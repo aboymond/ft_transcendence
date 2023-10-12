@@ -4,8 +4,8 @@ services:
   front:
     build: ./requirements/front/
     volumes:
-      - ./requirements/front/app/public/:/usr/src/app/public/
-      - ./requirements/front/app/src/:/usr/src/app/src/
+      - ./requirements/front/app/:/usr/src/app/
+      # - ./requirements/front/app/src/:/usr/src/app/src/
     env_file:
       - .env
     # depends_on:
