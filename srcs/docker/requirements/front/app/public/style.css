@@ -1,3 +1,9 @@
+@font-face {
+	font-family: 'Polybius';
+	src: url('/fonts/Polybius1981.ttf') format('truetype');
+}
+
+
 * {
 	--res: calc(0.01 * 10vmin);
 	margin: 0;
@@ -8,11 +14,255 @@
 	list-style: none;
 	text-shadow: 0 0 10px rgb(134, 255, 134);
 	color: rgb(26, 255, 0);
-	
+
 }
 
 body {
-    background-color: rgb(0, 0, 0);
+
+	text-decoration: none;
+	background-color: rgb(6, 60, 0);
 }
 
 
+
+#scan {
+	display: flex;
+	width: 100%;
+	height: 100%;
+	opacity: 60%;
+	position: absolute;
+	z-index: 0;
+}
+
+#bezel {
+	display: flex;
+	width: 100%;
+	height: 100%;
+	opacity: 98%;
+	position: absolute;
+	z-index: 1;
+}
+
+header {
+	display: flex;
+	justify-content: flex-end;
+	/* background-color: blueviolet; */
+}
+
+header a {
+	font-size: 3vh;
+	margin-right: 4em;
+	margin-top: 2em;
+	/* margin-left: 80%; */
+	z-index: 10;
+	/* font-weight: lighter;
+	overflow: hidden;
+	white-space: nowrap;
+	position: relative; */
+	/* animation: typing 3.5s steps(7); */
+	/* background-color: aqua; */
+}
+
+
+#contener-logo {
+	/* margin-top: 2em; */
+	height: 8em;
+	overflow: hidden;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	/* background-color: aqua; */
+}
+
+#logo {
+	font-family: 'Polybius';
+	font-size: calc(80 * var(--res));
+	z-index: 10;
+}
+
+#p-end {
+	display: flex;
+	justify-content: flex-start;
+	margin: 4vh 0 4vh 8.5vh;
+	z-index: 10;
+	/* background-color: blanchedalmond; */
+}
+
+#p-end div h4 {
+
+	font-size: calc(25 * var(--res));
+	z-index: 10;
+	display: flex;
+	font-weight: lighter;
+	overflow: hidden;
+	position: relative;
+	white-space: nowrap;
+	animation: typing 4s steps(30);
+	/* background-color: aliceblue; */
+}
+
+@keyframes typing {
+	from {
+		width: 0;
+	}
+
+	to {
+		width: 100%;
+	}
+}
+
+#p-end div h4::after {
+	content: '';
+	position: absolute;
+	display: block;
+	height: 100%;
+	width: 0.1vh;
+	background: rgb(26, 255, 0);
+	right: 0;
+	top: 0;
+	animation: cursor 1s infinite;
+}
+
+@keyframes cursor {
+	0% {
+		opacity: 1;
+	}
+
+	50% {
+		opacity: 0;
+	}
+
+	100% {
+		opacity: 1;
+	}
+}
+
+#box {
+	display: flex;
+	height: 50vh;
+	border-color: rgb(74, 246, 38);
+	z-index: 10;
+	/* background-color: blue; */
+}
+
+#menu {
+	display: flex;
+	width: 50vh;
+	border-style: solid;
+	border-width: 2px;
+	margin-left: 5em;
+	box-shadow: 0 0 5px rgb(165, 255, 165);
+	border-color: rgb(74, 246, 38);
+	z-index: 10;
+	/* background-color: aqua; */
+
+}
+
+#menu nav {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	width: 100%;
+	/* background-color: brown; */
+}
+
+#menu li {
+	display: flex;
+	height: 100%;
+	align-items: center;
+	justify-content: center;
+	border-style: solid;
+	border-width: 2px;
+	border-color: rgb(74, 246, 38);
+	/* overflow: hidden; */
+	/* background-color: antiquewhite; */
+}
+
+#menu li a {
+	height: 100%;
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-size: calc(40 * var(--res));
+	overflow: hidden;
+	position: relative;
+	/* background-color: aqua; */
+
+}
+
+#menu a::before {
+
+	content: '';
+	position: absolute;
+	background-color: rgb(74, 246, 38);
+	top: 0;
+	left: -100%;
+	width: 100%;
+	height: 100%;
+
+	transition: all, 0.3s;
+	z-index: -1;
+}
+
+#menu a:hover::before {
+	left: 0;
+}
+
+#menu a:hover {
+	color: rgb(2, 34, 5);
+	font-size: calc(50 * var(--res))
+}
+
+#game_window {
+	display: flex;
+	width: 100%;
+	align-items: center;
+	justify-content: center;
+	border-style: solid;
+	border-width: 2px;
+	box-shadow: 0 0 5px rgb(165, 255, 165);
+	border-color: rgb(74, 246, 38);
+	z-index: 10;
+}
+
+#chatbox {
+	display: flex;
+	width: 50%;
+	align-items: center;
+	justify-content: center;
+	border-style: solid;
+	border-width: 2px;
+	margin-right: 5em;
+	box-shadow: 0 0 5px rgb(165, 255, 165);
+	border-color: rgb(74, 246, 38);
+	z-index: 10;
+}
+
+footer {
+	height: 5vh;
+	width: 100%;
+	margin-bottom: 2em;
+	display: flex;
+	justify-content: center;
+	position: absolute;
+	bottom: 0;
+	z-index: 10;
+
+	/* background-color: aqua; */
+}
+
+.sphere {
+	width: 50%;
+	height: 40%;
+	background-color: rgb(165, 255, 165, 0.05);
+	border-radius: 50%;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	z-index: 2;
+	filter: blur(100px);
+}
+
+#credits {}

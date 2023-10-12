@@ -1,32 +1,32 @@
-version: '4'
+version: "4"
 
 services:
-  front:
-    build: ./requirements/front/
-    volumes:
-      - ./requirements/front/app/:/usr/src/app/
-      # - ./requirements/front/app/src/:/usr/src/app/src/
-    env_file:
-      - .env
-    # depends_on:
-    #   - back
-    ports:
-      - 3000:3000
-    # networks:
-    #   - networks
-    restart: unless-stopped
+    front:
+        build: ./requirements/front/
+        volumes:
+            - ./requirements/front/app/:/usr/src/app/
+            # - ./requirements/front/app/src/:/usr/src/app/src/
+        env_file:
+            - .env
+        # depends_on:
+        #   - back
+        ports:
+            - 3000:3000
+        # networks:
+        #   - networks
+        restart: unless-stopped
 
-  # back:
-  #   build: ./requirements/back/
-  #   volumes:
-  #     - ../app/:/app
-  #   env_file:
-  #     - .env
-  #   ports:
-  #     - 8080:8080
-  #   networks:
-  #     - networks
-  #   restart: unless-stopped
+    # back:
+    #   build: ./requirements/back/
+    #   volumes:
+    #     - ../app/:/app
+    #   env_file:
+    #     - .env
+    #   ports:
+    #     - 8080:8080
+    #   networks:
+    #     - networks
+    #   restart: unless-stopped
 
 networks:
-  networks:
+    networks:
