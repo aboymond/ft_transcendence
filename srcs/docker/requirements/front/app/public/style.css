@@ -1,6 +1,12 @@
-@font-face {
+/* @font-face {
 	font-family: 'Polybius';
 	src: url('/fonts/Polybius1981.ttf') format('truetype');
+} */
+
+
+
+:root {
+	--blur-value: 1px;
 }
 
 
@@ -14,24 +20,27 @@
 	list-style: none;
 	text-shadow: 0 0 10px rgb(134, 255, 134);
 	color: rgb(26, 255, 0);
+	
+	
 
 }
 
 body {
 
 	text-decoration: none;
-	background-color: rgb(6, 60, 0);
+	background-color: rgb(5, 49, 0);
+	
 }
-
 
 
 #scan {
 	display: flex;
 	width: 100%;
 	height: 100%;
-	opacity: 60%;
+	opacity: 10%;
 	position: absolute;
-	z-index: 0;
+	pointer-events: none;
+	z-index: 20;
 }
 
 #bezel {
@@ -41,6 +50,8 @@ body {
 	opacity: 98%;
 	position: absolute;
 	z-index: 1;
+	filter: blur(10px);
+	
 }
 
 header {
@@ -55,6 +66,7 @@ header a {
 	margin-top: 2em;
 	/* margin-left: 80%; */
 	z-index: 10;
+	filter: blur(var(--blur-value));
 	/* font-weight: lighter;
 	overflow: hidden;
 	white-space: nowrap;
@@ -78,6 +90,7 @@ header a {
 	font-family: 'Polybius';
 	font-size: calc(80 * var(--res));
 	z-index: 10;
+	filter: blur(var(--blur-value));
 }
 
 #p-end {
@@ -85,6 +98,7 @@ header a {
 	justify-content: flex-start;
 	margin: 4vh 0 4vh 8.5vh;
 	z-index: 10;
+	filter: blur(var(--blur-value));
 	/* background-color: blanchedalmond; */
 }
 
@@ -142,6 +156,7 @@ header a {
 	height: 50vh;
 	border-color: rgb(74, 246, 38);
 	z-index: 10;
+	
 	/* background-color: blue; */
 }
 
@@ -154,6 +169,8 @@ header a {
 	box-shadow: 0 0 5px rgb(165, 255, 165);
 	border-color: rgb(74, 246, 38);
 	z-index: 10;
+	filter: blur(var(--blur-value));
+	
 	/* background-color: aqua; */
 
 }
@@ -187,6 +204,7 @@ header a {
 	font-size: calc(40 * var(--res));
 	overflow: hidden;
 	position: relative;
+	/* filter: blur(0.5px); */
 	/* background-color: aqua; */
 
 }
@@ -200,7 +218,7 @@ header a {
 	left: -100%;
 	width: 100%;
 	height: 100%;
-
+	
 	transition: all, 0.3s;
 	z-index: -1;
 }
@@ -210,8 +228,9 @@ header a {
 }
 
 #menu a:hover {
-	color: rgb(2, 34, 5);
-	font-size: calc(50 * var(--res))
+	color: rgb(6, 60, 0);
+	font-size: calc(50 * var(--res));
+	/* filter: blur(0.5px); */
 }
 
 #game_window {
@@ -223,6 +242,7 @@ header a {
 	border-width: 2px;
 	box-shadow: 0 0 5px rgb(165, 255, 165);
 	border-color: rgb(74, 246, 38);
+	filter: blur(var(--blur-value));
 	z-index: 10;
 }
 
@@ -236,6 +256,7 @@ header a {
 	margin-right: 5em;
 	box-shadow: 0 0 5px rgb(165, 255, 165);
 	border-color: rgb(74, 246, 38);
+	filter: blur(var(--blur-value));
 	z-index: 10;
 }
 
@@ -261,7 +282,7 @@ footer {
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
-	z-index: 2;
+	z-index: 25;
 	filter: blur(100px);
 }
 
