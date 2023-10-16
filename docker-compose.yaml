@@ -1,0 +1,32 @@
+version: "3"
+services:
+    backend:
+        build:
+            context: ./backend
+            dockerfile: Dockerfile
+        image: backend:latest
+        container_name: backend-container
+        ports:
+            - "3000:3000"
+        networks:
+            - my-network # specify the network for the backend service
+
+    frontend:
+        build:
+            context: ./frontend
+            dockerfile: Dockerfile
+        image: frontend:latest
+        container_name: frontend-container
+        ports:
+            - "3001:80"
+        environment:
+            - VITE_BACKEND_URL=http://backend:3000
+        networks:
+            - my-network # specify the network for the frontend service
+
+volumes:
+    db-data:
+
+networks:
+    my-network: # define a custom network named my-network
+        driver: bridge
