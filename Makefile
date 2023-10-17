@@ -2,8 +2,8 @@ NAME		=	transcendence
 DIR			=	/
 #DEV_COMPOSE	=	-f ${DIR} docker-compose.dev.yml
 COMPOSE	=	-f ${DIR} docker-compose.yml
-ENV			=	--env-file srcs/docker/.env
-DOCKER		=	docker compose ${COMPOSE} ${ENV} -p ${NAME}
+ENV			=	--env-file .env
+DOCKER		=	docker compose ${ENV} -p ${NAME}
 #DEV_DOCKER		=	docker compose ${DEV_COMPOSE} ${ENV} -p ${NAME}
 
 all:			build start
@@ -33,4 +33,4 @@ aclean:			clean pclean vclean
 
 re:				clean all
 
-.PHONY all build start down clean vclean pclean re
+.PHONY: all build start down clean vclean pclean re
