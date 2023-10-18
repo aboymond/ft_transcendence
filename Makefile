@@ -27,9 +27,9 @@ pclean:
 				docker system prune -af
 
 vclean:
-				docker volumes prune -f
+				docker volume prune -f
 
-aclean:			clean pclean vclean 
+aclean:			clean pclean vclean
 
 re:				clean all
 
