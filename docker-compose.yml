@@ -20,7 +20,7 @@ services:
             dockerfile: Dockerfile.dev
         image: frontend:latest
         container_name: frontend-container
-        ports:
+        ports: 
             - "3001:3001"
         environment:
             - VITE_BACKEND_URL=http://backend:3000

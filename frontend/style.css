@@ -20,6 +20,8 @@
 	list-style: none;
 	text-shadow: 0 0 10px rgb(134, 255, 134);
 	color: rgb(26, 255, 0);
+	overflow: hidden;
+
 	
 	
 
@@ -29,7 +31,8 @@ body {
 
 	text-decoration: none;
 	background-color: rgb(5, 49, 0);
-	
+	display: absolute;
+
 }
 
 
@@ -44,27 +47,49 @@ body {
 }
 
 #bezel {
+	margin: 0;
 	display: flex;
 	width: 100%;
 	height: 100%;
 	opacity: 98%;
 	position: absolute;
-	z-index: 1;
-	filter: blur(10px);
+	z-index: 21;
+	filter: blur(5px);
+	pointer-events: none;
 	
+}
+
+#light {
+	display: flex;
+	width: 100%;
+	height: 100%;
+	opacity: 30%;
+	position: absolute;
+	z-index: 20;
+	filter: blur(35px);
+	pointer-events: none;
+	
+}
+
+#page {
+	/* background-color: royalblue; */
+	margin-left: 10%;
+	margin-right: 10%; 
 }
 
 header {
 	display: flex;
 	justify-content: flex-end;
+
 	/* background-color: blueviolet; */
 }
 
 header a {
 	font-size: 3vh;
-	margin-right: 4em;
-	margin-top: 2em;
-	/* margin-left: 80%; */
+	/* margin-right: 5em; */
+	margin-top: 3em;
+	margin-left: 5em;
+	/* margin: 10vh, 10vh, 10vh, 10vh; */
 	z-index: 10;
 	filter: blur(var(--blur-value));
 	/* font-weight: lighter;
@@ -96,7 +121,7 @@ header a {
 #p-end {
 	display: flex;
 	justify-content: flex-start;
-	margin: 4vh 0 4vh 8.5vh;
+	margin: 4vh 0 4vh 0vh;
 	z-index: 10;
 	filter: blur(var(--blur-value));
 	/* background-color: blanchedalmond; */
@@ -153,6 +178,7 @@ header a {
 
 #box {
 	display: flex;
+	width: 100%;
 	height: 50vh;
 	border-color: rgb(74, 246, 38);
 	z-index: 10;
@@ -162,10 +188,10 @@ header a {
 
 #menu {
 	display: flex;
-	width: 50vh;
+	width: 20%;
 	border-style: solid;
 	border-width: 2px;
-	margin-left: 5em;
+	margin-left: 0em;
 	box-shadow: 0 0 5px rgb(165, 255, 165);
 	border-color: rgb(74, 246, 38);
 	z-index: 10;
@@ -201,7 +227,7 @@ header a {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	font-size: calc(40 * var(--res));
+	font-size: calc(25 * var(--res));
 	overflow: hidden;
 	position: relative;
 	/* filter: blur(0.5px); */
@@ -218,7 +244,7 @@ header a {
 	left: -100%;
 	width: 100%;
 	height: 100%;
-	
+	overflow: hidden;
 	transition: all, 0.3s;
 	z-index: -1;
 }
@@ -228,14 +254,16 @@ header a {
 }
 
 #menu a:hover {
+	/* display: flex; */
 	color: rgb(6, 60, 0);
-	font-size: calc(50 * var(--res));
+	font-size: 3em;
+	overflow: hidden;
 	/* filter: blur(0.5px); */
 }
 
 #game_window {
 	display: flex;
-	width: 100%;
+	width: 60%;
 	align-items: center;
 	justify-content: center;
 	border-style: solid;
@@ -248,12 +276,12 @@ header a {
 
 #chatbox {
 	display: flex;
-	width: 50%;
+	width: 20%;
 	align-items: center;
 	justify-content: center;
 	border-style: solid;
 	border-width: 2px;
-	margin-right: 5em;
+	/* margin-right: 5em; */
 	box-shadow: 0 0 5px rgb(165, 255, 165);
 	border-color: rgb(74, 246, 38);
 	filter: blur(var(--blur-value));
@@ -263,7 +291,7 @@ header a {
 footer {
 	height: 5vh;
 	width: 100%;
-	margin-bottom: 2em;
+	margin-bottom: 2%;
 	display: flex;
 	justify-content: center;
 	position: absolute;
@@ -273,17 +301,9 @@ footer {
 	/* background-color: aqua; */
 }
 
-.sphere {
-	width: 50%;
-	height: 40%;
-	background-color: rgb(165, 255, 165, 0.05);
-	border-radius: 50%;
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	z-index: 25;
-	filter: blur(100px);
+#credits {
+	font-size: calc(20 * var(--res));
+	z-index: 10;
+	filter: blur(var(--blur-value));
 }
 
-#credits {}

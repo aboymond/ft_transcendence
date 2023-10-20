@@ -9,15 +9,18 @@
 		<link rel="stylesheet" href="style.css" />
 	</head>
 	<body>
-		<script src="./game/js/jquery.js"></script>
 		<script src="./game/js/pixi.js"></script>
-		<script src="./game/js/main.js"></script>
-		<div class="sphere"></div>
+		<script src="./game/js/jquery.js"></script>
+		<script type="module" src="./game/js/main.js"></script>
+		
 
 		<div id="screen">
 			<img src="./img/scanlines.png" id="scan" />
 			<img src="./img/bezel.png" id="bezel" />
+			<img src="./img/light.png" id="light" />
+			<div class="sphere"></div>
 		</div>
+	<div id="page">
 		<header>
 			<a href="#">sign in</a>
 		</header>
@@ -37,9 +40,7 @@
 					<li><a href="history">HISTORY</a></li>
 				</nav>
 			</section>
-			<section id="game_window">
-				<div></div>
-			</section>
+			<section id="game_window"></section>
 			<section id="chatbox">
 				<div>chatbox</div>
 			</section>
@@ -47,5 +48,6 @@
 		<footer>
 			<div id="credits">credits</div>
 		</footer>
+	</div>
 	</body>
 </html>
