@@ -1,17 +1,28 @@
 
 // import pixi filter glow
+import * as PIXI from 'pixi.js';
 import {GlowFilter} from '@pixi/filter-glow';
 import { gsap } from 'gsap';
+import * as Menu from './menu/menu.js';
+import { pushStart } from './menu/menu.js';
 
 // init variables
+var scoreText;
+// scoreText.alpha = 0.2;
+var playerScore = 0;
+var computerScore = 0;
 var myPixi;
 var ball;
 var playerPad;
-var computerPad;
+var computerPad ;
 var gameStarted = false;
-var playerTurn = false;
-var lvlBot = 0.09;
+var playerTurn = true ;
+var lvlBot = 0.08;
 let keys = {};
+let checkInterval;
+
+
+
 
 
 // set keyup and keydown events
@@ -25,12 +36,29 @@ window.addEventListener('keyup', function(e) {
 
 // launch game
 $(document).ready(function(){
+    Menu.initMenu();
+	checkInterval = setInterval(checkStart, 100);
+});
 
-	initPixi();
-	createGame();
-	gameLoop();
-	$(window).on('resize', resizePixi);
-	
+// window.addEventListener('resize', function() {
+//     myPixi.renderer.resize(window.innerWidth, window.innerHeight);
+// });
+
+
+function checkStart() {
+    if (pushStart) {
+		clearInterval(checkInterval);
+
+        console.log("Menu init");
+        initPixi();
+        createGame();
+		Menu.destroyMenu(); // Détruire le contenu du menu.
+        setupGame();
+		resizePixi();
+	}
+}
+
+function setupGame() {
 	// game loop for ball
 	myPixi.ticker.add(function() {
 
@@ -56,6 +84,7 @@ $(document).ready(function(){
 			}
 			else {
 				// ball position 
+				botStart();
 				if (ball.x - ball.width / 2 < computerPad.x - computerPad.width / 2) {
 					ball.x = computerPad.x - computerPad.width / 2 + ball.width / 2;
 				} else if (ball.x + ball.width / 2 > computerPad.x + computerPad.width / 2) {
@@ -63,7 +92,6 @@ $(document).ready(function(){
 				}
 				ball.vel.x = (ball.x - computerPad.x ) / (computerPad.width / 2) * 5;
 				ball.y = computerPad.y + 25;
-				botStart();
 			}
 		}
 		else {
@@ -84,6 +112,9 @@ $(document).ready(function(){
 				playerPad.x = myPixi.view.width / 2;
 				ball.x = playerPad.x;
 				gameStarted = false;
+				playerTurn = false;
+				playerScore++; // Augmentez le score du joueur
+				updateScoreText();
 			}
 			else if (ball.y > myPixi.view.height){
 				console.log("Computer win !");
@@ -92,6 +123,9 @@ $(document).ready(function(){
 				playerPad.x = myPixi.view.width / 2;
 				ball.x = playerPad.x;
 				gameStarted = false;
+				playerTurn = true;
+				computerScore++; 
+				updateScoreText();
 			}
 	
 			// touch wall
@@ -119,10 +153,10 @@ $(document).ready(function(){
 				}
 			}
 		}
-	
+
+		updateBallPosition();
 	});
-	
-});
+}
 
 
 // init pixi canvas
@@ -142,7 +176,8 @@ function initPixi(){
 		backgroundAlpha: 0,
 	});
 
-
+	scoreText = new PIXI.Text('0 - 0', { fill: 0x1aff00, fontSize: 48, align: 'center'});
+	scoreText.alpha = 0.2;
 	// add canvas to html
 
 	$('#game_window').append(myPixi.view);
@@ -178,15 +213,22 @@ function createGame(){
 	computerPad.y = 50;
 	myPixi.stage.addChild(computerPad);
 
+
+	scoreText.x = myPixi.view.width / 2 - scoreText.width / 2;
+	scoreText.y = myPixi.view.height / 2 - scoreText.height / 2;
+	myPixi.stage.addChild(scoreText);
 	// create glow filter
 	const glowFilter = new GlowFilter({
 		distance: 35,
 		outerStrength: 1.2,
 		innerStrength: 0,
-		color: PIXI.utils.hex2string(0x86FF86),
+		color: 0x86FF86,
 	});
+	
 
 	// add glow filter to ball and pads
+
+	scoreText.filters = [glowFilter]
 	ball.filters = [glowFilter];
 	playerPad.filters = [glowFilter];
 	computerPad.filters = [glowFilter];
@@ -203,18 +245,14 @@ function createBall(size, color){
 
 // create pad
 function createPad(width, height, color){
-	var ball = new PIXI.Graphics();
-	ball.beginFill(color);
-	ball.drawRect(-width/2, -height/2, width, height);
-	ball.endFill();
-	return ball;
+	var pad = new PIXI.Graphics();
+	pad.beginFill(color);
+	pad.drawRect(-width/2, -height/2, width, height);
+	pad.endFill();
+	return pad;
 }
 
-
-// game loop 
-function gameLoop() {
-	// console.log(keys);
-
+function updateBallPosition() {
 	// player movement right
 	if (keys[39]) {
 		if (!((playerPad.x + playerPad.width / 2) > myPixi.view.width)) {
@@ -237,16 +275,24 @@ function gameLoop() {
 	if (keys[32])
 		if (gameStarted == false)
 			gameStarted = true;
-
-   
-	// console.log(gameStarted);
-	requestAnimationFrame(gameLoop);
 }
 
 function botStart() {
-	gsap.to(computerPad, 1.5, {x: Math.random() * myPixi.view.width, ease:
-		'expo.out', onComplete: function() {
-			gameStarted = true;
-		}})
+    gsap.to(computerPad, {
+        x: Math.random() * myPixi.view.width,
+        duration: 1, 
+        ease: 'expo.Out', 
+        onComplete: function() {
+            gameStarted = true;
+        }
+    });
 }
+
+function updateScoreText() {
+	scoreText.text = playerScore + ' - ' + computerScore;
+    scoreText.x = myPixi.view.width / 2 - scoreText.width / 2;
+    scoreText.y = myPixi.view.height / 2 - scoreText.height / 2;
+	scoreText.alpha = 0.2;
+}  
+
 

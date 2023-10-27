@@ -10,10 +10,13 @@
 		"preview": "vite preview"
 	},
 	"dependencies": {
+		"@pixi/color": "^7.3.2",
+		"@pixi/filter-drop-shadow": "^5.2.0",
 		"@pixi/filter-glow": "^5.2.1",
+		"@pixi/sound": "^5.2.2",
 		"gsap": "^3.12.2",
 		"pixi-filters": "^5.2.1",
-		"pixi.js": "^7.3.1",
+		"pixi.js": "^7.3.2",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0"
 	},
