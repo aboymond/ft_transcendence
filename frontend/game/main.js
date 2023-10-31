@@ -52,7 +52,7 @@ function checkStart() {
         console.log("Menu init");
         initPixi();
         createGame();
-		Menu.destroyMenu(); // Détruire le contenu du menu.
+		Menu.destroyMenu();
         setupGame();
 		resizePixi();
 	}
