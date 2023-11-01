@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
 import { SceneBase } from "./SceneBase";
-import { SceneGame } from "./SceneGame";
+import { SceneMenu2 } from "./SceneMenu2";
 import {textStyleDefault, textStyleTitle } from "../index";
 import { GlowFilter } from "@pixi/filter-glow";
 
@@ -34,7 +34,6 @@ export class SceneMenu extends SceneBase {
     container.addChild(this._initTextSpace())
     this._spaceText.x = this.root.width / 2 - this._spaceText.width / 2;
     this._spaceText.y = this.root.height - 100 - this._spaceText.height / 2;
-    
   }
 
   public onUpdate() {
@@ -46,7 +45,7 @@ export class SceneMenu extends SceneBase {
 
   public onKeyDown(e: KeyboardEvent) {
     if (e.code === 'Space') 
-      this.root.loadScene(new SceneGame(this.root))
+      this.root.loadScene(new SceneMenu2(this.root))
   }
 
   public onKeyUp() {

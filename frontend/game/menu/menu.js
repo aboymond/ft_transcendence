@@ -59,51 +59,51 @@ export function initMenu() {
     setInterval(blinkText, 800);
 }
 
-function createTextPong (x, y, glow) {
-    const style = new PIXI.TextStyle({
-        fontFamily: 'Pixelmania',
-        fill: 0x1aff00,
-        fontSize: y / 2 - 120
-    });
+// function createTextPong (x, y, glow) {
+//     const style = new PIXI.TextStyle({
+//         fontFamily: 'Pixelmania',
+//         fill: 0x1aff00,
+//         fontSize: y / 2 - 120
+//     });
 
-    startText = new PIXI.Text('PONG', style);
-    startText.filters = [glow];
-    console.log(startText);
+//     startText = new PIXI.Text('PONG', style);
+//     startText.filters = [glow];
+//     console.log(startText);
 
-    startText.x = x / 2 - startText.width / 2;
-    startText.y = (y / 2) / 2 - startText.height / 2;
+//     startText.x = x / 2 - startText.width / 2;
+//     startText.y = (y / 2) / 2 - startText.height / 2;
 
-    myPixiMenu.stage.addChild(startText);
-}
+//     myPixiMenu.stage.addChild(startText);
+// }
 
-function createTextSpace (x, y, glow) {
-    const style = new PIXI.TextStyle({
-        fontFamily: 'arial',
-        fill: 0x1aff00,
-        fontSize: 20
-    });
-    spaceText = new PIXI.Text('PRESS SPACE TO START', style);
-    spaceText.filters = [glow];
+// function createTextSpace (x, y, glow) {
+//     const style = new PIXI.TextStyle({
+//         fontFamily: 'arial',
+//         fill: 0x1aff00,
+//         fontSize: 20
+//     });
+//     spaceText = new PIXI.Text('PRESS SPACE TO START', style);
+//     spaceText.filters = [glow];
     
 
-    spaceText.x = x / 2 - spaceText.width / 2;
-    spaceText.y = y - 100 - spaceText.height / 2;
+//     spaceText.x = x / 2 - spaceText.width / 2;
+//     spaceText.y = y - 100 - spaceText.height / 2;
 
-    myPixiMenu.stage.addChild(spaceText);
-}
+//     myPixiMenu.stage.addChild(spaceText);
+// }
 
-function blinkText() {
-    if (spaceText) {
-        spaceText.visible = !spaceText.visible;
-    }
+// function blinkText() {
+//     if (spaceText) {
+//         spaceText.visible = !spaceText.visible;
+//     }
    
-}
+// }
 
-export function destroyMenu() {
-    if (myPixiMenu) {
-        myPixiMenu.stage.removeChildren(); // Supprimez tous les éléments de la scène.
-        myPixiMenu.destroy(true); // Supprimez le canevas de la page.
-    }
-}
+// export function destroyMenu() {
+//     if (myPixiMenu) {
+//         myPixiMenu.stage.removeChildren(); // Supprimez tous les éléments de la scène.
+//         myPixiMenu.destroy(true); // Supprimez le canevas de la page.
+//     }
+// }
 
-export { pushStart };
+// export { pushStart };
