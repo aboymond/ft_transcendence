@@ -3,16 +3,16 @@ services:
     db:
         image: postgres:latest
         container_name: db-container
-        volumes:
-            - db-data:/var/lib/postgresql/data
+        ports:
+            - "5432:5432"
         environment:
             POSTGRES_DB: dbname
             POSTGRES_USER: user
             POSTGRES_PASSWORD: password
-        ports:
-            - "5432:5432"
         networks:
             - my-network
+        volumes:
+            - db-data:/var/lib/postgresql/data
 
     backend:
         build:
@@ -22,13 +22,13 @@ services:
         container_name: backend-container
         ports:
             - "8000:8000"
+        environment:
+            DATABASE_URL: postgresql://youruser:yourpassword@db:5432/yourdbname
         networks:
             - my-network
         volumes:
             - ./backend:/app
             - backend_static:/app/static
-        environment:
-            DATABASE_URL: postgresql://youruser:yourpassword@db:5432/yourdbname
         command: python manage.py runserver 0.0.0.0:8000
 
     frontend:
@@ -50,7 +50,6 @@ services:
 volumes:
     db-data:
     backend_static:
-    backend_node_modules:
     frontend_node_modules:
 
 networks:
