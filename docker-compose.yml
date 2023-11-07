@@ -1,19 +1,5 @@
 version: "3.8"
 services:
-    db:
-        image: postgres:latest
-        container_name: db-container
-        ports:
-            - "5432:5432"
-        environment:
-            POSTGRES_DB: dbname
-            POSTGRES_USER: user
-            POSTGRES_PASSWORD: password
-        networks:
-            - my-network
-        volumes:
-            - db-data:/var/lib/postgresql/data
-
     backend:
         build:
             context: ./backend
@@ -29,6 +15,7 @@ services:
         volumes:
             - ./backend:/app
             - backend_static:/app/static
+        restart: always
         command: python manage.py runserver 0.0.0.0:8000
 
     frontend:
@@ -46,11 +33,44 @@ services:
         volumes:
             - ./frontend:/usr/src/app
             - frontend_node_modules:/usr/src/app/node_modules
+        restart: always
+
+    db:
+        image: postgres:latest
+        container_name: db-container
+        ports:
+            - "5432:5432"
+        environment:
+            POSTGRES_DB: dbname
+            POSTGRES_USER: user
+            POSTGRES_PASSWORD: password
+        networks:
+            - my-network
+        volumes:
+            - db-data:/var/lib/postgresql/data
+        restart: always
+
+    pgadmin:
+        image: dpage/pgadmin4
+        container_name: pgadmin-container
+        ports:
+            - "5050:80"
+        environment:
+            PGADMIN_DEFAULT_EMAIL: admin@example.com
+            PGADMIN_DEFAULT_PASSWORD: root
+        networks:
+            - my-network
+        volumes:
+            - pgadmin_data:/var/lib/pgadmin
+        depends_on:
+            - db
+        restart: always
 
 volumes:
-    db-data:
     backend_static:
     frontend_node_modules:
+    db-data:
+    pgadmin_data:
 
 networks:
     my-network:
