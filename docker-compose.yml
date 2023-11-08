@@ -15,8 +15,9 @@ services:
         volumes:
             - ./backend:/app
             - backend_static:/app/static
-        restart: always
-        command: python manage.py runserver 0.0.0.0:8000
+        depends_on:
+            - db
+        restart: unless-stopped
 
     frontend:
         build:
@@ -33,7 +34,7 @@ services:
         volumes:
             - ./frontend:/usr/src/app
             - frontend_node_modules:/usr/src/app/node_modules
-        restart: always
+        restart: unless-stopped
 
     db:
         image: postgres:latest
@@ -48,7 +49,7 @@ services:
             - my-network
         volumes:
             - db-data:/var/lib/postgresql/data
-        restart: always
+        restart: unless-stopped
 
     pgadmin:
         image: dpage/pgadmin4
@@ -64,7 +65,7 @@ services:
             - pgadmin_data:/var/lib/pgadmin
         depends_on:
             - db
-        restart: always
+        restart: unless-stopped
 
 volumes:
     backend_static:
