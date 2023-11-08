@@ -22,4 +22,13 @@ RUN poetry config virtualenvs.create false \
 # Copy the rest of the code
 COPY . /app/
 
+# Copy entrypoint script into the container
+COPY docker-entrypoint.sh /app/docker-entrypoint.sh
+
+# Make sure the script is executable
+RUN chmod +x /app/docker-entrypoint.sh
+
+# Set the entrypoint
+ENTRYPOINT ["/app/docker-entrypoint.sh"]
+
 # You can add other Dockerfile commands below as needed
