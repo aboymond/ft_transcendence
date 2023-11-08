@@ -57,4 +57,4 @@ aclean:	clean pclean vclean
 
 re:	clean up
 
-.PHONY:	default up down build migrate superuser logs shell test collectstatic clean pclean vclean aclean re
+.PHONY:	default up dev down build migrations migrate superuser logs shell test collectstatic clean pclean vclean aclean re
