@@ -1,16 +1,25 @@
 # Use an official Python runtime as a parent image
-FROM python:3.9
+FROM python:3.12
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
+ENV POETRY_VERSION 1.7
 
 # Set work directory
 WORKDIR /app
 
-# Install dependencies
-COPY requirements.txt /app/
-RUN pip install --no-cache-dir -r requirements.txt
+# Install Poetry
+RUN pip install --no-cache-dir "poetry==$POETRY_VERSION"
 
 # Copy project
+COPY pyproject.toml poetry.lock* /app/
+
+# Install dependencies
+RUN poetry config virtualenvs.create false \
+	&& poetry install --no-interaction --no-ansi
+
+# Copy the rest of the code
 COPY . /app/
+
+# You can add other Dockerfile commands below as needed
