@@ -1,4 +1,5 @@
 import type { SceneBase } from "./scenes/SceneBase"
+// import { jQuery as $ } from 'jquery'
 import * as PIXI from 'pixi.js';
 
 interface IPixiManagerOptions {
@@ -7,8 +8,12 @@ interface IPixiManagerOptions {
 }
 
 
-export class PixiManager {
 
+export class PixiManager {
+  
+  public vsPlayer = false;
+  public botLvl = 0.75;
+  
   private _currentScene?: SceneBase = undefined
   private _app: PIXI.Application
 
@@ -22,8 +27,8 @@ export class PixiManager {
       antialias: options.antialias ?? true,
     })
     this._app.ticker.add((delta) => {
-        if (this._currentScene === undefined) return;
-        this._currentScene.onUpdate(delta)
+      if (this._currentScene === undefined) return;
+      this._currentScene.onUpdate(delta)
     })
     window.addEventListener('keydown', this._onKeyDownBind);
     window.addEventListener('keyup', this._onKeyUpBind);
@@ -64,11 +69,11 @@ export class PixiManager {
   }
   
 
-  get width () {
+  public get width () {
     return $('#game_window').width()
   }
 
-  get height () {
+  public get height () {
     return $('#game_window').height()
   }
 } 

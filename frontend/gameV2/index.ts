@@ -1,24 +1,70 @@
 import * as PIXI from 'pixi.js';
-// import { GlowFilter } from '@pixi/filter-glow';
+import { GlowFilter } from '@pixi/filter-glow';
+import {PixelateFilter} from '@pixi/filter-pixelate';
 
 export const defaultColor = 0x1aff00;
 
-export const textStyleTitle = new PIXI.TextStyle({
+// Menu 1 
+export const textStyleTitleMenu1 = new PIXI.TextStyle({
   fontFamily: 'Pixelmania',
   fill: defaultColor,
   fontSize: 50
 });
 
-export const textStyleDefault = new PIXI.TextStyle({
+export const textStyleDefaultMenu1 = new PIXI.TextStyle({
   fontFamily: 'arial',
   fill: defaultColor,
   fontSize: 20
 });
 
-// export const glowFilter = new GlowFilter({
-//   distance: 30,
-//   outerStrength: 1.2,
-//   innerStrength: 0,
-//   color: 0x86FF86,
-// });
+// Menu 2
+
+export const textStylePVPMenu2 = new PIXI.TextStyle({
+  fontFamily: 'Pixelmania',
+  // fill: defaultColor,
+  fontSize: $('#game_window').width() / 20
+});
+
+export const textStylePVBMenu2 = new PIXI.TextStyle({
+  fontFamily: 'Pixelmania',
+  // fill: defaultColor,
+  fontSize: $('#game_window').width() / 20
+});
+
+// Menu Option
+
+export const textStyleMenuOption = new PIXI.TextStyle({
+
+  fontSize: 20,
+  fill: defaultColor
+});
+export const textStyleMenuOption1 = new PIXI.TextStyle({
+
+  fontSize: 20,
+  fill: 'green'
+});
+export const textStyleMenuOption2 = new PIXI.TextStyle({
+
+  fontSize: 20,
+  fill: defaultColor
+});
+export const textStyleMenuOption3 = new PIXI.TextStyle({
+
+  fontSize: 20,
+  fill: defaultColor
+});
+
+
+// Effects
+
+export const glowFilter = new GlowFilter({
+  distance: 30,
+  outerStrength: 1.2,
+  innerStrength: 0,
+  color: 0x86FF86,
+}) as unknown as PIXI.Filter;
+
+export const PixelPad = new PixelateFilter({
+
+}) as unknown as PIXI.Filter;
 
