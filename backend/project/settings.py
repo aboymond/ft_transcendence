@@ -40,6 +40,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    "authentication",
+    "games",
+    "tournaments",
+    "users",
+
     # 'rest_framework',
     # 'corsheaders',
     # 'channels',
@@ -78,7 +83,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'project.wsgi.application'
 
-ASGI_APPLICATION = 'project.asgi.application'
+# ASGI_APPLICATION = 'project.asgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases

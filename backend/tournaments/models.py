@@ -12,4 +12,5 @@ class Match(models.Model):
     tournament = models.ForeignKey(Tournament, related_name='matches', on_delete=models.CASCADE)
     player_one = models.ForeignKey(UserProfile, related_name='matches_as_player_one', on_delete=models.SET_NULL, null=True)
     player_two = models.ForeignKey(UserProfile, related_name='matches_as_player_two', on_delete=models.SET_NULL, null=True)
+    scheduled_time = models.DateTimeField()
     # More fields...
