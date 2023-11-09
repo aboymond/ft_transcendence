@@ -3,12 +3,11 @@ import { SceneBase } from "./SceneBase";
 import { SceneGame } from "./SceneGame";
 import { SceneMenuOption } from "./SceneMenuOption";
 import { glowFilter, defaultColor, textStylePVPMenu2, textStylePVBMenu2} from "..";
-// import { GlowFilter } from "@pixi/filter-glow";
+
+
 
 export class SceneMenu2 extends SceneBase {
 
-
-  // private _vsPlayer = this.root._vsPlayer;
   private _menuBox1 = new PIXI.Graphics();
   private _menuBox2 = new PIXI.Graphics(); 
   private _textPlayerVsPlayer = new PIXI.Text('PLAYER\n  VS\n  PLAYER', textStylePVPMenu2);
@@ -26,7 +25,7 @@ export class SceneMenu2 extends SceneBase {
   //=======================================
 
   public onStart(container: PIXI.Container) {
-    // init menu
+
     container.addChild(this._menuBoxInit(this._menuBox1));
     container.addChild(this._menuBoxInit(this._menuBox2));
     container.addChild(this._initTextPlayerVsPlayer(this._textPlayerVsPlayer));
@@ -52,12 +51,7 @@ export class SceneMenu2 extends SceneBase {
       this._updateMenuColor(); 
     }
     if (e.code === 'Space') {
-      if (this.root.vsPlayer === false) {
-        this.root.loadScene(new SceneGame(this.root));
-      }
-      else {
-        this.root.loadScene(new SceneMenuOption(this.root));
-      }
+      this.root.loadScene(new SceneMenuOption(this.root));
     }
   }
 

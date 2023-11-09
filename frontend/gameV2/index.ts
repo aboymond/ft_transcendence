@@ -53,6 +53,11 @@ export const textStyleMenuOption3 = new PIXI.TextStyle({
   fontSize: 20,
   fill: defaultColor
 });
+export const textStyleMenuOptionError = new PIXI.TextStyle({
+
+  fontSize: 20,
+  fill: defaultColor
+});
 
 
 // Effects

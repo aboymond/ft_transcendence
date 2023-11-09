@@ -12,7 +12,7 @@ interface IPixiManagerOptions {
 export class PixiManager {
   
   public vsPlayer = false;
-  public botLvl = 0.75;
+  public botLvl = 0.5;
   
   private _currentScene?: SceneBase = undefined
   private _app: PIXI.Application

@@ -2,7 +2,6 @@ import * as PIXI from 'pixi.js';
 import { SceneBase } from "./SceneBase";
 import { SceneMenu2 } from "./SceneMenu2";
 import {glowFilter, textStyleDefaultMenu1, textStyleTitleMenu1 } from "../index";
-// import { GlowFilter } from "@pixi/filter-glow";
 
 export class SceneMenu extends SceneBase {
 
@@ -29,7 +28,7 @@ export class SceneMenu extends SceneBase {
     container.addChild(this._initTextSpace())
     this._spaceText.x = this.root.width / 2 - this._spaceText.width / 2;
     this._spaceText.y = this.root.height - 100 - this._spaceText.height / 2;
-    // setInterval(this._blinkText, 800);
+
       this._interval = setInterval(() => {
       if (this._spaceText) {
         this._spaceText.visible = !this._spaceText.visible;
@@ -71,12 +70,5 @@ export class SceneMenu extends SceneBase {
   //=======================================
   // UTILS 
   //=======================================
-  private _blinkText() {
-
-    if (this._spaceText) {
-        this._spaceText.visible = !this._spaceText.visible;
-      }
-      console.log(this._spaceText);
-  }
 
 }
