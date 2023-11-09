@@ -1,9 +1,7 @@
 import * as PIXI from 'pixi.js';
 import { SceneBase } from "./SceneBase";
-import {defaultColor, glowFilter, textStyleMenuOption, textStyleMenuOption1, textStyleMenuOption2, textStyleMenuOption3, PixelPad } from "../index";
-
-
-
+import {defaultColor, glowFilter, textStyleMenuOption, textStyleMenuOption1, textStyleMenuOption2, textStyleMenuOption3,} from "../index";
+// import { Sprite } from '@pixi/sprite';
 
 const selectMax = 3;
 
@@ -12,26 +10,37 @@ const chooseBotLevel: string[] = ["EASY", "MEDIUM", "HARD", "IMPOSSIBLE!!!"];
 const botLvlNum: number[] = [0.5, 0.75, 0.9, 1];
 const choosePad: string[] = ["BASIC", "LOCKED", "LOCKED", "LOCKED", "LOCKED", "LOCKED"];
 
+const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+const textures = [
+  PIXI.Texture.from('gameV2/img/pad0.png'),
+  PIXI.Texture.from('gameV2/img/pad1.png'),
+  PIXI.Texture.from('gameV2/img/pad2.png'),
+  PIXI.Texture.from('gameV2/img/pad3.png'),
+  PIXI.Texture.from('gameV2/img/pad4.png'),
+  PIXI.Texture.from('gameV2/img/pad5.png'),
+  
+];
+
+
+const testi = 0;
 
 
 
 export class SceneMenuOption extends SceneBase {
-    
-
+  
+  
   private _currentSelect = 0
-
+  
   private _currentColor = 0
   private _currentPad = 0
   private _currentBotLevel = 0
-
-
+  
   private _pad = new PIXI.Graphics();
   private _padColor = new PIXI.Graphics();
-  
 
+  private _spritesPad: PIXI.Sprite[] = [];
 
-
-// padA.filters = [padPixel as unknown as Filter];
   
   //=======================================
   // Effects
@@ -60,15 +69,30 @@ export class SceneMenuOption extends SceneBase {
     this._padColor.y = (this._textColorAvatar.y - 20 );
     this._padColor.x = (this.root.width / 2 + this._padColor.width / 2);
 
-    container.addChild(this._createPad(this._pad));
-    this._pad.y = (this._textPad.y - 20 );
-    this._pad.x = (this.root.width / 2 + this._pad.width / 2);
+    // container.addChild(this._createPad(this._pad));
+    // this._pad.y = (this._textPad.y - 20 );
+    // this._pad.x = (this.root.width / 2 + this._pad.width / 2);
     
 
     if (this.root.vsPlayer === false) {
       container.addChild(this._createTextBotLevel(this._textBotLevel));
     }
-    // this._textColorAvatar.style.fill = defaultColor;
+
+    for (let i = 0; i < textures.length; i++) {
+      this._spritesPad.push(new PIXI.Sprite(textures[i]));
+    }
+
+    // container.addChild(this.sprite);
+    for (let i = 0; i < this._spritesPad.length; i++) {
+      container.addChild(this._spritesPad[i]);
+      this._spritesPad[i].x = (this.root.width / 2) - 75;
+      this._spritesPad[i].y = (this._textPad.y - 20 ) - 10;
+      this._spritesPad[i].tint = 'green';
+      this._spritesPad[i].visible = false;
+      this._spritesPad[i].filters = [glowFilter];
+    }
+    this._spritesPad[0].visible = true;
+
 
 
   }
@@ -157,13 +181,13 @@ this._updateMenuColor();
     pad.endFill();
     return (pad);
   }
-  private _createPad (pad: PIXI.Graphics) {
-    pad.filters = [glowFilter];
-    pad.beginFill(defaultColor);
-    pad.drawRect(-100, -10, 100, 10);
-    pad.endFill();
-    return (pad);
-  }
+  // private _createPad (pad: PIXI.Graphics) {
+  //   pad.filters = [glowFilter];
+  //   pad.beginFill(defaultColor);
+  //   pad.drawRect(-100, -10, 100, 10);
+  //   pad.endFill();
+  //   return (pad);
+  // }
 
   //=======================================
   // UTILS NAVIGATOR
@@ -219,31 +243,38 @@ this._updateMenuColor();
       this._currentColor = chooseColor.length - 1
     this._textColorAvatar.text = "< " + chooseColor[this._currentColor] + " >";
     this._textColorAvatar.x = this.root.width / 2 - this._textColorAvatar.width / 2;
-
+    this._updatePadColor();
   }
 
   private _colorNext () {
     this._currentColor++;
     if (this._currentColor > chooseColor.length - 1)
       this._currentColor = 0;
-      this._textColorAvatar.text = "< " + chooseColor[this._currentColor] + " >";
-      this._textColorAvatar.x = this.root.width / 2 - this._textColorAvatar.width / 2;
+    this._textColorAvatar.text = "< " + chooseColor[this._currentColor] + " >";
+     this._textColorAvatar.x = this.root.width / 2 - this._textColorAvatar.width / 2;
+     this._updatePadColor();
   }
 
   private _padPrev () {
+    this._spritesPad[this._currentPad].visible = false;
     this._currentPad--;
-    if (this._currentPad < 0)
-    this._currentPad = choosePad.length - 1;
+    if (this._currentPad < 0) 
+      this._currentPad = choosePad.length - 1;
+    this._spritesPad[this._currentPad].visible = true;
     this._textPad.text = "< " + choosePad[this._currentPad] + " >";
     this._textPad.x = this.root.width / 2 - this._textPad.width / 2;
+    this._updatePadColor();
   }
 
   private _padNext () {
+    this._spritesPad[this._currentPad].visible = false;
     this._currentPad++;
     if (this._currentPad > choosePad.length - 1)
-    this._currentPad = 0;
+      this._currentPad = 0;
+    this._spritesPad[this._currentPad].visible = true;
     this._textPad.text = "< " + choosePad[this._currentPad] + " >";
     this._textPad.x = this.root.width / 2 - this._textPad.width / 2;
+    this._updatePadColor();
   }
 
   private _botLvlPrev () {
@@ -266,11 +297,10 @@ this._updateMenuColor();
 
   private _updateMenuColor () {
 
-    console.log('update color ' + this._currentSelect);
     if (this._currentSelect === 0) {
       this._textColorAvatar.style.fill = defaultColor;
       this._padColor.tint = defaultColor;
-    
+      this._spritesPad[this._currentPad].tint = 'green';
       this._textBotLevel.style.fill = 'green';
       this._textPlay.style.fill = 'green';
     }
@@ -278,6 +308,7 @@ this._updateMenuColor();
     else if (this._currentSelect === 1) {
       this._textColorAvatar.style.fill = 'green';
       this._padColor.tint = 'green';
+      this._spritesPad[this._currentPad].tint = 'green';
       this._textBotLevel.style.fill = defaultColor;
       this._textPad.style.fill = 'green';
     }
@@ -285,17 +316,32 @@ this._updateMenuColor();
     else if (this._currentSelect === 2) {
       this._textBotLevel.style.fill = 'green';
       this._textPad.style.fill = defaultColor;
+      this._spritesPad[this._currentPad].tint = defaultColor;
       this._textPlay.style.fill = 'green';
     }
 
     else if (this._currentSelect === 3) {
       this._textColorAvatar.style.fill = 'green';
-      this._padColor.beginFill('green');
+      this._padColor.tint = 'green';
+      this._spritesPad[this._currentPad].tint = 'green';
       this._textPad.style.fill = 'green';
       this._textPlay.style.fill = defaultColor;
     }
   }
 
+  async _updatePadColor() {
+    this._padColor.clear();
+    await sleep(150);
+    this._padColor.beginFill(defaultColor);
+    this._padColor.drawRect(-50, -50, 50, 50);
+    this._padColor.y = (this._textColorAvatar.y - 20 );
+    this._padColor.x = (this.root.width / 2 + this._padColor.width / 2);
+    this._padColor.endFill();
+  }
+  async _updatePad() {
 
+  }
+
+  
 
 }
