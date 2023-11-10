@@ -23,4 +23,5 @@ urlpatterns = [
     path('api/users/', include('users.urls')),  # This will prefix all users URLs with /api/users/
     # If you don't want any prefix, just use path('', include('users.urls')),
     # ... include other app urls if you have any ...
+    path('api/', include('profiles.urls')),
 ]
