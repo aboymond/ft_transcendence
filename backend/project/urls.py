@@ -15,8 +15,12 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    # Add this line to include your users app's URLs with a prefix (if desired)
+    path('api/users/', include('users.urls')),  # This will prefix all users URLs with /api/users/
+    # If you don't want any prefix, just use path('', include('users.urls')),
+    # ... include other app urls if you have any ...
 ]
