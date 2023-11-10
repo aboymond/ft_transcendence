@@ -1,10 +1,12 @@
 from django.contrib import admin
-from .models import Tournament, Match
+from .models import Tournament, TournamentParticipant
 
 @admin.register(Tournament)
 class TournamentAdmin(admin.ModelAdmin):
-    list_display = ['name', 'organizer', 'start_date', 'end_date']
+    list_display = ('name', 'start_date', 'end_date')
+    search_fields = ('name',)
 
-@admin.register(Match)
-class MatchAdmin(admin.ModelAdmin):
-    list_display = ['tournament', 'player_one', 'player_two', 'scheduled_time']
+@admin.register(TournamentParticipant)
+class TournamentParticipantAdmin(admin.ModelAdmin):
+    list_display = ('user', 'tournament', 'joined_at')
+    search_fields = ('user__username', 'tournament__name')

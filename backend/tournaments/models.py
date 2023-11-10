@@ -1,16 +1,23 @@
+# tournaments/models.py
 from django.db import models
-from users.models import UserProfile
+from users.models import CustomUser
 
 class Tournament(models.Model):
     name = models.CharField(max_length=255)
-    organizer = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     start_date = models.DateTimeField()
-    end_date = models.DateTimeField()
-    # More fields...
+    end_date = models.DateTimeField(null=True, blank=True)
+    participants = models.ManyToManyField(CustomUser, through='TournamentParticipant')
 
-class Match(models.Model):
-    tournament = models.ForeignKey(Tournament, related_name='matches', on_delete=models.CASCADE)
-    player_one = models.ForeignKey(UserProfile, related_name='matches_as_player_one', on_delete=models.SET_NULL, null=True)
-    player_two = models.ForeignKey(UserProfile, related_name='matches_as_player_two', on_delete=models.SET_NULL, null=True)
-    scheduled_time = models.DateTimeField()
-    # More fields...
+    def __str__(self):
+        return self.name
+
+class TournamentParticipant(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
+    joined_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'tournament')  # Each user can only join a tournament once
+
+    def __str__(self):
+        return f"{self.user} in {self.tournament}"

@@ -12,12 +12,11 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Game',
+            name='Profile',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('start_time', models.DateTimeField(auto_now_add=True)),
-                ('end_time', models.DateTimeField(blank=True, null=True)),
-                ('game_state', models.JSONField(blank=True, null=True)),
+                ('avatar', models.ImageField(default='profiles/avatars/default.jpg', upload_to='profiles/avatars/')),
+                ('bio', models.TextField(blank=True)),
             ],
         ),
     ]

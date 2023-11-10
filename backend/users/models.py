@@ -1,10 +1,8 @@
-from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 
-class UserProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
-    bio = models.TextField()
+class CustomUser(AbstractUser):
+    # No need to declare 'username' here since it's already part of AbstractUser
+    # You can still add additional fields if you need them
 
     def __str__(self):
-        return self.user.username
+        return self.username

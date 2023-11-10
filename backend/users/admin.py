@@ -1,6 +1,8 @@
 from django.contrib import admin
-from .models import UserProfile
+from django.contrib.auth.admin import UserAdmin
+from .models import CustomUser
 
-@admin.register(UserProfile)
-class UserProfileAdmin(admin.ModelAdmin):
-    list_display = ['user', 'avatar', 'bio']
+@admin.register(CustomUser)
+class CustomUserAdmin(UserAdmin):
+    model = CustomUser
+    # If you have added additional fields, include them here
