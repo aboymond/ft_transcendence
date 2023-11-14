@@ -19,7 +19,7 @@ class Tournament(models.Model):
     end_date = models.DateTimeField()
     tournament_type = models.CharField(max_length=2, choices=TOURNAMENT_TYPES, default=SINGLE_ELIMINATION)
 
-class Match(models.Model):
+class TournamentMatch(models.Model):
     tournament = models.ForeignKey(Tournament, related_name='matches', on_delete=models.CASCADE)
     player1 = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='matches_as_player1', on_delete=models.CASCADE)
     player2 = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='matches_as_player2', on_delete=models.CASCADE)
@@ -29,7 +29,7 @@ class Match(models.Model):
 class Round(models.Model):
     tournament = models.ForeignKey(Tournament, related_name='rounds', on_delete=models.CASCADE)
     round_number = models.IntegerField()
-    matches = models.ManyToManyField(Match)
+    matches = models.ManyToManyField(TournamentMatch)
 
 class MatchmakingQueue(models.Model):
     player = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)

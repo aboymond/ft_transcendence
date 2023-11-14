@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from .models import PlayerProfile
 from .models import Tournament
-from .models import Match
+from .models import TournamentMatch
 from .models import Round
 from .models import MatchmakingQueue
 
@@ -18,7 +18,7 @@ class TournamentSerializer(serializers.ModelSerializer):
 
 class MatchSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Match
+        model = TournamentMatch
         fields = '__all__'  # You can also specify fields as a list of field names if you don't want to include all fields.
 
 class RoundSerializer(serializers.ModelSerializer):

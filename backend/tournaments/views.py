@@ -15,15 +15,15 @@ class TournamentRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView)
     queryset = Tournament.objects.all()
     serializer_class = TournamentSerializer
 
-from .models import Match
+from .models import TournamentMatch
 from .serializers import MatchSerializer
 
 # List all matches or create a new one
 class MatchListCreateView(generics.ListCreateAPIView):
-    queryset = Match.objects.all()
+    queryset = TournamentMatch.objects.all()
     serializer_class = MatchSerializer
 
 # Retrieve, update or delete a match instance
 class MatchRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Match.objects.all()
+    queryset = TournamentMatch.objects.all()
     serializer_class = MatchSerializer
