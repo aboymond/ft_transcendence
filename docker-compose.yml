@@ -15,6 +15,7 @@ services:
         volumes:
             - ./backend:/app
             - backend_static:/app/static
+            - media_volume:/app/media
         depends_on:
             - db
         restart: unless-stopped
