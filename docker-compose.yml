@@ -73,6 +73,7 @@ volumes:
     frontend_node_modules:
     db-data:
     pgadmin_data:
+    media_volume:
 
 networks:
     my-network:
