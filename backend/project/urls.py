@@ -19,9 +19,7 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # Add this line to include your users app's URLs with a prefix (if desired)
-    path('api/users/', include('users.urls')),  # This will prefix all users URLs with /api/users/
-    # If you don't want any prefix, just use path('', include('users.urls')),
-    # ... include other app urls if you have any ...
-    path('api/', include('profiles.urls')),
+    path('api/users/', include('users.urls')),
+    path('api/profiles', include('profiles.urls')),
+    path('api/tournaments/', include('tournaments.urls')),
 ]
