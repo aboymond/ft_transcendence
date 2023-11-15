@@ -1,12 +1,13 @@
-# matches/models.py
 from django.db import models
+from django.conf import settings
 from games.models import Game
 
 class Match(models.Model):
-    game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='matches')
-    player1_score = models.IntegerField()
-    player2_score = models.IntegerField()
-    played_at = models.DateTimeField(auto_now_add=True)
+    player1 = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='matches_as_player1', on_delete=models.CASCADE)
+    player2 = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='matches_as_player2', on_delete=models.CASCADE)
+    winner = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='won_matches', on_delete=models.SET_NULL, null=True, blank=True)
+    start_time = models.DateTimeField()
+    end_time = models.DateTimeField(null=True, blank=True)
+    game = models.ForeignKey(Game, on_delete=models.SET_NULL, null=True, blank=True)
+    # Additional fields like match status, scores, etc.
 
-    def __str__(self):
-        return f"Match {self.game} on {self.played_at}"
