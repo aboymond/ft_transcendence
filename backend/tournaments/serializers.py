@@ -3,8 +3,14 @@ from rest_framework import serializers
 from .models import Tournament
 from .models import Round
 from .models import MatchmakingQueue
+from django.contrib.auth import get_user_model
 
 class TournamentSerializer(serializers.ModelSerializer):
+    participants = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=get_user_model().objects.all(),
+        required=False  # Set as not required
+    )
     class Meta:
         model = Tournament
         fields = '__all__'

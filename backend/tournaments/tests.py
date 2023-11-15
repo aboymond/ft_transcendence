@@ -25,21 +25,38 @@ class TournamentModelTest(TestCase):
         cls.tournament.participants.add(cls.user1, cls.user2)
 
         # Create a match
-        cls.match = Match.objects.create(player1=cls.user1, player2=cls.user2)
+        cls.match = Match.objects.create(
+            player1=cls.user1,
+            player2=cls.user2,
+            start_time=timezone.now()
+        )
         cls.tournament.matches.add(cls.match)
 
     def test_tournament_creation(self):
-        self.assertEqual(self.tournament.name, 'My Tournament')
+        self.assertEqual(self.tournament.name, 'Existing Tournament')
         self.assertIn(self.user1, self.tournament.participants.all())
         self.assertIn(self.match, self.tournament.matches.all())
 
 class TournamentListViewTest(APITestCase):
 
+    @classmethod
+    def setUpTestData(cls):
+        # Create users for participants
+        cls.user1 = User.objects.create_user(username='user1', password='12345')
+        cls.user2 = User.objects.create_user(username='user2', password='12345')
+
     def test_create_tournament(self):
         url = reverse('tournament-list')
-        data = {'name': 'New Tournament'}
+        data = {
+            'name': 'New Tournament',
+            'tournament_type': Tournament.SINGLE_ELIMINATION,
+            'status': 'Created',
+        }
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        tournament = Tournament.objects.get(name='New Tournament')
+        tournament.participants.add(self.user1, self.user2)
 
     def test_list_tournaments(self):
         url = reverse('tournament-list')
@@ -50,7 +67,10 @@ class TournamentDetailViewTest(APITestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.tournament = Tournament.objects.create(name='Existing Tournament')
+        cls.tournament = Tournament.objects.create(
+            name='Existing Tournament',
+            start_date=timezone.now()
+        )
         cls.url = reverse('tournament-detail', kwargs={'pk': cls.tournament.pk})
 
     def test_get_tournament(self):

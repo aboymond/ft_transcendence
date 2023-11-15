@@ -14,8 +14,8 @@ class Tournament(models.Model):
     name = models.CharField(max_length=255)
     participants = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='tournaments')
     matches = models.ManyToManyField(Match, related_name='tournaments', blank=True)
-    start_date = models.DateTimeField()
-    end_date = models.DateTimeField()
+    start_date = models.DateTimeField(null=True, blank=True)
+    end_date = models.DateTimeField(null=True, blank=True)
     tournament_type = models.CharField(max_length=2, choices=TOURNAMENT_TYPES, default=SINGLE_ELIMINATION)
     status = models.CharField(max_length=255, default='Created')
 
