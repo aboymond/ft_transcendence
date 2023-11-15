@@ -1,8 +1,8 @@
 from django.contrib.auth.models import AbstractUser
+from django.db import models
 
 class CustomUser(AbstractUser):
-    # No need to declare 'username' here since it's already part of AbstractUser
-    # You can still add additional fields if you need them
+    display_name = models.CharField(max_length=100, unique=True)
 
     def __str__(self):
         return self.username
