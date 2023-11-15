@@ -40,6 +40,9 @@ shell:
 test:
 	docker-compose exec backend python manage.py test
 
+test-app:
+	docker-compose exec backend python manage.py test $(app)
+
 # Rule to collect static files
 collectstatic:
 	docker-compose exec backend python manage.py collectstatic --noinput
