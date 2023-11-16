@@ -1,12 +1,13 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
+from .models import GameHistory
 
 User = get_user_model()
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'username', 'password', 'display_name', 'avatar', 'bio')
+        fields = ('id', 'username', 'password', 'display_name', 'avatar', 'bio', 'wins', 'losses')
         extra_kwargs = {
             'password': {'write_only': True},
             'display_name': {'required': False}
@@ -34,3 +35,8 @@ class UserSerializer(serializers.ModelSerializer):
         instance.save()
 
         return instance
+
+class GameHistorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GameHistory
+        fields = ['id', 'players', 'winner', 'played_at']

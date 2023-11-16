@@ -6,6 +6,10 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 from .serializers import UserSerializer
 from .models import CustomUser
+from rest_framework import generics
+from .models import GameHistory
+from .serializers import GameHistorySerializer
+from rest_framework.permissions import IsAuthenticated
 
 class CreateUserView(generics.CreateAPIView):
     serializer_class = UserSerializer
@@ -39,4 +43,10 @@ class UserUpdateView(generics.UpdateAPIView):
         # Assumes the user is updating their own profile
         return self.request.user
 
-# Add additional views as needed...
+
+class GameHistoryListView(generics.ListAPIView):
+    serializer_class = GameHistorySerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return GameHistory.objects.filter(players=self.request.user)
