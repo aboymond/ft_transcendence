@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from rest_framework.test import APITestCase
 from rest_framework.test import APIClient
 from rest_framework import status
-from .models import GameHistory
+from .models import GameHistory, Friendship
 
 User = get_user_model()
 
@@ -74,6 +74,37 @@ class GameHistoryTest(TestCase):
         self.assertEqual(len(response.data), 1)
         self.assertEqual(response.data[0]['winner'], self.user1.id)
 
-    # def test_game_history_content(self):
-    #     # Additional tests to verify the content of the game history
-    #     # Check if the game history contains correct player information, etc.
+class FriendshipTests(TestCase):
+
+    def setUp(self):
+        self.user1 = User.objects.create_user(username='user1', password='test123')
+        self.user2 = User.objects.create_user(username='user2', password='test123')
+        self.user3 = User.objects.create_user(username='user3', password='test123')
+        Friendship.objects.create(requester=self.user1, receiver=self.user2, status='accepted')
+        Friendship.objects.create(requester=self.user2, receiver=self.user3, status='sent')
+        self.client = APIClient()
+
+    def test_list_friends(self):
+        self.client.force_authenticate(user=self.user1)
+        response = self.client.get(reverse('list-friends'))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)  # user1 should have 1 friend
+
+    def test_reject_friend_request(self):
+        self.client.force_authenticate(user=self.user3)
+        friendship = Friendship.objects.get(requester=self.user2, receiver=self.user3)
+        url = reverse('reject-cancel-friend-request', kwargs={'pk': friendship.id})
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertFalse(Friendship.objects.filter(pk=friendship.id).exists())
+
+    def test_remove_friend(self):
+        self.client.force_authenticate(user=self.user1)
+        friendship = Friendship.objects.get(requester=self.user1, receiver=self.user2, status='accepted')
+        url = reverse('remove-friend', kwargs={'pk': friendship.id})
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertFalse(Friendship.objects.filter(pk=friendship.id).exists())
+
+    # Add more tests as needed for other scenarios and edge cases
+

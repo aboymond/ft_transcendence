@@ -1,6 +1,6 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
-from .views import CreateUserView, LoginView, LogoutView, UserUpdateView, GameHistoryListView
+from .views import CreateUserView, LoginView, LogoutView, UserUpdateView, GameHistoryListView, CreateFriendRequestView, AcceptFriendRequestView, ListFriendsView, RejectCancelFriendRequestView, RemoveFriendView
 
 urlpatterns = [
     path('register/', CreateUserView.as_view(), name='register'),
@@ -11,4 +11,9 @@ urlpatterns = [
     path('token/verify/', TokenVerifyView.as_view(), name='token_verify'),
     path('update/', UserUpdateView.as_view(), name='update'),
     path('game-history/', GameHistoryListView.as_view(), name='game-history-list'),
+    path('friends/request/', CreateFriendRequestView.as_view(), name='create-friend-request'),
+    path('friends/accept/', AcceptFriendRequestView.as_view(), name='accept-friend-request'),
+    path('friends/list/', ListFriendsView.as_view(), name='list-friends'),
+    path('friends/reject-cancel/<int:pk>/', RejectCancelFriendRequestView.as_view(), name='reject-cancel-friend-request'),
+    path('friends/remove/<int:pk>/', RemoveFriendView.as_view(), name='remove-friend'),
 ]
