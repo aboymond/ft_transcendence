@@ -42,7 +42,7 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'corsheaders',
-    # 'channels',
+    'channels',
     # 'django-two-factor-auth',
 
     "games",
@@ -83,7 +83,14 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'project.wsgi.application'
 
-# ASGI_APPLICATION = 'project.asgi.application'
+ASGI_APPLICATION = 'project.routing.application'
+
+# Using in-memory channel layer
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
