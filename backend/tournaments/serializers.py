@@ -9,7 +9,7 @@ class TournamentSerializer(serializers.ModelSerializer):
     participants = serializers.PrimaryKeyRelatedField(
         many=True,
         queryset=get_user_model().objects.all(),
-        required=False  # Set as not required
+        required=False
     )
     class Meta:
         model = Tournament

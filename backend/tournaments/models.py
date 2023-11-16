@@ -27,4 +27,3 @@ class Round(models.Model):
 class MatchmakingQueue(models.Model):
     player = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now_add=True)
-    # Additional fields like 'preferred_tournament_type' can be added
