@@ -1,11 +1,11 @@
-from rest_framework import generics
+from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
-from rest_framework import status
-from .serializers import UserSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
+from .serializers import UserSerializer
+from .models import CustomUser
 
 class CreateUserView(generics.CreateAPIView):
     serializer_class = UserSerializer
@@ -31,11 +31,12 @@ class LogoutView(generics.GenericAPIView):
         # Add your logout logic here
         return Response(...)
 
-# class CustomTokenObtainPairView(TokenObtainPairView):
-#     # Override this method to add extra responses in your JWT payload
-#     def get_serializer(self, *args, **kwargs):
-#         serializer = super().get_serializer(*args, **kwargs)
-#         # Customize the token payload here
-#         return serializer
+class UserUpdateView(generics.UpdateAPIView):
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        # Assumes the user is updating their own profile
+        return self.request.user
 
 # Add additional views as needed...
