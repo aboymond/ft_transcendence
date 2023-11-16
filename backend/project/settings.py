@@ -47,7 +47,6 @@ INSTALLED_APPS = [
 
     "games",
     "matches",
-    "profiles.apps.ProfilesConfig",
     "tournaments",
     "users",
 ]
