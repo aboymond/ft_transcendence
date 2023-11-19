@@ -20,6 +20,9 @@ async function fetchAPI(endpoint: string, options = {}) {
 }
 
 export const apiService = {
+	getUserProfile: async () => {
+		return fetchAPI('users/profile/'); // Endpoint for fetching the current user's profile
+	},
 	getUser: async (userId: string) => {
 		return fetchAPI(`users/${userId}/`); // Endpoint for fetching user data
 	},
@@ -28,6 +31,13 @@ export const apiService = {
 			// Endpoint for updating user data
 			method: 'PUT',
 			body: JSON.stringify(userData),
+		});
+	},
+	register: async (username: string, password: string, displayName: string) => {
+		return fetchAPI('users/register/', {
+			// Update with your actual registration endpoint
+			method: 'POST',
+			body: JSON.stringify({ username, password, display_name: displayName }),
 		});
 	},
 	login: async (username: string, password: string) => {
