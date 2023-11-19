@@ -6,6 +6,7 @@ const Register: React.FC = () => {
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
 	const [displayName, setDisplayName] = useState('');
+	const [error, setError] = useState('');
 	const navigate = useNavigate();
 
 	const handleSubmit = async (event: React.FormEvent) => {
@@ -13,16 +14,18 @@ const Register: React.FC = () => {
 		try {
 			await apiService.register(username, password, displayName);
 			console.log('Registration successful');
-			navigate('/login'); // Redirect to login page after successful registration
+			setError('');
+			navigate('/login');
 		} catch (error) {
 			console.error('Registration failed:', error);
-			// Handle registration failure
+			setError('Registration failed. Please check try again.');
 		}
 	};
 
 	return (
 		<div>
 			<h1>Register</h1>
+			{error && <p style={{ color: 'red' }}>{error}</p>}
 			<form onSubmit={handleSubmit}>
 				<div>
 					<label>Username:</label>

@@ -7,6 +7,7 @@ import { useAuth } from '../hooks/useAuth';
 const Login: React.FC = () => {
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
+	const [error, setError] = useState('');
 	const navigate = useNavigate();
 	const auth = useAuth();
 
@@ -16,17 +17,18 @@ const Login: React.FC = () => {
 			const data = await apiService.login(username, password);
 			console.log('Login success:', data);
 			auth.login(data.access);
+			setError('');
 			navigate('/profile');
 		} catch (error) {
 			console.error('Login failed:', error);
-			// Handle login failure
-			navigate('/profile');
+			setError('Login failed. Please check your credentials.');
 		}
 	};
 
 	return (
 		<form onSubmit={handleSubmit}>
 			<h1>Login</h1>
+			{error && <p style={{ color: 'red' }}>{error}</p>}
 			<input
 				type="text"
 				value={username}
