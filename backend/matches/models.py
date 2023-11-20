@@ -9,5 +9,3 @@ class Match(models.Model):
     start_time = models.DateTimeField()
     end_time = models.DateTimeField(null=True, blank=True)
     game = models.ForeignKey(Game, on_delete=models.SET_NULL, null=True, blank=True)
-    # Additional fields like match status, scores, etc.
-

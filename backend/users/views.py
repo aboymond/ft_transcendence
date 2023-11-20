@@ -45,6 +45,13 @@ class UserUpdateView(generics.UpdateAPIView):
         # Assumes the user is updating their own profile
         return self.request.user
 
+class CurrentUserProfileView(generics.RetrieveAPIView):
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user
+
 class GameHistoryListView(generics.ListAPIView):
     serializer_class = GameHistorySerializer
     permission_classes = [IsAuthenticated]
@@ -105,3 +112,9 @@ class RemoveFriendView(generics.DestroyAPIView):
         else:
             raise PermissionDenied("Cannot remove this friend")
 
+class AvatarUploadView(generics.UpdateAPIView):
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user

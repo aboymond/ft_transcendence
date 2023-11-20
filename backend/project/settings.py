@@ -42,7 +42,7 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'corsheaders',
-    # 'channels',
+    'channels',
     # 'django-two-factor-auth',
 
     "games",
@@ -83,7 +83,14 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'project.wsgi.application'
 
-# ASGI_APPLICATION = 'project.asgi.application'
+ASGI_APPLICATION = 'project.routing.application'
+
+# Using in-memory channel layer
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
@@ -151,7 +158,7 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': True,
