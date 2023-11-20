@@ -65,6 +65,12 @@ export const apiService = {
 	getFriendRequests: async () => {
 		return fetchAPI('friends/requests/');
 	},
+	sendFriendRequest: async (username: string) => {
+		return fetchAPI('friends/request/', {
+			method: 'POST',
+			body: JSON.stringify({ username }),
+		});
+	},
 	acceptFriendRequest: async (requestId: number) => {
 		return fetchAPI(`friends/accept/${requestId}/`, {
 			method: 'PATCH',

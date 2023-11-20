@@ -6,3 +6,12 @@ export interface UserProfile {
 	losses: number;
 	// Include any other fields that your profile might have
 }
+
+export interface Friend {
+	id: number;
+	username: string;
+	sender?: {
+		id: number;
+		username: string;
+	};
+}
