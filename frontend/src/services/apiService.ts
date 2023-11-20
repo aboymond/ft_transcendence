@@ -19,19 +19,17 @@ async function fetchAPI(endpoint: string, options = {}) {
 	return response.json();
 }
 
+interface UserData {
+	displayName?: string;
+	bio?: string;
+}
+
 export const apiService = {
 	getUserProfile: async () => {
 		return fetchAPI('users/profile/'); // Endpoint for fetching the current user's profile
 	},
 	getUser: async (userId: string) => {
 		return fetchAPI(`users/${userId}/`); // Endpoint for fetching user data
-	},
-	updateUser: async (userId: string, userData: any) => {
-		return fetchAPI(`users/${userId}/`, {
-			// Endpoint for updating user data
-			method: 'PUT',
-			body: JSON.stringify(userData),
-		});
 	},
 	register: async (username: string, password: string, displayName: string) => {
 		return fetchAPI('users/register/', {
@@ -47,5 +45,41 @@ export const apiService = {
 			body: JSON.stringify({ username, password }),
 		});
 	},
-	// Add other API methods as needed
+	updateUserProfile: async (data: UserData) => {
+		return fetchAPI('users/update/', {
+			method: 'PATCH',
+			body: JSON.stringify(data),
+		});
+	},
+	uploadUserAvatar: async (avatar: File) => {
+		const formData = new FormData();
+		formData.append('avatar', avatar);
+		return fetchAPI('users/avatar/', {
+			method: 'POST',
+			body: formData,
+		});
+	},
+	getFriends: async () => {
+		return fetchAPI('friends/list/');
+	},
+	getFriendRequests: async () => {
+		return fetchAPI('friends/requests/');
+	},
+	acceptFriendRequest: async (requestId: number) => {
+		return fetchAPI(`friends/accept/${requestId}/`, {
+			method: 'PATCH',
+		});
+	},
+	rejectFriendRequest: async (requestId: number) => {
+		return fetchAPI(`friends/reject/${requestId}/`, {
+			method: 'DELETE',
+		});
+	},
+	removeFriend: async (friendId: number) => {
+		return fetchAPI(`friends/remove/${friendId}/`, {
+			method: 'DELETE',
+		});
+	},
 };
+
+export default apiService;

@@ -111,3 +111,10 @@ class RemoveFriendView(generics.DestroyAPIView):
             instance.delete()
         else:
             raise PermissionDenied("Cannot remove this friend")
+
+class AvatarUploadView(generics.UpdateAPIView):
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user

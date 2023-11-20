@@ -9,6 +9,8 @@ class CustomUser(AbstractUser):
     bio = models.TextField(blank=True)
     wins = models.IntegerField(default=0)
     losses = models.IntegerField(default=0)
+    friends = models.ManyToManyField('self', symmetrical=False)
+    online = models.BooleanField(default=False)
 
     @property
     def match_history(self):

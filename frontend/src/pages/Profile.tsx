@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from 'react';
+import { useAuth } from '../hooks/useAuth';
 import { apiService } from '../services/apiService';
 import { UserProfile } from '../types'; // Import the interface
 
 const Profile: React.FC = () => {
 	const [profile, setProfile] = useState<UserProfile | null>(null);
+	const auth = useAuth();
 
 	useEffect(() => {
 		apiService
 			.getUserProfile()
 			.then((data: UserProfile) => setProfile(data))
 			.catch((error) => console.error('Failed to load profile:', error));
-	}, []);
+	}, [auth.token]);
 
 	if (!profile) return <div>Loading profile...</div>;
 
