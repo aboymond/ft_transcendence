@@ -92,6 +92,14 @@ class ListFriendsView(generics.ListAPIView):
                    User.objects.filter(received_requests__requester=user, received_requests__status='accepted'))
         return friends.distinct()
 
+class ListFriendRequestsView(generics.ListAPIView):
+    serializer_class = FriendshipSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        return Friendship.objects.filter(receiver=user, status='sent')
+
 class RejectCancelFriendRequestView(generics.DestroyAPIView):
     queryset = Friendship.objects.all()
     permission_classes = [IsAuthenticated]
