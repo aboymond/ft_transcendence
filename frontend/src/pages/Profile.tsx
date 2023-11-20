@@ -1,20 +1,40 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { apiService } from '../services/apiService';
-import { UserProfile } from '../types'; // Import the interface
+import { UserProfile } from '../types';
+import { useNavigate } from 'react-router-dom';
 
 const Profile: React.FC = () => {
 	const [profile, setProfile] = useState<UserProfile | null>(null);
+	const [error, setError] = useState<string | null>(null); // Error state
 	const auth = useAuth();
+	const navigate = useNavigate();
 
 	useEffect(() => {
+		if (!auth.isAuthenticated) {
+			// Redirect to login page or handle unauthenticated state
+			navigate('/login');
+			return;
+		}
+
 		apiService
 			.getUserProfile()
-			.then((data: UserProfile) => setProfile(data))
-			.catch((error) => console.error('Failed to load profile:', error));
-	}, [auth.token]);
+			.then((data: UserProfile) => {
+				setProfile(data);
+			})
+			.catch((error) => {
+				console.error('Failed to load profile:', error);
+				setError('Failed to load profile');
+			});
+	}, [auth.isAuthenticated, navigate]);
 
-	if (!profile) return <div>Loading profile...</div>;
+	if (error) {
+		return <div>Error: {error}</div>;
+	}
+
+	if (!profile) {
+		return <div>No profile data available.</div>;
+	}
 
 	return (
 		<div>

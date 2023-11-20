@@ -18,7 +18,7 @@ const Friends: React.FC = () => {
 
 	useEffect(() => {
 		const fetchFriends = async () => {
-			if (auth.token) {
+			if (auth.isAuthenticated && auth.token) {
 				try {
 					const friendsList = await apiService.getFriends();
 					setFriends(friendsList);
@@ -30,10 +30,10 @@ const Friends: React.FC = () => {
 			}
 		};
 		fetchFriends();
-	}, [auth.token]);
+	}, [auth.isAuthenticated, auth.token]);
 
 	const handleAcceptRequest = async (requestId: string) => {
-		if (auth.token) {
+		if (auth.isAuthenticated && auth.token) {
 			// Add null check for auth.token
 			try {
 				const requestIdNumber = parseInt(requestId); // Convert string ID to number
@@ -46,8 +46,7 @@ const Friends: React.FC = () => {
 	};
 
 	const handleRejectRequest = async (requestId: string) => {
-		if (auth.token) {
-			// Add null check for auth.token
+		if (auth.isAuthenticated && auth.token) {
 			try {
 				const requestIdNumber = parseInt(requestId); // Convert string ID to number
 				await apiService.rejectFriendRequest(requestIdNumber);
@@ -59,8 +58,7 @@ const Friends: React.FC = () => {
 	};
 
 	const handleRemoveFriend = async (friendId: string) => {
-		if (auth.token) {
-			// Add null check for auth.token
+		if (auth.isAuthenticated && auth.token) {
 			try {
 				const friendIdNumber = parseInt(friendId); // Convert string ID to number
 				await apiService.removeFriend(friendIdNumber);
