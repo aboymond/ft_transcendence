@@ -1,8 +1,8 @@
 import * as PIXI from 'pixi.js';
 import { SceneBase } from "./SceneBase";
 import {defaultColor, glowFilter, textStyleMenuOption, textStyleMenuOption1, textStyleMenuOption2, textStyleMenuOption3, textStyleMenuOptionError} from "../index";
-import { SceneGame } from './SceneGame';
-// import { Sprite } from '@pixi/sprite';
+import { SceneGameVsBot } from './SceneGameVsBot';
+
 
 const selectMax = 3;
 let errorLock: boolean = false;
@@ -219,7 +219,7 @@ export class SceneMenuOption extends SceneBase {
     if ((!this.root.vsPlayer && this._currentSelect === 3) || (this.root.vsPlayer && this._currentSelect === 2)) {
       //play the game
       if (this._currentPad === 0)
-        this.root.loadScene(new SceneGame(this.root));
+        this.root.loadScene(new SceneGameVsBot(this.root));
       else {
         errorLock = true;
         this._popError.visible = true;
