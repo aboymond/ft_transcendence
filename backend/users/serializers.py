@@ -14,7 +14,7 @@ class UserSerializer(serializers.ModelSerializer):
     match_history = GameHistorySerializer(many=True, read_only=True)
     class Meta:
         model = User
-        fields = ('id', 'username', 'password', 'display_name', 'avatar', 'bio', 'wins', 'losses', 'match_history')
+        fields = ('id', 'username', 'password', 'display_name', 'avatar', 'bio', 'wins', 'losses', 'status', 'match_history')
         extra_kwargs = {
             'password': {'write_only': True},
             'display_name': {'required': False}

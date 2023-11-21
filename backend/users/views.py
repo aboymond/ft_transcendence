@@ -24,6 +24,8 @@ class LoginView(generics.GenericAPIView):
         password = request.data.get('password')
         user = authenticate(request, username=username, password=password)
         if user is not None:
+            user.status = 'online'
+            user.save()
             refresh = RefreshToken.for_user(user)
             return Response({
                 'refresh': str(refresh),
@@ -34,6 +36,8 @@ class LoginView(generics.GenericAPIView):
 
 class LogoutView(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
+        request.user.status = 'offline'
+        request.user.save()
         # Add your logout logic here
         return Response(...)
 

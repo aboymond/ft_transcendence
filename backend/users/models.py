@@ -4,13 +4,20 @@ from django.conf import settings
 from django.core.paginator import Paginator
 
 class CustomUser(AbstractUser):
+    STATUS_CHOICES = [
+        ('online', 'Online'),
+        ('offline', 'Offline'),
+        ('in-game', 'In-Game'),
+        ('queuing', 'Queuing'),
+    ]
+
     display_name = models.CharField(max_length=100, unique=True, blank=True, null=True, default=None)
     avatar = models.ImageField(upload_to='avatars/', default='static/images/default_avatar.png')
     bio = models.TextField(blank=True)
     wins = models.IntegerField(default=0)
     losses = models.IntegerField(default=0)
     friends = models.ManyToManyField('self', symmetrical=False)
-    online = models.BooleanField(default=False)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='offline')
 
     @property
     def match_history(self):
