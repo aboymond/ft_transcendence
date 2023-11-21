@@ -113,7 +113,7 @@ function setupGame() {
 				ball.x = playerPad.x;
 				gameStarted = false;
 				playerTurn = false;
-				playerScore++; // Augmentez le score du joueur
+				playerScore++;
 				updateScoreText();
 			}
 			else if (ball.y > myPixi.view.height){

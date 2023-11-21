@@ -20,6 +20,7 @@ export class SceneGameVsBot extends SceneBase {
 	private _padBot = new PIXI.Graphics();
 	private _padPlayer = new PIXI.Graphics();
 	private _scoreText = new PIXI.Text('0 - 0', {fill: defaultColor});
+	private _keysPressed: { [key: string]: boolean } = {};
 
 	//=======================================
 	// HOOK
@@ -52,20 +53,22 @@ export class SceneGameVsBot extends SceneBase {
 		if (!this._gameStarted) 
 			this._checkTurn()
 		else {
+			this._addVelocity()
 
 		}
-		this._addVelocity()
 		this._checkCollisions()
+		this._updatePadPosition();
 	}
 
 	public onFinish() {
 	}
 
 	public onKeyDown(e: KeyboardEvent) {
-		this._updatePadPosition(e.code);
+		this._keysPressed[e.code] = true;
 	}
 
-	public onKeyUp() {
+	public onKeyUp(e: KeyboardEvent) {
+		delete this._keysPressed[e.code];
 	}
 
 	//=======================================
@@ -96,69 +99,88 @@ export class SceneGameVsBot extends SceneBase {
 	//=======================================
 
 	private _addVelocity() {
-//     if (!this.playerTurn)
-//         this._ball.y += this._data.ballVelocity.y;
-//     else 
-//         this._ball.y -= this._data.ballVelocity.y;
-//     this._ball.x += this._data.ballVelocity.x;
+    if (!this._playerTurn)
+        this._ball.y += this._data.ballVelocity.y;
+    else 
+        this._ball.y -= this._data.ballVelocity.y;
+    this._ball.x += this._data.ballVelocity.x;
   }
 	
 	private _checkCollisions() {
-				// if (this._ball.y / 2 === 0) {
-				//     console.log("colision");
-				//     this._ball.y = -this._data.ballVelocity.y;
-				// }
+		if (this._ball.x - (this._ball.width / 2) <= 0) {
+			console.log("Ball colision left");
+			this._data.ballVelocity.x = -this._data.ballVelocity.x;
+		}
+		else if (this._ball.x + (this._ball.width) >= this.root.width){
+			console.log("Ball colision right");
+			this._data.ballVelocity.x = -this._data.ballVelocity.x;
+		}
+
+		if (this._ball.y <= this._padBot.y + this._padBot.height / 2){
+			console.log("Ball colision botPad");
+			this._data.ballVelocity.y = -this._data.ballVelocity.y;
+		}
+		else if (this._ball.y >= this._padPlayer.y - this._padPlayer.height ) {
+			console.log("Ball colision playerPad");
+			this._data.ballVelocity.y = -this._data.ballVelocity.y;
+		}
+		
+
+
 	}
 
 	private _checkTurn() {
 
-			// turn player or computer
-			if (this._playerTurn) {
-				// ball position
-				if (this._ball.x - this._ball.width / 2 < this._padPlayer.x - this._padPlayer.width / 2) {
-					this._ball.x = this._padPlayer.x - this._padPlayer.width / 2 + this._ball.width / 2;
-				}
-				else if (this._ball.x + this._ball.width / 2 > this._padPlayer.x + this._padPlayer.width / 2) {
-					this._ball.x = this._padPlayer.x + this._padPlayer.width / 2 - this._ball.width / 2;
-				}
-				this._data.ballVelocity.x = (this._ball.x - this._padPlayer.x ) / (this._padPlayer.width / 2) * 5;
-				this._ball.y = this._padPlayer.y - 25;
+		// turn player or computer
+		if (this._playerTurn) {
+			// ball position
+			if (this._ball.x - this._ball.width / 2 < this._padPlayer.x - this._padPlayer.width / 2) {
+				this._ball.x = this._padPlayer.x - this._padPlayer.width / 2 - this._ball.width / 2;
 			}
-			else {
-				// this._ball position 
-				// botStart();
-				if (this._ball.x - this._ball.width / 2 < this._padBot.x - this._padBot.width / 2) {
-					this._ball.x = this._padBot.x - this._padBot.width / 2 + this._ball.width / 2;
-				} else if (this._ball.x + this._ball.width / 2 > this._padBot.x + this._padBot.width / 2) {
-					this._ball.x = this._padBot.x + this._padBot.width / 2 - this._ball.width / 2;
-				}
-				this._data.ballVelocity.x = (this._ball.x - this._padBot.x ) / (this._padBot.width / 2) * 5;
-				this._ball.y = this._padBot.y + 25;
+			else if (this._ball.x + this._ball.width / 2 > this._padPlayer.x + this._padPlayer.width / 2) {
+				this._ball.x = this._padPlayer.x + this._padPlayer.width / 2 - this._ball.width / 2;
 			}
+			this._data.ballVelocity.x = (this._ball.x - this._padPlayer.x ) / (this._padPlayer.width / 2) * 5;
+			this._ball.y = this._padPlayer.y - 25;
+		}
+		else {
+			// this._ball position 
+			// botStart();
+			if (this._ball.x - this._ball.width / 2 < this._padBot.x - this._padBot.width / 2) {
+				this._ball.x = this._padBot.x - this._padBot.width / 2 - this._ball.width / 2;
+			}
+			else if (this._ball.x + this._ball.width / 2 > this._padBot.x + this._padBot.width / 2) {
+				this._ball.x = this._padBot.x + this._padBot.width / 2 - this._ball.width / 2;
+			}
+			this._data.ballVelocity.x = (this._ball.x - this._padBot.x ) / (this._padBot.width / 2) * 5;
+			this._ball.y = this._padBot.y + 25;
+		}
 	}
 
-	private _updatePadPosition(keys: string) {
-			// player movement right
-	if (keys === 'ArrowRight') {
-		if (!((this._padPlayer.x + this._padPlayer.width / 2) > this.root.width)) {
-			this._padPlayer.x += 10;
+	private _updatePadPosition() {
+				// player movement right
+		if (this._keysPressed['ArrowRight']) {
+			if (!((this._padPlayer.x + this._padPlayer.width / 2) > this.root.width)) {
+				this._padPlayer.x += 10;
+			}
+			else
+				console.log("Pad touch right wall");
 		}
-		else
-			console.log("Touch right wall");
-	}
-	
-	// player movement left
-	if (keys === 'ArrowLeft') {
-		if (!((this._padPlayer.x - this._padPlayer.width / 2) < 0)) {
-			this._padPlayer.x -= 10;
+		
+		// player movement left
+		if (this._keysPressed['ArrowLeft']) {
+			if (!((this._padPlayer.x - this._padPlayer.width / 2) < 0)) {
+				this._padPlayer.x -= 10;
+			}
+			else
+			console.log("Pad touch left wall");
 		}
-		else
-		console.log("Touch left wall");
-	}
 
-	// start with space
-	if (keys[32])
-		if (gameStarted == false)
-			gameStarted = true;
+		// start with space
+		if (this._keysPressed['Space']) {
+			if (this._gameStarted == false)
+				this._gameStarted = true;
+			console.log("press space " + this._gameStarted);
+		}
 	}
 } 
