@@ -68,7 +68,7 @@ export const apiService = {
 	sendFriendRequest: async (username: string) => {
 		return fetchAPI('friends/request/', {
 			method: 'POST',
-			body: JSON.stringify({ username }),
+			body: JSON.stringify({ receiver: username }),
 		});
 	},
 	acceptFriendRequest: async (requestId: number) => {
