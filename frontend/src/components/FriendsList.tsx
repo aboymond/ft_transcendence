@@ -23,7 +23,10 @@ const FriendList = () => {
 			<h2>My Friends</h2>
 			<ul>
 				{friends.map((friend) => (
-					<li key={friend.id}>{friend.username}</li>
+					<li key={friend.id}>
+						{friend.username} -{' '}
+						<span className={`status ${friend.status}`}>{friend.status}</span>
+					</li>
 				))}
 			</ul>
 		</div>

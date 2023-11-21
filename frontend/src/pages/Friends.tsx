@@ -1,15 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import apiService from '../services/apiService';
-
-interface Friend {
-	id: string;
-	username: string;
-	sender?: {
-		id: string;
-		username: string;
-	};
-}
+import { Friend } from '../types';
 
 const Friends: React.FC = () => {
 	const [friends, setFriends] = useState<Friend[]>([]);
@@ -32,11 +24,11 @@ const Friends: React.FC = () => {
 		fetchFriends();
 	}, [auth.isAuthenticated, auth.token]);
 
-	const handleAcceptRequest = async (requestId: string) => {
+	const handleAcceptRequest = async (requestId: number) => {
 		if (auth.isAuthenticated && auth.token) {
 			// Add null check for auth.token
 			try {
-				const requestIdNumber = parseInt(requestId); // Convert string ID to number
+				const requestIdNumber = requestId; // Convert string ID to number
 				await apiService.acceptFriendRequest(requestIdNumber);
 				// Update friend requests and friends list
 			} catch (error) {
@@ -45,10 +37,10 @@ const Friends: React.FC = () => {
 		}
 	};
 
-	const handleRejectRequest = async (requestId: string) => {
+	const handleRejectRequest = async (requestId: number) => {
 		if (auth.isAuthenticated && auth.token) {
 			try {
-				const requestIdNumber = parseInt(requestId); // Convert string ID to number
+				const requestIdNumber = requestId;
 				await apiService.rejectFriendRequest(requestIdNumber);
 				// Update friend requests list
 			} catch (error) {
@@ -57,10 +49,10 @@ const Friends: React.FC = () => {
 		}
 	};
 
-	const handleRemoveFriend = async (friendId: string) => {
+	const handleRemoveFriend = async (friendId: number) => {
 		if (auth.isAuthenticated && auth.token) {
 			try {
-				const friendIdNumber = parseInt(friendId); // Convert string ID to number
+				const friendIdNumber = friendId;
 				await apiService.removeFriend(friendIdNumber);
 				// Update friends list
 			} catch (error) {

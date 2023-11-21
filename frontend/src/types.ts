@@ -10,6 +10,7 @@ export interface UserProfile {
 export interface Friend {
 	id: number;
 	username: string;
+	status: 'online' | 'offline' | 'in-game' | 'queueing';
 	sender?: {
 		id: number;
 		username: string;
