@@ -13,33 +13,42 @@ from .serializers import GameHistorySerializer
 
 User = get_user_model()
 
+
 class CreateUserView(generics.CreateAPIView):
     serializer_class = UserSerializer
+
 
 class LoginView(generics.GenericAPIView):
     serializer_class = UserSerializer
 
     def post(self, request, *args, **kwargs):
-        username = request.data.get('username')
-        password = request.data.get('password')
+        username = request.data.get("username")
+        password = request.data.get("password")
         user = authenticate(request, username=username, password=password)
         if user is not None:
-            user.status = 'online'
+            user.status = "online"
             user.save()
             refresh = RefreshToken.for_user(user)
-            return Response({
-                'refresh': str(refresh),
-                'access': str(refresh.access_token),
-            }, status=status.HTTP_200_OK)
+            return Response(
+                {
+                    "refresh": str(refresh),
+                    "access": str(refresh.access_token),
+                },
+                status=status.HTTP_200_OK,
+            )
         else:
-            return Response({'error': 'Invalid Credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response(
+                {"error": "Invalid Credentials"}, status=status.HTTP_401_UNAUTHORIZED
+            )
+
 
 class LogoutView(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
-        request.user.status = 'offline'
+        request.user.status = "offline"
         request.user.save()
         # Add your logout logic here
         return Response(...)
+
 
 class UserUpdateView(generics.UpdateAPIView):
     serializer_class = UserSerializer
@@ -49,12 +58,14 @@ class UserUpdateView(generics.UpdateAPIView):
         # Assumes the user is updating their own profile
         return self.request.user
 
+
 class CurrentUserProfileView(generics.RetrieveAPIView):
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
 
     def get_object(self):
         return self.request.user
+
 
 class GameHistoryListView(generics.ListAPIView):
     serializer_class = GameHistorySerializer
@@ -63,15 +74,17 @@ class GameHistoryListView(generics.ListAPIView):
     def get_queryset(self):
         return GameHistory.objects.filter(players=self.request.user)
 
+
 class CreateFriendRequestView(generics.CreateAPIView):
     queryset = Friendship.objects.all()
     serializer_class = FriendshipSerializer
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
-        receiver_username = self.request.data.get('receiver')
+        receiver_username = self.request.data.get("receiver")
         receiver = get_object_or_404(User, username=receiver_username)
         serializer.save(requester=self.request.user, receiver=receiver)
+
 
 class AcceptFriendRequestView(generics.UpdateAPIView):
     queryset = Friendship.objects.all()
@@ -80,10 +93,13 @@ class AcceptFriendRequestView(generics.UpdateAPIView):
 
     def perform_update(self, serializer):
         friendship = serializer.instance
-        if friendship.receiver == self.request.user and friendship.status == 'sent':
-            serializer.save(status='accepted')
+        if friendship.receiver == self.request.user and friendship.status == "sent":
+            serializer.save(status="accepted")
         else:
-            return Response({"error": "Invalid request"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Invalid request"}, status=status.HTTP_400_BAD_REQUEST
+            )
+
 
 class ListFriendsView(generics.ListAPIView):
     serializer_class = UserSerializer
@@ -92,9 +108,13 @@ class ListFriendsView(generics.ListAPIView):
     def get_queryset(self):
         user = self.request.user
         # Get all friends where the friendship status is 'accepted'
-        friends = (User.objects.filter(sent_requests__receiver=user, sent_requests__status='accepted') |
-                   User.objects.filter(received_requests__requester=user, received_requests__status='accepted'))
+        friends = User.objects.filter(
+            sent_requests__receiver=user, sent_requests__status="accepted"
+        ) | User.objects.filter(
+            received_requests__requester=user, received_requests__status="accepted"
+        )
         return friends.distinct()
+
 
 class ListFriendRequestsView(generics.ListAPIView):
     serializer_class = FriendshipSerializer
@@ -102,27 +122,36 @@ class ListFriendRequestsView(generics.ListAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        return Friendship.objects.filter(receiver=user, status='sent')
+        return Friendship.objects.filter(receiver=user, status="sent")
+
 
 class RejectCancelFriendRequestView(generics.DestroyAPIView):
     queryset = Friendship.objects.all()
     permission_classes = [IsAuthenticated]
 
     def perform_destroy(self, instance):
-        if instance.requester == self.request.user or instance.receiver == self.request.user:
+        if (
+            instance.requester == self.request.user
+            or instance.receiver == self.request.user
+        ):
             instance.delete()
         else:
             raise PermissionDenied("Cannot cancel or reject this friend request")
 
+
 class RemoveFriendView(generics.DestroyAPIView):
-    queryset = Friendship.objects.filter(status='accepted')
+    queryset = Friendship.objects.filter(status="accepted")
     permission_classes = [IsAuthenticated]
 
     def perform_destroy(self, instance):
-        if instance.requester == self.request.user or instance.receiver == self.request.user:
+        if (
+            instance.requester == self.request.user
+            or instance.receiver == self.request.user
+        ):
             instance.delete()
         else:
             raise PermissionDenied("Cannot remove this friend")
+
 
 class AvatarUploadView(generics.UpdateAPIView):
     serializer_class = UserSerializer
