@@ -60,29 +60,29 @@ export const apiService = {
 		});
 	},
 	getFriends: async () => {
-		return fetchAPI('friends/list/');
+		return fetchAPI('users/friends/list/');
 	},
 	getFriendRequests: async () => {
-		return fetchAPI('friends/requests/');
+		return fetchAPI('users/friends/request/');
 	},
 	sendFriendRequest: async (username: string) => {
-		return fetchAPI('friends/request/', {
+		return fetchAPI('users/friends/request/', {
 			method: 'POST',
 			body: JSON.stringify({ receiver: username }),
 		});
 	},
 	acceptFriendRequest: async (requestId: number) => {
-		return fetchAPI(`friends/accept/${requestId}/`, {
+		return fetchAPI(`users/friends/accept/${requestId}/`, {
 			method: 'PATCH',
 		});
 	},
 	rejectFriendRequest: async (requestId: number) => {
-		return fetchAPI(`friends/reject/${requestId}/`, {
+		return fetchAPI(`users/friends/reject/${requestId}/`, {
 			method: 'DELETE',
 		});
 	},
 	removeFriend: async (friendId: number) => {
-		return fetchAPI(`friends/remove/${friendId}/`, {
+		return fetchAPI(`users/friends/remove/${friendId}/`, {
 			method: 'DELETE',
 		});
 	},

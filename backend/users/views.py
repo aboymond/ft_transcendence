@@ -70,7 +70,7 @@ class CreateFriendRequestView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         receiver_username = self.request.data.get('receiver')
-        receiver = get_object_or_404(CustomUser, username=receiver_username)
+        receiver = get_object_or_404(User, username=receiver_username)
         serializer.save(requester=self.request.user, receiver=receiver)
 
 class AcceptFriendRequestView(generics.UpdateAPIView):
