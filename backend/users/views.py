@@ -6,6 +6,7 @@ from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import AuthenticationFailed
 from .serializers import UserSerializer
 from .serializers import FriendshipSerializer
 from .models import GameHistory, Friendship
@@ -47,9 +48,7 @@ class LoginView(generics.GenericAPIView):
                 status=status.HTTP_200_OK,
             )
         else:
-            return Response(
-                {"error": "Invalid Credentials"}, status=status.HTTP_401_UNAUTHORIZED
-            )
+            raise AuthenticationFailed("Invalid Credentials")
 
 
 class LogoutView(generics.GenericAPIView):
