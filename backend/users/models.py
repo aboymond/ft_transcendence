@@ -26,7 +26,7 @@ class CustomUser(AbstractUser):
 
     @property
     def match_history(self):
-        all_games = self.games_history_played.all().order_by("-played_at")
+        all_games = self.games_history_played.all().order_by("-played_at")  # type: ignore
         paginator = Paginator(all_games, 10)  # Show 10 games per page
         first_page = paginator.page(1)
         return first_page.object_list

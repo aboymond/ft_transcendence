@@ -8,7 +8,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
 from .serializers import UserSerializer
 from .serializers import FriendshipSerializer
-from .models import CustomUser, GameHistory, Friendship
+from .models import GameHistory, Friendship
 from .serializers import GameHistorySerializer
 
 User = get_user_model()

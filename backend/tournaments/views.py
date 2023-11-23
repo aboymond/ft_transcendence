@@ -1,7 +1,7 @@
 from rest_framework import generics
 from .models import Tournament
 from .serializers import TournamentSerializer
-from .serializers import RoundSerializer
+# from .serializers import RoundSerializer
 
 
 # List all tournaments or create a new one
