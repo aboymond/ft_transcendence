@@ -17,6 +17,16 @@ User = get_user_model()
 class CreateUserView(generics.CreateAPIView):
     serializer_class = UserSerializer
 
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            self.perform_create(serializer)
+            headers = self.get_success_headers(serializer.data)
+            return Response(
+                serializer.data, status=status.HTTP_201_CREATED, headers=headers
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class LoginView(generics.GenericAPIView):
     serializer_class = UserSerializer
@@ -57,6 +67,13 @@ class UserUpdateView(generics.UpdateAPIView):
     def get_object(self):
         # Assumes the user is updating their own profile
         return self.request.user
+
+    def put(self, request, *args, **kwargs):
+        serializer = self.get_serializer(self.get_object(), data=request.data)
+        if serializer.is_valid():
+            self.perform_update(serializer)
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class CurrentUserProfileView(generics.RetrieveAPIView):
