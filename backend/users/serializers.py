@@ -2,6 +2,8 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from .models import GameHistory
 from .models import Friendship
+from rest_framework.validators import UniqueValidator
+from rest_framework.exceptions import ValidationError
 
 User = get_user_model()
 
@@ -14,6 +16,9 @@ class GameHistorySerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     match_history = GameHistorySerializer(many=True, read_only=True)
+    username = serializers.CharField(
+        validators=[UniqueValidator(queryset=User.objects.all())]
+    )
 
     class Meta:
         model = User
@@ -58,6 +63,10 @@ class UserSerializer(serializers.ModelSerializer):
         instance.save()
 
         return instance
+
+    def validate(self):
+        if self.status == "online" and not self.session_set.exists():
+            raise ValidationError("User must have a current session to be online.")
 
 
 class FriendshipSerializer(serializers.ModelSerializer):
