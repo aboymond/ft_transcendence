@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import CustomUser, GameHistory
+from .models import CustomUser, GameHistory, Friendship
 
 
 @admin.register(CustomUser)
@@ -23,3 +23,9 @@ class GameHistoryAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         return super().get_queryset(request).prefetch_related("players")
+
+@admin.register(Friendship)
+class FriendshipAdmin(admin.ModelAdmin):
+    list_display = ("requester", "receiver", "status", "created_at")
+    search_fields = ("requester__username", "receiver__username")
+    list_filter = ("status",)
