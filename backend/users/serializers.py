@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from .models import GameHistory
 from .models import Friendship
@@ -64,16 +65,24 @@ class UserSerializer(serializers.ModelSerializer):
 
         return instance
 
-    def validate(self):
-        if self.status == "online" and not self.session_set.exists():
+    def validate(self, data):
+        if 'status' in data and data['status'] == "online" and not self.session_set.exists():
             raise ValidationError("User must have a current session to be online.")
-
+        return data
 
 class FriendshipSerializer(serializers.ModelSerializer):
+    receiver = serializers.CharField()
     class Meta:
         model = Friendship
-        fields = ["id", "requester", "receiver", "status", "created_at"]
+        fields = ["id", "receiver", "status", "created_at"]
+        read_only_fields = ["requester"]
 
+    def validate(self, data):
+        # Validate the receiver as a username instead of a primary key
+        receiver_username = data.get('receiver')
+        receiver = get_object_or_404(User, username=receiver_username)
+        data['receiver'] = receiver
+        return data
 
 class AvatarSerializer(serializers.ModelSerializer):
     class Meta:

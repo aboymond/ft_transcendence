@@ -137,8 +137,7 @@ class ListFriendRequestsView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        user = self.request.user
-        return Friendship.objects.filter(receiver=user, status="sent")
+        return Friendship.objects.filter(receiver=self.request.user, status="requested")
 
 
 class RejectCancelFriendRequestView(generics.DestroyAPIView):

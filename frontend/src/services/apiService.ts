@@ -63,7 +63,7 @@ export const apiService = {
 		return fetchAPI('users/friends/list/');
 	},
 	getFriendRequests: async () => {
-		return fetchAPI('users/friends/request/');
+		return fetchAPI('users/friends/requests-list/');
 	},
 	sendFriendRequest: async (username: string) => {
 		return fetchAPI('users/friends/request/', {
