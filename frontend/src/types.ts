@@ -16,3 +16,7 @@ export interface Friend {
 		username: string;
 	};
 }
+
+export interface ApiError extends Error {
+	message: string;
+}

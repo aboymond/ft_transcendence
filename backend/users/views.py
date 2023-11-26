@@ -2,7 +2,7 @@ from django.contrib.auth import authenticate
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied
-from rest_framework import generics, permissions, status
+from rest_framework import generics, permissions, status, serializers
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
@@ -99,8 +99,11 @@ class CreateFriendRequestView(generics.CreateAPIView):
     def perform_create(self, serializer):
         receiver_username = self.request.data.get("receiver")
         receiver = get_object_or_404(User, username=receiver_username)
+        if self.request.user == receiver:
+            raise serializers.ValidationError("You cannot send a friend request to yourself.")
+        if Friendship.objects.filter(requester=receiver, receiver=self.request.user).exists():
+            raise serializers.ValidationError("This user has already sent you a friend request.")
         serializer.save(requester=self.request.user, receiver=receiver)
-
 
 class AcceptFriendRequestView(generics.UpdateAPIView):
     queryset = Friendship.objects.all()
