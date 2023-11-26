@@ -25,6 +25,17 @@ interface UserData {
 }
 
 export const apiService = {
+	verifyToken: async (token: string) => {
+        try {
+            await fetchAPI('users/token/verify/', {
+                method: 'POST',
+                body: JSON.stringify({ token }),
+            });
+            return true;
+        } catch (error) {
+            return false;
+        }
+    },
 	getUserProfile: async () => {
 		return fetchAPI('users/profile/'); // Endpoint for fetching the current user's profile
 	},

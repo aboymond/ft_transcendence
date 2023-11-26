@@ -21,10 +21,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 		const storedToken = localStorage.getItem('token');
 		if (storedToken) {
 			setToken(storedToken);
-			setIsAuthenticated(true);
-			apiService.getUserProfile().then((userData) => setUser(userData));
+			apiService.verifyToken(storedToken).then((isValid) => {
+				setIsAuthenticated(isValid);
+				if (isValid) {
+					apiService.getUserProfile().then((userData) => setUser(userData));
+				}
+			});
 		}
-	}, []); // Empty dependency array to run only once
+	}, []);
 
 	const login = (newToken: string, newUser: UserProfile) => {
 		localStorage.setItem('token', newToken);

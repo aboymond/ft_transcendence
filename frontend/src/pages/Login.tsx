@@ -15,12 +15,10 @@ const Login: React.FC = () => {
 		event.preventDefault();
 		try {
 			const data = await apiService.login(username, password);
-			console.log('Login success:', data);
-			auth.login(data.access);
+			auth.login(data.access, data.user);
 			setError('');
 			navigate('/profile');
 		} catch (error) {
-			console.error('Login failed:', error);
 			setError('Login failed. Please check your credentials.');
 		}
 	};

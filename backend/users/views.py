@@ -1,4 +1,4 @@
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, logout
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied
@@ -11,6 +11,8 @@ from .serializers import UserSerializer
 from .serializers import FriendshipSerializer
 from .models import GameHistory, Friendship
 from .serializers import GameHistorySerializer
+from django.http import Http404
+
 
 User = get_user_model()
 
@@ -44,6 +46,7 @@ class LoginView(generics.GenericAPIView):
                 {
                     "refresh": str(refresh),
                     "access": str(refresh.access_token),
+                    "user": UserSerializer(user).data,
                 },
                 status=status.HTTP_200_OK,
             )
@@ -55,7 +58,7 @@ class LogoutView(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
         request.user.status = "offline"
         request.user.save()
-        # Add your logout logic here
+        logout(request)
         return Response(...)
 
 
@@ -98,12 +101,28 @@ class CreateFriendRequestView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         receiver_username = self.request.data.get("receiver")
-        receiver = get_object_or_404(User, username=receiver_username)
+        try:
+            receiver = User.objects.get(username=receiver_username)
+        except User.DoesNotExist:
+            raise serializers.ValidationError("The specified user does not exist.")
         if self.request.user == receiver:
-            raise serializers.ValidationError("You cannot send a friend request to yourself.")
-        if Friendship.objects.filter(requester=receiver, receiver=self.request.user).exists():
-            raise serializers.ValidationError("This user has already sent you a friend request.")
+            raise serializers.ValidationError(
+                "You cannot send a friend request to yourself."
+            )
+        if Friendship.objects.filter(
+            requester=receiver, receiver=self.request.user
+        ).exists():
+            raise serializers.ValidationError(
+                "This user has already sent you a friend request."
+            )
         serializer.save(requester=self.request.user, receiver=receiver)
+
+    def post(self, request, *args, **kwargs):
+        try:
+            return super().post(request, *args, **kwargs)
+        except serializers.ValidationError as e:
+            return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
 
 class AcceptFriendRequestView(generics.UpdateAPIView):
     queryset = Friendship.objects.all()

@@ -1,25 +1,34 @@
 import { useState } from 'react';
-import { useAuth } from '../hooks/useAuth'
+import { useEffect } from 'react';
+import { useAuth } from '../hooks/useAuth';
 import apiService from '../services/apiService';
 import { ApiError } from '../types';
 
 const AddFriend = () => {
+	useEffect(() => {
+		return () => {
+			setUsername('');
+		};
+	}, []);
 	const [username, setUsername] = useState('');
 	const { user } = useAuth();
 
 	const handleAddFriend = async () => {
 		if (user && username === user.username) {
-			alert("You cannot send a friend request to yourself.");
+			alert('You cannot send a friend request to yourself.');
 			return;
 		}
 		try {
 			await apiService.sendFriendRequest(username);
 			alert('Friend request sent!');
-		} catch (error) {
-			const apiError = error as ApiError;
-			if (apiError.message === 'API call failed: Bad Request') {
+		} catch (error: any) {
+			const errorMessage = error.response?.data?.detail || error.message;
+			console.log('errorMessage:', errorMessage);
+			if (errorMessage === 'You cannot send a friend request to yourself.') {
 				alert('You cannot send a friend request to yourself.');
-			} else if (apiError.message === 'API call failed: This user has already sent you a friend request.') {
+			} else if (
+				errorMessage === 'This user has already sent you a friend request.'
+			) {
 				alert('This user has already sent you a friend request.');
 			} else {
 				console.error('Error sending friend request:', error);
