@@ -1,10 +1,10 @@
 from django.test import TestCase
-from .models import Tournament, Match
-from rest_framework.test import APITestCase
-from rest_framework import status
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.utils import timezone
+from rest_framework.test import APITestCase
+from rest_framework import status
+from .models import Tournament, Game
 
 User = get_user_model()
 
@@ -24,16 +24,16 @@ class TournamentModelTest(TestCase):
         )
         cls.tournament.participants.add(cls.user1, cls.user2)
 
-        # Create a match
-        cls.match = Match.objects.create(
+        # Create a game
+        cls.game = Game.objects.create(
             player1=cls.user1, player2=cls.user2, start_time=timezone.now()
         )
-        cls.tournament.matches.add(cls.match)
+        cls.tournament.games.add(cls.game)
 
     def test_tournament_creation(self):
         self.assertEqual(self.tournament.name, "Existing Tournament")
         self.assertIn(self.user1, self.tournament.participants.all())
-        self.assertIn(self.match, self.tournament.matches.all())
+        self.assertIn(self.game, self.tournament.games.all())
 
 
 class TournamentListViewTest(APITestCase):

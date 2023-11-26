@@ -44,7 +44,6 @@ INSTALLED_APPS = [
     "channels",
     # 'django-two-factor-auth',
     "games",
-    "matches",
     "tournaments",
     "users",
 ]

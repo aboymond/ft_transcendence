@@ -1,6 +1,6 @@
 from django.db import models
 from django.conf import settings
-from matches.models import Match
+from games.models import Game
 
 
 class Tournament(models.Model):
@@ -16,7 +16,7 @@ class Tournament(models.Model):
     participants = models.ManyToManyField(
         settings.AUTH_USER_MODEL, related_name="tournaments"
     )
-    matches = models.ManyToManyField(Match, related_name="tournaments", blank=True)
+    games = models.ManyToManyField(Game, related_name="tournaments", blank=True)
     start_date = models.DateTimeField(null=True, blank=True)
     end_date = models.DateTimeField(null=True, blank=True)
     tournament_type = models.CharField(
@@ -30,7 +30,7 @@ class Round(models.Model):
         Tournament, related_name="rounds", on_delete=models.CASCADE
     )
     round_number = models.IntegerField()
-    matches = models.ManyToManyField(Match, related_name="rounds", blank=True)
+    games = models.ManyToManyField(Game, related_name="rounds", blank=True)
 
 
 class MatchmakingQueue(models.Model):
