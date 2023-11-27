@@ -12,6 +12,9 @@ WORKDIR /app
 # Install Poetry
 RUN pip install --no-cache-dir "poetry==$POETRY_VERSION"
 
+#Install oauth toolkit
+RUN pip install django-oauth-toolkit djangorestframework
+
 # Copy project
 COPY pyproject.toml poetry.lock* /app/
 
