@@ -1,3 +1,5 @@
+import { Friend, FriendRequest } from '../types';
+
 const API_BASE_URL = 'http://localhost:8000/api'; // Update with your actual backend URL
 
 function getHeaders() {
@@ -20,22 +22,26 @@ async function fetchAPI(endpoint: string, options = {}) {
 }
 
 interface UserData {
-	displayName?: string;
+	username?: string;
+	display_name?: string;
 	bio?: string;
 }
 
 export const apiService = {
 	verifyToken: async (token: string) => {
-        try {
-            await fetchAPI('users/token/verify/', {
-                method: 'POST',
-                body: JSON.stringify({ token }),
-            });
-            return true;
-        } catch (error) {
-            return false;
-        }
-    },
+		if (!token) {
+			return false;
+		}
+		try {
+			await fetchAPI('users/token/verify/', {
+				method: 'POST',
+				body: JSON.stringify({ token }),
+			});
+			return true;
+		} catch (error) {
+			return false;
+		}
+	},
 	getUserProfile: async () => {
 		return fetchAPI('users/profile/'); // Endpoint for fetching the current user's profile
 	},
@@ -70,10 +76,10 @@ export const apiService = {
 			body: formData,
 		});
 	},
-	getFriends: async () => {
+	getFriends: async (): Promise<Friend[]> => {
 		return fetchAPI('users/friends/list/');
 	},
-	getFriendRequests: async () => {
+	getFriendRequests: async (): Promise<FriendRequest[]> => {
 		return fetchAPI('users/friends/requests-list/');
 	},
 	sendFriendRequest: async (username: string) => {

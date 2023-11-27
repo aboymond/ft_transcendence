@@ -66,23 +66,31 @@ class UserSerializer(serializers.ModelSerializer):
         return instance
 
     def validate(self, data):
-        if 'status' in data and data['status'] == "online" and not self.session_set.exists():
+        if (
+            "status" in data
+            and data["status"] == "online"
+            and not self.session_set.exists()
+        ):
             raise ValidationError("User must have a current session to be online.")
         return data
 
+
 class FriendshipSerializer(serializers.ModelSerializer):
-    receiver = serializers.CharField()
+    requester = UserSerializer(read_only=True)
+    receiver = UserSerializer()
+
     class Meta:
         model = Friendship
-        fields = ["id", "receiver", "status", "created_at"]
+        fields = ["id", "requester", "receiver", "status", "created_at"]
         read_only_fields = ["requester"]
 
     def validate(self, data):
         # Validate the receiver as a username instead of a primary key
-        receiver_username = data.get('receiver')
+        receiver_username = data.get("receiver")
         receiver = get_object_or_404(User, username=receiver_username)
-        data['receiver'] = receiver
+        data["receiver"] = receiver
         return data
+
 
 class AvatarSerializer(serializers.ModelSerializer):
     class Meta:

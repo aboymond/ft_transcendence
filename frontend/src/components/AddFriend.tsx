@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import apiService from '../services/apiService';
-import { ApiError } from '../types';
 
 const AddFriend = () => {
 	useEffect(() => {

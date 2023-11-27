@@ -1,4 +1,5 @@
-export interface UserProfile {
+export interface User {
+	id: number;
 	username: string;
 	display_name: string;
 	bio: string;
@@ -9,12 +10,16 @@ export interface UserProfile {
 
 export interface Friend {
 	id: number;
-	username: string;
+	user: User;
 	status: 'online' | 'offline' | 'in-game' | 'queueing';
-	sender?: {
-		id: number;
-		username: string;
-	};
+}
+
+export interface FriendRequest {
+	id: number;
+	requester: User;
+	receiver: User;
+	status: 'sent' | 'accepted' | 'rejected';
+	created_at: string;
 }
 
 export interface ApiError extends Error {

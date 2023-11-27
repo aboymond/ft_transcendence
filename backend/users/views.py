@@ -1,5 +1,4 @@
 from django.contrib.auth import authenticate, logout
-from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied
 from rest_framework import generics, permissions, status, serializers
@@ -11,7 +10,6 @@ from .serializers import UserSerializer
 from .serializers import FriendshipSerializer
 from .models import GameHistory, Friendship
 from .serializers import GameHistorySerializer
-from django.http import Http404
 
 
 User = get_user_model()

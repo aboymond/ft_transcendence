@@ -1,12 +1,12 @@
 import { createContext, useState, useEffect, ReactNode } from 'react';
 import apiService from '../services/apiService';
-import { UserProfile } from '../types';
+import { User } from '../types';
 
 interface AuthContextType {
 	token: string | null;
 	isAuthenticated: boolean;
-	user: UserProfile | null;
-	login: (token: string, user: UserProfile) => void;
+	user: User | null;
+	login: (token: string, user: User) => void;
 	logout: () => void;
 }
 
@@ -15,7 +15,7 @@ export const AuthContext = createContext<AuthContextType | null>(null);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
 	const [token, setToken] = useState<string | null>(null);
 	const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-	const [user, setUser] = useState<UserProfile | null>(null);
+	const [user, setUser] = useState<User | null>(null);
 
 	useEffect(() => {
 		const storedToken = localStorage.getItem('token');
@@ -25,12 +25,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 				setIsAuthenticated(isValid);
 				if (isValid) {
 					apiService.getUserProfile().then((userData) => setUser(userData));
+				} else {
+					setUser(null);
 				}
 			});
 		}
 	}, []);
 
-	const login = (newToken: string, newUser: UserProfile) => {
+	const login = (newToken: string, newUser: User) => {
 		localStorage.setItem('token', newToken);
 		setToken(newToken);
 		setIsAuthenticated(true);
