@@ -23,7 +23,6 @@ from oauth2_provider.contrib.rest_framework import TokenHasReadWriteScope, Token
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-	path('o/', include('https://api.intra.42.fr', namespace='intra.42')),
     path('api/users/', include('users.urls')),
     path('api/matches', include('matches.urls')),
     path('api/tournaments/', include('tournaments.urls'))

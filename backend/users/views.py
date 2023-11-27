@@ -10,6 +10,7 @@ from .serializers import UserSerializer
 from .serializers import FriendshipSerializer
 from .models import CustomUser, GameHistory, Friendship
 from .serializers import GameHistorySerializer
+from django.http import HttpRequest
 
 User = get_user_model()
 
@@ -31,6 +32,13 @@ class LoginView(generics.GenericAPIView):
             }, status=status.HTTP_200_OK)
         else:
             return Response({'error': 'Invalid Credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+
+class AuthView(generics.GenericAPIView):
+	request = HttpRequest()
+	request.method = 'GET'
+	request.path = 'https://api.intra.42.fr/oauth/authorize?'
+	request.GET['name'] = 'jhon'
+	request.GET['age'] = 26
 
 class LogoutView(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
