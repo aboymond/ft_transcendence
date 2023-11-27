@@ -23,6 +23,13 @@ class Tournament(models.Model):
         max_length=2, choices=TOURNAMENT_TYPES, default=SINGLE_ELIMINATION
     )
     status = models.CharField(max_length=255, default="Created")
+    winner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name="tournaments_won",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
 
 
 class Round(models.Model):
