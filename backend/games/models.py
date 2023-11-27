@@ -1,6 +1,5 @@
 from django.db import models
 from django.conf import settings
-from tournaments.models import Tournament
 
 
 class Game(models.Model):
@@ -30,13 +29,6 @@ class Game(models.Model):
     winner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         related_name="games_won",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-    )
-    tournament = models.ForeignKey(
-        Tournament,
-        related_name="games",
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
