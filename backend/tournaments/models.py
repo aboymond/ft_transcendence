@@ -12,6 +12,16 @@ class Tournament(models.Model):
         (ROUND_ROBIN, "Round Robin"),
     ]
 
+    CREATED = "CR"
+    IN_PROGRESS = "IP"
+    COMPLETED = "CO"
+
+    STATUS_CHOICES = [
+        (CREATED, "Created"),
+        (IN_PROGRESS, "In Progress"),
+        (COMPLETED, "Completed"),
+    ]
+
     name = models.CharField(max_length=255)
     participants = models.ManyToManyField(
         settings.AUTH_USER_MODEL, related_name="tournaments"
@@ -22,7 +32,11 @@ class Tournament(models.Model):
     tournament_type = models.CharField(
         max_length=2, choices=TOURNAMENT_TYPES, default=SINGLE_ELIMINATION
     )
-    status = models.CharField(max_length=255, default="Created")
+    status = models.CharField(
+        max_length=2,
+        choices=STATUS_CHOICES,
+        default=CREATED,
+    )
     winner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         related_name="tournaments_won",
