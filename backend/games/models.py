@@ -40,13 +40,17 @@ class Game(models.Model):
 
     @classmethod
     def find_or_create_game(cls, user):
-        game = cls.objects.filter(status="waiting").exclude(player1=user).first()
-
-        if game:
-            game.player2 = user
-            game.status = "in_progress"
-            game.save()
+        queue = MatchmakingQueue.objects.order_by("timestamp")
+        if queue.exists():
+            opponent = queue.first().player
+            queue.first().delete()
+            game = cls.objects.create(player1=user, player2=opponent)
         else:
-            game = cls.objects.create(player1=user)
-
+            MatchmakingQueue.objects.create(player=user)
+            game = None
         return game
+
+
+class MatchmakingQueue(models.Model):
+    player = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    timestamp = models.DateTimeField(auto_now_add=True)

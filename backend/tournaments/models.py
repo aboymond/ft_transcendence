@@ -52,8 +52,3 @@ class Round(models.Model):
     )
     round_number = models.IntegerField()
     games = models.ManyToManyField(Game, related_name="rounds", blank=True)
-
-
-class MatchmakingQueue(models.Model):
-    player = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    timestamp = models.DateTimeField(auto_now_add=True)
