@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import apiService from '../services/apiService';
+import { ApiError } from '../types';
 
 const AddFriend = () => {
 	useEffect(() => {
@@ -20,8 +21,9 @@ const AddFriend = () => {
 		try {
 			await apiService.sendFriendRequest(username);
 			alert('Friend request sent!');
-		} catch (error: any) {
-			const errorMessage = error.response?.data?.detail || error.message;
+		} catch (error: unknown) {
+			const apiError = error as ApiError;
+			const errorMessage = apiError.response?.data?.detail || apiError.message;
 			console.log('errorMessage:', errorMessage);
 			if (errorMessage === 'You cannot send a friend request to yourself.') {
 				alert('You cannot send a friend request to yourself.');

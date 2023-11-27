@@ -10,7 +10,7 @@ from .serializers import UserSerializer
 from .serializers import FriendshipSerializer
 from .models import GameHistory, Friendship
 from .serializers import GameHistorySerializer
-
+from .serializers import AvatarSerializer
 
 User = get_user_model()
 
@@ -189,8 +189,11 @@ class RemoveFriendView(generics.DestroyAPIView):
 
 
 class AvatarUploadView(generics.UpdateAPIView):
-    serializer_class = UserSerializer
+    serializer_class = AvatarSerializer
     permission_classes = [IsAuthenticated]
 
     def get_object(self):
         return self.request.user
+
+    def post(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)

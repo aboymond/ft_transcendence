@@ -39,6 +39,7 @@ export const apiService = {
 			});
 			return true;
 		} catch (error) {
+			localStorage.removeItem('token');
 			return false;
 		}
 	},
@@ -71,7 +72,7 @@ export const apiService = {
 	uploadUserAvatar: async (avatar: File) => {
 		const formData = new FormData();
 		formData.append('avatar', avatar);
-		return fetchAPI('users/avatar/', {
+		return fetchAPI('users/avatar/upload/', {
 			method: 'POST',
 			body: formData,
 		});

@@ -5,6 +5,7 @@ import Register from './pages/Register';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
 import FriendsPage from './pages/FriendsPage';
+import ProfileUpdate from './pages/ProfileUpdate';
 
 const AppRoutes: React.FC = () => {
 	const { isAuthenticated } = useAuth();
@@ -20,6 +21,12 @@ const AppRoutes: React.FC = () => {
 				}
 			/>
 			<Route path="/profile" element={<Profile />} />
+			<Route
+				path="/profile/update"
+				element={
+					isAuthenticated ? <ProfileUpdate /> : <Navigate to="/login" replace />
+				}
+			/>
 			<Route
 				path="/friends"
 				element={

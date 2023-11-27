@@ -17,6 +17,12 @@ const Navbar: React.FC = () => {
 		>
 			{auth.isAuthenticated ? (
 				<>
+					<Link to="/" style={{ marginRight: '10px' }}>
+						Home
+					</Link>
+					<Link to="/profile" style={{ marginRight: '10px' }}>
+						Profile
+					</Link>
 					<Link to="/friends" style={{ marginRight: '10px' }}>
 						Friends
 					</Link>

@@ -27,6 +27,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 					apiService.getUserProfile().then((userData) => setUser(userData));
 				} else {
 					setUser(null);
+					setToken(null);
 				}
 			});
 		}

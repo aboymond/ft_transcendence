@@ -22,6 +22,11 @@ export interface FriendRequest {
 	created_at: string;
 }
 
-export interface ApiError extends Error {
+export type ApiError = {
 	message: string;
-}
+	response?: {
+		data?: {
+			detail?: string;
+		};
+	};
+};
