@@ -135,3 +135,11 @@ class Match(models.Model):
     game = models.OneToOneField(
         Game, related_name="match", on_delete=models.CASCADE, null=True, blank=True
     )
+
+    def start_game(self):
+        if self.player1.status == "online" and self.player2.status == "online":
+            game = Game.objects.create(
+                player1=self.player1, player2=self.player2, status="in_progress"
+            )
+            self.game = game
+            self.save()

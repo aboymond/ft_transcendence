@@ -3,6 +3,8 @@ from .views import (
     TournamentListCreateView,
     TournamentRetrieveUpdateDestroyView,
     TournamentAddParticipantView,
+    MatchListCreateView,
+    MatchRetrieveUpdateDestroyView,
 )
 
 urlpatterns = [
@@ -16,5 +18,11 @@ urlpatterns = [
         "tournaments/<int:pk>/add_participant/",
         TournamentAddParticipantView.as_view(),
         name="tournament-add-participant",
+    ),
+    path("matches/", MatchListCreateView.as_view(), name="match-list"),
+    path(
+        "matches/<int:pk>/",
+        MatchRetrieveUpdateDestroyView.as_view(),
+        name="match-detail",
     ),
 ]
