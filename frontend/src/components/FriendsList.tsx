@@ -1,16 +1,19 @@
-import { Friend } from '../types';
+import { User } from '../types';
 
 interface FriendListProps {
-	friends: Friend[];
+	friends: User[];
 }
 
 const FriendList = ({ friends }: FriendListProps) => {
+	console.log(friends);
 	return (
 		<div>
 			<h2>Friends</h2>
 			<ul>
 				{friends.map((friend) => (
-					<li key={friend.id}>{friend.user.username}</li>
+					<li key={friend.id}>
+						{friend.username ? friend.username : 'Unknown User'}
+					</li>
 				))}
 			</ul>
 		</div>
