@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from games.models import Game
+from itertools import combinations
 
 
 class Tournament(models.Model):
@@ -23,6 +24,7 @@ class Tournament(models.Model):
     ]
 
     name = models.CharField(max_length=255)
+    max_participants = models.IntegerField()
     participants = models.ManyToManyField(
         settings.AUTH_USER_MODEL, related_name="tournaments"
     )
@@ -45,10 +47,60 @@ class Tournament(models.Model):
         blank=True,
     )
 
+    @classmethod
+    def create_tournament(cls, name, tournament_type, max_participants):
+        tournament = cls.objects.create(
+            name=name,
+            tournament_type=tournament_type,
+            max_participants=max_participants,
+            status=cls.CREATED,
+        )
+        return tournament
 
-class Round(models.Model):
-    tournament = models.ForeignKey(
-        Tournament, related_name="rounds", on_delete=models.CASCADE
-    )
-    round_number = models.IntegerField()
-    games = models.ManyToManyField(Game, related_name="rounds", blank=True)
+    def add_participant(self, user):
+        if self.participants.count() < self.max_participants:
+            self.participants.add(user)
+            self.save()
+            if self.participants.count() == self.max_participants:
+                if self.tournament_type == self.SINGLE_ELIMINATION:
+                    self.start_single_elimination(self)
+                elif self.tournament_type == self.ROUND_ROBIN:
+                    self.start_round_robin(self)
+        else:
+            raise Exception("Tournament is full")
+
+    @classmethod
+    def start_single_elimination(cls, tournament):
+        players = list(tournament.participants.all())
+        while len(players) > 1:
+            for i in range(0, len(players), 2):
+                game = Game.objects.create(
+                    player1=players[i], player2=players[i + 1], status="in_progress"
+                )
+                tournament.games.add(game)
+            winners = [
+                game.winner
+                for game in tournament.games.all()
+                if game.winner is not None
+            ]
+            players = winners
+        if players:
+            tournament.winner = players[0]
+            tournament.status = cls.COMPLETED
+            tournament.save()
+
+    @classmethod
+    def start_round_robin(cls, tournament):
+        players = list(tournament.participants.all())
+        for player1, player2 in combinations(players, 2):
+            game = Game.objects.create(
+                player1=player1, player2=player2, status="in_progress"
+            )
+            tournament.games.add(game)
+        winners = [
+            game.winner for game in tournament.games.all() if game.winner is not None
+        ]
+        winner = max(winners, key=winners.count)
+        tournament.winner = winner
+        tournament.status = cls.COMPLETED
+        tournament.save()

@@ -44,7 +44,9 @@ class Game(models.Model):
         if queue.exists():
             opponent = queue.first().player
             queue.first().delete()
-            game = cls.objects.create(player1=user, player2=opponent)
+            game = cls.objects.create(
+                player1=user, player2=opponent, status="in_progress"
+            )
         else:
             MatchmakingQueue.objects.create(player=user)
             game = None
