@@ -72,12 +72,16 @@ class Tournament(models.Model):
     @classmethod
     def start_single_elimination(cls, tournament):
         players = list(tournament.participants.all())
+        order = 1
         while len(players) > 1:
             for i in range(0, len(players), 2):
-                game = Game.objects.create(
-                    player1=players[i], player2=players[i + 1], status="in_progress"
+                Match.objects.create(
+                    tournament=tournament,
+                    player1=players[i],
+                    player2=players[i + 1],
+                    order=order,
                 )
-                tournament.games.add(game)
+                order += 1
             winners = [
                 game.winner
                 for game in tournament.games.all()
@@ -95,11 +99,12 @@ class Tournament(models.Model):
     @classmethod
     def start_round_robin(cls, tournament):
         players = list(tournament.participants.all())
+        order = 1
         for player1, player2 in combinations(players, 2):
-            game = Game.objects.create(
-                player1=player1, player2=player2, status="in_progress"
+            Match.objects.create(
+                tournament=tournament, player1=player1, player2=player2, order=order
             )
-            tournament.games.add(game)
+            order += 1
         winners = [
             game.winner for game in tournament.games.all() if game.winner is not None
         ]
@@ -110,3 +115,23 @@ class Tournament(models.Model):
 
         tournament.status = cls.COMPLETED
         tournament.save()
+
+
+class Match(models.Model):
+    tournament = models.ForeignKey(
+        Tournament, related_name="matches", on_delete=models.CASCADE
+    )
+    player1 = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name="matches_as_player1",
+        on_delete=models.CASCADE,
+    )
+    player2 = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name="matches_as_player2",
+        on_delete=models.CASCADE,
+    )
+    order = models.IntegerField()
+    game = models.OneToOneField(
+        Game, related_name="match", on_delete=models.CASCADE, null=True, blank=True
+    )
