@@ -84,12 +84,14 @@ class CurrentUserProfileView(generics.RetrieveAPIView):
         return self.request.user
 
 
-class GameHistoryListView(generics.ListAPIView):
+class GameHistoryListCreateView(generics.ListCreateAPIView):
+    queryset = GameHistory.objects.all()
     serializer_class = GameHistorySerializer
-    permission_classes = [IsAuthenticated]
 
-    def get_queryset(self):
-        return GameHistory.objects.filter(players=self.request.user)
+
+class GameHistoryRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = GameHistory.objects.all()
+    serializer_class = GameHistorySerializer
 
 
 class CreateFriendRequestView(generics.CreateAPIView):

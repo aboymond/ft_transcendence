@@ -1,10 +1,10 @@
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
-from .models import GameHistory
-from .models import Friendship
 from rest_framework.validators import UniqueValidator
 from rest_framework.exceptions import ValidationError
+from .models import GameHistory
+from .models import Friendship
 
 User = get_user_model()
 
@@ -12,7 +12,7 @@ User = get_user_model()
 class GameHistorySerializer(serializers.ModelSerializer):
     class Meta:
         model = GameHistory
-        fields = ["id", "players", "winner", "played_at"]
+        fields = "__all__"
 
 
 class UserSerializer(serializers.ModelSerializer):
