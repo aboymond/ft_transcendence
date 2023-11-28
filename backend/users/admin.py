@@ -10,7 +10,8 @@ class CustomUserAdmin(admin.ModelAdmin):
         "bio",
         "wins",
         "losses",
-    )  # Adjust the fields as per your model
+        "tournament_wins",
+    )
     search_fields = ("username", "display_name")
     # Add any additional customizations as required
 
@@ -23,6 +24,7 @@ class GameHistoryAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         return super().get_queryset(request).prefetch_related("players")
+
 
 @admin.register(Friendship)
 class FriendshipAdmin(admin.ModelAdmin):

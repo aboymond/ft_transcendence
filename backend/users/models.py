@@ -21,6 +21,7 @@ class CustomUser(AbstractUser):
     bio = models.TextField(blank=True)
     wins = models.IntegerField(default=0)
     losses = models.IntegerField(default=0)
+    tournament_wins = models.IntegerField(default=0)
     friends = models.ManyToManyField("self", symmetrical=False)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="offline")
 

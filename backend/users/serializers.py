@@ -32,6 +32,7 @@ class UserSerializer(serializers.ModelSerializer):
             "bio",
             "wins",
             "losses",
+            "tournament_wins",
             "status",
             "match_history",
         )

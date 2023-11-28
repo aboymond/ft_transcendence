@@ -33,6 +33,13 @@ class Game(models.Model):
         null=True,
         blank=True,
     )
+    loser = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name="games_lost",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
 
     @property
     def is_full(self):
@@ -51,6 +58,18 @@ class Game(models.Model):
             MatchmakingQueue.objects.create(player=user)
             game = None
         return game
+
+    def end_game(self, winner):
+        self.winner = winner
+        self.loser = self.player1 if self.player2 == winner else self.player2
+        self.status = "completed"
+        self.save()
+
+        winner.wins += 1
+        winner.save()
+
+        self.loser.losses += 1
+        self.loser.save()
 
 
 class MatchmakingQueue(models.Model):

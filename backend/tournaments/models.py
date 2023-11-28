@@ -86,6 +86,9 @@ class Tournament(models.Model):
             players = winners
         if players:
             tournament.winner = players[0]
+            tournament.winner.tournament_wins += 1
+            tournament.winner.save()
+
             tournament.status = cls.COMPLETED
             tournament.save()
 
@@ -102,5 +105,8 @@ class Tournament(models.Model):
         ]
         winner = max(winners, key=winners.count)
         tournament.winner = winner
+        tournament.winner.tournament_wins += 1
+        tournament.winner.save()
+
         tournament.status = cls.COMPLETED
         tournament.save()
