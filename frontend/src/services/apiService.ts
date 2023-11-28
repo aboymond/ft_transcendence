@@ -1,4 +1,4 @@
-import { Friend, FriendRequest } from '../types';
+import { User, FriendRequest } from '../types';
 
 const API_BASE_URL = 'http://localhost:8000/api'; // Update with your actual backend URL
 
@@ -77,7 +77,7 @@ export const apiService = {
 			body: formData,
 		});
 	},
-	getFriends: async (): Promise<Friend[]> => {
+	getFriends: async (): Promise<User[]> => {
 		return fetchAPI('users/friends/list/');
 	},
 	getFriendRequests: async (): Promise<FriendRequest[]> => {

@@ -1,5 +1,4 @@
 from django.contrib.auth import get_user_model
-from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from rest_framework.exceptions import ValidationError
@@ -85,12 +84,16 @@ class FriendshipSerializer(serializers.ModelSerializer):
         fields = ["id", "requester", "receiver", "status", "created_at"]
         read_only_fields = ["requester"]
 
-    def validate(self, data):
-        # Validate the receiver as a username instead of a primary key
+    def to_internal_value(self, data):
+        # Convert the receiver username to a User instance
         receiver_username = data.get("receiver")
-        receiver = get_object_or_404(User, username=receiver_username)
-        data["receiver"] = receiver
-        return data
+        receiver = User.objects.get(username=receiver_username)
+        return {
+            "requester": data.get("requester"),
+            "receiver": receiver,
+            "status": data.get("status"),
+            "created_at": data.get("created_at"),
+        }
 
 
 class AvatarSerializer(serializers.ModelSerializer):
