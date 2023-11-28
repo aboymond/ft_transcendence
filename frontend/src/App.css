@@ -1,4 +1,145 @@
-.status {
+:root {
+	--blur-value: 1px;
+    --primary-color: rgb(26, 255, 0);
+    --background-color: rgb(5, 49, 0);
+    --accent-color: rgb(74, 246, 38);
+    --font-family: 'Press Start 2P', monospace;
+}
+
+
+* {
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-family);
+    text-decoration: none;
+    box-sizing: border-box;
+    list-style: none;
+    text-shadow: 0 0 10px var(--primary-color);
+    color: var(--primary-color);
+    overflow: hidden;
+}
+
+
+body {
+    background-color: var(--background-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    
+}
+
+#image-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 30;
+    pointer-events: none;
+}
+
+#scan {
+	display: flex;
+	width: 100%;
+	height: 100%;
+	opacity: 60%;
+	position: absolute;
+	z-index: 31;
+    pointer-events: none;
+}
+
+#bezel {
+	display: flex;
+	width: 100%;
+	height: 100%;
+	opacity: 98%;
+	position: absolute;
+	z-index: 32;
+    pointer-events: none;
+    filter: blur(5px);
+}
+
+#light {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    opacity: 30%;
+    position: absolute;
+    z-index: 0;
+    filter: blur(35px);
+    pointer-events: none;
+
+}
+
+#page {
+    width: 100%;
+    max-width: 1200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+	min-height: 100vh;
+    margin: 0 auto;
+    padding-top: 80px; 
+}
+
+#p-end {
+    text-align: left;
+    margin: 5rem 0;
+}
+
+#p-end h4 {
+	font-size: 1.2rem;
+    white-space: nowrap;
+    overflow: hidden;
+    border-right: 3px solid var(--primary-color);
+    width: 0;
+    animation: typing 6s steps(40) forwards, blink-caret 0.5s step-end infinite;
+}
+
+@media (max-width: 768px) {
+    #page {
+        padding-top: 50px;
+    }
+    #p-end h4 {
+        font-size: 0.8rem;
+    }
+}
+
+
+@media (min-width: 992px) {
+    #p-end h4 {
+        font-size: 1.5rem;
+    }
+}
+
+@media (min-width: 1200px) {
+    #p-end h4 {
+        font-size: 1.5rem;
+    }
+}
+
+@media (min-width: 1400px) {
+    #p-end h4 {
+        font-size: 1.5rem;
+    }
+}
+
+
+@keyframes typing {
+    from { width: 0; }
+    to { width: 100%; }
+}
+
+
+@keyframes blink-caret {
+    from, to { border-color: transparent; }
+    50% { border-color: var(--primary-color); }
+}
+
+
+/* .status {
 	padding: 2px 5px;
 	border-radius: 4px;
 	color: white;
@@ -16,4 +157,4 @@
 }
 .status.queuing {
 	background-color: orange;
-}
+} */
