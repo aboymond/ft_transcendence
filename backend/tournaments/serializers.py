@@ -1,26 +1,20 @@
-from rest_framework import serializers
-
-from .models import Tournament
-from .models import Round
-from .models import MatchmakingQueue
 from django.contrib.auth import get_user_model
+from rest_framework import serializers
+from .models import Tournament
+from .models import Match
+
 
 class TournamentSerializer(serializers.ModelSerializer):
     participants = serializers.PrimaryKeyRelatedField(
-        many=True,
-        queryset=get_user_model().objects.all(),
-        required=False
+        many=True, queryset=get_user_model().objects.all(), required=False
     )
+
     class Meta:
         model = Tournament
-        fields = '__all__'
+        fields = "__all__"
 
-class RoundSerializer(serializers.ModelSerializer):
+
+class MatchSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Round
-        fields = '__all__'
-
-class MatchmakingQueueSerializer(serializers.ModelSerializer):
-		class Meta:
-				model = MatchmakingQueue
-				fields = '__all__'
+        model = Match
+        fields = "__all__"

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { apiService } from '../services/apiService';
-import { UserProfile } from '../types';
+import { User } from '../types';
 import { useNavigate } from 'react-router-dom';
 
 const Profile: React.FC = () => {
-	const [profile, setProfile] = useState<UserProfile | null>(null);
+	const [profile, setProfile] = useState<User | null>(null);
 	const [error, setError] = useState<string | null>(null); // Error state
 	const auth = useAuth();
 	const navigate = useNavigate();
@@ -19,7 +19,7 @@ const Profile: React.FC = () => {
 
 		apiService
 			.getUserProfile()
-			.then((data: UserProfile) => {
+			.then((data: User) => {
 				setProfile(data);
 			})
 			.catch((error) => {
@@ -44,7 +44,9 @@ const Profile: React.FC = () => {
 			<p>Bio: {profile.bio}</p>
 			<p>Wins: {profile.wins}</p>
 			<p>Losses: {profile.losses}</p>
-			{/* Display other profile details */}
+			<button onClick={() => navigate('/profile/update')}>
+				Update Profile
+			</button>
 		</div>
 	);
 };

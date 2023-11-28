@@ -1,0 +1,19 @@
+.status {
+	padding: 2px 5px;
+	border-radius: 4px;
+	color: white;
+	font-weight: bold;
+}
+
+.status.online {
+	background-color: green;
+}
+.status.offline {
+	background-color: grey;
+}
+.status.in-game {
+	background-color: blue;
+}
+.status.queuing {
+	background-color: orange;
+}

@@ -1,5 +1,6 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
-import json
+# import json
+
 
 class GameConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -9,7 +10,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         # Handle disconnection
         pass
 
-    async def receive(self, text_data):
-        # Handle incoming messages from WebSocket
-        data = json.loads(text_data)
-        # Process data...
+    # async def receive(self, text_data):
+    #     # Handle incoming messages from WebSocket
+    #     data = json.loads(text_data)
+    #     # Process data...

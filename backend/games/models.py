@@ -1,19 +1,45 @@
 from django.db import models
 from django.conf import settings
 
+
 class Game(models.Model):
     STATUS_CHOICES = [
-        ('waiting', 'Waiting for Player'),
-        ('in_progress', 'In Progress'),
-        ('completed', 'Completed'),
+        ("waiting", "Waiting for Player"),
+        ("in_progress", "In Progress"),
+        ("completed", "Completed"),
     ]
 
-    player1 = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='games_as_player1', on_delete=models.SET_NULL, null=True, blank=True)
-    player2 = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='games_as_player2', on_delete=models.SET_NULL, null=True, blank=True)
-    status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='waiting')
+    player1 = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name="games_as_player1",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
+    player2 = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name="games_as_player2",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
+    status = models.CharField(max_length=15, choices=STATUS_CHOICES, default="waiting")
     start_time = models.DateTimeField(auto_now_add=True)
     end_time = models.DateTimeField(null=True, blank=True)
-    winner = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='games_won', on_delete=models.SET_NULL, null=True, blank=True)
+    winner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name="games_won",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
+    loser = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name="games_lost",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
 
     @property
     def is_full(self):
@@ -21,13 +47,31 @@ class Game(models.Model):
 
     @classmethod
     def find_or_create_game(cls, user):
-        game = cls.objects.filter(status='waiting').exclude(player1=user).first()
-
-        if game:
-            game.player2 = user
-            game.status = 'in_progress'
-            game.save()
+        queue = MatchmakingQueue.objects.order_by("timestamp")
+        if queue.exists():
+            opponent = queue.first().player
+            queue.first().delete()
+            game = cls.objects.create(
+                player1=user, player2=opponent, status="in_progress"
+            )
         else:
-            game = cls.objects.create(player1=user)
-
+            MatchmakingQueue.objects.create(player=user)
+            game = None
         return game
+
+    def end_game(self, winner):
+        self.winner = winner
+        self.loser = self.player1 if self.player2 == winner else self.player2
+        self.status = "completed"
+        self.save()
+
+        winner.wins += 1
+        winner.save()
+
+        self.loser.losses += 1
+        self.loser.save()
+
+
+class MatchmakingQueue(models.Model):
+    player = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    timestamp = models.DateTimeField(auto_now_add=True)

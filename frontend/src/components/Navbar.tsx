@@ -16,7 +16,18 @@ const Navbar: React.FC = () => {
 			style={{ display: 'flex', justifyContent: 'flex-end', padding: '10px' }}
 		>
 			{auth.isAuthenticated ? (
-				<button onClick={handleLogout}>Logout</button>
+				<>
+					<Link to="/" style={{ marginRight: '10px' }}>
+						Home
+					</Link>
+					<Link to="/profile" style={{ marginRight: '10px' }}>
+						Profile
+					</Link>
+					<Link to="/friends" style={{ marginRight: '10px' }}>
+						Friends
+					</Link>
+					<button onClick={handleLogout}>Logout</button>
+				</>
 			) : (
 				<>
 					<Link to="/register" style={{ marginRight: '10px' }}>

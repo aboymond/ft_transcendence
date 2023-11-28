@@ -1,19 +1,24 @@
 import React, { useState } from 'react';
 import apiService from '../services/apiService';
+import { useNavigate } from 'react-router-dom';
 
 const ProfileUpdate: React.FC = () => {
-	const [displayName, setDisplayName] = useState('');
+	const [display_name, setDisplayName] = useState('');
 	const [bio, setBio] = useState('');
 	const [avatar, setAvatar] = useState<File | null>(null);
+	const navigate = useNavigate();
 
 	const handleUpdate = async () => {
 		try {
-			const data = { displayName, bio };
+			const data: { display_name?: string; bio?: string } = {};
+			if (display_name) data.display_name = display_name;
+			if (bio) data.bio = bio;
 			await apiService.updateUserProfile(data);
 			if (avatar) {
 				await apiService.uploadUserAvatar(avatar);
 			}
 			alert('Profile updated successfully');
+			navigate('/profile');
 		} catch (error) {
 			console.error('Error updating profile:', error);
 		}
@@ -24,7 +29,7 @@ const ProfileUpdate: React.FC = () => {
 			<h1>Update Profile</h1>
 			<input
 				type="text"
-				value={displayName}
+				value={display_name}
 				onChange={(e) => setDisplayName(e.target.value)}
 				placeholder="Display Name"
 			/>

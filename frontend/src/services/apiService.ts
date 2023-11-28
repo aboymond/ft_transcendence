@@ -1,3 +1,5 @@
+import { Friend, FriendRequest } from '../types';
+
 const API_BASE_URL = 'http://localhost:8000/api'; // Update with your actual backend URL
 
 function getHeaders() {
@@ -20,11 +22,27 @@ async function fetchAPI(endpoint: string, options = {}) {
 }
 
 interface UserData {
-	displayName?: string;
+	username?: string;
+	display_name?: string;
 	bio?: string;
 }
 
 export const apiService = {
+	verifyToken: async (token: string) => {
+		if (!token) {
+			return false;
+		}
+		try {
+			await fetchAPI('users/token/verify/', {
+				method: 'POST',
+				body: JSON.stringify({ token }),
+			});
+			return true;
+		} catch (error) {
+			localStorage.removeItem('token');
+			return false;
+		}
+	},
 	getUserProfile: async () => {
 		return fetchAPI('users/profile/'); // Endpoint for fetching the current user's profile
 	},
@@ -54,29 +72,35 @@ export const apiService = {
 	uploadUserAvatar: async (avatar: File) => {
 		const formData = new FormData();
 		formData.append('avatar', avatar);
-		return fetchAPI('users/avatar/', {
+		return fetchAPI('users/avatar/upload/', {
 			method: 'POST',
 			body: formData,
 		});
 	},
-	getFriends: async () => {
-		return fetchAPI('friends/list/');
+	getFriends: async (): Promise<Friend[]> => {
+		return fetchAPI('users/friends/list/');
 	},
-	getFriendRequests: async () => {
-		return fetchAPI('friends/requests/');
+	getFriendRequests: async (): Promise<FriendRequest[]> => {
+		return fetchAPI('users/friends/requests-list/');
+	},
+	sendFriendRequest: async (username: string) => {
+		return fetchAPI('users/friends/request/', {
+			method: 'POST',
+			body: JSON.stringify({ receiver: username }),
+		});
 	},
 	acceptFriendRequest: async (requestId: number) => {
-		return fetchAPI(`friends/accept/${requestId}/`, {
+		return fetchAPI(`users/friends/accept/${requestId}/`, {
 			method: 'PATCH',
 		});
 	},
 	rejectFriendRequest: async (requestId: number) => {
-		return fetchAPI(`friends/reject/${requestId}/`, {
+		return fetchAPI(`users/friends/reject/${requestId}/`, {
 			method: 'DELETE',
 		});
 	},
 	removeFriend: async (friendId: number) => {
-		return fetchAPI(`friends/remove/${friendId}/`, {
+		return fetchAPI(`users/friends/remove/${friendId}/`, {
 			method: 'DELETE',
 		});
 	},
