@@ -6,7 +6,7 @@ import {glowFilter, textStyleDefaultMenu1, textStyleTitleMenu1 } from "../index"
 export class SceneMenu extends SceneBase {
 
   private _textTitle = new PIXI.Text('PONG', textStyleTitleMenu1);
-  private _spaceText = new PIXI.Text('PRESS SPACE TO START', textStyleDefaultMenu1);
+  private _spaceText = new PIXI.Text('PRESS ENTER TO START', textStyleDefaultMenu1);
   private _interval = 0;
 
   //=======================================
@@ -48,7 +48,7 @@ export class SceneMenu extends SceneBase {
   }
 
   public onKeyDown(e: KeyboardEvent) {
-    if (e.code === 'Space') 
+    if (e.code === 'Enter') 
       this.root.loadScene(new SceneMenu2(this.root))
   }
 

@@ -50,7 +50,7 @@ export class SceneMenu2 extends SceneBase {
       this.root.vsPlayer = true;
       this._updateMenuColor(); 
     }
-    if (e.code === 'Space') {
+    if (e.code === 'Enter') {
       this.root.loadScene(new SceneMenuOption(this.root));
     }
   }

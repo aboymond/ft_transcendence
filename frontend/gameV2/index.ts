@@ -33,22 +33,27 @@ export const textStylePVBMenu2 = new PIXI.TextStyle({
 
 // Menu Option
 
-export const textStyleMenuOption = new PIXI.TextStyle({
+export const textStyleMenuOptionColor = new PIXI.TextStyle({
 
   fontSize: 20,
   fill: defaultColor
 });
-export const textStyleMenuOption1 = new PIXI.TextStyle({
+export const textStyleMenuOptionPad = new PIXI.TextStyle({
 
   fontSize: 20,
   fill: 'green'
 });
-export const textStyleMenuOption2 = new PIXI.TextStyle({
+export const textStyleMenuOptionLevel = new PIXI.TextStyle({
 
   fontSize: 20,
   fill: defaultColor
 });
-export const textStyleMenuOption3 = new PIXI.TextStyle({
+export const textStyleMenuOptionVictory = new PIXI.TextStyle({
+
+  fontSize: 20,
+  fill: defaultColor
+});
+export const textStyleMenuOptionPlay = new PIXI.TextStyle({
 
   fontSize: 20,
   fill: defaultColor

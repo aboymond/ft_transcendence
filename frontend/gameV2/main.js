@@ -7,6 +7,6 @@ import { SceneMenuOption } from "./scenes/SceneMenuOption";
 // launch game
 $(document).ready(function(){
     const pixiMan = new PixiManager(); 
-    pixiMan.loadScene(new SceneGameVsBot(pixiMan))
+    pixiMan.loadScene(new SceneMenuOption(pixiMan))
 
 });

@@ -116,7 +116,7 @@ function setupGame() {
 				playerScore++;
 				updateScoreText();
 			}
-			else if (ball.y > myPixi.view.height){
+			else if (ball.y > myPixi.view.height){ 
 				console.log("Computer win !");
 				ball.vel.x = 0;
 				ball.vel.y = 5;
