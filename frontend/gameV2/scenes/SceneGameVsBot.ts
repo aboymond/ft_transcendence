@@ -1,7 +1,7 @@
 import { defaultColor, glowFilter } from "..";
-
 import { SceneBase } from "./SceneBase"
 import { SceneMenu } from "./SceneMenu";
+import { SceneWinOrLoose } from "./SceneWinOrLoose";
 import * as PIXI from 'pixi.js';
 import { gsap } from 'gsap';
 
@@ -81,6 +81,14 @@ export class SceneGameVsBot extends SceneBase {
 			}
 		}
 		this._updatePadPosition();
+		if (this._data.playerAScore === this.root.amountVictory) {
+			this.root.playerAWin = true;
+			this.root.loadScene(new SceneWinOrLoose(this.root));
+		}
+		else if (this._data.playerBScore === this.root.amountVictory) {
+			this.root.playerAWin = false;
+			this.root.loadScene(new SceneWinOrLoose(this.root));
+		}
 	}
 
 	public onFinish() {

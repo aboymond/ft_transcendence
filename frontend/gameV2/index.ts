@@ -64,6 +64,13 @@ export const textStyleMenuOptionError = new PIXI.TextStyle({
   fill: defaultColor
 });
 
+export const textStyleWinOrLoose = new PIXI.TextStyle({
+
+  fontSize: 20,
+  fontFamily: 'Pixelmania',
+  fill: defaultColor
+});
+
 
 // Effects
 

@@ -1,6 +1,5 @@
 import * as PIXI from 'pixi.js';
 import { SceneBase } from "./SceneBase";
-import { SceneGame } from "./SceneGame";
 import { SceneMenuOption } from "./SceneMenuOption";
 import { glowFilter, defaultColor, textStylePVPMenu2, textStylePVBMenu2} from "..";
 

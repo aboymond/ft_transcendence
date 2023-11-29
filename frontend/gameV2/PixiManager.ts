@@ -14,6 +14,7 @@ export class PixiManager {
   public vsPlayer = false;
   public amountVictory = 5;
   public botLvl = 0.05;
+  public playerAWin = true;
   
   private _currentScene?: SceneBase = undefined
   private _app: PIXI.Application
