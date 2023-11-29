@@ -9,11 +9,7 @@ ENV POETRY_VERSION 1.7
 # Set work directory
 WORKDIR /app
 
-# Install Poetry
-RUN pip install --no-cache-dir "poetry==$POETRY_VERSION"
-
-#Install oauth toolkit
-RUN pip install django-oauth-toolkit djangorestframework
+RUN pip install -r requirements.txt
 
 # Copy project
 COPY pyproject.toml poetry.lock* /app/

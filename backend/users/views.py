@@ -10,7 +10,13 @@ from .serializers import UserSerializer
 from .serializers import FriendshipSerializer
 from .models import CustomUser, GameHistory, Friendship
 from .serializers import GameHistorySerializer
+from .intra import ic
 from django.http import HttpRequest
+from rest_framework.views import APIView
+
+import requests
+import json
+
 
 User = get_user_model()
 
@@ -34,11 +40,33 @@ class LoginView(generics.GenericAPIView):
             return Response({'error': 'Invalid Credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
 class AuthView(generics.GenericAPIView):
-	request = HttpRequest()
-	request.method = 'GET'
-	request.path = 'https://api.intra.42.fr/oauth/authorize?'
-	request.GET['name'] = 'jhon'
-	request.GET['age'] = 26
+
+	def authorize():
+		response =  ic.get('https://api.intra.42.fr/oauth/authorize?')
+		print(response)
+
+class CallBackView(APIView):
+
+	def get(self, request, *args, **kwargs):
+		print(f'callback data : {request.GET.get('code')}')
+		response = requests.post("https://api.intra.42.fr/oauth/token",
+		data={"grant_type": "authorization_code",
+		"client_id": "u-s4t2ud-6c18a58bc5b403ff20bfaefb68fbe8ac9fb4f0627a02ad39abaf9b40a8260789",
+		"client_secret": "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",
+		"code": {request.GET.get('code')},
+		"redirect_uri": "http://localhost:8000/api/users/auth/callback"
+		})
+		data = response.json()
+		response = requests.get('https://api.intra.42.fr/v2/me', headers={'Authorization': f'Bearer {data['access_token']}'})
+		print(response.content)
+		print(json.dumps(response.json(), indent=4))
+		return Response()
+
+class CallBackCodeView(APIView):
+
+	def get(self, request, *args, **kwargs):
+		print(f'access token : {request.GET.get('code')}')
+
 
 class LogoutView(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
