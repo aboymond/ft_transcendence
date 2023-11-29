@@ -12,6 +12,8 @@ from .serializers import FriendshipSerializer
 from .models import GameHistory, Friendship
 from .serializers import GameHistorySerializer
 from .serializers import AvatarSerializer
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 
 User = get_user_model()
 
@@ -117,6 +119,17 @@ class CreateFriendRequestView(generics.CreateAPIView):
                 "This user has already sent you a friend request."
             )
         serializer.save(requester=self.request.user, receiver=receiver, status="sent")
+
+        # Send WebSocket message
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            "friend_requests_%s" % receiver.pk,
+            {
+                "type": "friend_request",
+                "message": "You have a new friend request from %s"
+                % self.request.user.username,
+            },
+        )
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)

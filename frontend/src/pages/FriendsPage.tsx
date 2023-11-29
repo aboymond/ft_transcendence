@@ -11,6 +11,30 @@ const FriendsPage: React.FC = () => {
 	const [friendRequests, setFriendRequests] = useState<FriendRequest[]>([]);
 	const auth = useAuth();
 
+	const { user } = useAuth();
+
+	useEffect(() => {
+		const socket = new WebSocket(
+			'ws://localhost:8000/ws/friend_requests/' + user?.id + '/',
+		);
+
+		socket.onmessage = function (e) {
+			const data = JSON.parse(e.data);
+			console.log('Message:', data.message);
+
+			// Update friend request list
+			apiService.getFriendRequests().then(setFriendRequests);
+		};
+
+		socket.onclose = function () {
+			console.error('friend_requests socket closed unexpectedly');
+		};
+
+		return () => {
+			socket.close();
+		};
+	}, [user?.id]);
+
 	useEffect(() => {
 		const fetchFriends = async () => {
 			if (auth.isAuthenticated && auth.token) {
