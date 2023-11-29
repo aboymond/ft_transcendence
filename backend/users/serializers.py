@@ -4,6 +4,8 @@ from rest_framework.validators import UniqueValidator
 from rest_framework.exceptions import ValidationError
 from .models import GameHistory
 from .models import Friendship
+from django.db.models import Q
+from django.contrib.auth.models import AnonymousUser
 
 User = get_user_model()
 
@@ -19,6 +21,7 @@ class UserSerializer(serializers.ModelSerializer):
     username = serializers.CharField(
         validators=[UniqueValidator(queryset=User.objects.all())]
     )
+    friendship_id = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -34,6 +37,7 @@ class UserSerializer(serializers.ModelSerializer):
             "tournament_wins",
             "status",
             "match_history",
+            "friendship_id",
         )
         extra_kwargs = {
             "password": {"write_only": True},
@@ -74,6 +78,17 @@ class UserSerializer(serializers.ModelSerializer):
             raise ValidationError("User must have a current session to be online.")
         return data
 
+    def get_friendship_id(self, obj):
+        request = self.context.get("request")
+        if request and request.user and not isinstance(request.user, AnonymousUser):
+            friendship = Friendship.objects.filter(
+                Q(requester=request.user, receiver=obj)
+                | Q(requester=obj, receiver=request.user),
+                status="accepted",
+            ).first()
+            return friendship.id if friendship else None
+        return None
+
 
 class FriendshipSerializer(serializers.ModelSerializer):
     requester = UserSerializer(read_only=True)
@@ -85,14 +100,8 @@ class FriendshipSerializer(serializers.ModelSerializer):
         read_only_fields = ["requester"]
 
     def to_internal_value(self, data):
-        # Convert the receiver username to a User instance
-        receiver_username = data.get("receiver")
-        receiver = User.objects.get(username=receiver_username)
         return {
-            "requester": data.get("requester"),
-            "receiver": receiver,
             "status": data.get("status"),
-            "created_at": data.get("created_at"),
         }
 
 

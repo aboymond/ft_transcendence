@@ -96,35 +96,29 @@ class GameHistoryRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView
 
 
 class CreateFriendRequestView(generics.CreateAPIView):
-    print("CreateFriendRequestView called")  # Add logging
     queryset = Friendship.objects.all()
     serializer_class = FriendshipSerializer
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
         receiver_username = self.request.data.get("receiver")
-        print(f"Receiver username: {receiver_username}")  # Add logging
         try:
             receiver = User.objects.get(username=receiver_username)
         except User.DoesNotExist:
-            print("The specified user does not exist.")  # Add logging
             raise serializers.ValidationError("The specified user does not exist.")
         if self.request.user == receiver:
-            print("You cannot send a friend request to yourself.")  # Add logging
             raise serializers.ValidationError(
                 "You cannot send a friend request to yourself."
             )
         if Friendship.objects.filter(
             requester=receiver, receiver=self.request.user
         ).exists():
-            print("This user has already sent you a friend request.")  # Add logging
             raise serializers.ValidationError(
                 "This user has already sent you a friend request."
             )
         serializer.save(requester=self.request.user, receiver=receiver, status="sent")
 
     def post(self, request, *args, **kwargs):
-        print("Post method called")  # Add logging
         serializer = self.get_serializer(data=request.data)
         if not serializer.is_valid():
             print(serializer.errors)  # Print out the serializer errors
@@ -138,10 +132,11 @@ class AcceptFriendRequestView(generics.UpdateAPIView):
     queryset = Friendship.objects.all()
     serializer_class = FriendshipSerializer
     permission_classes = [IsAuthenticated]
+    lookup_url_kwarg = "requestId"
 
     def perform_update(self, serializer):
         friendship = serializer.instance
-        if friendship.receiver == self.request.user and friendship.status == "sent":
+        if friendship.status == "sent":
             serializer.save(status="accepted")
         else:
             return Response(
@@ -190,7 +185,7 @@ class RejectCancelFriendRequestView(generics.DestroyAPIView):
 
 
 class RemoveFriendView(generics.DestroyAPIView):
-    queryset = Friendship.objects.filter(status="accepted")
+    queryset = Friendship.objects.all()
     permission_classes = [IsAuthenticated]
 
     def perform_destroy(self, instance):

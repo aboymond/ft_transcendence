@@ -2,10 +2,10 @@ import { User } from '../types';
 
 interface FriendListProps {
 	friends: User[];
+	onRemove: (friendId: number) => void;
 }
 
-const FriendList = ({ friends }: FriendListProps) => {
-	console.log(friends);
+const FriendList = ({ friends, onRemove }: FriendListProps) => {
 	return (
 		<div>
 			<h2>Friends</h2>
@@ -13,6 +13,13 @@ const FriendList = ({ friends }: FriendListProps) => {
 				{friends.map((friend) => (
 					<li key={friend.id}>
 						{friend.username ? friend.username : 'Unknown User'}
+						<button
+							onClick={() =>
+								friend.friendship_id && onRemove(friend.friendship_id)
+							}
+						>
+							Remove
+						</button>
 					</li>
 				))}
 			</ul>

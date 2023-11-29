@@ -4,10 +4,10 @@ import apiService from '../services/apiService';
 import FriendList from '../components/FriendsList';
 import AddFriend from '../components/AddFriend';
 import FriendRequests from '../components/FriendRequests';
-import { Friend, FriendRequest } from '../types';
+import { User, FriendRequest } from '../types';
 
 const FriendsPage: React.FC = () => {
-	const [friends, setFriends] = useState<Friend[]>([]);
+	const [friends, setFriends] = useState<User[]>([]);
 	const [friendRequests, setFriendRequests] = useState<FriendRequest[]>([]);
 	const auth = useAuth();
 
@@ -29,10 +29,11 @@ const FriendsPage: React.FC = () => {
 
 	const handleAccept = async (requestId: number) => {
 		try {
-			await apiService.acceptFriendRequest(requestId);
+			const acceptedRequest = await apiService.acceptFriendRequest(requestId);
 			setFriendRequests(
 				friendRequests.filter((request) => request.id !== requestId),
 			);
+			setFriends([...friends, acceptedRequest.receiver]);
 		} catch (error) {
 			console.error('Error accepting request:', error);
 		}
@@ -49,11 +50,22 @@ const FriendsPage: React.FC = () => {
 		}
 	};
 
+	const handleRemove = async (friendshipId: number) => {
+		try {
+			await apiService.removeFriend(friendshipId);
+			setFriends(
+				friends.filter((friend) => friend.friendship_id !== friendshipId),
+			);
+		} catch (error) {
+			console.error('Error removing friend:', error);
+		}
+	};
+
 	return (
 		<div>
 			<h1>My Friends</h1>
 			<AddFriend />
-			<FriendList friends={friends} />
+			<FriendList friends={friends} onRemove={handleRemove} />
 			<FriendRequests
 				requests={friendRequests}
 				onAccept={handleAccept}

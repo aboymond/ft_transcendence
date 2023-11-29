@@ -44,15 +44,15 @@ urlpatterns = [
         name="list-friend-requests",
     ),
     path(
-        "friends/accept/",
+        "friends/request-accept/<int:requestId>/",
         AcceptFriendRequestView.as_view(),
         name="accept-friend-request",
     ),
-    path("friends/list/", ListFriendsView.as_view(), name="list-friends"),
     path(
-        "friends/reject-cancel/<int:pk>/",
+        "friends/request-reject-cancel/<int:pk>/",
         RejectCancelFriendRequestView.as_view(),
         name="reject-cancel-friend-request",
     ),
     path("friends/remove/<int:pk>/", RemoveFriendView.as_view(), name="remove-friend"),
+    path("friends/list/", ListFriendsView.as_view(), name="list-friends"),
 ]

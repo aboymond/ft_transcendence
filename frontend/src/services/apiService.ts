@@ -18,7 +18,8 @@ async function fetchAPI(endpoint: string, options = {}) {
 	if (!response.ok) {
 		throw new Error(`API call failed: ${response.statusText}`);
 	}
-	return response.json();
+	const text = await response.text();
+	return text ? JSON.parse(text) : {};
 }
 
 interface UserData {
@@ -90,12 +91,12 @@ export const apiService = {
 		});
 	},
 	acceptFriendRequest: async (requestId: number) => {
-		return fetchAPI(`users/friends/accept/${requestId}/`, {
+		return fetchAPI(`users/friends/request-accept/${requestId}/`, {
 			method: 'PATCH',
 		});
 	},
 	rejectFriendRequest: async (requestId: number) => {
-		return fetchAPI(`users/friends/reject/${requestId}/`, {
+		return fetchAPI(`users/friends/request-reject-cancel/${requestId}/`, {
 			method: 'DELETE',
 		});
 	},

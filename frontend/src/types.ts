@@ -8,6 +8,7 @@ export interface User {
 	tournament_wins: number;
 	status: 'online' | 'offline' | 'in-game' | 'queueing';
 	avatar?: string;
+	friendship_id?: number;
 }
 
 export interface FriendRequest {
