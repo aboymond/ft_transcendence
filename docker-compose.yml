@@ -68,6 +68,15 @@ services:
             - db
         # restart: unless-stopped
 
+    redis:
+        image: redis:latest
+        container_name: redis-container
+        ports:
+            - "6379:6379"
+        networks:
+            - my-network
+        # restart: unless-stopped
+
 volumes:
     backend_static:
     frontend_node_modules:

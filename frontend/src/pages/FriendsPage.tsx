@@ -18,16 +18,26 @@ const FriendsPage: React.FC = () => {
 			'ws://localhost:8000/ws/friend_requests/' + user?.id + '/',
 		);
 
-		socket.onmessage = function (e) {
-			const data = JSON.parse(e.data);
-			console.log('Message:', data.message);
+		socket.onopen = function (e) {
+			console.log('Connection to server opened');
+		};
 
-			// Update friend request list
-			apiService.getFriendRequests().then(setFriendRequests);
+		socket.onmessage = function (e) {
+			if (socket.readyState === WebSocket.OPEN) {
+				const data = JSON.parse(e.data);
+				console.log('Message:', data.message);
+
+				// Update friend request list
+				apiService.getFriendRequests().then(setFriendRequests);
+			}
 		};
 
 		socket.onclose = function () {
 			console.error('friend_requests socket closed unexpectedly');
+		};
+
+		socket.onerror = function (error) {
+			console.error('WebSocket error: ', error);
 		};
 
 		return () => {
