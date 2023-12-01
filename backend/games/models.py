@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from users.models import GameHistory
 
 
 class Game(models.Model):
@@ -40,6 +41,8 @@ class Game(models.Model):
         null=True,
         blank=True,
     )
+    player1_score = models.IntegerField(default=0)
+    player2_score = models.IntegerField(default=0)
 
     @property
     def is_full(self):
@@ -59,7 +62,7 @@ class Game(models.Model):
             game = None
         return game
 
-    def end_game(self, winner):
+    def end_game(self, winner, player1_score, player2_score):
         self.winner = winner
         self.loser = self.player1 if self.player2 == winner else self.player2
         self.status = "completed"
@@ -70,6 +73,11 @@ class Game(models.Model):
 
         self.loser.losses += 1
         self.loser.save()
+
+        game_history = GameHistory.objects.create(
+            winner=winner, player1_score=player1_score, player2_score=player2_score
+        )
+        game_history.players.add(self.player1, self.player2)
 
 
 class MatchmakingQueue(models.Model):

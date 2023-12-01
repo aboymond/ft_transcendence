@@ -28,6 +28,6 @@ class GameHistoryAdmin(admin.ModelAdmin):
 
 @admin.register(Friendship)
 class FriendshipAdmin(admin.ModelAdmin):
-    list_display = ("requester", "receiver", "status", "created_at")
+    list_display = ("id", "requester", "receiver", "status", "created_at")
     search_fields = ("requester__username", "receiver__username")
     list_filter = ("status",)

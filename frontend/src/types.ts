@@ -5,20 +5,17 @@ export interface User {
 	bio: string;
 	wins: number;
 	losses: number;
-	// Include any other fields that your profile might have
-}
-
-export interface Friend {
-	id: number;
-	user: User;
+	tournament_wins: number;
 	status: 'online' | 'offline' | 'in-game' | 'queueing';
+	avatar?: string;
+	friendship_id?: number;
 }
 
 export interface FriendRequest {
 	id: number;
 	requester: User;
 	receiver: User;
-	status: 'sent' | 'accepted' | 'rejected';
+	status: 'sent' | 'accepted';
 	created_at: string;
 }
 

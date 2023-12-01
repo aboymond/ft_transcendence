@@ -18,7 +18,7 @@ services:
             - media_volume:/app/media
         depends_on:
             - db
-        restart: unless-stopped
+        # restart: unless-stopped
 
     frontend:
         build:
@@ -35,7 +35,7 @@ services:
         volumes:
             - ./frontend:/usr/src/app
             - frontend_node_modules:/usr/src/app/node_modules
-        restart: unless-stopped
+        # restart: unless-stopped
 
     db:
         image: postgres:latest
@@ -50,7 +50,7 @@ services:
             - my-network
         volumes:
             - db-data:/var/lib/postgresql/data
-        restart: unless-stopped
+        # restart: unless-stopped
 
     pgadmin:
         image: dpage/pgadmin4
@@ -66,7 +66,16 @@ services:
             - pgadmin_data:/var/lib/pgadmin
         depends_on:
             - db
-        restart: unless-stopped
+        # restart: unless-stopped
+
+    redis:
+        image: redis:latest
+        container_name: redis-container
+        ports:
+            - "6379:6379"
+        networks:
+            - my-network
+        # restart: unless-stopped
 
 volumes:
     backend_static:

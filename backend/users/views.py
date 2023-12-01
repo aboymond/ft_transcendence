@@ -1,6 +1,7 @@
 from django.contrib.auth import authenticate, logout
 from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied
+from django.db.models import Q
 from rest_framework import generics, permissions, status, serializers
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -11,6 +12,8 @@ from .serializers import FriendshipSerializer
 from .models import GameHistory, Friendship
 from .serializers import GameHistorySerializer
 from .serializers import AvatarSerializer
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 
 User = get_user_model()
 
@@ -84,12 +87,14 @@ class CurrentUserProfileView(generics.RetrieveAPIView):
         return self.request.user
 
 
-class GameHistoryListView(generics.ListAPIView):
+class GameHistoryListCreateView(generics.ListCreateAPIView):
+    queryset = GameHistory.objects.all()
     serializer_class = GameHistorySerializer
-    permission_classes = [IsAuthenticated]
 
-    def get_queryset(self):
-        return GameHistory.objects.filter(players=self.request.user)
+
+class GameHistoryRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = GameHistory.objects.all()
+    serializer_class = GameHistorySerializer
 
 
 class CreateFriendRequestView(generics.CreateAPIView):
@@ -113,9 +118,23 @@ class CreateFriendRequestView(generics.CreateAPIView):
             raise serializers.ValidationError(
                 "This user has already sent you a friend request."
             )
-        serializer.save(requester=self.request.user, receiver=receiver)
+        serializer.save(requester=self.request.user, receiver=receiver, status="sent")
+
+        # Send WebSocket message
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            "friend_requests_%s" % receiver.pk,
+            {
+                "type": "friend_request",
+                "message": "You have a new friend request from %s"
+                % self.request.user.username,
+            },
+        )
 
     def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if not serializer.is_valid():
+            print(serializer.errors)  # Print out the serializer errors
         try:
             return super().post(request, *args, **kwargs)
         except serializers.ValidationError as e:
@@ -126,10 +145,11 @@ class AcceptFriendRequestView(generics.UpdateAPIView):
     queryset = Friendship.objects.all()
     serializer_class = FriendshipSerializer
     permission_classes = [IsAuthenticated]
+    lookup_url_kwarg = "requestId"
 
     def perform_update(self, serializer):
         friendship = serializer.instance
-        if friendship.receiver == self.request.user and friendship.status == "sent":
+        if friendship.status == "sent":
             serializer.save(status="accepted")
         else:
             return Response(
@@ -157,7 +177,10 @@ class ListFriendRequestsView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Friendship.objects.filter(receiver=self.request.user, status="requested")
+        return Friendship.objects.filter(
+            Q(requester=self.request.user) | Q(receiver=self.request.user),
+            status="sent",
+        )
 
 
 class RejectCancelFriendRequestView(generics.DestroyAPIView):
@@ -175,7 +198,7 @@ class RejectCancelFriendRequestView(generics.DestroyAPIView):
 
 
 class RemoveFriendView(generics.DestroyAPIView):
-    queryset = Friendship.objects.filter(status="accepted")
+    queryset = Friendship.objects.all()
     permission_classes = [IsAuthenticated]
 
     def perform_destroy(self, instance):

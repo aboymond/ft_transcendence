@@ -9,15 +9,16 @@ from .views import (
     LoginView,
     LogoutView,
     UserUpdateView,
-    GameHistoryListView,
+    CurrentUserProfileView,
+    GameHistoryListCreateView,
+    GameHistoryRetrieveUpdateDestroyView,
     CreateFriendRequestView,
     AcceptFriendRequestView,
     ListFriendsView,
+    ListFriendRequestsView,
     RejectCancelFriendRequestView,
     RemoveFriendView,
-    CurrentUserProfileView,
     AvatarUploadView,
-    ListFriendRequestsView,
 )
 
 urlpatterns = [
@@ -30,7 +31,8 @@ urlpatterns = [
     path("update/", UserUpdateView.as_view(), name="update"),
     path("avatar/upload/", AvatarUploadView.as_view(), name="avatar-upload"),
     path("profile/", CurrentUserProfileView.as_view(), name="current-user-profile"),
-    path("game-history/", GameHistoryListView.as_view(), name="game-history-list"),
+    path("game_histories/", GameHistoryListCreateView.as_view()),
+    path("game_histories/<int:pk>/", GameHistoryRetrieveUpdateDestroyView.as_view()),
     path(
         "friends/request/",
         CreateFriendRequestView.as_view(),
@@ -42,15 +44,15 @@ urlpatterns = [
         name="list-friend-requests",
     ),
     path(
-        "friends/accept/",
+        "friends/request-accept/<int:requestId>/",
         AcceptFriendRequestView.as_view(),
         name="accept-friend-request",
     ),
-    path("friends/list/", ListFriendsView.as_view(), name="list-friends"),
     path(
-        "friends/reject-cancel/<int:pk>/",
+        "friends/request-reject-cancel/<int:pk>/",
         RejectCancelFriendRequestView.as_view(),
         name="reject-cancel-friend-request",
     ),
     path("friends/remove/<int:pk>/", RemoveFriendView.as_view(), name="remove-friend"),
+    path("friends/list/", ListFriendsView.as_view(), name="list-friends"),
 ]

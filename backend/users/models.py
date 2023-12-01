@@ -1,7 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.conf import settings
-from django.core.paginator import Paginator
 
 
 class CustomUser(AbstractUser):
@@ -27,10 +26,7 @@ class CustomUser(AbstractUser):
 
     @property
     def match_history(self):
-        all_games = self.games_history_played.all().order_by("-played_at")  # type: ignore
-        paginator = Paginator(all_games, 10)  # Show 10 games per page
-        first_page = paginator.page(1)
-        return first_page.object_list
+        return self.games_history_played.all().order_by("-played_at")
 
     def __str__(self):
         return self.username
@@ -47,6 +43,8 @@ class GameHistory(models.Model):
         related_name="games_history_won",
     )
     played_at = models.DateTimeField(auto_now_add=True)
+    player1_score = models.IntegerField(default=0)
+    player2_score = models.IntegerField(default=0)
 
     def __str__(self):
         return f"Game on {self.played_at.strftime('%Y-%m-%d %H:%M')}"

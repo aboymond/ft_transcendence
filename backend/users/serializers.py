@@ -1,10 +1,11 @@
 from django.contrib.auth import get_user_model
-from django.shortcuts import get_object_or_404
 from rest_framework import serializers
-from .models import GameHistory
-from .models import Friendship
 from rest_framework.validators import UniqueValidator
 from rest_framework.exceptions import ValidationError
+from .models import GameHistory
+from .models import Friendship
+from django.db.models import Q
+from django.contrib.auth.models import AnonymousUser
 
 User = get_user_model()
 
@@ -12,7 +13,7 @@ User = get_user_model()
 class GameHistorySerializer(serializers.ModelSerializer):
     class Meta:
         model = GameHistory
-        fields = ["id", "players", "winner", "played_at"]
+        fields = "__all__"
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -20,6 +21,7 @@ class UserSerializer(serializers.ModelSerializer):
     username = serializers.CharField(
         validators=[UniqueValidator(queryset=User.objects.all())]
     )
+    friendship_id = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -35,6 +37,7 @@ class UserSerializer(serializers.ModelSerializer):
             "tournament_wins",
             "status",
             "match_history",
+            "friendship_id",
         )
         extra_kwargs = {
             "password": {"write_only": True},
@@ -75,6 +78,17 @@ class UserSerializer(serializers.ModelSerializer):
             raise ValidationError("User must have a current session to be online.")
         return data
 
+    def get_friendship_id(self, obj):
+        request = self.context.get("request")
+        if request and request.user and not isinstance(request.user, AnonymousUser):
+            friendship = Friendship.objects.filter(
+                Q(requester=request.user, receiver=obj)
+                | Q(requester=obj, receiver=request.user),
+                status="accepted",
+            ).first()
+            return friendship.id if friendship else None
+        return None
+
 
 class FriendshipSerializer(serializers.ModelSerializer):
     requester = UserSerializer(read_only=True)
@@ -85,12 +99,10 @@ class FriendshipSerializer(serializers.ModelSerializer):
         fields = ["id", "requester", "receiver", "status", "created_at"]
         read_only_fields = ["requester"]
 
-    def validate(self, data):
-        # Validate the receiver as a username instead of a primary key
-        receiver_username = data.get("receiver")
-        receiver = get_object_or_404(User, username=receiver_username)
-        data["receiver"] = receiver
-        return data
+    def to_internal_value(self, data):
+        return {
+            "status": data.get("status"),
+        }
 
 
 class AvatarSerializer(serializers.ModelSerializer):
