@@ -24,7 +24,7 @@ const Register: React.FC = () => {
 	};
 
 	return (
-		<div>
+		<div className={styles.container}>
 			<h1 className={styles.title}>Register</h1>
 			{error && <p style={{ color: 'red' }}>{error}</p>}
 			<form onSubmit={handleSubmit}>

@@ -1,5 +1,6 @@
 .title {
     font-size: 20px;
+    margin: 10px;
 }
 
 .inputField {
@@ -8,6 +9,7 @@
     /* border-width: 3px !important;  */
     /* box-shadow: 0 0 5px var(--primary-color) !important; */
     border-color: var(--accent-color) !important;
+    margin: 10px;
 }
 
 .inputField::placeholder {
@@ -21,4 +23,12 @@
     border-width: 3px;
     box-shadow: 0 0 5px var(--primary-color);
     border-color: var(--accent-color);
+    margin: 10px;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
