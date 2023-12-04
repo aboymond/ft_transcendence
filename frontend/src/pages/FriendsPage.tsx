@@ -32,8 +32,8 @@ const FriendsPage: React.FC = () => {
 			}
 		};
 
-		socket.onclose = function () {
-			console.error('friend_requests socket closed unexpectedly');
+		socket.onclose = function (event) {
+			console.error('friend_requests socket closed unexpectedly', event);
 		};
 
 		socket.onerror = function (error) {

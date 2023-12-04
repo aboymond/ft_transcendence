@@ -1,7 +1,6 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
-from rest_framework.exceptions import ValidationError
 from .models import GameHistory
 from .models import Friendship
 from django.db.models import Q
@@ -46,7 +45,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         display_name = validated_data.pop("display_name", None)
-        user = User.objects.create_user(
+        user = User.objects.create_user(  # type: ignore
             username=validated_data["username"],
             password=validated_data["password"],
             display_name=display_name,
@@ -68,15 +67,6 @@ class UserSerializer(serializers.ModelSerializer):
         instance.save()
 
         return instance
-
-    def validate(self, data):
-        if (
-            "status" in data
-            and data["status"] == "online"
-            and not self.session_set.exists()
-        ):
-            raise ValidationError("User must have a current session to be online.")
-        return data
 
     def get_friendship_id(self, obj):
         request = self.context.get("request")
