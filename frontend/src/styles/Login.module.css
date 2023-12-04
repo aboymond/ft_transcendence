@@ -1,0 +1,28 @@
+.inputField {
+    background-color: var(--background-color) !important;
+    /* border-style: solid !important; */
+    /* border-width: 3px !important;  */
+    /* box-shadow: 0 0 5px var(--primary-color) !important; */
+    border-color: var(--accent-color) !important;
+}
+
+.inputField::placeholder {
+    color: black;
+}
+
+.submitButton {
+    background-color: var(--primary-color) !important;
+    color: black;
+    border-style: solid;
+    border-width: 3px;
+    box-shadow: 0 0 5px var(--primary-color);
+    border-color: var(--accent-color);
+}
+
+.loginForm {
+    background-color: var(--background-color) !important;
+}
+
+.title {
+    font-size: 20px;
+}

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { apiService } from '../services/apiService';
 import { useNavigate } from 'react-router-dom';
+import styles from '../styles/Register.module.css';
 
 const Register: React.FC = () => {
 	const [username, setUsername] = useState('');
@@ -24,7 +25,7 @@ const Register: React.FC = () => {
 
 	return (
 		<div>
-			<h1>Register</h1>
+			<h1 className={styles.title}>Register</h1>
 			{error && <p style={{ color: 'red' }}>{error}</p>}
 			<form onSubmit={handleSubmit}>
 				<div>
@@ -33,6 +34,7 @@ const Register: React.FC = () => {
 						type="text"
 						value={username}
 						onChange={(e) => setUsername(e.target.value)}
+						className={styles.inputField}
 					/>
 				</div>
 				<div>
@@ -41,6 +43,7 @@ const Register: React.FC = () => {
 						type="password"
 						value={password}
 						onChange={(e) => setPassword(e.target.value)}
+						className={styles.inputField}
 					/>
 				</div>
 				<div>
@@ -49,9 +52,10 @@ const Register: React.FC = () => {
 						type="text"
 						value={displayName}
 						onChange={(e) => setDisplayName(e.target.value)}
+						className={styles.inputField}
 					/>
 				</div>
-				<button type="submit">Register</button>
+				<button type="submit" className={styles.submitButton}>Register</button>
 			</form>
 		</div>
 	);

@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiService } from '../services/apiService';
 import { useAuth } from '../hooks/useAuth';
+import styles from '../styles/Login.module.css';
 
 const Login: React.FC = () => {
 	const [username, setUsername] = useState('');
@@ -24,23 +25,25 @@ const Login: React.FC = () => {
 	};
 
 	return (
-		<form onSubmit={handleSubmit}>
-			<h1>Login</h1>
-			{error && <p style={{ color: 'red' }}>{error}</p>}
-			<input
-				type="text"
-				value={username}
-				onChange={(e) => setUsername(e.target.value)}
-				placeholder="Username"
-			/>
-			<input
-				type="password"
-				value={password}
-				onChange={(e) => setPassword(e.target.value)}
-				placeholder="Password"
-			/>
-			<button type="submit">Login</button>
-		</form>
+		<form onSubmit={handleSubmit} className={styles.loginForm}>
+    		<h1 className={styles.title}>Login</h1>
+   			{error && <p style={{ color: 'red' }}>{error}</p>}
+   		<input
+        	type="text"
+       		value={username}
+        	onChange={(e) => setUsername(e.target.value)}
+        	placeholder="Username"
+        	className={styles.inputField}
+    	/>
+    	<input
+       		type="password"
+        	value={password}
+        	onChange={(e) => setPassword(e.target.value)}
+        	placeholder="Password"
+        	className={styles.inputField}
+    	/>
+    	<button type="submit" className={styles.submitButton}>Login</button>
+	</form>
 	);
 };
 
