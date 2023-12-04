@@ -32,6 +32,7 @@ const FriendsPage: React.FC = () => {
 			};
 
 			socketRef.current.onmessage = function (e) {
+				console.log('Message received from server:', e.data);
 				if (socketRef.current?.readyState === WebSocket.OPEN) {
 					const data = JSON.parse(e.data);
 					console.log('Message:', data.message);
