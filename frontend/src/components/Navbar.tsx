@@ -1,43 +1,44 @@
 import React from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { Navbar, Nav, Container } from 'react-bootstrap';
+import styles from '../styles/NavBar.module.css';
 
-const Navbar: React.FC = () => {
-	const auth = useAuth();
-	const navigate = useNavigate();
+const NavBar: React.FC = () => {
+    const auth = useAuth();
+    const navigate = useNavigate();
+    const location = useLocation();
 
-	const handleLogout = () => {
-		auth.logout();
-		navigate('/');
-	};
+    const handleLogout = () => {
+        auth.logout();
+        navigate('/');
+    };
 
-	return (
-		<nav
-			style={{ display: 'flex', justifyContent: 'flex-end', padding: '10px' }}
-		>
-			{auth.isAuthenticated ? (
-				<>
-					<Link to="/" style={{ marginRight: '10px' }}>
-						Home
-					</Link>
-					<Link to="/profile" style={{ marginRight: '10px' }}>
-						Profile
-					</Link>
-					<Link to="/friends" style={{ marginRight: '10px' }}>
-						Friends
-					</Link>
-					<button onClick={handleLogout}>Logout</button>
-				</>
-			) : (
-				<>
-					<Link to="/register" style={{ marginRight: '10px' }}>
-						Register
-					</Link>
-					<Link to="/login">Login</Link>
-				</>
-			)}
-		</nav>
+    return (
+        <Navbar className="custom-navbar" expand="lg">
+			<Container>
+				{location.pathname !== '/' && <Navbar.Brand href="#">Retroscendence</Navbar.Brand>}
+				<Navbar.Toggle aria-controls="basic-navbar-nav" className={styles.navToggle} />
+				<Navbar.Collapse id="basic-navbar-nav">
+					<Nav className={`ml-auto ${styles.nav}`}>
+						<Nav.Link className={styles.navLink} href="/">Home</Nav.Link>
+						{auth.isAuthenticated ? (
+							<>
+								<Nav.Link className={styles.navLink} href="/profile">Profile</Nav.Link>
+								<Nav.Link className={styles.navLink} href="/friends">Friends</Nav.Link>
+								<Nav.Link className={styles.navLink} onClick={handleLogout}>Logout</Nav.Link>
+							</>
+						) : (
+							<>
+								<Nav.Link className={styles.navLink} href="/register">Register</Nav.Link>
+								<Nav.Link className={styles.navLink} href="/login">Login</Nav.Link>
+							</>
+						)}
+					</Nav>
+				</Navbar.Collapse>
+			</Container>
+		</Navbar>
 	);
 };
 
-export default Navbar;
+export default NavBar;

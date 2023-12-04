@@ -12,11 +12,6 @@ const Home: React.FC = () => {
 	return (
 		<div id="page">
 		<Navbar />
-      <div id="image-container">
-        <img src="./img/light.png" alt="Light" id="light" />
-        <img src="./img/scanlines.png" alt="Scanlines" id="scan" />
-        <img src="./img/bezel.png" alt="Bezel" id="bezel" />
-      </div>
       <Container fluid>
         <Row className="justify-content-md-center">
           <Col md="auto">
@@ -32,7 +27,7 @@ const Home: React.FC = () => {
             </div>
           </Col>
         </Row>
-        <Row>
+        {/* <Row>
           <Col xs={12} md={3} lg={2}>
             <Menu />
           </Col>
@@ -42,7 +37,7 @@ const Home: React.FC = () => {
           <Col xs={12} md={3} lg={2}>
             <History />
           </Col>
-        </Row>
+        </Row> */}
         <Footer />
       </Container>
     </div>

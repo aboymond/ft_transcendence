@@ -1,0 +1,19 @@
+.logCard {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--background-color) !important;
+    border-style: solid !important;
+    border-width: 3px !important;
+    box-shadow: 0 0 5px var(--primary-color) !important;
+    border-color: var(--accent-color) !important;
+}
+
+.button {
+    margin: 10px;
+    background-color: var(--primary-color) !important;
+    color: var(--background-color) !important;
+    font-family: var(--font-family) !important;
+    border-color: var(--accent-color) !important;
+    white-space: nowrap;
+}

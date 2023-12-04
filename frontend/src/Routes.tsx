@@ -6,13 +6,15 @@ import Login from './pages/Login';
 import Profile from './pages/Profile';
 import FriendsPage from './pages/FriendsPage';
 import ProfileUpdate from './pages/ProfileUpdate';
+import LogPage from './pages/LogPage';
 
 const AppRoutes: React.FC = () => {
 	const { isAuthenticated } = useAuth();
 
 	return (
 		<Routes>
-			<Route path="/" element={<Home />} />
+			<Route path="/" element={<LogPage />} />
+			<Route path="/home" element={<Home />} />
 			<Route path="/register" element={<Register />} />
 			<Route
 				path="/login"

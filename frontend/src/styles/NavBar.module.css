@@ -1,0 +1,13 @@
+.navLink {
+    color: var(--primary-color) !important;
+    font-family: var(--font-family) !important;
+}
+
+.nav {
+    justify-content: flex-end;
+}
+
+.navToggle {
+    border-color: var(--primary-color) !important;
+    background-color: var(--primary-color) !important;
+}
