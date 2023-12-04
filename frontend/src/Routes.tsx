@@ -6,9 +6,10 @@ import Login from './pages/Login';
 import Profile from './pages/Profile';
 import FriendsPage from './pages/FriendsPage';
 import ProfileUpdate from './pages/ProfileUpdate';
+import LoadingScreen from './components/LoadingScreen';
 
 const AppRoutes: React.FC = () => {
-	const { isAuthenticated } = useAuth();
+	const { isAuthenticated, loading } = useAuth();
 
 	return (
 		<Routes>
@@ -30,7 +31,13 @@ const AppRoutes: React.FC = () => {
 			<Route
 				path="/friends"
 				element={
-					isAuthenticated ? <FriendsPage /> : <Navigate to="/login" replace />
+					loading ? (
+						<LoadingScreen />
+					) : isAuthenticated ? (
+						<FriendsPage />
+					) : (
+						<Navigate to="/login" replace />
+					)
 				}
 			/>
 		</Routes>

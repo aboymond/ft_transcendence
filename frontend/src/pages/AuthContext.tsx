@@ -1,13 +1,20 @@
 import { createContext, useState, useEffect, ReactNode } from 'react';
 import apiService from '../services/apiService';
 import { User } from '../types';
+import { jwtDecode } from 'jwt-decode';
 
 interface AuthContextType {
 	token: string | null;
 	isAuthenticated: boolean;
 	user: User | null;
+	loading: boolean;
 	login: (token: string, user: User) => void;
 	logout: () => void;
+}
+
+interface DecodedToken {
+	[key: string]: unknown;
+	exp: number;
 }
 
 export const AuthContext = createContext<AuthContextType | null>(null);
@@ -16,21 +23,28 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 	const [token, setToken] = useState<string | null>(null);
 	const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 	const [user, setUser] = useState<User | null>(null);
+	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
+		setLoading(true);
 		const storedToken = localStorage.getItem('token');
 		if (storedToken) {
-			setToken(storedToken);
-			apiService.verifyToken(storedToken).then((isValid) => {
-				setIsAuthenticated(isValid);
-				if (isValid) {
-					apiService.getUserProfile().then((userData) => setUser(userData));
-				} else {
-					setUser(null);
-					setToken(null);
-				}
-			});
+			const decodedToken: DecodedToken = jwtDecode(storedToken);
+			const currentTime = Date.now() / 1000;
+
+			if (decodedToken.exp > currentTime) {
+				setToken(storedToken);
+				setIsAuthenticated(true);
+				apiService.getUserProfile().then((userData) => setUser(userData));
+			} else {
+				// Token is expired
+				localStorage.removeItem('token');
+				setUser(null);
+				setToken(null);
+				setIsAuthenticated(false);
+			}
 		}
+		setLoading(false);
 	}, []);
 
 	const login = (newToken: string, newUser: User) => {
@@ -51,6 +65,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 		token,
 		isAuthenticated,
 		user,
+		loading,
 		login,
 		logout,
 	};
