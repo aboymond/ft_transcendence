@@ -175,3 +175,17 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:3001",
     # Add any other origins your frontend is using
 ]
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+}
