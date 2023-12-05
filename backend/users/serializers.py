@@ -76,7 +76,7 @@ class UserSerializer(serializers.ModelSerializer):
                 | Q(requester=obj, receiver=request.user),
                 status="accepted",
             ).first()
-            return friendship.id if friendship else None
+            return friendship.id if friendship else None  # type: ignore
         return None
 
 
