@@ -6,11 +6,8 @@ import Login from './pages/Login';
 import Profile from './pages/Profile';
 import FriendsPage from './pages/FriendsPage';
 import ProfileUpdate from './pages/ProfileUpdate';
-<<<<<<< HEAD
 import LoadingScreen from './components/LoadingScreen';
-=======
 import LogPage from './pages/LogPage';
->>>>>>> origin/integration_front
 
 const AppRoutes: React.FC = () => {
 	const { isAuthenticated, loading } = useAuth();
