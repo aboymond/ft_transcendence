@@ -31,6 +31,12 @@ export const textStylePVBMenu2 = new PIXI.TextStyle({
   fontSize: $('#game_window').width() / 20
 });
 
+export const textStyleTournamentMenu = new PIXI.TextStyle({
+  fontFamily: 'Pixelmania',
+  // fill: defaultColor,
+  fontSize: $('#game_window').width() / 20
+});
+
 // Menu Option
 
 export const textStyleMenuOptionColor = new PIXI.TextStyle({

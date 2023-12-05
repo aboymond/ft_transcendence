@@ -116,22 +116,18 @@ export class SceneMenuOption extends SceneBase {
 	public onKeyDown(e: KeyboardEvent) {
 
 		if (e.code === 'ArrowUp') {
-			console.log('UP');
 			if (!errorLock)
 				this._pressUp();
 		}
 		if (e.code === 'ArrowDown') {
-			console.log('DOWN');
 			if (!errorLock)
 				this._pressDown();
 		}
 		if (e.code === 'ArrowLeft') {
-			console.log('LEFT');
 			if (!errorLock)
 				this._pressLeft();
 		}
 		if (e.code === 'ArrowRight') {
-			console.log('RIGHT');
 			if (!errorLock)
 				this._pressRight();
 		}

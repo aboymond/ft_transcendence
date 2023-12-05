@@ -78,4 +78,5 @@ export class PixiManager {
   public get height () {
     return $('#game_window').height()
   }
+
 } 
