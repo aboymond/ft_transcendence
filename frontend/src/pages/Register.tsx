@@ -2,8 +2,14 @@ import React, { useState } from 'react';
 import { apiService } from '../services/apiService';
 import { useNavigate } from 'react-router-dom';
 import styles from '../styles/Register.module.css';
+import { Button } from 'react-bootstrap';
 
-const Register: React.FC = () => {
+interface RegisterProps {
+    onClose: () => void;
+}
+
+const Register: React.FC<RegisterProps> = ({ onClose }) => {
+
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
 	const [displayName, setDisplayName] = useState('');
@@ -25,6 +31,19 @@ const Register: React.FC = () => {
 
 	return (
 		<div className={styles.container}>
+			<Button 
+                variant="light" 
+                onClick={onClose}
+                style={{
+                    position: 'absolute',
+                    top: 10,
+                    right: 10,
+                    backgroundColor: 'var(--primary-color)',
+					borderColor: 'var(--accent-color)'
+                }}
+            >
+                &times;
+            </Button>
 			<h1 className={styles.title}>Register</h1>
 			{error && <p style={{ color: 'red' }}>{error}</p>}
 			<form onSubmit={handleSubmit}>

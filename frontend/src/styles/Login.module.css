@@ -22,6 +22,7 @@
 }
 
 .loginForm {
+    /* position: relative; */
     background-color: var(--background-color) !important;
     margin: 10px;
 }
@@ -30,3 +31,10 @@
     font-size: 20px;
     margin: 10px;
 }
+
+/* .close-button {
+    position: absolute !important;
+    top: 0 !important; 
+    right: 0 !important;
+    background-color: var(--background-color) !important;
+} */

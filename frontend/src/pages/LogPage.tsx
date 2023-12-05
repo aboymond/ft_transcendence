@@ -3,10 +3,14 @@ import { Container, Row, Col, Button, Card } from 'react-bootstrap';
 import Logo from '../components/Logo';
 import styles from '../styles/LogPage.module.css';
 import Login from './Login';
-import Register from './Register'; // Import the Register component
+import Register from './Register';
 
 const LogPage: React.FC = () => {
-    const [showComponent, setShowComponent] = useState(''); // Add a new state variable for the Register component
+    const [showComponent, setShowComponent] = useState('');
+
+    const handleClose = () => {
+        setShowComponent('');
+    };
 
     return (
         <Container fluid id="log-page">
@@ -21,8 +25,11 @@ const LogPage: React.FC = () => {
             <Row className="justify-content-md-center">
                 <Col xs={12} md={6}>
                     <Card className={styles.logCard}>
+                        {showComponent === '' && <Card.Header className={styles.header}>
+                            Welcome to our awesome project
+                        </Card.Header>}
                         <Card.Body>
-                            {showComponent === 'login' ? <Login /> : showComponent === 'register' ? <Register /> : (
+                            {showComponent === 'login' ? <Login onClose={handleClose} /> : showComponent === 'register' ? <Register onClose={handleClose} /> : (
                                 <>
                                     <Row>
                                         <Col>
@@ -42,6 +49,9 @@ const LogPage: React.FC = () => {
                                 </>
                             )}
                         </Card.Body>
+                        {showComponent === '' && <Card.Footer>
+                            Made with love by us
+                        </Card.Footer>}
                     </Card>
                 </Col>
             </Row>

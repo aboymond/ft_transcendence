@@ -17,3 +17,10 @@
     border-color: var(--accent-color) !important;
     white-space: nowrap;
 }
+
+.header{
+    margin: 10px;
+    
+    
+    white-space: nowrap;
+}
