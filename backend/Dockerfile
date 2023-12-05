@@ -9,8 +9,8 @@ ENV POETRY_VERSION 1.7
 # Set work directory
 WORKDIR /app
 
-# Install Poetry
-RUN pip install --no-cache-dir "poetry==$POETRY_VERSION"
+COPY requirements.txt .
+RUN pip install -r requirements.txt
 
 # Copy project
 COPY pyproject.toml poetry.lock* /app/
@@ -18,6 +18,7 @@ COPY pyproject.toml poetry.lock* /app/
 # Install dependencies
 RUN poetry config virtualenvs.create false \
 	&& poetry install --no-interaction --no-ansi
+RUN	pip install python-dotenv
 
 # Copy the rest of the code
 COPY . /app/

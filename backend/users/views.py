@@ -1,3 +1,5 @@
+import os
+import requests
 from django.contrib.auth import authenticate, logout
 from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied
@@ -7,15 +9,19 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import AuthenticationFailed
+from rest_framework.views import APIView
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+from dotenv import load_dotenv
 from .serializers import UserSerializer
 from .serializers import FriendshipSerializer
 from .models import GameHistory, Friendship
 from .serializers import GameHistorySerializer
 from .serializers import AvatarSerializer
-from channels.layers import get_channel_layer
-from asgiref.sync import async_to_sync
+from .intra import ic
 
 User = get_user_model()
+load_dotenv()
 
 
 class CreateUserView(generics.CreateAPIView):
@@ -53,6 +59,46 @@ class LoginView(generics.GenericAPIView):
             )
         else:
             raise AuthenticationFailed("Invalid Credentials")
+
+
+class AuthView(generics.GenericAPIView):
+    def authorize(self):
+        response = ic.get("https://api.intra.42.fr/oauth/authorize?")
+        print("AUTHORIZE : ", response)
+
+
+class CallBackView(APIView):
+    def get(self, request, *args, **kwargs):
+        response = requests.post(
+            "https://api.intra.42.fr/oauth/token",
+            data={
+                "grant_type": "authorization_code",
+                "client_id": os.getenv("CLIENT"),
+                "client_secret": os.getenv("SECRET"),
+                "code": {request.GET.get("code")},
+                "redirect_uri": "http://localhost:8000/api/users/auth/callback",
+            },
+        )
+        data = response.json()
+        response = requests.get(
+            "https://api.intra.42.fr/v2/me",
+            headers={"Authorization": f'Bearer {data['access_token']}'},
+        )
+        user = {}
+        user["id"] = response.json()["id"]
+        user["login"] = response.json()["login"]
+        user["email"] = response.json()["email"]
+        user["lastname"] = response.json()["last_name"]
+        user["firstname"] = response.json()["first_name"]
+        user["image"] = response.json()["image"]["versions"]["small"]
+        user["access_token"] = data["access_token"]
+        print(user)
+        return Response()
+
+
+class CallBackCodeView(APIView):
+    def get(self, request, *args, **kwargs):
+        print(f'access token : {request.GET.get('code')}')
 
 
 class LogoutView(generics.GenericAPIView):

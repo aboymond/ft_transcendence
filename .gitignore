@@ -1,4 +1,6 @@
 .DS_Store
 .vscode
 .cursorignore
+/backend/users/config.yml
+info.txt
 .env
