@@ -1,43 +1,25 @@
 import React from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
+// import { useNavigate} from 'react-router-dom';
+// import { useAuth } from '../hooks/useAuth';
+import { Navbar, Nav, Container } from 'react-bootstrap';
+import styles from '../styles/NavBar.module.css';
 
-const Navbar: React.FC = () => {
-	const auth = useAuth();
-	const navigate = useNavigate();
+const NavBar: React.FC = () => {
+    // const auth = useAuth();
+    // const navigate = useNavigate();
 
-	const handleLogout = () => {
-		auth.logout();
-		navigate('/');
-	};
+    // const handleLogout = () => {
+    //     auth.logout();
+    //     navigate('/');
+    // };
 
-	return (
-		<nav
-			style={{ display: 'flex', justifyContent: 'flex-end', padding: '10px' }}
-		>
-			{auth.isAuthenticated ? (
-				<>
-					<Link to="/" style={{ marginRight: '10px' }}>
-						Home
-					</Link>
-					<Link to="/profile" style={{ marginRight: '10px' }}>
-						Profile
-					</Link>
-					<Link to="/friends" style={{ marginRight: '10px' }}>
-						Friends
-					</Link>
-					<button onClick={handleLogout}>Logout</button>
-				</>
-			) : (
-				<>
-					<Link to="/register" style={{ marginRight: '10px' }}>
-						Register
-					</Link>
-					<Link to="/login">Login</Link>
-				</>
-			)}
-		</nav>
+    return (
+        <Navbar className={styles.title} expand="lg">
+			<Container>
+				<Navbar.Brand>Retroscendence</Navbar.Brand>
+			</Container>
+		</Navbar>
 	);
 };
 
-export default Navbar;
+export default NavBar;
