@@ -13,12 +13,15 @@ from .serializers import GameHistorySerializer
 from .intra import ic
 from django.http import HttpRequest
 from rest_framework.views import APIView
+from dotenv import load_dotenv
 
 import requests
+import os
 import json
 
 
 User = get_user_model()
+load_dotenv()
 
 class CreateUserView(generics.CreateAPIView):
     serializer_class = UserSerializer
@@ -43,7 +46,7 @@ class AuthView(generics.GenericAPIView):
 
 	def authorize():
 		response =  ic.get('https://api.intra.42.fr/oauth/authorize?')
-		print(response)
+		print("AUTHORIZE : ", response)
 
 class CallBackView(APIView):
 

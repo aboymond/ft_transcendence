@@ -23,7 +23,16 @@ class IntraAPIClient(object):
     verify_requests = False
 
     def __init__(self, progress_bar=False):
-        load_dotenv()
+        # base_dir = os.path.dirname(os.path.realpath(__file__))
+        env = load_dotenv()
+        # with open(base_dir + '/config.yml', 'r') as cfg_stream:
+        #     config = yaml.load(cfg_stream, Loader=yaml.BaseLoader)
+        self.client_id = os.getenv('CLIENT')
+        self.client_secret = os.getenv('SECRET')
+        self.token_url = os.getenv('URI')
+        self.api_url = os.getenv('ENDPOINT')
+        self.progress_bar = progress_bar
+        self.token = None
 
     def request_token(self):
         request_token_payload = {
