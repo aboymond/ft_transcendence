@@ -6,13 +6,16 @@ import Login from './pages/Login';
 import Profile from './pages/Profile';
 import FriendsPage from './pages/FriendsPage';
 import ProfileUpdate from './pages/ProfileUpdate';
+import LoadingScreen from './components/LoadingScreen';
+import LogPage from './pages/LogPage';
 
 const AppRoutes: React.FC = () => {
-	const { isAuthenticated } = useAuth();
+	const { isAuthenticated, loading } = useAuth();
 
 	return (
 		<Routes>
-			<Route path="/" element={<Home />} />
+			<Route path="/" element={<LogPage />} />
+			<Route path="/home" element={<Home />} />
 			<Route path="/register" element={<Register />} />
 			<Route
 				path="/login"
@@ -30,7 +33,13 @@ const AppRoutes: React.FC = () => {
 			<Route
 				path="/friends"
 				element={
-					isAuthenticated ? <FriendsPage /> : <Navigate to="/login" replace />
+					loading ? (
+						<LoadingScreen />
+					) : isAuthenticated ? (
+						<FriendsPage />
+					) : (
+						<Navigate to="/login" replace />
+					)
 				}
 			/>
 		</Routes>

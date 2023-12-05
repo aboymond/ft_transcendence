@@ -20,7 +20,7 @@ const AddFriend = () => {
 		}
 		try {
 			await apiService.sendFriendRequest(username);
-			alert('Friend request sent!');
+			console.log('Friend request sent!');
 		} catch (error: unknown) {
 			const apiError = error as ApiError;
 			const errorMessage = apiError.response?.data?.detail || apiError.message;

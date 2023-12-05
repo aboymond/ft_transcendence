@@ -26,7 +26,7 @@ class CustomUser(AbstractUser):
 
     @property
     def match_history(self):
-        return self.games_history_played.all().order_by("-played_at")
+        return GameHistory.objects.filter(players=self).order_by("-played_at")
 
     def __str__(self):
         return self.username

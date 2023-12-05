@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import apiService from '../services/apiService';
 import FriendList from '../components/FriendsList';
@@ -13,35 +13,50 @@ const FriendsPage: React.FC = () => {
 
 	const { user } = useAuth();
 
+	const socketRef = useRef<WebSocket | null>(null);
+
 	useEffect(() => {
-		const socket = new WebSocket(
-			'ws://localhost:8000/ws/friend_requests/' + user?.id + '/',
-		);
+		if (!user?.id) {
+			// If user ID is not loaded yet, don't open the WebSocket connection
+			return;
+		}
 
-		socket.onopen = function (e) {
-			console.log('Connection to server opened');
-		};
+		// Only open a new WebSocket connection if one isn't already open
+		if (!socketRef.current || socketRef.current.readyState !== WebSocket.OPEN) {
+			socketRef.current = new WebSocket(
+				'ws://localhost:8000/ws/friend_requests/' + user.id + '/',
+			);
 
-		socket.onmessage = function (e) {
-			if (socket.readyState === WebSocket.OPEN) {
-				const data = JSON.parse(e.data);
-				console.log('Message:', data.message);
+			socketRef.current.onopen = function (e) {
+				console.log('Connection to server opened');
+			};
 
-				// Update friend request list
-				apiService.getFriendRequests().then(setFriendRequests);
-			}
-		};
+			socketRef.current.onmessage = function (e) {
+				console.log('Message received from server:', e.data);
+				if (socketRef.current?.readyState === WebSocket.OPEN) {
+					const data = JSON.parse(e.data);
+					console.log('Message:', data.message);
 
-		socket.onclose = function () {
-			console.error('friend_requests socket closed unexpectedly');
-		};
+					// Update friend request list
+					apiService.getFriendRequests().then(setFriendRequests);
+				}
+			};
 
-		socket.onerror = function (error) {
-			console.error('WebSocket error: ', error);
-		};
+			socketRef.current.onclose = function (event) {
+				console.error('friend_requests socket closed unexpectedly', event);
+			};
 
+			socketRef.current.onerror = function (error) {
+				console.error('WebSocket error: ', error);
+				console.log('WebSocket readyState: ', socketRef.current?.readyState);
+			};
+		}
+
+		// Cleanup function to close the WebSocket connection when the component is unmounted
 		return () => {
-			socket.close();
+			if (socketRef.current) {
+				socketRef.current.close();
+			}
 		};
 	}, [user?.id]);
 

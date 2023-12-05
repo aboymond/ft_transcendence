@@ -1,10 +1,20 @@
 import React from 'react';
+import { Container, Row, Col } from 'react-bootstrap';
+import '../App.css';
+// import Logo from '../components/Logo';
+// import GameWindow from '../components/GameWindow';
+// import Menu from '../components/Menu';
+// import History from '../components/History';
+// import Footer from '../components/Footer';
+import Navbar from '../components/Navbar';
 
 const Home: React.FC = () => {
 	return (
-		<div className="text-center p-4">
-			<h1>RETROSCENDENCE</h1>
-		</div>
+		<div id="page">
+		<Navbar />
+      <Container fluid>
+      </Container>
+    </div>
 	);
 };
 

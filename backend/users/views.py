@@ -40,13 +40,13 @@ class LoginView(generics.GenericAPIView):
         password = request.data.get("password")
         user = authenticate(request, username=username, password=password)
         if user is not None:
-            user.status = "online"
+            user.status = "online"  # type: ignore
             user.save()
             refresh = RefreshToken.for_user(user)
             return Response(
                 {
                     "refresh": str(refresh),
-                    "access": str(refresh.access_token),
+                    "access": str(refresh.access_token),  # type: ignore
                     "user": UserSerializer(user).data,
                 },
                 status=status.HTTP_200_OK,
@@ -103,7 +103,7 @@ class CreateFriendRequestView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
-        receiver_username = self.request.data.get("receiver")
+        receiver_username = self.request.data.get("receiver")  # type: ignore
         try:
             receiver = User.objects.get(username=receiver_username)
         except User.DoesNotExist:
@@ -122,12 +122,12 @@ class CreateFriendRequestView(generics.CreateAPIView):
 
         # Send WebSocket message
         channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)(
+        async_to_sync(channel_layer.group_send)(  # type: ignore
             "friend_requests_%s" % receiver.pk,
             {
                 "type": "friend_request",
                 "message": "You have a new friend request from %s"
-                % self.request.user.username,
+                % self.request.user.username,  # type: ignore
             },
         )
 
