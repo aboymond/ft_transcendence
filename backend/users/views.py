@@ -51,18 +51,24 @@ class AuthView(generics.GenericAPIView):
 class CallBackView(APIView):
 
 	def get(self, request, *args, **kwargs):
-		print(f'callback data : {request.GET.get('code')}')
 		response = requests.post("https://api.intra.42.fr/oauth/token",
 		data={"grant_type": "authorization_code",
-		"client_id": "u-s4t2ud-6c18a58bc5b403ff20bfaefb68fbe8ac9fb4f0627a02ad39abaf9b40a8260789",
-		"client_secret": "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",
+		"client_id": os.getenv('CLIENT'),
+		"client_secret": os.getenv('SECRET'),
 		"code": {request.GET.get('code')},
 		"redirect_uri": "http://localhost:8000/api/users/auth/callback"
 		})
 		data = response.json()
 		response = requests.get('https://api.intra.42.fr/v2/me', headers={'Authorization': f'Bearer {data['access_token']}'})
-		print(response.content)
-		print(json.dumps(response.json(), indent=4))
+		user = {}
+		user['id'] = response.json()['id']
+		user['login'] = response.json()['login']
+		user['email'] = response.json()['email']
+		user['lastname'] = response.json()['last_name']
+		user['firstname'] = response.json()['first_name']
+		user['image'] = response.json()['image']['versions']['small']
+		user['access_token'] = data['access_token']
+		print(user)
 		return Response()
 
 class CallBackCodeView(APIView):
