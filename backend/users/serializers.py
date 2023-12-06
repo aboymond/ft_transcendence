@@ -79,6 +79,11 @@ class UserSerializer(serializers.ModelSerializer):
             return friendship.id if friendship else None  # type: ignore
         return None
 
+    def validate_username(self, value):
+        if "#" in value:
+            raise serializers.ValidationError("Username cannot contain '#' character.")
+        return value
+
 
 class FriendshipSerializer(serializers.ModelSerializer):
     requester = UserSerializer(read_only=True)

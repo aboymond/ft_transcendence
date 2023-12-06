@@ -4,6 +4,7 @@ from django.contrib.auth import authenticate, logout
 from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
+from django.shortcuts import redirect
 from rest_framework import generics, permissions, status, serializers
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -62,13 +63,24 @@ class LoginView(generics.GenericAPIView):
 
 
 class AuthView(generics.GenericAPIView):
+    print("AUTHVIEW")
+
+    def get(self, request, *args, **kwargs):
+        authorization_url = "https://api.intra.42.fr/oauth/authorize?client_id={}&redirect_uri={}&response_type=code".format(
+            os.getenv("CLIENT"), "http://localhost:8000/api/users/auth/callback"
+        )
+        return redirect(authorization_url)
+
     def authorize(self):
         response = ic.get("https://api.intra.42.fr/oauth/authorize?")
         print("AUTHORIZE : ", response)
 
 
 class CallBackView(APIView):
+    print("CALLBACKVIEW")
+
     def get(self, request, *args, **kwargs):
+        print("CALLBACKVIEW GET")
         response = requests.post(
             "https://api.intra.42.fr/oauth/token",
             data={
@@ -87,16 +99,40 @@ class CallBackView(APIView):
         user = {}
         user["id"] = response.json()["id"]
         user["login"] = response.json()["login"]
-        user["email"] = response.json()["email"]
-        user["lastname"] = response.json()["last_name"]
-        user["firstname"] = response.json()["first_name"]
         user["image"] = response.json()["image"]["versions"]["small"]
         user["access_token"] = data["access_token"]
         print(user)
-        return Response()
+        # Get or create the user
+        User = get_user_model()
+        username = f"{user['login']}#{user['id']}"
+        print(username)
+        # Try to get the user from the database
+        try:
+            existing_user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            # If the user does not exist, create a new user
+            existing_user = User.objects.create(username=username, image=user["image"])
+        else:
+            # If the user exists, update their image
+            existing_user.image = user["image"]
+            existing_user.save()
+
+        # Generate a JWT token for the user
+        refresh = RefreshToken.for_user(existing_user)
+
+        # Return the token in the response
+        return Response(
+            {
+                "refresh": str(refresh),
+                "access": str(refresh.access_token),
+                "user": UserSerializer(existing_user).data,
+            }
+        )
 
 
 class CallBackCodeView(APIView):
+    print("CALLBACKCODEVIEW")
+
     def get(self, request, *args, **kwargs):
         print(f'access token : {request.GET.get('code')}')
 
