@@ -1,36 +1,63 @@
-NAME		=	transcendence
-DIR			=	/
-#DEV_COMPOSE	=	-f ${DIR} docker-compose.dev.yml
-COMPOSE	=	-f ${DIR} docker-compose.yml
-ENV			=	--env-file .env
-DOCKER		=	docker compose ${ENV} -p ${NAME}
-#DEV_DOCKER		=	docker compose ${DEV_COMPOSE} ${ENV} -p ${NAME}
+# Default rule that gets executed when you run just `make`
+default: up
 
-all:			build start
+# Rule to start all services
+up:
+	docker-compose up -d
 
-build:
-				${DOCKER} build
+dev:
+	docker-compose up --build
 
-start:
-				${DOCKER} up -d
-
-dev:			build
-				${DEV_DOCKER} up -d
-
+# Rule to stop all services
 down:
-				${DOCKER} down
+	docker-compose down
 
-clean:			
-				${DOCKER} down --volumes
+# Rule to build or rebuild services
+build:
+	docker-compose build
+
+# Rule to run migrations
+migrations:
+	docker-compose exec backend python manage.py makemigrations
+
+migrate:
+	docker-compose exec backend python manage.py migrate
+
+# Rule to create Django superuser
+superuser:
+	docker-compose exec backend python manage.py createsuperuser
+
+# Rule to check the logs of a service
+# Usage: make logs service=backend
+logs:
+	docker-compose logs -f $(service)
+
+# Rule to run Django shell
+shell:
+	docker-compose exec backend python manage.py shell
+
+# Rule to run tests
+test:
+	docker-compose exec backend python manage.py test
+
+test-app:
+	docker-compose exec backend python manage.py test $(app)
+
+# Rule to collect static files
+collectstatic:
+	docker-compose exec backend python manage.py collectstatic --noinput
+
+clean:
+	docker-compose down --volumes
 
 pclean:
-				docker system prune -af
+	docker system prune -af
 
 vclean:
-				docker volume prune -f
+	docker volume prune -f
 
-aclean:			clean pclean vclean
+aclean:	clean pclean vclean
 
-re:				clean all
+re:	clean up
 
-.PHONY: all build start down clean vclean pclean re
+.PHONY:	default up dev down build migrations migrate superuser logs shell test collectstatic clean pclean vclean aclean re

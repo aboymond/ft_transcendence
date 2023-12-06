@@ -1,60 +1,17 @@
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-		<meta name="viewport" , initial-scale=1.0>
-		<link rel="icon" href="favicon16x16.png">
-		<title>Transcendence</title>
+    <head>
+        <meta charset="UTF-8" />
+        <link rel="icon" type="image/png" href="favicon.ico" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Retroscendence</title>
 
-		<link rel="stylesheet" href="style.css" />
-		<!-- <link rel="stylesheet" type="text/css" href="./game/menu/font/font.css"> -->
-
-		<script src="./game/lib/jquery.js"></script>
-		<!-- <script src="./game/lib/pixi.js"></script> -->
-		<script type="module" src="./gameV2/main.js"></script>
-		<!-- <script type="module" src="./game/main.js"></script> -->
-		<!-- <script type="module" src="./game/js/player.js"></script> -->
-	</head>
-	<body>
-
-		
-
-		<div id="screen">
-			<img src="./img/scanlines.png" id="scan" />
-			<img src="./img/bezel.png" id="bezel" />
-			<img src="./img/light.png" id="light" />
-			<div class="sphere"></div>
-		</div>
-	<div id="page">
-		<header>
-			<a href="#">sign in</a>
-		</header>
-		<div id="contener-logo">
-			<h1 id="logo">TRANSCENDENCE</h1>
-		</div>
-		<div id="p-end">
-			<div>
-				<h4>It's now the end of the game !</h4>
-			</div>
-		</div>
-		<div id="box">
-			<section id="menu">
-				<nav>
-					<li><a href="play">PLAY</a></li>
-					<li><a href="chatbox">CHATBOX</a></li>
-					<li><a href="history">HISTORY</a></li>
-				</nav>
-			</section>
-			<section id="game_window"></section>
-			<section id="chatbox">
-				<div>chatbox</div>
-			</section>
-		</div>
-		<footer>
-			<div id="credits">credits</div>
-		</footer>
-	</div>
-	</body>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    </head>
+    <body>
+        <div id="root"></div>
+        <script type="module" src="/src/main.tsx"></script>
+    </body>
 </html>

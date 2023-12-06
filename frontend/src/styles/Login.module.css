@@ -1,0 +1,40 @@
+.inputField {
+    background-color: var(--background-color) !important;
+    /* border-style: solid !important; */
+    /* border-width: 3px !important;  */
+    /* box-shadow: 0 0 5px var(--primary-color) !important; */
+    border-color: var(--accent-color) !important;
+    margin: 10px;
+}
+
+.inputField::placeholder {
+    color: black;
+}
+
+.submitButton {
+    background-color: var(--primary-color) !important;
+    color: black;
+    border-style: solid;
+    border-width: 3px;
+    box-shadow: 0 0 5px var(--primary-color);
+    border-color: var(--accent-color);
+    margin: 10px;
+}
+
+.loginForm {
+    /* position: relative; */
+    background-color: var(--background-color) !important;
+    margin: 10px;
+}
+
+.title {
+    font-size: 20px;
+    margin: 10px;
+}
+
+/* .close-button {
+    position: absolute !important;
+    top: 0 !important; 
+    right: 0 !important;
+    background-color: var(--background-color) !important;
+} */
