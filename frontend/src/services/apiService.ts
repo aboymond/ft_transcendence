@@ -11,9 +11,15 @@ function getHeaders() {
 }
 
 async function fetchAPI(endpoint: string, options = {}) {
+	const headers = getHeaders();
+	if (options.body instanceof FormData) {
+		// When sending FormData, remove the 'Content-Type' header
+		// The browser will automatically set it to 'multipart/form-data' and include the necessary boundary parameter
+		delete headers['Content-Type'];
+	}
 	const response = await fetch(`${API_BASE_URL}/${endpoint}`, {
 		...options,
-		headers: getHeaders(),
+		headers: headers,
 	});
 	if (!response.ok) {
 		throw new Error(`API call failed: ${response.statusText}`);
