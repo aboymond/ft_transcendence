@@ -4,20 +4,24 @@ import { useNavigate } from 'react-router-dom';
 
 const ProfileUpdate: React.FC = () => {
 	const [display_name, setDisplayName] = useState('');
-	const [bio, setBio] = useState('');
 	const [avatar, setAvatar] = useState<File | null>(null);
 	const navigate = useNavigate();
 
+	const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		if (e.target.files) {
+			setAvatar(e.target.files[0]);
+		}
+	};
+
 	const handleUpdate = async () => {
 		try {
-			const data: { display_name?: string; bio?: string } = {};
+			const data: { display_name?: string } = {};
 			if (display_name) data.display_name = display_name;
-			if (bio) data.bio = bio;
 			await apiService.updateUserProfile(data);
 			if (avatar) {
 				await apiService.uploadUserAvatar(avatar);
 			}
-			alert('Profile updated successfully');
+			console.log('Profile updated successfully');
 			navigate('/profile');
 		} catch (error) {
 			console.error('Error updating profile:', error);
@@ -33,15 +37,7 @@ const ProfileUpdate: React.FC = () => {
 				onChange={(e) => setDisplayName(e.target.value)}
 				placeholder="Display Name"
 			/>
-			<textarea
-				value={bio}
-				onChange={(e) => setBio(e.target.value)}
-				placeholder="Bio"
-			></textarea>
-			<input
-				type="file"
-				onChange={(e) => setAvatar(e.target.files ? e.target.files[0] : null)}
-			/>
+			<input type="file" onChange={handleAvatarChange} />
 			<button onClick={handleUpdate}>Update</button>
 		</div>
 	);

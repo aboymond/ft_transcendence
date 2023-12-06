@@ -7,7 +7,6 @@ class CustomUserAdmin(admin.ModelAdmin):
     list_display = (
         "username",
         "display_name",
-        "bio",
         "wins",
         "losses",
         "tournament_wins",

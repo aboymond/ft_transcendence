@@ -39,9 +39,9 @@ const Profile: React.FC = () => {
 	return (
 		<div>
 			<h1>User Profile</h1>
+			<img src={profile.avatar} alt="User avatar" />
 			<p>Username: {profile.username}</p>
 			<p>Display Name: {profile.display_name}</p>
-			<p>Bio: {profile.bio}</p>
 			<p>Wins: {profile.wins}</p>
 			<p>Losses: {profile.losses}</p>
 			<button onClick={() => navigate('/profile/update')}>

@@ -2,7 +2,6 @@ export interface User {
 	id: number;
 	username: string;
 	display_name: string;
-	bio: string;
 	wins: number;
 	losses: number;
 	tournament_wins: number;

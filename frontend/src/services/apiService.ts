@@ -25,7 +25,6 @@ async function fetchAPI(endpoint: string, options = {}) {
 interface UserData {
 	username?: string;
 	display_name?: string;
-	bio?: string;
 }
 
 export const apiService = {
@@ -73,10 +72,14 @@ export const apiService = {
 	uploadUserAvatar: async (avatar: File) => {
 		const formData = new FormData();
 		formData.append('avatar', avatar);
-		return fetchAPI('users/avatar/upload/', {
-			method: 'POST',
+		const response = await fetchAPI('users/avatar/upload/', {
+			method: 'PUT',
 			body: formData,
 		});
+		if (!response.ok) {
+			throw new Error('Error uploading avatar');
+		}
+		return response.json();
 	},
 	getFriends: async (): Promise<User[]> => {
 		return fetchAPI('users/friends/list/');

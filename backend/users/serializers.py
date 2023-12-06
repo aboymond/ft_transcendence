@@ -30,7 +30,6 @@ class UserSerializer(serializers.ModelSerializer):
             "password",
             "display_name",
             "avatar",
-            "bio",
             "wins",
             "losses",
             "tournament_wins",

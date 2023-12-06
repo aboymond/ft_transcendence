@@ -15,9 +15,8 @@ class CustomUser(AbstractUser):
         max_length=100, unique=True, blank=True, null=True, default=None
     )
     avatar = models.ImageField(
-        upload_to="avatars/", default="static/images/default_avatar.png"
+        upload_to="avatars/", default="avatars/default_avatar.png"
     )
-    bio = models.TextField(blank=True)
     wins = models.IntegerField(default=0)
     losses = models.IntegerField(default=0)
     tournament_wins = models.IntegerField(default=0)

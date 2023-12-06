@@ -16,10 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-
-from rest_framework import generics, permissions, serializers
-
-from oauth2_provider.contrib.rest_framework import TokenHasReadWriteScope, TokenHasScope
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -27,3 +25,6 @@ urlpatterns = [
     # path('api/games/', include('games.urls')),
     path("api/tournaments/", include("tournaments.urls")),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
