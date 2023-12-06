@@ -10,14 +10,12 @@ const App: React.FC = () => {
 	return (
 		<AuthProvider>
 			<Router>
-				<div id="page">
 					<div id="image-container">
 						<img src="./img/light.png" alt="Light" id="light" />
 						<img src="./img/scanlines.png" alt="Scanlines" id="scan" />
 						<img src="./img/bezel.png" alt="Bezel" id="bezel" />
 					</div>
 					<AppRoutes />
-				</div>
 			</Router>
 		</AuthProvider>
 	);

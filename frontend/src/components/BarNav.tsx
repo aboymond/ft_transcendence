@@ -8,9 +8,9 @@ const BarNav: React.FC = () => {
   const handleToggle = () => setShow(!show);
 
   return (
-    <Navbar bg="light" expand={false}>
+    <Navbar bg="light" expand={false} style={{ flexWrap: 'nowrap' }}>
       <Container fluid>
-        <Navbar.Brand className={styles.brand}>Retroscendence</Navbar.Brand>
+        <Navbar.Brand>Retroscendence</Navbar.Brand>
         <Nav className="ms-auto">
           <Nav.Item>
             <Nav.Link onClick={handleToggle}>
@@ -18,7 +18,6 @@ const BarNav: React.FC = () => {
                 src="../public/img/Nino.png" 
                 roundedCircle 
                 style={{ width: '60px', height: '60px' }}
-                className={styles.image}
               />
             </Nav.Link>
           </Nav.Item>

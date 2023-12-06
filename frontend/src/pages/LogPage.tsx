@@ -13,6 +13,7 @@ const LogPage: React.FC = () => {
     };
 
     return (
+        <div id="page">
         <Container fluid id="log-page">
             <Logo />
             <Row>
@@ -56,6 +57,7 @@ const LogPage: React.FC = () => {
                 </Col>
             </Row>
         </Container>
+        </div>
     );
 };
 
