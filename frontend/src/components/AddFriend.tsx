@@ -27,9 +27,7 @@ const AddFriend = () => {
 			console.log('errorMessage:', errorMessage);
 			if (errorMessage === 'You cannot send a friend request to yourself.') {
 				alert('You cannot send a friend request to yourself.');
-			} else if (
-				errorMessage === 'This user has already sent you a friend request.'
-			) {
+			} else if (errorMessage === 'This user has already sent you a friend request.') {
 				alert('This user has already sent you a friend request.');
 			} else {
 				console.error('Error sending friend request:', error);
