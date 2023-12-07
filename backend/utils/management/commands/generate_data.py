@@ -54,7 +54,7 @@ class Command(BaseCommand):
             start_time = timezone.now() - timedelta(days=randint(0, 30))
             end_time = start_time + timedelta(hours=randint(1, 24))
 
-            game = Game.objects.create(
+            game = Game.objects.create(  # noqa: F841
                 player1=user1,
                 player2=user2,
                 status="completed",
@@ -65,11 +65,11 @@ class Command(BaseCommand):
                 start_time=start_time,
                 end_time=end_time,
             )
-
-        game_history = GameHistory.objects.create(
-            winner=winner, player1_score=player1_score, player2_score=player2_score
-        )
-        game_history.players.set([user1, user2])
+            # Create game history
+            game_history = GameHistory.objects.create(
+                winner=winner, player1_score=player1_score, player2_score=player2_score
+            )
+            game_history.players.set([user1, user2])
 
         # Create tournaments and matches
         i = 0
