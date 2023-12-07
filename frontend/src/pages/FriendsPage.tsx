@@ -23,12 +23,10 @@ const FriendsPage: React.FC = () => {
 
 		// Only open a new WebSocket connection if one isn't already open
 		if (!socketRef.current || socketRef.current.readyState !== WebSocket.OPEN) {
-			socketRef.current = new WebSocket(
-				'ws://localhost:8000/ws/friend_requests/' + user.id + '/',
-			);
+			socketRef.current = new WebSocket('ws://localhost:8000/ws/friend_requests/' + user.id + '/');
 
 			socketRef.current.onopen = function (e) {
-				console.log('Connection to server opened');
+				console.log('Connection to server opened', e);
 			};
 
 			socketRef.current.onmessage = function (e) {
@@ -79,9 +77,7 @@ const FriendsPage: React.FC = () => {
 	const handleAccept = async (requestId: number) => {
 		try {
 			const acceptedRequest = await apiService.acceptFriendRequest(requestId);
-			setFriendRequests(
-				friendRequests.filter((request) => request.id !== requestId),
-			);
+			setFriendRequests(friendRequests.filter((request) => request.id !== requestId));
 			setFriends([...friends, acceptedRequest.receiver]);
 		} catch (error) {
 			console.error('Error accepting request:', error);
@@ -91,9 +87,7 @@ const FriendsPage: React.FC = () => {
 	const handleReject = async (requestId: number) => {
 		try {
 			await apiService.rejectFriendRequest(requestId);
-			setFriendRequests(
-				friendRequests.filter((request) => request.id !== requestId),
-			);
+			setFriendRequests(friendRequests.filter((request) => request.id !== requestId));
 		} catch (error) {
 			console.error('Error rejecting request:', error);
 		}
@@ -102,9 +96,7 @@ const FriendsPage: React.FC = () => {
 	const handleRemove = async (friendshipId: number) => {
 		try {
 			await apiService.removeFriend(friendshipId);
-			setFriends(
-				friends.filter((friend) => friend.friendship_id !== friendshipId),
-			);
+			setFriends(friends.filter((friend) => friend.friendship_id !== friendshipId));
 		} catch (error) {
 			console.error('Error removing friend:', error);
 		}
@@ -115,11 +107,7 @@ const FriendsPage: React.FC = () => {
 			<h1>My Friends</h1>
 			<AddFriend />
 			<FriendList friends={friends} onRemove={handleRemove} />
-			<FriendRequests
-				requests={friendRequests}
-				onAccept={handleAccept}
-				onReject={handleReject}
-			/>
+			<FriendRequests requests={friendRequests} onAccept={handleAccept} onReject={handleReject} />
 		</div>
 	);
 };
