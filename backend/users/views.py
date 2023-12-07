@@ -99,7 +99,7 @@ class CallBackView(APIView):
         user = {}
         user["id"] = response.json()["id"]
         user["login"] = response.json()["login"]
-        user["image"] = response.json()["image"]["versions"]["small"]
+        user["avatar"] = response.json()["image"]["versions"]["small"]
         user["access_token"] = data["access_token"]
         print(user)
         # Get or create the user
@@ -111,10 +111,10 @@ class CallBackView(APIView):
             existing_user = User.objects.get(username=username)
         except User.DoesNotExist:
             # If the user does not exist, create a new user
-            existing_user = User.objects.create(username=username, image=user["image"])
+            existing_user = User.objects.create(username=username, avatar=user["avatar"])
         else:
-            # If the user exists, update their image
-            existing_user.image = user["image"]
+            # If the user exists, update their avatar
+            existing_user.avatar = user["avatar"]
             existing_user.save()
 
         # Generate a JWT token for the user
