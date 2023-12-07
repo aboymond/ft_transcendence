@@ -13,7 +13,7 @@ const Profile: React.FC = () => {
 	useEffect(() => {
 		if (!auth.isAuthenticated) {
 			// Redirect to login page or handle unauthenticated state
-			navigate('/login');
+			navigate('/');
 			return;
 		}
 
@@ -44,9 +44,7 @@ const Profile: React.FC = () => {
 			<p>Display Name: {profile.display_name}</p>
 			<p>Wins: {profile.wins}</p>
 			<p>Losses: {profile.losses}</p>
-			<button onClick={() => navigate('/profile/update')}>
-				Update Profile
-			</button>
+			<button onClick={() => navigate('/profile/update')}>Update Profile</button>
 		</div>
 	);
 };

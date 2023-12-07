@@ -11,10 +11,9 @@ import Navbar from '../components/Navbar';
 const Home: React.FC = () => {
 	return (
 		<div id="page">
-		<Navbar />
-      <Container fluid>
-      </Container>
-    </div>
+			<Navbar />
+			<Container fluid></Container>
+		</div>
 	);
 };
 

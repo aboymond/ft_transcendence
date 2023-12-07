@@ -10,6 +10,7 @@ class CustomUserAdmin(admin.ModelAdmin):
         "wins",
         "losses",
         "tournament_wins",
+        "status",
     )
     search_fields = ("username", "display_name")
     # Add any additional customizations as required

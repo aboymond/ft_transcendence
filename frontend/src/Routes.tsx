@@ -1,8 +1,6 @@
 import { useAuth } from './hooks/useAuth';
 import { Route, Routes, Navigate } from 'react-router-dom';
 import Home from './pages/Home';
-import Register from './pages/Register';
-import Login from './pages/Login';
 import Profile from './pages/Profile';
 import FriendsPage from './pages/FriendsPage';
 import ProfileUpdate from './pages/ProfileUpdate';
@@ -14,33 +12,22 @@ const AppRoutes: React.FC = () => {
 
 	return (
 		<Routes>
-			<Route path="/" element={<LogPage />} />
-			<Route path="/home" element={<Home />} />
-			<Route path="/register" element={<Register />} />
-			<Route
-				path="/login"
-				element={
-					isAuthenticated ? <Navigate to="/profile" replace /> : <Login />
-				}
-			/>
+			<Route path="/" element={isAuthenticated ? <Navigate to="/home" replace /> : <LogPage />} />
+			<Route path="/home" element={isAuthenticated ? <Home /> : <Navigate to="/" replace />} />
 			<Route path="/profile" element={<Profile />} />
 			<Route
 				path="/profile/update"
-				element={
-					isAuthenticated ? <ProfileUpdate /> : <Navigate to="/login" replace />
-				}
+				element={isAuthenticated ? <ProfileUpdate /> : <Navigate to="/" replace />}
 			/>
 			<Route
 				path="/friends"
 				element={
-					loading ? (
-						<LoadingScreen />
-					) : isAuthenticated ? (
-						<FriendsPage />
-					) : (
-						<Navigate to="/login" replace />
-					)
+					loading ? <LoadingScreen /> : isAuthenticated ? <FriendsPage /> : <Navigate to="/" replace />
 				}
+			/>
+			<Route
+				path="*"
+				element={isAuthenticated ? <Navigate to="/home" replace /> : <Navigate to="/" replace />}
 			/>
 		</Routes>
 	);

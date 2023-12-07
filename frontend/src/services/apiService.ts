@@ -2,20 +2,24 @@ import { User, FriendRequest } from '../types';
 
 const API_BASE_URL = 'http://localhost:8000/api'; // Update with your actual backend URL
 
-function getHeaders() {
-	const token = localStorage.getItem('token'); // Or however you store the token
-	return {
-		'Content-Type': 'application/json',
-		...(token ? { Authorization: `Bearer ${token}` } : {}),
-	};
+function getHeaders(includeToken = true): HeadersInit {
+	const token = includeToken ? localStorage.getItem('token') : null;
+	const headers = new Headers();
+	headers.append('Content-Type', 'application/json');
+	if (token) {
+		headers.append('Authorization', `Bearer ${token}`);
+	}
+	return headers;
 }
 
-async function fetchAPI(endpoint: string, options = {}) {
-	const headers = getHeaders();
-	if (options.body instanceof FormData) {
-		// When sending FormData, remove the 'Content-Type' header
-		// The browser will automatically set it to 'multipart/form-data' and include the necessary boundary parameter
-		delete headers['Content-Type'];
+async function fetchAPI(
+	endpoint: string,
+	options: RequestInit = {},
+	includeToken = true,
+) {
+	const headers = getHeaders(includeToken);
+	if (options.body instanceof FormData && headers instanceof Headers) {
+		headers.delete('Content-Type');
 	}
 	const response = await fetch(`${API_BASE_URL}/${endpoint}`, {
 		...options,
@@ -56,18 +60,26 @@ export const apiService = {
 		return fetchAPI(`users/${userId}/`); // Endpoint for fetching user data
 	},
 	register: async (username: string, password: string, displayName: string) => {
-		return fetchAPI('users/register/', {
-			// Update with your actual registration endpoint
-			method: 'POST',
-			body: JSON.stringify({ username, password, display_name: displayName }),
-		});
+		return fetchAPI(
+			'users/register/',
+			{
+				// Update with your actual registration endpoint
+				method: 'POST',
+				body: JSON.stringify({ username, password, display_name: displayName }),
+			},
+			false,
+		);
 	},
 	login: async (username: string, password: string) => {
-		return fetchAPI('users/login/', {
-			// Update with your actual login endpoint
-			method: 'POST',
-			body: JSON.stringify({ username, password }),
-		});
+		return fetchAPI(
+			'users/login/',
+			{
+				// Update with your actual login endpoint
+				method: 'POST',
+				body: JSON.stringify({ username, password }),
+			},
+			false,
+		);
 	},
 	updateUserProfile: async (data: UserData) => {
 		return fetchAPI('users/update/', {
