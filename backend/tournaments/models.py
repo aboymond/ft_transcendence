@@ -24,6 +24,11 @@ class Tournament(models.Model):
     ]
 
     name = models.CharField(max_length=255)
+    creator = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name="tournaments_created",
+        on_delete=models.CASCADE,
+    )
     max_participants = models.IntegerField()
     participants = models.ManyToManyField(
         settings.AUTH_USER_MODEL, related_name="tournaments"

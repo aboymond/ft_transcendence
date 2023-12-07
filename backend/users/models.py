@@ -49,6 +49,23 @@ class GameHistory(models.Model):
         return f"Game on {self.played_at.strftime('%Y-%m-%d %H:%M')}"
 
 
+class TournamentHistory(models.Model):
+    players = models.ManyToManyField(
+        settings.AUTH_USER_MODEL, related_name="tournament_history_played"
+    )
+    winner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="tournament_history_won",
+    )
+    played_at = models.DateTimeField(auto_now_add=True)
+    rank = models.IntegerField(default=0)
+
+    def __str__(self):
+        return f"Tournament on {self.played_at.strftime('%Y-%m-%d %H:%M')}"
+
+
 class Friendship(models.Model):
     STATUS_CHOICES = (
         ("sent", "Sent"),

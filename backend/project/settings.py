@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "games",
     "tournaments",
     "users",
+    "utils",
 ]
 
 MIDDLEWARE = [

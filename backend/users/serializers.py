@@ -1,10 +1,10 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
-from .models import GameHistory
-from .models import Friendship
 from django.db.models import Q
+from .models import GameHistory
 from django.contrib.auth.models import AnonymousUser
+from .models import Friendship, TournamentHistory
 
 User = get_user_model()
 
@@ -15,8 +15,15 @@ class GameHistorySerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class TournamentHistorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TournamentHistory
+        fields = "__all__"
+
+
 class UserSerializer(serializers.ModelSerializer):
     match_history = GameHistorySerializer(many=True, read_only=True)
+    tournament_history_played = TournamentHistorySerializer(many=True, read_only=True)
     username = serializers.CharField(
         validators=[UniqueValidator(queryset=User.objects.all())]
     )
@@ -36,6 +43,7 @@ class UserSerializer(serializers.ModelSerializer):
             "status",
             "match_history",
             "friendship_id",
+            "tournament_history_played",
         )
         extra_kwargs = {
             "password": {"write_only": True},

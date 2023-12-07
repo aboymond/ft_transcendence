@@ -64,8 +64,6 @@ class LoginView(generics.GenericAPIView):
 
 
 class AuthView(generics.GenericAPIView):
-    print("AUTHVIEW")
-
     def get(self, request, *args, **kwargs):
         authorization_url = "https://api.intra.42.fr/oauth/authorize?client_id={}&redirect_uri={}&response_type=code".format(
             os.getenv("CLIENT"), "http://localhost:8000/api/users/auth/callback"
@@ -78,10 +76,7 @@ class AuthView(generics.GenericAPIView):
 
 
 class CallBackView(APIView):
-    print("CALLBACKVIEW")
-
     def get(self, request, *args, **kwargs):
-        print("CALLBACKVIEW GET")
         response = requests.post(
             "https://api.intra.42.fr/oauth/token",
             data={
@@ -132,8 +127,6 @@ class CallBackView(APIView):
 
 
 class CallBackCodeView(APIView):
-    print("CALLBACKCODEVIEW")
-
     def get(self, request, *args, **kwargs):
         print(f'access token : {request.GET.get('code')}')
 
