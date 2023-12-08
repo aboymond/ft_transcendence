@@ -15,9 +15,8 @@ class CustomUser(AbstractUser):
         max_length=100, unique=True, blank=True, null=True, default=None
     )
     avatar = models.ImageField(
-        upload_to="avatars/", default="static/images/default_avatar.png"
+        upload_to="avatars/", default="avatars/default_avatar.png"
     )
-    bio = models.TextField(blank=True)
     wins = models.IntegerField(default=0)
     losses = models.IntegerField(default=0)
     tournament_wins = models.IntegerField(default=0)
@@ -48,6 +47,23 @@ class GameHistory(models.Model):
 
     def __str__(self):
         return f"Game on {self.played_at.strftime('%Y-%m-%d %H:%M')}"
+
+
+class TournamentHistory(models.Model):
+    players = models.ManyToManyField(
+        settings.AUTH_USER_MODEL, related_name="tournament_history_played"
+    )
+    winner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="tournament_history_won",
+    )
+    played_at = models.DateTimeField(auto_now_add=True)
+    rank = models.IntegerField(default=0)
+
+    def __str__(self):
+        return f"Tournament on {self.played_at.strftime('%Y-%m-%d %H:%M')}"
 
 
 class Friendship(models.Model):

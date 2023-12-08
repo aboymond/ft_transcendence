@@ -1,6 +1,6 @@
 import { createContext, useState, useEffect, ReactNode } from 'react';
-import apiService from '../services/apiService';
-import { User } from '../types';
+import apiService from '../src/services/apiService';
+import { User } from '../src/types';
 import { jwtDecode } from 'jwt-decode';
 
 interface AuthContextType {
@@ -70,9 +70,5 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 		logout,
 	};
 
-	return (
-		<AuthContext.Provider value={authContextValue}>
-			{children}
-		</AuthContext.Provider>
-	);
+	return <AuthContext.Provider value={authContextValue}>{children}</AuthContext.Provider>;
 };

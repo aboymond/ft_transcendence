@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { Container, Row, Col, Button, Card } from 'react-bootstrap';
 import Logo from '../components/Logo';
 import styles from '../styles/LogPage.module.css';
-import Login from './Login';
-import Register from './Register';
+import Login from '../components/Login';
+import Register from '../components/Register';
 
 const LogPage: React.FC = () => {
 	const [showComponent, setShowComponent] = useState('');
@@ -26,15 +26,13 @@ const LogPage: React.FC = () => {
 				<Col xs={12} md={6}>
 					<Card className={styles.logCard}>
 						{showComponent === '' && (
-							<Card.Header className={styles.header}>
-								Welcome to our awesome project
-							</Card.Header>
+							<Card.Header className={styles.header}>Welcome to our awesome project</Card.Header>
 						)}
 						<Card.Body>
 							{showComponent === 'login' ? (
 								<Login onClose={handleClose} />
 							) : showComponent === 'register' ? (
-								<Register onClose={handleClose} />
+								<Register onClose={handleClose} onSuccess={() => setShowComponent('login')} />
 							) : (
 								<>
 									<Row>
@@ -63,19 +61,14 @@ const LogPage: React.FC = () => {
 										variant="primary"
 										type="submit"
 										className={`mt-3 ${styles.button} w-100`}
-										onClick={() =>
-											(window.location.href =
-												'http://localhost:8000/api/users/auth/')
-										}
+										onClick={() => (window.location.href = 'http://localhost:8000/api/users/auth/')}
 									>
 										Sign Up with 42
 									</Button>
 								</>
 							)}
 						</Card.Body>
-						{showComponent === '' && (
-							<Card.Footer>Made with love by us</Card.Footer>
-						)}
+						{showComponent === '' && <Card.Footer>Made with love by us</Card.Footer>}
 					</Card>
 				</Col>
 			</Row>

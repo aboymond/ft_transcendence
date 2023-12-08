@@ -43,6 +43,14 @@ test:
 test-app:
 	docker-compose exec backend python manage.py test $(app)
 
+# Rule to generate fake data
+generate:
+	docker-compose exec backend python manage.py generate_data 10
+
+# Rule to delete all data
+delete:
+	docker-compose exec backend python manage.py delete_data
+
 # Rule to collect static files
 collectstatic:
 	docker-compose exec backend python manage.py collectstatic --noinput

@@ -1,49 +1,41 @@
 import { useAuth } from './hooks/useAuth';
 import { Route, Routes, Navigate } from 'react-router-dom';
 import Home from './pages/Home';
-import Register from './pages/Register';
-import Login from './pages/Login';
-import Profile from './pages/Profile';
+import Profile from './components/Profile';
 import FriendsPage from './pages/FriendsPage';
-import ProfileUpdate from './pages/ProfileUpdate';
 import LoadingScreen from './components/LoadingScreen';
 import LogPage from './pages/LogPage';
+import Navbar from './components/Navbar';
+import HomePage from './pages/HomePage';
+
+const AuthenticatedRoutes: React.FC = () => (
+	<>
+		<Navbar />
+		<Routes>
+			<Route path="/home" element={<Home />} />
+			<Route path="/test" element={<HomePage />} />
+			<Route path="/profile" element={<Profile />} />
+			<Route path="/friends" element={<FriendsPage />} />
+			<Route path="*" element={<Navigate to="/home" replace />} />
+		</Routes>
+	</>
+);
+
+const NonAuthenticatedRoutes: React.FC = () => (
+	<Routes>
+		<Route path="/" element={<LogPage />} />
+		<Route path="*" element={<Navigate to="/" replace />} />
+	</Routes>
+);
 
 const AppRoutes: React.FC = () => {
 	const { isAuthenticated, loading } = useAuth();
 
-	return (
-		<Routes>
-			<Route path="/" element={<LogPage />} />
-			<Route path="/home" element={<Home />} />
-			<Route path="/register" element={<Register />} />
-			<Route
-				path="/login"
-				element={
-					isAuthenticated ? <Navigate to="/profile" replace /> : <Login />
-				}
-			/>
-			<Route path="/profile" element={<Profile />} />
-			<Route
-				path="/profile/update"
-				element={
-					isAuthenticated ? <ProfileUpdate /> : <Navigate to="/login" replace />
-				}
-			/>
-			<Route
-				path="/friends"
-				element={
-					loading ? (
-						<LoadingScreen />
-					) : isAuthenticated ? (
-						<FriendsPage />
-					) : (
-						<Navigate to="/login" replace />
-					)
-				}
-			/>
-		</Routes>
-	);
+	if (loading) {
+		return <LoadingScreen />;
+	}
+
+	return isAuthenticated ? <AuthenticatedRoutes /> : <NonAuthenticatedRoutes />;
 };
 
 export default AppRoutes;
