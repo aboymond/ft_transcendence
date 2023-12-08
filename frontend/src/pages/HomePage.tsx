@@ -5,9 +5,12 @@ import '../App.css';
 import GameHistoryList from '../components/GameHistoryList';
 import Profile from '../components/Profile';
 import FriendsPage from './FriendsPage';
+import GameWindow from '../components/GameWindow';
 
 const HomePage: React.FC = () => {
-	const [activeComponent, setActiveComponent] = useState<'history' | 'profile' | 'friends'>('history');
+	const [activeComponent, setActiveComponent] = useState<'history' | 'profile' | 'friends' | 'game'>(
+		'history',
+	);
 
 	return (
 		<div id="page">
@@ -28,11 +31,17 @@ const HomePage: React.FC = () => {
 							Friends
 						</Button>
 					</Col>
+					<Col xs={12}>
+						<Button style={{ width: '100%' }} onClick={() => setActiveComponent('game')}>
+							Game
+						</Button>
+					</Col>
 				</Row>
 
 				{activeComponent === 'history' && <GameHistoryList />}
 				{activeComponent === 'profile' && <Profile />}
 				{activeComponent === 'friends' && <FriendsPage />}
+				{activeComponent === 'game' && <GameWindow />}
 			</Container>
 		</div>
 	);

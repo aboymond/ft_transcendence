@@ -47,7 +47,7 @@ urlpatterns = [
         name="retrieve_game_histories",
     ),
     path(
-        "/<int:pk>/game_history/",
+        "<int:pk>/game_history/",
         UserGameHistoryView.as_view(),
         name="user-game-history",
     ),
