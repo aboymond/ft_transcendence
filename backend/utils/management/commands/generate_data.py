@@ -7,6 +7,7 @@ from random import choice, randint
 from itertools import combinations
 from datetime import timedelta
 from django.utils import timezone
+import random
 
 
 class Command(BaseCommand):
@@ -31,6 +32,17 @@ class Command(BaseCommand):
                 receiver=user2,
                 status=choice(Friendship.STATUS_CHOICES)[0],
             )
+        try:
+            admin_user = CustomUser.objects.get(username="admin")
+            random_friends = random.sample(users, min(5, len(users)))
+            for friend in random_friends:
+                Friendship.objects.create(
+                    requester=admin_user,
+                    receiver=friend,
+                    status=choice(Friendship.STATUS_CHOICES)[0],
+                )
+        except CustomUser.DoesNotExist:
+            self.stdout.write(self.style.WARNING("User 'admin' does not exist."))
 
         # Create games and game histories
         for user1, user2 in combinations(users, 2):
