@@ -1,4 +1,5 @@
 import { User, FriendRequest } from '../types';
+import { GameHistory } from '../types';
 
 const API_BASE_URL = 'http://localhost:8000/api'; // Update with your actual backend URL
 
@@ -12,11 +13,7 @@ function getHeaders(includeToken = true): HeadersInit {
 	return headers;
 }
 
-async function fetchAPI(
-	endpoint: string,
-	options: RequestInit = {},
-	includeToken = true,
-) {
+async function fetchAPI(endpoint: string, options: RequestInit = {}, includeToken = true) {
 	const headers = getHeaders(includeToken);
 	if (options.body instanceof FormData && headers instanceof Headers) {
 		headers.delete('Content-Type');
@@ -53,11 +50,17 @@ export const apiService = {
 			return false;
 		}
 	},
+	getUsers(): Promise<User[]> {
+		return fetchAPI('users/list/');
+	},
 	getUserProfile: async () => {
 		return fetchAPI('users/profile/'); // Endpoint for fetching the current user's profile
 	},
-	getUser: async (userId: string) => {
-		return fetchAPI(`users/${userId}/`); // Endpoint for fetching user data
+	// getUser: async (userId: string) => {
+	// 	return fetchAPI(`users/${userId}/`); // Endpoint for fetching user data
+	// },
+	getUserGameHistory: async (userId: number): Promise<GameHistory[]> => {
+		return fetchAPI(`users/${userId}/game_history/`);
 	},
 	register: async (username: string, password: string, displayName: string) => {
 		return fetchAPI(
@@ -125,6 +128,9 @@ export const apiService = {
 		return fetchAPI(`users/friends/remove/${friendId}/`, {
 			method: 'DELETE',
 		});
+	},
+	getGameHistory: async (): Promise<GameHistory[]> => {
+		return fetchAPI('users/game_histories/');
 	},
 };
 

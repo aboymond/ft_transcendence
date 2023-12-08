@@ -9,10 +9,36 @@ from .models import Friendship, TournamentHistory
 User = get_user_model()
 
 
+class UserNameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["username"]
+
+
 class GameHistorySerializer(serializers.ModelSerializer):
+    players = serializers.SerializerMethodField()
+    winner = serializers.SerializerMethodField()
+    player1_score = serializers.SerializerMethodField()
+    player2_score = serializers.SerializerMethodField()
+
     class Meta:
         model = GameHistory
         fields = "__all__"
+
+    def get_players(self, obj):
+        return [
+            {"id": player.id, "username": player.username}
+            for player in obj.players.all()
+        ]
+
+    def get_winner(self, obj):
+        return {"id": obj.winner.id, "username": obj.winner.username}
+
+    def get_player1_score(self, obj):
+        return obj.player1_score
+
+    def get_player2_score(self, obj):
+        return obj.player2_score
 
 
 class TournamentHistorySerializer(serializers.ModelSerializer):

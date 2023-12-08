@@ -21,9 +21,11 @@ from .models import GameHistory, Friendship
 from .serializers import GameHistorySerializer
 from .serializers import AvatarSerializer
 from .intra import ic
+import logging
 
 User = get_user_model()
 load_dotenv()
+logger = logging.getLogger(__name__)
 
 
 class CreateUserView(generics.CreateAPIView):
@@ -139,6 +141,11 @@ class LogoutView(generics.GenericAPIView):
         return Response(...)
 
 
+class UserListView(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+
 class UserUpdateView(generics.UpdateAPIView):
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -153,6 +160,21 @@ class UserUpdateView(generics.UpdateAPIView):
             self.perform_update(serializer)
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserGameHistoryView(generics.ListAPIView):
+    serializer_class = GameHistorySerializer
+
+    def get_queryset(self):
+        user_id = self.kwargs["pk"]
+        logger.info(f"Fetching game history for user {user_id}")
+        try:
+            user = User.objects.get(id=user_id)
+            logger.info(f"Found user {user.username} with ID {user_id}")
+            return user.match_history
+        except User.DoesNotExist:
+            logger.error(f"User with ID {user_id} does not exist")
+            return []
 
 
 class CurrentUserProfileView(generics.RetrieveAPIView):
@@ -173,7 +195,7 @@ class GameHistoryRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView
     serializer_class = GameHistorySerializer
 
 
-class CreateFriendRequestView(generics.CreateAPIView):
+class FriendRequestCreateView(generics.CreateAPIView):
     queryset = Friendship.objects.all()
     serializer_class = FriendshipSerializer
     permission_classes = [IsAuthenticated]

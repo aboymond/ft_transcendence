@@ -26,3 +26,12 @@ export type ApiError = {
 		};
 	};
 };
+
+export interface GameHistory {
+	id: number;
+	players: User[];
+	winner: User;
+	played_at: string;
+	player1_score: number;
+	player2_score: number;
+}

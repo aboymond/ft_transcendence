@@ -16,7 +16,7 @@ const NavBar: React.FC = () => {
 	return (
 		<Navbar className={styles.title} expand="lg">
 			<Container>
-				<Navbar.Brand>Retroscendence</Navbar.Brand>
+				<Navbar.Brand>{auth.user?.username || 'Retroscendence'}</Navbar.Brand>
 				<Nav className="ml-auto">
 					<Nav.Link onClick={handleLogout}>Logout</Nav.Link>
 				</Nav>

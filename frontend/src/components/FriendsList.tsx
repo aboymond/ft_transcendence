@@ -13,13 +13,7 @@ const FriendList = ({ friends, onRemove }: FriendListProps) => {
 				{friends.map((friend) => (
 					<li key={friend.id}>
 						{friend.username ? friend.username : 'Unknown User'}
-						<button
-							onClick={() =>
-								friend.friendship_id && onRemove(friend.friendship_id)
-							}
-						>
-							Remove
-						</button>
+						<button onClick={() => friend.friendship_id && onRemove(friend.friendship_id)}>Remove</button>
 					</li>
 				))}
 			</ul>

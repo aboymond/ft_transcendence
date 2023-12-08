@@ -26,7 +26,7 @@ const FriendsPage: React.FC = () => {
 			socketRef.current = new WebSocket('ws://localhost:8000/ws/friend_requests/' + user.id + '/');
 
 			socketRef.current.onopen = function (e) {
-				console.log('Connection to server opened', e);
+				console.log('FriendsPage WebSocket opened.', e);
 			};
 
 			socketRef.current.onmessage = function (e) {
@@ -40,13 +40,12 @@ const FriendsPage: React.FC = () => {
 				}
 			};
 
-			socketRef.current.onclose = function (event) {
-				console.error('friend_requests socket closed unexpectedly', event);
+			socketRef.current.onclose = function (e) {
+				console.log('FriendsPage WebSocket closed.', e);
 			};
 
 			socketRef.current.onerror = function (error) {
 				console.error('WebSocket error: ', error);
-				console.log('WebSocket readyState: ', socketRef.current?.readyState);
 			};
 		}
 
@@ -104,9 +103,8 @@ const FriendsPage: React.FC = () => {
 
 	return (
 		<div>
-			<h1>My Friends</h1>
-			<AddFriend />
 			<FriendList friends={friends} onRemove={handleRemove} />
+			<AddFriend />
 			<FriendRequests requests={friendRequests} onAccept={handleAccept} onReject={handleReject} />
 		</div>
 	);

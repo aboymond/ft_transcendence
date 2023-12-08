@@ -5,6 +5,7 @@ from .models import CustomUser, GameHistory, Friendship
 @admin.register(CustomUser)
 class CustomUserAdmin(admin.ModelAdmin):
     list_display = (
+        "id",
         "username",
         "display_name",
         "wins",
