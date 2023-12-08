@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Navbar, Offcanvas, Nav, Container, Image } from 'react-bootstrap';
-import styles from '../styles/BarNav.module.css';
+import { Navbar, Nav, Container, Image, Offcanvas, Row, Col } from 'react-bootstrap';
 
 const BarNav: React.FC = () => {
   const [show, setShow] = useState(false);
@@ -8,20 +7,23 @@ const BarNav: React.FC = () => {
   const handleToggle = () => setShow(!show);
 
   return (
-    <Navbar bg="light" expand={false} style={{ flexWrap: 'nowrap' }}>
+    <Navbar bg="green" expand={false} style={{ flexWrap: 'nowrap', paddingLeft: '100px', marginTop: '60px'}}>
       <Container fluid>
-        <Navbar.Brand>Retroscendence</Navbar.Brand>
-        <Nav className="ms-auto">
-          <Nav.Item>
-            <Nav.Link onClick={handleToggle}>
+        <Row className="w-100">
+          <Col xs={true} className="d-flex justify-content-start">
+            <Navbar.Brand style={{ color: 'var(--primary-color)' }}>Retroscendence</Navbar.Brand>
+          </Col>
+          <Col xs="auto" className="d-flex justify-content-end" style={{ paddingRight: '50px' }}>
+            <Nav.Item>
               <Image 
                 src="../public/img/Nino.png" 
                 roundedCircle 
-                style={{ width: '60px', height: '60px' }}
+                style={{ width: '60px', height: '60px', cursor: 'pointer' }}
+                onClick={handleToggle}
               />
-            </Nav.Link>
-          </Nav.Item>
-        </Nav>
+            </Nav.Item>
+          </Col>
+        </Row>
 
         <Navbar.Offcanvas 
           show={show} 
@@ -32,7 +34,7 @@ const BarNav: React.FC = () => {
             <Offcanvas.Title>Menu</Offcanvas.Title>
           </Offcanvas.Header>
           <Offcanvas.Body>
-            {/* ajouter les options du menu*/}
+            {/* ajouter menu options*/}
             <Nav.Link href="#action1">Option 1</Nav.Link>
             <Nav.Link href="#action2">Option 2</Nav.Link>
           </Offcanvas.Body>
