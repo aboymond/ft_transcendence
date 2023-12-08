@@ -30,13 +30,13 @@ const BarNav: React.FC = () => {
           onHide={() => setShow(false)} 
           placement="end"
         >
-          <Offcanvas.Header closeButton>
+          <Offcanvas.Header closeButton style={{backgroundColor: 'black'}}>
             <Offcanvas.Title>Menu</Offcanvas.Title>
           </Offcanvas.Header>
-          <Offcanvas.Body>
+          <Offcanvas.Body style={{backgroundColor: 'black'}}>
             {/* ajouter menu options*/}
-            <Nav.Link href="#action1">Option 1</Nav.Link>
-            <Nav.Link href="#action2">Option 2</Nav.Link>
+            <Nav.Link href="#action1">Profile</Nav.Link>
+            <Nav.Link href="#action2">Log Out</Nav.Link>
           </Offcanvas.Body>
         </Navbar.Offcanvas>
       </Container>

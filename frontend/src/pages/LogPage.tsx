@@ -50,7 +50,7 @@ const LogPage: React.FC = () => {
                                 </>
                             )}
                         </Card.Body>
-                        {showComponent === '' && <Card.Footer>
+                        {showComponent === '' && <Card.Footer className={styles.footer}>
                             Made with love by us
                         </Card.Footer>}
                     </Card>

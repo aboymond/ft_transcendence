@@ -21,8 +21,16 @@
 .header{
     margin: 10px;
     white-space: nowrap;
+    text-align: center;
+}
+
+.footer {
+    margin: 10px;
+    white-space: nowrap;
+    text-align: center;
 }
 
 .scrollableContent {
     overflow-y: auto;
   }
+
