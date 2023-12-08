@@ -20,7 +20,9 @@
 
 .header{
     margin: 10px;
-    
-    
     white-space: nowrap;
 }
+
+.scrollableContent {
+    overflow-y: auto;
+  }
