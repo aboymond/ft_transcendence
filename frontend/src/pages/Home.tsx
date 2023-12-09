@@ -6,13 +6,10 @@ import '../App.css';
 // import Menu from '../components/Menu';
 // import History from '../components/History';
 // import Footer from '../components/Footer';
+import BarNav from '../components/BarNav';
 
 const Home: React.FC = () => {
-	return (
-		<div id="page">
-			<Container fluid></Container>
-		</div>
-	);
+	return <BarNav />;
 };
 
 export default Home;

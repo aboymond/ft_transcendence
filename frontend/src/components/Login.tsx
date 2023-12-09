@@ -39,6 +39,7 @@ const Login: React.FC<LoginProps> = ({ onClose }) => {
 					right: 10,
 					backgroundColor: 'var(--primary-color)',
 					borderColor: 'var(--accent-color)',
+					width: 'auto',
 				}}
 			>
 				&times;

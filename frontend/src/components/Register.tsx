@@ -38,6 +38,7 @@ const Register: React.FC<RegisterProps> = ({ onClose, onSuccess }) => {
 					right: 10,
 					backgroundColor: 'var(--primary-color)',
 					borderColor: 'var(--accent-color)',
+					width: 'auto',
 				}}
 			>
 				&times;
