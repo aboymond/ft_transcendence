@@ -9,11 +9,7 @@ interface FriendRequestsProps {
 	onReject: (requestId: number) => void;
 }
 
-const FriendRequests = ({
-	requests,
-	onAccept,
-	onReject,
-}: FriendRequestsProps) => {
+const FriendRequests = ({ requests, onAccept, onReject }: FriendRequestsProps) => {
 	const { user } = useAuth();
 	return (
 		<div>
@@ -22,15 +18,11 @@ const FriendRequests = ({
 				{requests.map((request) => (
 					<li key={request.id}>
 						{request.requester?.username === user?.username
-							? `You sent a friend request to ${
-									request.receiver?.username || 'Unknown User'
-							  }`
-							: `${
-									request.requester?.username || 'Unknown User'
-							  } sent you a friend request`}
+							? `You sent a friend request to ${request.receiver?.username || 'Unknown User'}`
+							: `${request.requester?.username || 'Unknown User'} sent you a friend request`}
 						{
 							request.requester?.username === user?.username ? (
-								<button onClick={() => onReject(request.id)}>Cancel</button> //! TODO change to cancel
+								<button onClick={() => onReject(request.id)}>Cancel</button> //! TODO change to cancel ?
 							) : (
 								<>
 									<button onClick={() => onAccept(request.id)}>Accept</button>

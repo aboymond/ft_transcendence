@@ -2,9 +2,9 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { Navbar, Nav, Container } from 'react-bootstrap';
-import styles from '../styles/NavBar.module.css';
+import styles from '../styles/BarNav.module.css';
 
-const NavBar: React.FC = () => {
+const TestNavBar: React.FC = () => {
 	const auth = useAuth();
 	const navigate = useNavigate();
 
@@ -27,4 +27,4 @@ const NavBar: React.FC = () => {
 	);
 };
 
-export default NavBar;
+export default TestNavBar;
