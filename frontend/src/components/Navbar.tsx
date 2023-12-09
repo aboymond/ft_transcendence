@@ -18,6 +18,8 @@ const NavBar: React.FC = () => {
 			<Container>
 				<Navbar.Brand>{auth.user?.username || 'Retroscendence'}</Navbar.Brand>
 				<Nav className="ml-auto">
+					<Nav.Link onClick={() => navigate('/home')}>Home</Nav.Link>
+					<Nav.Link onClick={() => navigate('/test')}>Test</Nav.Link>
 					<Nav.Link onClick={handleLogout}>Logout</Nav.Link>
 				</Nav>
 			</Container>

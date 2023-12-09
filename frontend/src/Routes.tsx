@@ -6,14 +6,14 @@ import FriendsPage from './pages/FriendsPage';
 import LoadingScreen from './components/LoadingScreen';
 import LogPage from './pages/LogPage';
 import Navbar from './components/Navbar';
-import HomePage from './pages/HomePage';
+import TestPage from './pages/TestPage';
 
 const AuthenticatedRoutes: React.FC = () => (
 	<>
 		<Navbar />
 		<Routes>
 			<Route path="/home" element={<Home />} />
-			<Route path="/test" element={<HomePage />} />
+			<Route path="/test" element={<TestPage />} />
 			<Route path="/profile" element={<Profile />} />
 			<Route path="/friends" element={<FriendsPage />} />
 			<Route path="*" element={<Navigate to="/home" replace />} />

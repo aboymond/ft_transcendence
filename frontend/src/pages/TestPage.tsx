@@ -1,4 +1,4 @@
-// frontend/src/pages/HomePage.tsx
+// frontend/src/pages/TestPage.tsx
 import React, { useState } from 'react';
 import { Button, Container, Row, Col } from 'react-bootstrap';
 import '../App.css';
@@ -7,7 +7,7 @@ import Profile from '../components/Profile';
 import FriendsPage from './FriendsPage';
 import GameWindow from '../components/GameWindow';
 
-const HomePage: React.FC = () => {
+const TestPage: React.FC = () => {
 	const [activeComponent, setActiveComponent] = useState<'history' | 'profile' | 'friends' | 'game'>(
 		'history',
 	);
@@ -31,7 +31,7 @@ const HomePage: React.FC = () => {
 							Friends
 						</Button>
 					</Col>
-					<Col xs={12}>
+					<Col xs={4}>
 						<Button style={{ width: '100%' }} onClick={() => setActiveComponent('game')}>
 							Game
 						</Button>
@@ -47,4 +47,4 @@ const HomePage: React.FC = () => {
 	);
 };
 
-export default HomePage;
+export default TestPage;
