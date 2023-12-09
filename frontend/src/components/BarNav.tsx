@@ -3,6 +3,7 @@ import { Navbar, Nav, Container, Image, Offcanvas, Row, Col } from 'react-bootst
 import apiService from '../services/apiService';
 import { useAuth } from '../hooks/useAuth';
 import Profile from './Profile';
+import Friends from './Friends';
 
 const BarNav: React.FC = () => {
 	const [show, setShow] = useState(false);
@@ -46,6 +47,7 @@ const BarNav: React.FC = () => {
 					<Offcanvas.Body style={{ backgroundColor: 'black' }}>
 						{/* ajouter menu options*/}
 						<Profile />
+						<Friends />
 						<Nav.Link onClick={auth.logout}>Log Out</Nav.Link>
 					</Offcanvas.Body>
 				</Navbar.Offcanvas>

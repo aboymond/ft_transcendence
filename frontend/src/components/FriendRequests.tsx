@@ -13,7 +13,7 @@ const FriendRequests = ({ requests, onAccept, onReject }: FriendRequestsProps) =
 	const { user } = useAuth();
 	return (
 		<div>
-			<h2>Friend Requests</h2>
+			<p>Friend Requests</p>
 			<ul>
 				{requests.map((request) => (
 					<li key={request.id}>

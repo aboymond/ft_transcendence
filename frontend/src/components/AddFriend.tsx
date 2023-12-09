@@ -37,7 +37,7 @@ const AddFriend = () => {
 
 	return (
 		<div>
-			<h2>Add a Friend</h2>
+			<p>Add a Friend</p>
 			<input
 				type="text"
 				value={username}

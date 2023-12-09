@@ -4,7 +4,7 @@ import { Button, Container, Row, Col } from 'react-bootstrap';
 import '../App.css';
 import GameHistoryList from '../components/GameHistoryList';
 import Profile from '../components/Profile';
-import FriendsPage from './FriendsPage';
+import Friends from '../components/Friends';
 import GameWindow from '../components/GameWindow';
 
 const TestPage: React.FC = () => {
@@ -40,7 +40,7 @@ const TestPage: React.FC = () => {
 
 				{activeComponent === 'history' && <GameHistoryList />}
 				{activeComponent === 'profile' && <Profile />}
-				{activeComponent === 'friends' && <FriendsPage />}
+				{activeComponent === 'friends' && <Friends />}
 				{activeComponent === 'game' && <GameWindow />}
 			</Container>
 		</div>

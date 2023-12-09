@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import apiService from '../services/apiService';
-import FriendList from '../components/FriendsList';
-import AddFriend from '../components/AddFriend';
-import FriendRequests from '../components/FriendRequests';
+import FriendList from './FriendsList';
+import AddFriend from './AddFriend';
+import FriendRequests from './FriendRequests';
 import { User, FriendRequest } from '../types';
 
-const FriendsPage: React.FC = () => {
+const Friends: React.FC = () => {
 	const [friends, setFriends] = useState<User[]>([]);
 	const [friendRequests, setFriendRequests] = useState<FriendRequest[]>([]);
 	const auth = useAuth();
@@ -26,7 +26,7 @@ const FriendsPage: React.FC = () => {
 			socketRef.current = new WebSocket('ws://localhost:8000/ws/friend_requests/' + user.id + '/');
 
 			socketRef.current.onopen = function (e) {
-				console.log('FriendsPage WebSocket opened.', e);
+				console.log('Friends WebSocket opened.', e);
 			};
 
 			socketRef.current.onmessage = function (e) {
@@ -41,7 +41,7 @@ const FriendsPage: React.FC = () => {
 			};
 
 			socketRef.current.onclose = function (e) {
-				console.log('FriendsPage WebSocket closed.', e);
+				console.log('Friends WebSocket closed.', e);
 			};
 
 			socketRef.current.onerror = function (error) {
@@ -110,4 +110,4 @@ const FriendsPage: React.FC = () => {
 	);
 };
 
-export default FriendsPage;
+export default Friends;

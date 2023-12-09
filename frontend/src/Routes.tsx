@@ -2,7 +2,7 @@ import { useAuth } from './hooks/useAuth';
 import { Route, Routes, Navigate } from 'react-router-dom';
 import Home from './pages/Home';
 import Profile from './components/Profile';
-import FriendsPage from './pages/FriendsPage';
+import Friends from './components/Friends';
 import LoadingScreen from './components/LoadingScreen';
 import LogPage from './pages/LogPage';
 import TestNavbar from './components/TestNavbar';
@@ -15,7 +15,7 @@ const AuthenticatedRoutes: React.FC = () => (
 			<Route path="/home" element={<Home />} />
 			<Route path="/test" element={<TestPage />} />
 			<Route path="/profile" element={<Profile />} />
-			<Route path="/friends" element={<FriendsPage />} />
+			<Route path="/friends" element={<Friends />} />
 			<Route path="*" element={<Navigate to="/home" replace />} />
 		</Routes>
 	</>
