@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Navbar, Nav, Container, Image, Offcanvas, Row, Col } from 'react-bootstrap';
 import apiService from '../services/apiService';
+import { useAuth } from '../hooks/useAuth';
+import Profile from './Profile';
 
 const BarNav: React.FC = () => {
 	const [show, setShow] = useState(false);
 	const [avatarUrl, setAvatarUrl] = useState('');
+	const auth = useAuth();
 
 	useEffect(() => {
 		const fetchUserProfile = async () => {
@@ -42,8 +45,8 @@ const BarNav: React.FC = () => {
 					</Offcanvas.Header>
 					<Offcanvas.Body style={{ backgroundColor: 'black' }}>
 						{/* ajouter menu options*/}
-						<Nav.Link href="#action1">Profile</Nav.Link>
-						<Nav.Link href="#action2">Log Out</Nav.Link>
+						<Profile />
+						<Nav.Link onClick={auth.logout}>Log Out</Nav.Link>
 					</Offcanvas.Body>
 				</Navbar.Offcanvas>
 			</Container>
