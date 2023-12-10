@@ -1,11 +1,12 @@
 // frontend/src/pages/TestPage.tsx
 import React, { useState } from 'react';
-import { Button, Container, Row, Col } from 'react-bootstrap';
+import { Container, Row, Col, Dropdown, DropdownButton } from 'react-bootstrap';
 import '../App.css';
 import GameHistoryList from '../components/GameHistoryList';
 import Profile from '../components/Profile';
 import Friends from '../components/Friends';
 import GameWindow from '../components/GameWindow';
+import TestNavbar from '../components/TestNavbar';
 
 const TestPage: React.FC = () => {
 	const [activeComponent, setActiveComponent] = useState<'history' | 'profile' | 'friends' | 'game'>(
@@ -14,27 +15,19 @@ const TestPage: React.FC = () => {
 
 	return (
 		<div id="page">
+			<TestNavbar />
 			<Container fluid>
 				<Row>
-					<Col xs={4}>
-						<Button style={{ width: '100%' }} onClick={() => setActiveComponent('history')}>
-							History
-						</Button>
-					</Col>
-					<Col xs={4}>
-						<Button style={{ width: '100%' }} onClick={() => setActiveComponent('profile')}>
-							Profile
-						</Button>
-					</Col>
-					<Col xs={4}>
-						<Button style={{ width: '100%' }} onClick={() => setActiveComponent('friends')}>
-							Friends
-						</Button>
-					</Col>
-					<Col xs={4}>
-						<Button style={{ width: '100%' }} onClick={() => setActiveComponent('game')}>
-							Game
-						</Button>
+					<Col xs={12}>
+						<DropdownButton
+							id="dropdown-basic-button"
+							title={activeComponent.charAt(0).toUpperCase() + activeComponent.slice(1)}
+						>
+							<Dropdown.Item onClick={() => setActiveComponent('history')}>History</Dropdown.Item>
+							<Dropdown.Item onClick={() => setActiveComponent('profile')}>Profile</Dropdown.Item>
+							<Dropdown.Item onClick={() => setActiveComponent('friends')}>Friends</Dropdown.Item>
+							<Dropdown.Item onClick={() => setActiveComponent('game')}>Game</Dropdown.Item>
+						</DropdownButton>
 					</Col>
 				</Row>
 

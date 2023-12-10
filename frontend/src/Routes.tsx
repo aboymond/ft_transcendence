@@ -5,12 +5,10 @@ import Profile from './components/Profile';
 import Friends from './components/Friends';
 import LoadingScreen from './components/LoadingScreen';
 import LogPage from './pages/LogPage';
-// import TestNavbar from './components/TestNavbar';
 import TestPage from './pages/TestPage';
 
 const AuthenticatedRoutes: React.FC = () => (
 	<>
-		{/* <TestNavbar /> */}
 		<Routes>
 			<Route path="/home" element={<Home />} />
 			<Route path="/test" element={<TestPage />} />

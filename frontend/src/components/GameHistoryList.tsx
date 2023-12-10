@@ -30,7 +30,7 @@ const GameHistoryList: React.FC = () => {
 					</li>
 				))}
 			</ul>
-			<div>
+			<div style={{ display: 'flex', flexDirection: 'row' }}>
 				<button onClick={loadPreviousPage} disabled={page === 0}>
 					Previous
 				</button>

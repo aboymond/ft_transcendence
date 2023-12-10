@@ -37,14 +37,14 @@ const AddFriend = () => {
 
 	return (
 		<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-			<p>Add friends</p>
+			<p style={{ textAlign: 'center' }}>Add friends</p>
 			<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
 				<input
 					type="text"
 					value={username}
 					onChange={(e) => setUsername(e.target.value)}
 					placeholder="Username"
-					style={{ background: 'transparent', marginRight: '10px' }}
+					style={{ background: 'transparent', marginRight: '10px', border: 'none', textAlign: 'center' }}
 				/>
 				<button style={{ background: 'grey' }} onClick={handleAddFriend}>
 					+

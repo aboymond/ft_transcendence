@@ -79,7 +79,9 @@ const Profile: React.FC = () => {
 	return (
 		<div>
 			<div style={{ display: 'flex', alignItems: 'center' }}>
-				<img src={profile.avatar} alt="User avatar" style={{ width: '100px', height: '100px' }} />
+				{!isEditing && (
+					<img src={profile.avatar} alt="User avatar" style={{ width: '100px', height: '100px' }} />
+				)}
 				{isEditing && <input type="file" onChange={handleAvatarChange} />}
 			</div>
 			{isEditing ? (

@@ -42,7 +42,7 @@ const BarNav: React.FC = () => {
 
 				<Navbar.Offcanvas show={show} onHide={() => setShow(false)} placement="end">
 					<Offcanvas.Header closeButton style={{ backgroundColor: 'black' }}>
-						<Offcanvas.Title>Menu</Offcanvas.Title>
+						<Offcanvas.Title style={{ textAlign: 'center' }}>Menu</Offcanvas.Title>
 					</Offcanvas.Header>
 					<Offcanvas.Body style={{ backgroundColor: 'black' }}>
 						{/* ajouter menu options*/}

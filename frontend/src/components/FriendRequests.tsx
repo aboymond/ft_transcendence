@@ -17,8 +17,8 @@ const FriendRequests = ({ requests, onAccept, onReject }: FriendRequestsProps) =
 
 	return (
 		<div>
-			<p>Friend Requests</p>
-			<ul>
+			<p style={{ textAlign: 'center' }}>Friend Requests</p>
+			<ul style={{ maxHeight: '4em', overflowY: 'auto' }}>
 				{receivedRequests.map((request) => (
 					<div
 						key={request.id}
@@ -43,7 +43,7 @@ const FriendRequests = ({ requests, onAccept, onReject }: FriendRequestsProps) =
 				))}
 			</ul>
 			<hr />
-			<ul>
+			<ul style={{ maxHeight: '6em', overflowY: 'auto' }}>
 				{sentRequests.map((request) => (
 					<div
 						key={request.id}

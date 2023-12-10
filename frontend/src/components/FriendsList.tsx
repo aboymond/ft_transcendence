@@ -8,8 +8,8 @@ interface FriendListProps {
 const FriendList = ({ friends, onRemove }: FriendListProps) => {
 	return (
 		<div>
-			<p>Friends</p>
-			<ul>
+			<p style={{ textAlign: 'center' }}>Friends</p>
+			<ul style={{ maxHeight: '6em', overflowY: 'auto' }}>
 				{friends.map((friend) => (
 					<li key={friend.id}>
 						<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
