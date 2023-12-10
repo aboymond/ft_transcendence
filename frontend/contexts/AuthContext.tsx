@@ -10,6 +10,7 @@ interface AuthContextType {
 	loading: boolean;
 	login: (token: string, user: User) => void;
 	logout: () => void;
+	updateUser: (user: User) => void;
 }
 
 interface DecodedToken {
@@ -61,6 +62,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 		setUser(null);
 	};
 
+	const updateUser = (updatedUser: User) => {
+		setUser(updatedUser);
+	};
+
 	const authContextValue: AuthContextType = {
 		token,
 		isAuthenticated,
@@ -68,6 +73,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 		loading,
 		login,
 		logout,
+		updateUser,
 	};
 
 	return <AuthContext.Provider value={authContextValue}>{children}</AuthContext.Provider>;

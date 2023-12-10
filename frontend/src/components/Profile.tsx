@@ -3,7 +3,6 @@ import { useAuth } from '../hooks/useAuth';
 import { apiService } from '../services/apiService';
 import { User } from '../types';
 import { useNavigate } from 'react-router-dom';
-// import { GameHistory } from '../types';
 
 const Profile: React.FC = () => {
 	const [profile, setProfile] = useState<User | null>(null);
@@ -12,7 +11,6 @@ const Profile: React.FC = () => {
 	const [username, setUsername] = useState('');
 	const [display_name, setDisplayName] = useState('');
 	const [avatar, setAvatar] = useState<File | null>(null);
-	// const [gameHistory, setGameHistory] = useState<GameHistory[]>([]);
 	const auth = useAuth();
 	const navigate = useNavigate();
 
@@ -31,17 +29,18 @@ const Profile: React.FC = () => {
 				await apiService.uploadUserAvatar(avatar);
 			}
 			console.log('Profile updated successfully');
-			setIsEditing(false); // Close the editing form after successful update
+			setIsEditing(false);
 
 			// Fetch the updated profile
 			const updatedProfile = await apiService.getUserProfile();
-			setProfile(updatedProfile); // Update the profile state
+			setProfile(updatedProfile);
+
+			auth.updateUser(updatedProfile);
 		} catch (error) {
 			console.error('Error updating profile:', error);
 		}
 	};
 
-	// Fetch the profile only when auth.isAuthenticated changes
 	useEffect(() => {
 		if (!auth.isAuthenticated) {
 			navigate('/');
@@ -59,15 +58,6 @@ const Profile: React.FC = () => {
 			});
 	}, [auth.isAuthenticated, navigate]);
 
-	// Fetch the game history only when profile.id changes
-	// useEffect(() => {
-	// 	if (profile) {
-	// 		console.log('Profile: ', profile);
-	// 		apiService.getUserGameHistory(profile.id).then(setGameHistory).catch(console.error);
-	// 		console.log('Game History: ', gameHistory);
-	// 	}
-	// }, [profile, gameHistory]);
-
 	if (error) {
 		return <div>Error: {error}</div>;
 	}
@@ -78,10 +68,7 @@ const Profile: React.FC = () => {
 
 	return (
 		<div>
-			<div style={{ display: 'flex', alignItems: 'center' }}>
-				{!isEditing && (
-					<img src={profile.avatar} alt="User avatar" style={{ width: '100px', height: '100px' }} />
-				)}
+			<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
 				{isEditing && <input type="file" onChange={handleAvatarChange} />}
 			</div>
 			{isEditing ? (
@@ -109,16 +96,6 @@ const Profile: React.FC = () => {
 							Update Profile
 						</button>
 					)}
-					{/* <h2>Game History</h2>
-					{gameHistory.map((game, index) => (
-						<div key={index}>
-							<p>Game {index + 1}:</p>
-							<p>Winner: {game.winner.username}</p>
-							<p>Played at: {new Date(game.played_at).toLocaleString()}</p>
-							<p>Player 1 Score: {game.player1_score}</p>
-							<p>Player 2 Score: {game.player2_score}</p>
-						</div>
-					))} */}
 				</>
 			)}
 		</div>

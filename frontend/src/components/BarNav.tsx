@@ -1,23 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Navbar, Nav, Container, Image, Offcanvas, Row, Col } from 'react-bootstrap';
-import apiService from '../services/apiService';
 import { useAuth } from '../hooks/useAuth';
 import Profile from './Profile';
 import Friends from './Friends';
 
 const BarNav: React.FC = () => {
 	const [show, setShow] = useState(false);
-	const [avatarUrl, setAvatarUrl] = useState('');
 	const auth = useAuth();
-
-	useEffect(() => {
-		const fetchUserProfile = async () => {
-			const userProfile = await apiService.getUserProfile();
-			setAvatarUrl(userProfile.avatar);
-		};
-
-		fetchUserProfile();
-	}, []);
+	const avatarUrl = auth.user?.avatar || '';
 
 	const handleToggle = () => setShow(!show);
 
@@ -41,8 +31,12 @@ const BarNav: React.FC = () => {
 				</Row>
 
 				<Navbar.Offcanvas show={show} onHide={() => setShow(false)} placement="end">
-					<Offcanvas.Header closeButton style={{ backgroundColor: 'black' }}>
-						<Offcanvas.Title style={{ textAlign: 'center' }}>Menu</Offcanvas.Title>
+					<Offcanvas.Header closeButton style={{ backgroundColor: 'black', justifyContent: 'center' }}>
+						<Image
+							src={avatarUrl}
+							roundedCircle
+							style={{ width: '60px', height: '60px', cursor: 'pointer' }}
+						/>
 					</Offcanvas.Header>
 					<Offcanvas.Body style={{ backgroundColor: 'black' }}>
 						{/* ajouter menu options*/}
