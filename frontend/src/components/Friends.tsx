@@ -103,9 +103,13 @@ const Friends: React.FC = () => {
 
 	return (
 		<div>
+			<hr />
 			<FriendList friends={friends} onRemove={handleRemove} />
+			<hr />
 			<AddFriend />
+			<hr />
 			<FriendRequests requests={friendRequests} onAccept={handleAccept} onReject={handleReject} />
+			<hr />
 		</div>
 	);
 };

@@ -36,15 +36,20 @@ const AddFriend = () => {
 	};
 
 	return (
-		<div>
-			<p>Add a Friend</p>
-			<input
-				type="text"
-				value={username}
-				onChange={(e) => setUsername(e.target.value)}
-				placeholder="Enter username"
-			/>
-			<button onClick={handleAddFriend}>Add Friend</button>
+		<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+			<p>Add friends</p>
+			<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+				<input
+					type="text"
+					value={username}
+					onChange={(e) => setUsername(e.target.value)}
+					placeholder="Username"
+					style={{ background: 'transparent', marginRight: '10px' }}
+				/>
+				<button style={{ background: 'grey' }} onClick={handleAddFriend}>
+					+
+				</button>
+			</div>
 		</div>
 	);
 };

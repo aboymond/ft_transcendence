@@ -103,7 +103,9 @@ const Profile: React.FC = () => {
 					<p>Wins: {profile.wins}</p>
 					<p>Losses: {profile.losses}</p>
 					{auth.user && auth.user.id === profile.id && (
-						<button onClick={() => setIsEditing(true)}>Update Profile</button>
+						<button style={{ background: 'grey' }} onClick={() => setIsEditing(true)}>
+							Update Profile
+						</button>
 					)}
 					{/* <h2>Game History</h2>
 					{gameHistory.map((game, index) => (

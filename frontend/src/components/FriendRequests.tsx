@@ -11,30 +11,57 @@ interface FriendRequestsProps {
 
 const FriendRequests = ({ requests, onAccept, onReject }: FriendRequestsProps) => {
 	const { user } = useAuth();
+
+	const receivedRequests = requests.filter((request) => request.requester?.username !== user?.username);
+	const sentRequests = requests.filter((request) => request.requester?.username === user?.username);
+
 	return (
 		<div>
 			<p>Friend Requests</p>
 			<ul>
-				{requests.map((request) => (
-					<li key={request.id}>
-						{request.requester?.username === user?.username
-							? `You sent a friend request to ${request.receiver?.username || 'Unknown User'}`
-							: `${request.requester?.username || 'Unknown User'} sent you a friend request`}
-						{
-							request.requester?.username === user?.username ? (
-								<button onClick={() => onReject(request.id)}>Cancel</button> //! TODO change to cancel ?
-							) : (
-								<>
-									<button onClick={() => onAccept(request.id)}>Accept</button>
-									<button onClick={() => onReject(request.id)}>Reject</button>
-								</>
-							) // Show Accept and Reject buttons for received requests
-						}
-					</li>
+				{receivedRequests.map((request) => (
+					<div
+						key={request.id}
+						style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+					>
+						<p style={{ margin: '0' }}>{`${request.requester?.username || 'Unknown User'}`}</p>
+						<div style={{ display: 'flex', alignItems: 'center' }}>
+							<button
+								style={{ border: 'none', background: 'transparent', padding: '0' }}
+								onClick={() => onAccept(request.id)}
+							>
+								+
+							</button>
+							<button
+								style={{ border: 'none', background: 'transparent', padding: '0' }}
+								onClick={() => onReject(request.id)}
+							>
+								x
+							</button>
+						</div>
+					</div>
+				))}
+			</ul>
+			<hr />
+			<ul>
+				{sentRequests.map((request) => (
+					<div
+						key={request.id}
+						style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+					>
+						<p style={{ margin: '0' }}>{`${request.receiver?.username || 'Unknown User'}`}</p>
+						<div style={{ display: 'flex', alignItems: 'center' }}>
+							<button
+								style={{ border: 'none', background: 'transparent', padding: '0' }}
+								onClick={() => onReject(request.id)}
+							>
+								x
+							</button>
+						</div>
+					</div>
 				))}
 			</ul>
 		</div>
 	);
 };
-
 export default FriendRequests;
