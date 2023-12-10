@@ -5,10 +5,10 @@ import { Button } from 'react-bootstrap';
 
 interface RegisterProps {
 	onClose: () => void;
-	// onSuccess: () => void;
+	onSuccess: () => void;
 }
 
-const Register: React.FC<RegisterProps> = ({ onClose }) => {
+const Register: React.FC<RegisterProps> = ({ onClose, onSuccess }) => {
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
 	const [displayName, setDisplayName] = useState('');
@@ -20,7 +20,7 @@ const Register: React.FC<RegisterProps> = ({ onClose }) => {
 			await apiService.register(username, password, displayName);
 			console.log('Registration successful');
 			setError('');
-			// onSuccess();
+			onSuccess();
 		} catch (error) {
 			console.error('Registration failed:', error);
 			setError('Registration failed.');

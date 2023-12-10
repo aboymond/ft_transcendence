@@ -33,7 +33,7 @@ const LogPage: React.FC = () => {
 								{showComponent === 'login' ? (
 									<Login onClose={handleClose} />
 								) : showComponent === 'register' ? (
-									<Register onClose={handleClose} />
+									<Register onClose={handleClose} onSuccess={() => setShowComponent('login')} />
 								) : (
 									<>
 										<Row>
