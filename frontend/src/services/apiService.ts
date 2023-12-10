@@ -93,14 +93,15 @@ export const apiService = {
 	uploadUserAvatar: async (avatar: File) => {
 		const formData = new FormData();
 		formData.append('avatar', avatar);
-		const response = await fetchAPI('users/avatar/upload/', {
-			method: 'PUT',
-			body: formData,
-		});
-		if (!response.ok) {
+		try {
+			const response = await fetchAPI('users/avatar/upload/', {
+				method: 'PUT',
+				body: formData,
+			});
+			return response;
+		} catch (error) {
 			throw new Error('Error uploading avatar');
 		}
-		return response.json();
 	},
 	getFriends: async (): Promise<User[]> => {
 		return fetchAPI('users/friends/list/');
