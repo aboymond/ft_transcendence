@@ -9,5 +9,4 @@ export abstract class SceneBase {
 	public abstract onFinish();
 	public abstract onKeyDown(e: KeyboardEvent);
 	public abstract onKeyUp(e: KeyboardEvent);
-	public abstract updateState(data: any): void;
 }

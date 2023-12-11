@@ -1,19 +1,18 @@
-import { defaultColor, glowFilter } from "..";
-import { SceneBase } from "./SceneBase"
-import { SceneMenu } from "./SceneMenu";
-import { SceneWinOrLoose } from "./SceneWinOrLoose";
+import { defaultColor, glowFilter } from '..';
+import { SceneBase } from './SceneBase';
+import { SceneMenu } from './SceneMenu';
+import { SceneWinOrLoose } from './SceneWinOrLoose';
 import * as PIXI from 'pixi.js';
 import { gsap } from 'gsap';
 
 export class SceneGameVsBot extends SceneBase {
-
 	private _data = {
 		// isStarted: false,
-		ballVelocity: {x: 0, y: 5},
+		ballVelocity: { x: 0, y: 5 },
 		playerAScore: 0,
 		playerBScore: 0,
 		playerTurnA: Math.random() < 0.5,
-	}
+	};
 
 	private _botLvl = this.root.botLvl;
 	private _gameStarted = false;
@@ -21,19 +20,18 @@ export class SceneGameVsBot extends SceneBase {
 	private _botStarting = false;
 	private _exitBool = false;
 	private _exitYesNO = true;
-	
+
 	private _ball = new PIXI.Graphics();
 	private _padBot = new PIXI.Graphics();
 	private _padPlayer = new PIXI.Graphics();
-	private _scoreText = new PIXI.Text('0 - 0', {fill: defaultColor});
+	private _scoreText = new PIXI.Text('0 - 0', { fill: defaultColor });
 	private _keysPressed: { [key: string]: boolean } = {};
 	private _escapeKeyPressed = false;
 
 	private _exitMenu = new PIXI.Container();
 	private _yesOption: PIXI.Text;
-    private _noOption: PIXI.Text;
+	private _noOption: PIXI.Text;
 	private _exitText: PIXI.Text;
-
 
 	//=======================================
 	// HOOK
@@ -62,38 +60,29 @@ export class SceneGameVsBot extends SceneBase {
 
 		this._exitMenu = this._initExitMenu();
 		container.addChild(this._exitMenu);
-	
 	}
 
-
 	public onUpdate() {
-
 		if (!this._exitBool) {
-
 			this._botMove();
-			if (!this._gameStarted) 
-				this._checkTurn();
+			if (!this._gameStarted) this._checkTurn();
 			else {
 				this._addVelocity();
 				this._checkCollisions();
 				this._checkifBallIsOut();
-				
 			}
 		}
 		this._updatePadPosition();
 		if (this._data.playerAScore === this.root.amountVictory) {
 			this.root.playerAWin = true;
 			this.root.loadScene(new SceneWinOrLoose(this.root));
-		}
-		else if (this._data.playerBScore === this.root.amountVictory) {
+		} else if (this._data.playerBScore === this.root.amountVictory) {
 			this.root.playerAWin = false;
 			this.root.loadScene(new SceneWinOrLoose(this.root));
 		}
 	}
 
-	public onFinish() {
-
-	}
+	public onFinish() {}
 
 	public onKeyDown(e: KeyboardEvent) {
 		this._keysPressed[e.code] = true;
@@ -102,13 +91,13 @@ export class SceneGameVsBot extends SceneBase {
 			this._escapeKeyPressed = true;
 			this._exitBool = !this._exitBool;
 			this._exitMenu.visible = this._exitBool;
-			console.log("Escape " + (this._exitBool ? "true" : "false"));
+			console.log('Escape ' + (this._exitBool ? 'true' : 'false'));
 		}
 	}
 
 	public onKeyUp(e: KeyboardEvent) {
 		delete this._keysPressed[e.code];
-		
+
 		if (e.code === 'Escape') {
 			this._escapeKeyPressed = false;
 		}
@@ -118,7 +107,7 @@ export class SceneGameVsBot extends SceneBase {
 	// UTILS INIT
 	//=======================================
 
-	private _initBall(size: number, color: number){
+	private _initBall(size: number, color: number) {
 		this._ball.beginFill(color);
 		this._ball.drawRect(0, 0, size, size);
 		this._ball.filters = [glowFilter];
@@ -126,9 +115,9 @@ export class SceneGameVsBot extends SceneBase {
 		return this._ball;
 	}
 
-	private _initPad(pad: PIXI.Graphics, width: number, height: number, color: number){
+	private _initPad(pad: PIXI.Graphics, width: number, height: number, color: number) {
 		pad.beginFill(color);
-		pad.drawRect(-width/2, -height/2, width, height);
+		pad.drawRect(-width / 2, -height / 2, width, height);
 		pad.filters = [glowFilter];
 		pad.endFill();
 		return pad;
@@ -140,117 +129,112 @@ export class SceneGameVsBot extends SceneBase {
 	}
 
 	//=======================================
-	// UTILS 
+	// UTILS
 	//=======================================
 
 	private _addVelocity() {
-		if (this._playerTurn)
-			this._ball.y -= this._data.ballVelocity.y;
-		else 
-			this._ball.y += this._data.ballVelocity.y;
+		if (this._playerTurn) this._ball.y -= this._data.ballVelocity.y;
+		else this._ball.y += this._data.ballVelocity.y;
 		this._ball.x += this._data.ballVelocity.x;
 	}
-	
+
 	private _checkCollisions() {
-		// Wall colision 
-		if (this._ball.x <= 1 || (this._ball.x + this._ball.width / 2) >= this.root.width -1)
-					this._data.ballVelocity.x = -this._data.ballVelocity.x;
+		// Wall colision
+		if (this._ball.x <= 1 || this._ball.x + this._ball.width / 2 >= this.root.width - 1)
+			this._data.ballVelocity.x = -this._data.ballVelocity.x;
 
 		// Pad colision
-		if (this._ball.x > this._padBot.x - this._padBot.width / 2 && this._ball.x < this._padBot.x + this._padBot.width / 2) {
-			if (this._ball.y <= (this._padBot.y + this._padBot.height / 2) + 1){
+		if (
+			this._ball.x > this._padBot.x - this._padBot.width / 2 &&
+			this._ball.x < this._padBot.x + this._padBot.width / 2
+		) {
+			if (this._ball.y <= this._padBot.y + this._padBot.height / 2 + 1) {
 				this._data.ballVelocity.y = -this._data.ballVelocity.y;
-				this._data.ballVelocity.x = (this._ball.x - this._padBot.x ) / (this._padBot.width / 2) * 5;
+				this._data.ballVelocity.x = ((this._ball.x - this._padBot.x) / (this._padBot.width / 2)) * 5;
 			}
 		}
-		if (this._ball.x > this._padPlayer.x - this._padPlayer.width / 2 && this._ball.x < this._padPlayer.x + this._padPlayer.width / 2) {
-			if (this._ball.y >= (this._padPlayer.y - this._padPlayer.height) - 1) {
-				this._data.ballVelocity.x = (this._ball.x - this._padPlayer.x ) / (this._padPlayer.width / 2) * 5;
+		if (
+			this._ball.x > this._padPlayer.x - this._padPlayer.width / 2 &&
+			this._ball.x < this._padPlayer.x + this._padPlayer.width / 2
+		) {
+			if (this._ball.y >= this._padPlayer.y - this._padPlayer.height - 1) {
+				this._data.ballVelocity.x = ((this._ball.x - this._padPlayer.x) / (this._padPlayer.width / 2)) * 5;
 				this._data.ballVelocity.y = -this._data.ballVelocity.y;
 			}
 		}
 	}
 
 	private _checkTurn() {
-
 		// turn player or computer
 
 		if (this._playerTurn) {
 			// ball position
 			if (this._ball.x - this._ball.width / 2 < this._padPlayer.x - this._padPlayer.width / 2) {
 				this._ball.x = this._padPlayer.x - this._padPlayer.width / 2 - this._ball.width / 2;
-			}
-			else if (this._ball.x + this._ball.width / 2 > this._padPlayer.x + this._padPlayer.width / 2) {
+			} else if (this._ball.x + this._ball.width / 2 > this._padPlayer.x + this._padPlayer.width / 2) {
 				this._ball.x = this._padPlayer.x + this._padPlayer.width / 2 - this._ball.width / 2;
 			}
-			this._data.ballVelocity.x = (this._ball.x - this._padPlayer.x ) / (this._padPlayer.width / 2) * 5;
-			this._ball.y = (this._padPlayer.y - this._padPlayer.height / 2) - this._ball.height * 2;
-		}
-		else {
-			// ball position 
+			this._data.ballVelocity.x = ((this._ball.x - this._padPlayer.x) / (this._padPlayer.width / 2)) * 5;
+			this._ball.y = this._padPlayer.y - this._padPlayer.height / 2 - this._ball.height * 2;
+		} else {
+			// ball position
 			this._botStart();
 			if (this._ball.x - this._ball.width / 2 < this._padBot.x - this._padBot.width / 2) {
 				this._ball.x = this._padBot.x - this._padBot.width / 2 - this._ball.width / 2;
-			}
-			else if (this._ball.x + this._ball.width / 2 > this._padBot.x + this._padBot.width / 2) {
+			} else if (this._ball.x + this._ball.width / 2 > this._padBot.x + this._padBot.width / 2) {
 				this._ball.x = this._padBot.x + this._padBot.width / 2 - this._ball.width / 2;
 			}
-			this._data.ballVelocity.x = (this._ball.x - this._padBot.x ) / (this._padBot.width / 2) * 5;
-			this._ball.y = (this._padBot.y - this._padBot.height / 2) + this._ball.height * 2;
+			this._data.ballVelocity.x = ((this._ball.x - this._padBot.x) / (this._padBot.width / 2)) * 5;
+			this._ball.y = this._padBot.y - this._padBot.height / 2 + this._ball.height * 2;
 		}
 	}
 
 	private _updatePadPosition() {
-
 		if (!this._exitBool) {
 			// player movement right
 			if (this._keysPressed['ArrowRight']) {
-				if (!((this._padPlayer.x + this._padPlayer.width / 2) > this.root.width)) {
+				if (!(this._padPlayer.x + this._padPlayer.width / 2 > this.root.width)) {
 					this._padPlayer.x += 10;
 				}
 			}
-			
+
 			// player movement left
 			if (this._keysPressed['ArrowLeft']) {
-				if (!((this._padPlayer.x - this._padPlayer.width / 2) < 0)) {
+				if (!(this._padPlayer.x - this._padPlayer.width / 2 < 0)) {
 					this._padPlayer.x -= 10;
 				}
 			}
-	
+
 			// start with space
 			if (this._keysPressed['Space']) {
-				if (this._gameStarted == false)
-					this._gameStarted = true;
-				console.log("press space " + this._gameStarted);
+				if (this._gameStarted == false) this._gameStarted = true;
+				console.log('press space ' + this._gameStarted);
 			}
-
-		}
-		else {
-				if (this._keysPressed['ArrowRight']) {
-					this._exitYesNO = false;
-					this._noOption.style.fill = defaultColor;
-					this._yesOption.style.fill = 0x053100;
-				}
-				if (this._keysPressed['ArrowLeft']) {
-					this._exitYesNO = true;
-					this._yesOption.style.fill = defaultColor;
-					this._noOption.style.fill = 0x053100;
-				}
-				if (this._keysPressed['Enter']) {
-					if (this._exitYesNO) {
-						this.root.loadScene(new SceneMenu(this.root));
-					}
-					else {
-						this._exitBool = false;
-						this._exitMenu.visible = false;
-					}
+		} else {
+			if (this._keysPressed['ArrowRight']) {
+				this._exitYesNO = false;
+				this._noOption.style.fill = defaultColor;
+				this._yesOption.style.fill = 0x053100;
+			}
+			if (this._keysPressed['ArrowLeft']) {
+				this._exitYesNO = true;
+				this._yesOption.style.fill = defaultColor;
+				this._noOption.style.fill = 0x053100;
+			}
+			if (this._keysPressed['Enter']) {
+				if (this._exitYesNO) {
+					this.root.loadScene(new SceneMenu(this.root));
+				} else {
+					this._exitBool = false;
+					this._exitMenu.visible = false;
 				}
 			}
 		}
+	}
 
-	private _checkifBallIsOut(){
+	private _checkifBallIsOut() {
 		if (this._ball.y < 10 || this._ball.y < this._padBot.y) {
-			console.log("Player win !");
+			console.log('Player win !');
 			this._data.ballVelocity.x = 0;
 			this._data.ballVelocity.y = 5;
 			this._padPlayer.x = this.root.width / 2;
@@ -262,7 +246,7 @@ export class SceneGameVsBot extends SceneBase {
 			this._updateScoreText();
 		}
 		if (this._ball.y > this.root.height - 10 || this._ball.y > this._padPlayer.y) {
-			console.log("Bot win !");
+			console.log('Bot win !');
 			this._data.ballVelocity.x = 0;
 			this._data.ballVelocity.y = 5;
 			this._padPlayer.x = this.root.width / 2;
@@ -273,8 +257,8 @@ export class SceneGameVsBot extends SceneBase {
 			this._data.playerBScore++;
 			this._updateScoreText();
 		}
-		console.log("X in GO = " + this._data.ballVelocity.x);
-		console.log("Y in GO = " + this._data.ballVelocity.y);
+		console.log('X in GO = ' + this._data.ballVelocity.x);
+		console.log('Y in GO = ' + this._data.ballVelocity.y);
 	}
 
 	private _updateScoreText() {
@@ -283,23 +267,19 @@ export class SceneGameVsBot extends SceneBase {
 		this._scoreText.y = this.root.height / 2 - this._scoreText.height / 2;
 		this._scoreText.alpha = 0.2;
 	}
-	
 
 	private _botStart() {
-
-		if (this._botStarting)
-			return;
+		if (this._botStarting) return;
 
 		this._botStarting = true;
 		let targetX = Math.random() * this.root.width;
 		// let targetX = this.root.width;
-		if (targetX < this._padBot.width / 2)
-			targetX = this._padBot.width / 2;
+		if (targetX < this._padBot.width / 2) targetX = this._padBot.width / 2;
 		else if (targetX > this.root.width - this._padBot.width / 2)
 			targetX = this.root.width - this._padBot.width / 2;
 		const duration = 1;
 		const ease = 'expo.Out';
-	
+
 		gsap.to(this._padBot, {
 			x: targetX,
 			duration: duration,
@@ -307,19 +287,24 @@ export class SceneGameVsBot extends SceneBase {
 			onComplete: () => {
 				this._gameStarted = true;
 				this._botStarting = false;
-			}
+			},
 		});
 	}
-	
 
-	private _botMove(){
-		if ((this._padBot.x + this._padBot.width / 2 < this.root.width) && (this._ball.x + this._ball.width / 2 > this._padBot.x + this._padBot.width / 2))
+	private _botMove() {
+		if (
+			this._padBot.x + this._padBot.width / 2 < this.root.width &&
+			this._ball.x + this._ball.width / 2 > this._padBot.x + this._padBot.width / 2
+		)
 			this._padBot.x += (this._ball.x - this._padBot.x) * this._botLvl;
-		else if ((this._padBot.x - this._padBot.width / 2 > 0) && (this._ball.x - this._ball.width / 2 < this._padBot.x - this._padBot.width / 2))
+		else if (
+			this._padBot.x - this._padBot.width / 2 > 0 &&
+			this._ball.x - this._ball.width / 2 < this._padBot.x - this._padBot.width / 2
+		)
 			this._padBot.x += (this._ball.x - this._padBot.x) * this._botLvl;
 	}
 
-	private _initExitMenu (): PIXI.Container {
+	private _initExitMenu(): PIXI.Container {
 		const menu = new PIXI.Container();
 
 		const background = new PIXI.Graphics();
@@ -328,33 +313,30 @@ export class SceneGameVsBot extends SceneBase {
 		background.drawRect(-280, -150, 280, 150);
 		background.endFill();
 		background.visible = true;
-		background.x = this.root.width/ 2 + background.width / 2;
-		background.y = this.root.height/ 2 + background.height / 2;
+		background.x = this.root.width / 2 + background.width / 2;
+		background.y = this.root.height / 2 + background.height / 2;
 		menu.addChild(background);
 
-		this._exitText = new PIXI.Text('Exit ?', {fill: defaultColor});
+		this._exitText = new PIXI.Text('Exit ?', { fill: defaultColor });
 		this._exitText.x = background.x - background.width / 2 - this._exitText.width / 2;
 		this._exitText.y = background.y - 125;
 		this._exitText.filters = [glowFilter];
 		menu.addChild(this._exitText);
-	
-		this._yesOption = new PIXI.Text('Yes', {fill: defaultColor});
+
+		this._yesOption = new PIXI.Text('Yes', { fill: defaultColor });
 		this._yesOption.x = background.x - (background.width / 2 + this._yesOption.width / 2) - 50;
 		this._yesOption.y = background.y - 50;
 		this._yesOption.filters = [glowFilter];
 		menu.addChild(this._yesOption);
 
-		this._noOption = new PIXI.Text('No', {fill: 0x053100});
+		this._noOption = new PIXI.Text('No', { fill: 0x053100 });
 		this._noOption.x = background.x - (background.width / 2 + this._noOption.width / 2) + 50;
 		this._noOption.y = background.y - 50;
 		this._noOption.filters = [glowFilter];
 		menu.addChild(this._noOption);
-	
+
 		menu.visible = false;
 
-
-		return (menu);
+		return menu;
 	}
-	
-
-} 
+}

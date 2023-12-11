@@ -2,21 +2,13 @@ import { defaultColor } from '..';
 import { SceneBase } from './SceneBase';
 import * as PIXI from 'pixi.js';
 
-class SceneGame extends SceneBase {
+export class SceneGame extends SceneBase {
 	private _data = {
 		isStarted: false,
 		ballVelocity: { x: 0, y: 5 },
 		playerAScore: 0,
 		playerBScore: 0,
 		playerTurnA: Math.random() < 0.5,
-		ball_x: 0,
-		ball_y: 0,
-		padA_x: 0,
-		padA_y: 0,
-		padB_x: 0,
-		padB_y: 0,
-		player1_score: 0,
-		player2_score: 0,
 	};
 
 	private _ball = new PIXI.Graphics();
@@ -53,14 +45,6 @@ class SceneGame extends SceneBase {
 	public onUpdate() {
 		this._addVelocity();
 		this._checkCollisions();
-		// Fetch the game state from the backend
-		// Update the game display based on the fetched state
-		// Send game actions to the backend
-	}
-
-	public updateState(data: any): void {
-		this._data = data;
-		this._updateDisplay();
 	}
 
 	public onFinish() {}
@@ -99,16 +83,4 @@ class SceneGame extends SceneBase {
 	private _addVelocity() {}
 
 	private _checkCollisions() {}
-
-	private _updateDisplay(): void {
-		this._ball.x = this._data.ball_x;
-		this._ball.y = this._data.ball_y;
-		this._padA.x = this._data.padA_x;
-		this._padA.y = this._data.padA_y;
-		this._padB.x = this._data.padB_x;
-		this._padB.y = this._data.padB_y;
-		this._scoreText.text = `${this._data.player1_score} - ${this._data.player2_score}`;
-	}
 }
-
-export default SceneGame;
