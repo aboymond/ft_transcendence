@@ -1,6 +1,7 @@
 import * as PIXI from 'pixi.js';
 import { GlowFilter } from '@pixi/filter-glow';
 import { PixelateFilter } from '@pixi/filter-pixelate';
+import $ from 'jquery';
 
 export const defaultColor = 0x1aff00;
 

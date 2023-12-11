@@ -7,7 +7,7 @@ import { SceneWinOrLoose } from './scenes/SceneWinOrLoose';
 import { SceneMenuTournament } from './scenes/SceneMenuTournament';
 
 // launch game
-$(document).ready(function () {
+export function launchGame() {
 	const pixiMan = new PixiManager();
-	pixiMan.loadScene(new SceneMenuTournament(pixiMan));
-});
+	pixiMan.loadScene(new SceneMenu(pixiMan));
+}

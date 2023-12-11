@@ -1,6 +1,7 @@
 import type { SceneBase } from './scenes/SceneBase';
 // import { jQuery as $ } from 'jquery'
 import * as PIXI from 'pixi.js';
+import $ from 'jquery';
 
 interface IPixiManagerOptions {
 	backgroundAlpha: number;
