@@ -1,6 +1,6 @@
 import { createContext, useState, useEffect, ReactNode } from 'react';
-import apiService from '../src/services/apiService';
-import { User } from '../src/types';
+import apiService from '../services/apiService';
+import { User } from '../types';
 import { jwtDecode } from 'jwt-decode';
 
 interface AuthContextType {

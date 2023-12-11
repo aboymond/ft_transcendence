@@ -1,7 +1,7 @@
 // frontend/src/App.tsx
 import React from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
-import { AuthProvider } from '../contexts/AuthContext';
+import { AuthProvider } from './contexts/AuthContext';
 import WebSocketHandler from './components/WebSocketHandler';
 import './App.css';
 import AppRoutes from './Routes';
