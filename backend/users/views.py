@@ -222,12 +222,13 @@ class FriendRequestCreateView(generics.CreateAPIView):
 
         # Send WebSocket message
         channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)(  # type: ignore
-            "friend_requests_%s" % receiver.pk,
+        async_to_sync(channel_layer.group_send)(
+            "friend_requests",  # Group name
             {
-                "type": "friend_request",
-                "message": "You have a new friend request from %s"
-                % self.request.user.username,  # type: ignore
+                "type": "friend.request",
+                "event": "Create",
+                "requester": self.request.user.username,
+                "receiver": receiver.username,
             },
         )
 
@@ -248,13 +249,24 @@ class AcceptFriendRequestView(generics.UpdateAPIView):
     lookup_url_kwarg = "requestId"
 
     def perform_update(self, serializer):
-        friendship = serializer.instance
-        if friendship.status == "sent":
-            serializer.save(status="accepted")
-        else:
-            return Response(
-                {"error": "Invalid request"}, status=status.HTTP_400_BAD_REQUEST
+        instance = self.get_object()
+        if instance.receiver == self.request.user and instance.status == "sent":
+            instance.status = "accepted"
+            instance.save()
+
+            # Send WebSocket message
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                "friend_requests",  # Group name
+                {
+                    "type": "friend.request",
+                    "event": "Accept",
+                    "requester": instance.requester.username,
+                    "receiver": instance.receiver.username,
+                },
             )
+        else:
+            raise PermissionDenied("Cannot accept this friend request")
 
 
 class ListFriendsView(generics.ListAPIView):
@@ -293,6 +305,18 @@ class RejectCancelFriendRequestView(generics.DestroyAPIView):
             or instance.receiver == self.request.user
         ):
             instance.delete()
+
+            # Send WebSocket message
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                "friend_requests",  # Group name
+                {
+                    "type": "friend.request",
+                    "event": "Reject",
+                    "requester": instance.requester.username,
+                    "receiver": instance.receiver.username,
+                },
+            )
         else:
             raise PermissionDenied("Cannot cancel or reject this friend request")
 
@@ -307,6 +331,18 @@ class RemoveFriendView(generics.DestroyAPIView):
             or instance.receiver == self.request.user
         ):
             instance.delete()
+
+            # Send WebSocket message
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                "friend_requests",  # Group name
+                {
+                    "type": "friend.request",
+                    "event": "Remove",
+                    "requester": instance.requester.username,
+                    "receiver": instance.receiver.username,
+                },
+            )
         else:
             raise PermissionDenied("Cannot remove this friend")
 

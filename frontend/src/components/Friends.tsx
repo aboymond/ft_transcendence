@@ -31,10 +31,19 @@ const Friends: React.FC = () => {
 
 	useEffect(() => {
 		if (ws?.message) {
-			// Update the friends and friendRequests state based on the received message
-			// Adjust this logic according to the structure of your messages
-			setFriends(ws.message.friends);
-			setFriendRequests(ws.message.friendRequests);
+			console.log('ws.message:', ws.message);
+			// Fetch the updated list of friends from the server
+			const fetchFriends = async () => {
+				try {
+					const friendsList = await apiService.getFriends();
+					setFriends(friendsList);
+					const requestsList = await apiService.getFriendRequests();
+					setFriendRequests(requestsList);
+				} catch (error) {
+					console.error('Failed to fetch friends:', error);
+				}
+			};
+			fetchFriends();
 		}
 	}, [ws?.message]);
 

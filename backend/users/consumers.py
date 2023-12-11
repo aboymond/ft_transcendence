@@ -40,3 +40,10 @@ class GeneralRequestConsumer(AsyncWebsocketConsumer):
         message = event["message"]
 
         await self.send(text_data=json.dumps({"message": message}))
+
+    async def friend_request(self, event):
+        # Handle the friend request event
+        message = event["message"]
+
+        # Send a message to the WebSocket
+        await self.send(text_data=json.dumps({"message": message}))

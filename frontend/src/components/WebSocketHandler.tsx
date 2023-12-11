@@ -8,6 +8,7 @@ interface Props {
 interface WebSocketContextType {
 	socket: WebSocket | null;
 	message: any;
+	setMessage: React.Dispatch<React.SetStateAction<any>>;
 }
 
 export const WebSocketContext = createContext<WebSocketContextType | null>(null);
@@ -40,7 +41,7 @@ const WebSocketHandler: React.FC<Props> = ({ children }) => {
 	}, [user?.id]);
 
 	return (
-		<WebSocketContext.Provider value={{ socket: socketRef.current, message }}>
+		<WebSocketContext.Provider value={{ socket: socketRef.current, message, setMessage }}>
 			{children}
 		</WebSocketContext.Provider>
 	);
