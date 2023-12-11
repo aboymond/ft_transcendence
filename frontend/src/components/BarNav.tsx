@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Navbar, Nav, Container, Image, Offcanvas, Row, Col } from 'react-bootstrap';
+import { Navbar, Nav, Container, Image, Offcanvas, Row, Col, CloseButton } from 'react-bootstrap';
 import { useAuth } from '../hooks/useAuth';
 import Profile from './Profile';
 import Friends from './Friends';
@@ -31,15 +31,15 @@ const BarNav: React.FC = () => {
 				</Row>
 
 				<Navbar.Offcanvas show={show} onHide={() => setShow(false)} placement="end">
-					<Offcanvas.Header closeButton style={{ backgroundColor: 'black', justifyContent: 'center' }}>
+					<Offcanvas.Header style={{ backgroundColor: 'black', display: 'flex', justifyContent: 'center', position: 'relative' }}>
 						<Image
 							src={avatarUrl}
 							roundedCircle
 							style={{ width: '60px', height: '60px', cursor: 'pointer' }}
 						/>
+						<CloseButton onClick={() => setShow(false)} style={{ backgroundColor: 'rgb(74, 246, 38)', position: 'absolute', right: '20px' }} />
 					</Offcanvas.Header>
 					<Offcanvas.Body style={{ backgroundColor: 'black' }}>
-						{/* ajouter menu options*/}
 						<Profile />
 						<Friends />
 						<Nav.Link onClick={auth.logout}>Log Out</Nav.Link>
