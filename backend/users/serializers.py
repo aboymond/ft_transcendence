@@ -1,22 +1,55 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
-from .models import GameHistory
-from .models import Friendship
 from django.db.models import Q
+from .models import GameHistory
 from django.contrib.auth.models import AnonymousUser
+from .models import Friendship, TournamentHistory
 
 User = get_user_model()
 
 
+class UserNameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["username"]
+
+
 class GameHistorySerializer(serializers.ModelSerializer):
+    players = serializers.SerializerMethodField()
+    winner = serializers.SerializerMethodField()
+    player1_score = serializers.SerializerMethodField()
+    player2_score = serializers.SerializerMethodField()
+
     class Meta:
         model = GameHistory
+        fields = "__all__"
+
+    def get_players(self, obj):
+        return [
+            {"id": player.id, "username": player.username}
+            for player in obj.players.all()
+        ]
+
+    def get_winner(self, obj):
+        return {"id": obj.winner.id, "username": obj.winner.username}
+
+    def get_player1_score(self, obj):
+        return obj.player1_score
+
+    def get_player2_score(self, obj):
+        return obj.player2_score
+
+
+class TournamentHistorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TournamentHistory
         fields = "__all__"
 
 
 class UserSerializer(serializers.ModelSerializer):
     match_history = GameHistorySerializer(many=True, read_only=True)
+    tournament_history_played = TournamentHistorySerializer(many=True, read_only=True)
     username = serializers.CharField(
         validators=[UniqueValidator(queryset=User.objects.all())]
     )
@@ -30,13 +63,13 @@ class UserSerializer(serializers.ModelSerializer):
             "password",
             "display_name",
             "avatar",
-            "bio",
             "wins",
             "losses",
             "tournament_wins",
             "status",
             "match_history",
             "friendship_id",
+            "tournament_history_played",
         )
         extra_kwargs = {
             "password": {"write_only": True},
@@ -104,3 +137,8 @@ class AvatarSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ["avatar"]
+
+    def update(self, instance, validated_data):
+        instance.avatar = validated_data.get("avatar", instance.avatar)
+        instance.save()
+        return instance

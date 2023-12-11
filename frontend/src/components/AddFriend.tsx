@@ -27,9 +27,7 @@ const AddFriend = () => {
 			console.log('errorMessage:', errorMessage);
 			if (errorMessage === 'You cannot send a friend request to yourself.') {
 				alert('You cannot send a friend request to yourself.');
-			} else if (
-				errorMessage === 'This user has already sent you a friend request.'
-			) {
+			} else if (errorMessage === 'This user has already sent you a friend request.') {
 				alert('This user has already sent you a friend request.');
 			} else {
 				console.error('Error sending friend request:', error);
@@ -38,15 +36,20 @@ const AddFriend = () => {
 	};
 
 	return (
-		<div>
-			<h2>Add a Friend</h2>
-			<input
-				type="text"
-				value={username}
-				onChange={(e) => setUsername(e.target.value)}
-				placeholder="Enter username"
-			/>
-			<button onClick={handleAddFriend}>Add Friend</button>
+		<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+			<p style={{ textAlign: 'center' }}>Add friends</p>
+			<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+				<input
+					type="text"
+					value={username}
+					onChange={(e) => setUsername(e.target.value)}
+					placeholder="Username"
+					style={{ background: 'transparent', marginRight: '10px', border: 'none', textAlign: 'center' }}
+				/>
+				<button style={{ background: 'grey' }} onClick={handleAddFriend}>
+					+
+				</button>
+			</div>
 		</div>
 	);
 };

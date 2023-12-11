@@ -1,6 +1,6 @@
 import { createContext, useState, useEffect, ReactNode } from 'react';
-import apiService from '../services/apiService';
-import { User } from '../types';
+import apiService from '../src/services/apiService';
+import { User } from '../src/types';
 import { jwtDecode } from 'jwt-decode';
 
 interface AuthContextType {
@@ -10,6 +10,7 @@ interface AuthContextType {
 	loading: boolean;
 	login: (token: string, user: User) => void;
 	logout: () => void;
+	updateUser: (user: User) => void;
 }
 
 interface DecodedToken {
@@ -61,6 +62,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 		setUser(null);
 	};
 
+	const updateUser = (updatedUser: User) => {
+		setUser(updatedUser);
+	};
+
 	const authContextValue: AuthContextType = {
 		token,
 		isAuthenticated,
@@ -68,11 +73,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 		loading,
 		login,
 		logout,
+		updateUser,
 	};
 
-	return (
-		<AuthContext.Provider value={authContextValue}>
-			{children}
-		</AuthContext.Provider>
-	);
+	return <AuthContext.Provider value={authContextValue}>{children}</AuthContext.Provider>;
 };

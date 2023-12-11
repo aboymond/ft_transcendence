@@ -1,5 +1,5 @@
 # Build stage
-FROM node:18.18.2 AS build
+FROM node:20.5.0 AS build
 WORKDIR /usr/src/app
 COPY package*.json ./
 RUN npm install

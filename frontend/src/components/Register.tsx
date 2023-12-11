@@ -1,20 +1,18 @@
 import React, { useState } from 'react';
 import { apiService } from '../services/apiService';
-import { useNavigate } from 'react-router-dom';
 import styles from '../styles/Register.module.css';
 import { Button } from 'react-bootstrap';
 
 interface RegisterProps {
-    onClose: () => void;
+	onClose: () => void;
+	onSuccess: () => void;
 }
 
-const Register: React.FC<RegisterProps> = ({ onClose }) => {
-
+const Register: React.FC<RegisterProps> = ({ onClose, onSuccess }) => {
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
 	const [displayName, setDisplayName] = useState('');
 	const [error, setError] = useState('');
-	const navigate = useNavigate();
 
 	const handleSubmit = async (event: React.FormEvent) => {
 		event.preventDefault();
@@ -22,28 +20,29 @@ const Register: React.FC<RegisterProps> = ({ onClose }) => {
 			await apiService.register(username, password, displayName);
 			console.log('Registration successful');
 			setError('');
-			navigate('/login');
+			onSuccess();
 		} catch (error) {
 			console.error('Registration failed:', error);
-			setError('Registration failed. Please check try again.');
+			setError('Registration failed.');
 		}
 	};
 
 	return (
 		<div className={styles.container}>
-			<Button 
-                variant="light" 
-                onClick={onClose}
-                style={{
-                    position: 'absolute',
-                    top: 10,
-                    right: 10,
-                    backgroundColor: 'var(--primary-color)',
-					borderColor: 'var(--accent-color)'
-                }}
-            >
-                &times;
-            </Button>
+			<Button
+				variant="light"
+				onClick={onClose}
+				style={{
+					position: 'absolute',
+					top: 10,
+					right: 10,
+					backgroundColor: 'var(--primary-color)',
+					borderColor: 'var(--accent-color)',
+					width: 'auto',
+				}}
+			>
+				&times;
+			</Button>
 			<h1 className={styles.title}>Register</h1>
 			{error && <p style={{ color: 'red' }}>{error}</p>}
 			<form onSubmit={handleSubmit}>
@@ -74,7 +73,9 @@ const Register: React.FC<RegisterProps> = ({ onClose }) => {
 						className={styles.inputField}
 					/>
 				</div>
-				<button type="submit" className={styles.submitButton}>Register</button>
+				<button type="submit" className={styles.submitButton}>
+					Register
+				</button>
 			</form>
 		</div>
 	);

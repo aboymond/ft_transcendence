@@ -25,7 +25,7 @@ class Game(models.Model):
         blank=True,
     )
     status = models.CharField(max_length=15, choices=STATUS_CHOICES, default="waiting")
-    start_time = models.DateTimeField(auto_now_add=True)
+    start_time = models.DateTimeField(null=True, blank=True)
     end_time = models.DateTimeField(null=True, blank=True)
     winner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -43,6 +43,25 @@ class Game(models.Model):
     )
     player1_score = models.IntegerField(default=0)
     player2_score = models.IntegerField(default=0)
+
+    ball_x = models.FloatField(default=0)
+    ball_y = models.FloatField(default=0)
+    ball_velocity_x = models.FloatField(default=0)
+    ball_velocity_y = models.FloatField(default=0)
+    pad1_x = models.FloatField(default=0)
+    pad2_x = models.FloatField(default=0)
+
+    def update_ball_position(self):
+        self.ball_x += self.ball_velocity_x
+        self.ball_y += self.ball_velocity_y
+        self.save()
+
+    def move_pad(self, pad_number, x):
+        if pad_number == 1:
+            self.pad1_x = x
+        elif pad_number == 2:
+            self.pad2_x = x
+        self.save()
 
     @property
     def is_full(self):
@@ -78,6 +97,10 @@ class Game(models.Model):
             winner=winner, player1_score=player1_score, player2_score=player2_score
         )
         game_history.players.add(self.player1, self.player2)
+
+    def check_collisions(self):
+        # Add your collision detection logic here
+        pass
 
 
 class MatchmakingQueue(models.Model):
