@@ -1,61 +1,17 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import apiService from '../services/apiService';
 import FriendList from './FriendsList';
 import AddFriend from './AddFriend';
 import FriendRequests from './FriendRequests';
 import { User, FriendRequest } from '../types';
+import { WebSocketContext } from './WebSocketHandler';
 
 const Friends: React.FC = () => {
 	const [friends, setFriends] = useState<User[]>([]);
 	const [friendRequests, setFriendRequests] = useState<FriendRequest[]>([]);
 	const auth = useAuth();
-
-	const { user } = useAuth();
-
-	const socketRef = useRef<WebSocket | null>(null);
-
-	useEffect(() => {
-		if (!user?.id) {
-			// If user ID is not loaded yet, don't open the WebSocket connection
-			return;
-		}
-
-		// Only open a new WebSocket connection if one isn't already open
-		if (!socketRef.current || socketRef.current.readyState !== WebSocket.OPEN) {
-			socketRef.current = new WebSocket('ws://localhost:8000/ws/friend_requests/' + user.id + '/');
-
-			socketRef.current.onopen = function (e) {
-				console.log('Friends WebSocket opened.', e);
-			};
-
-			socketRef.current.onmessage = function (e) {
-				console.log('Message received from server:', e.data);
-				if (socketRef.current?.readyState === WebSocket.OPEN) {
-					const data = JSON.parse(e.data);
-					console.log('Message:', data.message);
-
-					// Update friend request list
-					apiService.getFriendRequests().then(setFriendRequests);
-				}
-			};
-
-			socketRef.current.onclose = function (e) {
-				console.log('Friends WebSocket closed.', e);
-			};
-
-			socketRef.current.onerror = function (error) {
-				console.error('WebSocket error: ', error);
-			};
-		}
-
-		// Cleanup function to close the WebSocket connection when the component is unmounted
-		return () => {
-			if (socketRef.current) {
-				socketRef.current.close();
-			}
-		};
-	}, [user?.id]);
+	const ws = useContext(WebSocketContext);
 
 	useEffect(() => {
 		const fetchFriends = async () => {
@@ -72,6 +28,15 @@ const Friends: React.FC = () => {
 		};
 		fetchFriends();
 	}, [auth.isAuthenticated, auth.token]);
+
+	useEffect(() => {
+		if (ws?.message) {
+			// Update the friends and friendRequests state based on the received message
+			// Adjust this logic according to the structure of your messages
+			setFriends(ws.message.friends);
+			setFriendRequests(ws.message.friendRequests);
+		}
+	}, [ws?.message]);
 
 	const handleAccept = async (requestId: number) => {
 		try {
