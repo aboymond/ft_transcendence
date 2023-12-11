@@ -5,7 +5,7 @@ import '../App.css';
 import GameHistoryList from '../components/GameHistoryList';
 import Profile from '../components/Profile';
 import Friends from '../components/Friends';
-import GameWindow from '../components/GameWindow';
+import Game from '../components/Game';
 import TestNavbar from '../components/TestNavbar';
 
 const TestPage: React.FC = () => {
@@ -34,7 +34,7 @@ const TestPage: React.FC = () => {
 				{activeComponent === 'history' && <GameHistoryList />}
 				{activeComponent === 'profile' && <Profile />}
 				{activeComponent === 'friends' && <Friends />}
-				{activeComponent === 'game' && <GameWindow />}
+				{activeComponent === 'game' && <Game />}
 			</Container>
 		</div>
 	);
