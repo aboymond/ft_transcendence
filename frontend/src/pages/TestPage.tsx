@@ -6,10 +6,11 @@ import GameHistoryList from '../components/GameHistoryList';
 import Profile from '../components/Profile';
 import Friends from '../components/Friends';
 import Game from '../components/Game';
+import GameWindow from '../components/GameWindow';
 import TestNavbar from '../components/TestNavbar';
 
 const TestPage: React.FC = () => {
-	const [activeComponent, setActiveComponent] = useState<'history' | 'profile' | 'friends' | 'game'>(
+	const [activeComponent, setActiveComponent] = useState<'history' | 'profile' | 'friends' | 'game' | 'gameWindow'>(
 		'history',
 	);
 
@@ -27,6 +28,7 @@ const TestPage: React.FC = () => {
 							<Dropdown.Item onClick={() => setActiveComponent('profile')}>Profile</Dropdown.Item>
 							<Dropdown.Item onClick={() => setActiveComponent('friends')}>Friends</Dropdown.Item>
 							<Dropdown.Item onClick={() => setActiveComponent('game')}>Game</Dropdown.Item>
+							<Dropdown.Item onClick={() => setActiveComponent('gameWindow')}>GameWin</Dropdown.Item>
 						</DropdownButton>
 					</Col>
 				</Row>
@@ -35,6 +37,8 @@ const TestPage: React.FC = () => {
 				{activeComponent === 'profile' && <Profile />}
 				{activeComponent === 'friends' && <Friends />}
 				{activeComponent === 'game' && <Game />}
+				{activeComponent === 'gameWindow' && <GameWindow />}
+
 			</Container>
 		</div>
 	);
