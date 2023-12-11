@@ -1,6 +1,7 @@
 import type { SceneBase } from './scenes/SceneBase';
 // import { jQuery as $ } from 'jquery'
 import * as PIXI from 'pixi.js';
+import $ from 'jquery';
 
 interface IPixiManagerOptions {
 	backgroundAlpha: number;
@@ -32,6 +33,10 @@ export class PixiManager {
 		window.addEventListener('keydown', this._onKeyDownBind);
 		window.addEventListener('keyup', this._onKeyUpBind);
 		$('#game_window').append(this._app.view);
+	}
+
+	public get view() {
+		return this._app.view;
 	}
 
 	public destroy() {
