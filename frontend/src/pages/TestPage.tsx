@@ -15,8 +15,9 @@ const TestPage: React.FC = () => {
 	);
 
 	return (
+		<>
+		<TestNavbar />
 		<div id="page">
-			<TestNavbar />
 			<Container fluid>
 				<Row>
 					<Col xs={12}>
@@ -41,6 +42,7 @@ const TestPage: React.FC = () => {
 
 			</Container>
 		</div>
+		</>
 	);
 };
 

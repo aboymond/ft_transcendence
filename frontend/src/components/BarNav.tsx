@@ -12,7 +12,7 @@ const BarNav: React.FC = () => {
 	const handleToggle = () => setShow(!show);
 
 	return (
-		<Navbar bg="green" expand={false} style={{ flexWrap: 'nowrap', paddingLeft: '100px', marginTop: '60px' }}>
+		<Navbar bg="green" expand={false} style={{ flexWrap: 'nowrap', paddingLeft: '100px', marginTop: '0px' }}>
 			<Container fluid>
 				<Row className="w-100">
 					<Col xs={true} className="d-flex justify-content-start">

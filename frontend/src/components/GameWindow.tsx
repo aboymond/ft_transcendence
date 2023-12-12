@@ -5,14 +5,14 @@ import { useEffect } from 'react';
 
 function GameWindow() {
     useEffect(() => {
-        const launchDelay = 100; // Délai en millisecondes (ajustez si nécessaire)
+        const launchDelay = 100; 
         setTimeout(() => {
             launchGame();
         }, launchDelay);
     }, []);
 
     return (
-        <Container className={styles.game_window}>
+        <Container className={styles.game_window1}> 
             <div id="game_window">
                 {}
             </div>
