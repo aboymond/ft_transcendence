@@ -1,0 +1,15 @@
+.window {
+    position: absolute;
+    right: 150px;
+    bottom: 250px;
+    display: flex;
+    width: 20vw !important;
+    height: 50vh; 
+    /* align-items: center; */
+    justify-content: flex-end;
+    border-style: solid;
+    border-width: 2px;
+    box-shadow: 0 0 5px rgb(165, 255, 165);
+    border-color:rgb(74,246,38);
+    padding: 20px;
+}
