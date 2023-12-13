@@ -13,3 +13,12 @@
     border-color:rgb(74,246,38);
     padding: 20px;
 }
+
+.button {
+    /* margin: 5px; */
+    background-color: var(--primary-color) !important;
+    color: var(--background-color) !important;
+    font-family: var(--font-family) !important;
+    border-color: var(--accent-color) !important;
+    white-space: nowrap;
+}
