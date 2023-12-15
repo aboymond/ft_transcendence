@@ -32,7 +32,7 @@ export class PixiManager {
 		});
 		window.addEventListener('keydown', this._onKeyDownBind);
 		window.addEventListener('keyup', this._onKeyUpBind);
-		$('#game_window').append(this._app.view);
+		$('#game_window').append(this._app.view as HTMLElement);
 	}
 
 	public destroy() {
