@@ -16,6 +16,7 @@ const App: React.FC = () => {
 						<img src="./img/scanlines.png" alt="Scanlines" id="scan" />
 						<img src="./img/bezel.png" alt="Bezel" id="bezel" />
 					</div>
+					
 					<AppRoutes />
 				</Router>
 			</WebSocketHandler>

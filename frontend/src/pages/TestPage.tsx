@@ -5,7 +5,7 @@ import '../App.css';
 import GameHistoryList from '../components/GameHistoryList';
 import Profile from '../components/Profile';
 import Friends from '../components/Friends';
-import Game from '../components/Game';
+import Game from '../components/GameWindow';
 import GameWindow from '../components/GameWindow';
 import TestNavbar from '../components/TestNavbar';
 
@@ -15,8 +15,9 @@ const TestPage: React.FC = () => {
 	);
 
 	return (
+		<>
+		<TestNavbar />
 		<div id="page">
-			<TestNavbar />
 			<Container fluid>
 				<Row>
 					<Col xs={12}>
@@ -41,6 +42,7 @@ const TestPage: React.FC = () => {
 
 			</Container>
 		</div>
+		</>
 	);
 };
 
