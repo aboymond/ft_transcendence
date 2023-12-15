@@ -10,6 +10,9 @@
 		"preview": "vite preview"
 	},
 	"dependencies": {
+		"@emotion/react": "^11.11.1",
+		"@emotion/styled": "^11.11.0",
+		"@mui/material": "^5.15.0",
 		"@pixi/color": "^7.3.2",
 		"@pixi/core": "^7.3.2",
 		"@pixi/filter-drop-shadow": "^5.2.0",

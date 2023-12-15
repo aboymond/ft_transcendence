@@ -1,26 +1,32 @@
-import React, { useEffect, useRef } from 'react';
-import { PixiManager } from '../game/PixiManager';
+import React, { useRef, useState } from 'react';
+import { Stage } from '@pixi/react';
 import { SceneMenu } from '../game/scenes/SceneMenu';
+import { SceneMenu2 } from '../game/scenes/SceneMenu2';
 
 const Game: React.FC = () => {
-	const gameContainer = useRef<HTMLDivElement>(null);
+	const [currentScene, setCurrentScene] = useState('menu');
+	const gameContainer = useRef(null);
+	const loadScene = (sceneName: string) => {
+		console.log(`Loading scene: ${sceneName}`);
+		setCurrentScene(sceneName);
+	};
 
-	useEffect(() => {
-		if (gameContainer.current) {
-			const pixiManager = new PixiManager();
-			gameContainer.current.appendChild(pixiManager.view); // Append PIXI view to the gameContainer
+	let scene;
+	switch (currentScene) {
+		case 'menu':
+			scene = <SceneMenu loadScene={loadScene} />;
+			break;
+		case 'menu2':
+			scene = <SceneMenu2 loadScene={loadScene} />;
+			break;
+		// Add more cases as needed
+	}
 
-			const scene = new SceneMenu(pixiManager); // Create a new SceneGame
-			pixiManager.loadScene(scene); // Load the scene
-
-			return () => {
-				// Add any cleanup code for your game here
-				pixiManager.destroy();
-			};
-		}
-	}, []);
-
-	return <div ref={gameContainer} />;
+	return (
+		<div ref={gameContainer}>
+			<Stage>{scene}</Stage>
+		</div>
+	);
 };
 
 export default Game;
