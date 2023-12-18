@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Container, Row, Col, Button } from 'react-bootstrap';
+import { Container, Row, Col, Button, CloseButton } from 'react-bootstrap';
 import styles from '../styles/Window.module.css';
 import GameHistoryList from './GameHistoryList';
 
@@ -17,10 +17,7 @@ const Window: React.FC = () => {
                                 variant="primary"
                                 type="submit"
                                 className={styles.button}
-                                onClick={() => {
-                                    setShowHistory(true);
-                                    setShowFriends(false);
-                                }}
+                                onClick={() => setShowHistory(true)}
                             >
                                 History
                             </Button>
@@ -30,39 +27,35 @@ const Window: React.FC = () => {
                             variant="primary"
                             type="submit"
                             className={styles.button}
-                            onClick={() => {
-                                setShowFriends(true);
-                                setShowHistory(false);
-                            }}
-                            >Friends
+                            onClick={() => setShowFriends(true)}
+                            >
+                                Friends
                             </Button>
                         </Col>
                     </>
                 )}
                 {showHistory && (
                     <Col className={styles.fullWindowContent}>
-                        <GameHistoryList />
-                        <Button 
+                        <CloseButton 
                             variant="primary"
                             type="submit"
                             className={`${styles.button} ${styles.closeButton}`}
                             onClick={() => setShowHistory(false)}
                         >
-                            X
-                        </Button>
+                        </CloseButton>
+                        <GameHistoryList />
                     </Col>
                 )}
                 {showFriends && (
                     <Col className={styles.fullWindowContent}>
-                        <div>Friends List</div>
-                        <Button 
+                        <CloseButton 
                             variant="primary"
                             type="submit"
                             className={`${styles.button} ${styles.closeButton}`}
                             onClick={() => setShowFriends(false)}
                         >
-                            X
-                        </Button>
+                        </CloseButton>
+                        <div>Friends List</div>
                     </Col>
                 )}
             </Row>
