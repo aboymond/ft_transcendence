@@ -1,0 +1,39 @@
+.update {
+    background-color: black;
+    /* background-color: var(--background-color); */
+    border-style: solid;
+    /* border-width: 3px; */
+    /* box-shadow: 0 0 5px var(--primary-color); */
+    border-color: var(--accent-color);
+    padding: 5px;
+    margin-top: 10px;
+}
+
+.nameContainer {
+    /* flex: 1; */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.input {
+    background-color: black;
+    /* background-color: var(--background-color); */
+    border-style: solid;
+    /* border-width: 3px; */
+    border-color: var(--accent-color);
+    padding: 5px;
+}
+
+.fileInput {
+    background-color: black;
+    color: var(--primary-color);
+    border-style: solid;
+    border-color: var(--accent-color);
+    padding: 5px;
+    /* border-radius: 5px; */
+    cursor: pointer;
+    align-items: left;
+    font-size: 10px;
+    white-space: nowrap;
+}
