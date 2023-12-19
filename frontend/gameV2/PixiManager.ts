@@ -1,6 +1,7 @@
 import type { SceneBase } from './scenes/SceneBase';
 // import { jQuery as $ } from 'jquery'
 import * as PIXI from 'pixi.js';
+import '../src/styles/GameWindow.module.css';
 import $ from 'jquery';
 
 interface IPixiManagerOptions {
@@ -32,7 +33,7 @@ export class PixiManager {
 		});
 		window.addEventListener('keydown', this._onKeyDownBind);
 		window.addEventListener('keyup', this._onKeyUpBind);
-		$('#game_window').append(this._app.view as HTMLElement);
+		$('#game_window').append(this._app.view as unknown as HTMLElement);
 	}
 
 	public destroy() {
