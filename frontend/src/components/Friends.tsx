@@ -6,6 +6,7 @@ import AddFriend from './AddFriend';
 import FriendRequests from './FriendRequests';
 import { User, FriendRequest } from '../types';
 import { WebSocketContext } from './WebSocketHandler';
+import styles from '../styles/Window.module.css';
 
 const Friends: React.FC = () => {
 	const [friends, setFriends] = useState<User[]>([]);
@@ -76,7 +77,7 @@ const Friends: React.FC = () => {
 	};
 
 	return (
-		<div>
+		<div className={styles.fullWindowContent}>
 			<hr />
 			<FriendList friends={friends} onRemove={handleRemove} />
 			<hr />

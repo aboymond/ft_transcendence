@@ -1,11 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Button, CloseButton } from 'react-bootstrap';
 import styles from '../styles/Window.module.css';
 import GameHistoryList from './GameHistoryList';
+import Friends from './Friends';
+import PotentialFriends from './PotentialFriends';
+import apiService from '../services/apiService';
+import { useAuth } from '../hooks/useAuth';
+import { User } from '../types';
 
 const Window: React.FC = () => {
     const [showHistory, setShowHistory] = useState(false);
     const [showFriends, setShowFriends] = useState(false);
+    const [friends, setFriends] = useState<User[]>([]);
+    const auth = useAuth();
+
+    useEffect(() => {
+        const fetchFriends = async () => {
+            if (auth.isAuthenticated && auth.token) {
+                try {
+                    const friendsList = await apiService.getFriends();
+                    setFriends(friendsList);
+                } catch (error) {
+                    console.error('Failed to fetch friends:', error);
+                }
+            }
+        };
+        fetchFriends();
+    }, [auth.isAuthenticated, auth.token]);
 
     return (
         <Container className={styles.window}>
@@ -55,7 +76,7 @@ const Window: React.FC = () => {
                             onClick={() => setShowFriends(false)}
                         >
                         </CloseButton>
-                        <div>Friends List</div>
+                        {friends.length > 0 ? <Friends /> : <PotentialFriends />}
                     </Col>
                 )}
             </Row>

@@ -35,6 +35,10 @@
     justify-content: space-between;
 }
 
+.fullWidth {
+    width: 100%;
+}
+
 .closeButton {
     width: 30px;
     height: 30px;
