@@ -76,7 +76,8 @@ const Window: React.FC = () => {
                             onClick={() => setShowFriends(false)}
                         >
                         </CloseButton>
-                        {friends.length > 0 ? <Friends /> : <PotentialFriends />}
+                        <PotentialFriends />
+                        {/* {friends.length > 0 ? <Friends /> : <PotentialFriends />} */}
                     </Col>
                 )}
             </Row>

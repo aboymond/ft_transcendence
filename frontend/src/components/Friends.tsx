@@ -6,7 +6,6 @@ import AddFriend from './AddFriend';
 import FriendRequests from './FriendRequests';
 import { User, FriendRequest } from '../types';
 import { WebSocketContext } from './WebSocketHandler';
-import styles from '../styles/Window.module.css';
 
 const Friends: React.FC = () => {
 	const [friends, setFriends] = useState<User[]>([]);
@@ -77,7 +76,7 @@ const Friends: React.FC = () => {
 	};
 
 	return (
-		<div className={styles.fullWindowContent}>
+		<div>
 			<hr />
 			<FriendList friends={friends} onRemove={handleRemove} />
 			<hr />
@@ -90,3 +89,5 @@ const Friends: React.FC = () => {
 };
 
 export default Friends;
+
+//pourquoi FriendsList ne peut que remove les amis et pas afficher la liste d'amis ni accepter de nouveaux amis ?
