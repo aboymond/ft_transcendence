@@ -8,6 +8,7 @@
     border-color:rgb(74,246,38);
     max-height: 90%;
     max-width: 100%;
+    background-color: brown;
 }
 .window .container {
     padding: 0;

@@ -37,12 +37,15 @@ const BarNav: React.FC = () => {
 							roundedCircle
 							style={{ width: '60px', height: '60px', cursor: 'pointer' }}
 						/>
-						<CloseButton onClick={() => setShow(false)} style={{ backgroundColor: 'rgb(74, 246, 38)', position: 'absolute', right: '20px' }} />
+						<CloseButton onClick={() => setShow(false)} style={{ backgroundColor: 'var(--primary-color)', position: 'absolute', right: '20px' }} />
 					</Offcanvas.Header>
 					<Offcanvas.Body style={{ backgroundColor: 'black' }}>
 						<Profile />
 						<Friends />
-						<Nav.Link onClick={auth.logout}>Log Out</Nav.Link>
+						<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+							<Nav.Link onClick={auth.logout}>Log Out</Nav.Link>
+						</div>
+						{/* <Nav.Link onClick={auth.logout}>Log Out</Nav.Link> */}
 					</Offcanvas.Body>
 				</Navbar.Offcanvas>
 			</Container>

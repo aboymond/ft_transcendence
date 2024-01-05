@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { apiService } from '../services/apiService';
 import { GameHistory } from '../types';
+import styles from '../styles/GameHistoryList.module.css'
 
 const GameHistoryList: React.FC = () => {
 	const [gameHistory, setGameHistory] = useState<GameHistory[]>([]);
@@ -31,10 +32,10 @@ const GameHistoryList: React.FC = () => {
 				))}
 			</ul>
 			<div style={{ display: 'flex', flexDirection: 'row' }}>
-				<button onClick={loadPreviousPage} disabled={page === 0}>
+				<button className={styles.load} onClick={loadPreviousPage} disabled={page === 0}>
 					Previous
 				</button>
-				<button onClick={loadNextPage} disabled={(page + 1) * 10 >= gameHistory.length}>
+				<button className={styles.load} onClick={loadNextPage} disabled={(page + 1) * 10 >= gameHistory.length}>
 					Next
 				</button>
 			</div>
