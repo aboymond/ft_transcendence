@@ -4,20 +4,19 @@ import BarNav from '../components/BarNav';
 import GameWindow from '../components/GameWindow';
 import Window from '../components/Window';
 import { Row, Col } from 'react-bootstrap';
+import styles from '../styles/Home.module.css';
 
 const Home: React.FC = () => {
 	return (
 	<>
 		<BarNav />
-		<div id="page" className="d-flex align-items-center justify-content-center">
-			<Row>
-				<Col>
+		<div id="homepage" >
+				<Col className={styles.gamecol}>
 					<GameWindow />
 				</Col>
-				<Col>
+				<Col className={styles.friendscol}>
 					<Window />
 				</Col>
-			</Row>
 		</div>
 	</>);
 };

@@ -2,12 +2,13 @@
     width: 100vw;
     height: 100vh;
     margin: 0;
-    padding: 0;
+    /* padding: 500px !important; */
     --blur-value: 1px;
     --primary-color: rgb(26, 255, 0);
     --background-color: rgb(5, 49, 0);
     --accent-color: rgb(74, 246, 38);
     --font-family: 'Press Start 2P', monospace;
+    /* background-color: blueviolet; */
 }
 
 
@@ -27,19 +28,10 @@
 body {
     width: 100%;
     height: 100%;
-    padding: 50px;
+    /* padding: 500px !important; */
     background-color: var(--background-color) !important;
-    position: relative;
+    /* position: relative; */
 
-
-    /* padding: 30px;
-    background-color: var(--background-color) !important;
-    position: absolute;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start; */
-
-    
 }
 
 #image-container {
@@ -87,53 +79,35 @@ body {
 
 
 #page {
-
-    width: calc(100% - 90px);
-    height: calc(100% - 150px);
-    position: absolute;
-    margin-top: 60px;
-    top: 45px;
-    left: 45px;
-    padding: 20px;
+    width: 100vw;
+    height: 100vh;
+    padding: 15%;
     overflow: hidden;
     background-color: aqua;
-    align-items: center !important; 
-    justify-content: center !important;
-
-
 }
 
-@media (max-width: 992px) {
+/* @media (max-width: 992px) {
     #page {
         padding-top: 50px;
     }
 
-    /* .d-flex {
-        height: 100%;
-    }
-    
-    .align-items-center {
-        align-items: center !important;
-    }
-    
-    .justify-content-center {
-        justify-content: center !important;
-    } */
+} */
 
-    /* width: 100%; */
-    /* height: 100%; */
-    /* display: flex; */
-    /* max-width: 1200px; */
-    /* display: flex; */
-    /* flex-direction: column; */
-    /* align-items: center; */
-    /* align-content: center; */
-    /* overflow-y: auto; */
-    /* margin: 0 auto; */
-    /* margin-bottom: -10px; */
-    /* padding-top: 80px;  */
-    /* background-color: aqua; */
+#homepage {
+    width: 100vw;
+    height: 80vh;
+    padding-top: 20%;
+    padding-bottom: 20%;
+    padding-left: 10%;
+    padding-right: 10%;
 
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    
+    background-color: aqua;
 }
 
 #p-end {
