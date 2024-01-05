@@ -218,7 +218,7 @@ export class SceneMenuOption extends SceneBase {
 			(!this.root.vsPlayer && this._currentSelect === 4) ||
 			(this.root.vsPlayer && this._currentSelect === 3)
 		) {
-			//play the game
+			
 			if (this._currentPad === 0) this.root.loadScene(new SceneGameVsBot(this.root));
 			else {
 				errorLock = true;

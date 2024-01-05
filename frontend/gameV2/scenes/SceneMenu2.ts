@@ -16,13 +16,7 @@ export class SceneMenu2 extends SceneBase {
 	private _textPvP = new PIXI.Text('PLAYER\n  VS\n  PLAYER', textStylePVPMenu2);
 	private _textPvB = new PIXI.Text('PLAYER\n  VS\n  BOT', textStylePVBMenu2);
 
-	//=======================================
-	// Effects
-	//=======================================
 
-	//=======================================
-	// HOOK
-	//=======================================
 
 	public onStart(container: PIXI.Container) {
 		container.addChild(this._menuBoxInit(this._menuBoxTournament));

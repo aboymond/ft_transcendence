@@ -10,10 +10,12 @@ interface IPixiManagerOptions {
 }
 
 export class PixiManager {
+	//For the back -------------
 	public vsPlayer = false;
 	public amountVictory = 5;
 	public botLvl = 0.05;
 	public playerAWin = true;
+	//--------------------------
 
 	private _currentScene?: SceneBase = undefined;
 	private _app: PIXI.Application;
@@ -70,10 +72,14 @@ export class PixiManager {
 	}
 
 	public get width() {
-		return $('#game_window').width();
+		const winWidth = 600;
+		const gameWindow = document.getElementById('game_window');
+		return gameWindow ? gameWindow.clientWidth : winWidth;
 	}
-
+	
 	public get height() {
-		return $('#game_window').height();
+		const winHeight = 800;
+		const gameWindow = document.getElementById('game_window');
+		return gameWindow ? gameWindow.clientHeight : winHeight;
 	}
 }

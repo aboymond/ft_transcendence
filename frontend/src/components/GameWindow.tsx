@@ -7,10 +7,7 @@ function GameWindow() {
 
     useEffect(() => {
         launchGame();
-        // const launchDelay = 100; 
-        // setTimeout(() => {
 
-        // }, launchDelay);
     }, []);
 
     return (
