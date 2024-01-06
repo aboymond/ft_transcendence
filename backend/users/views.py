@@ -92,6 +92,7 @@ class CallBackView(APIView):
             },
         )
         data = response.json()
+        print(f'data : {data}')
         response = requests.get(
             "https://api.intra.42.fr/v2/me",
             headers={"Authorization": f'Bearer {data['access_token']}'},

@@ -2,25 +2,41 @@ import { User, FriendRequest } from '../types';
 
 const API_BASE_URL = 'http://localhost:8000/api'; // Update with your actual backend URL
 
+// function getHeaders() {
+//     const token = localStorage.getItem('token');
+//     const headers = {
+//         'Access-Control-Allow-Origin': 'salut',
+//         'Content-Type': 'application/json',
+//     };
+
+//     if (token) {
+//         headers.Authorization = `Bearer ${token}`;
+//     }
+
+//     return headers;
+// }
+
 function getHeaders() {
 	const token = localStorage.getItem('token'); // Or however you store the token
 	return {
+		// 'Access-Control-Allow-Origin': '*',
 		'Content-Type': 'application/json',
 		...(token ? { Authorization: `Bearer ${token}` } : {}),
 	};
 }
 
 async function fetchAPI(endpoint: string, options = {}) {
-	const response = await fetch(`${API_BASE_URL}/${endpoint}`, {
-		...options,
-		headers: getHeaders(),
-	});
-	if (!response.ok) {
-		throw new Error(`API call failed: ${response.statusText}`);
-	}
-	const text = await response.text();
-	return text ? JSON.parse(text) : {};
+    const response = await fetch(`${API_BASE_URL}/${endpoint}`, {
+        ...options,
+        headers: getHeaders(),
+    });
+    if (!response.ok) {
+        throw new Error(`API call failed: ${response.statusText}`);
+    }
+    const text = await response.text();
+    return text ? JSON.parse(text) : {};
 }
+
 
 interface UserData {
 	username?: string;
@@ -41,6 +57,14 @@ export const apiService = {
 			return true;
 		} catch (error) {
 			localStorage.removeItem('token');
+			return false;
+		}
+	},
+	authlogin: async() => {
+		try{
+			return fetchAPI('users/auth');
+		} catch (error) {
+			console.log("ERROR fetching api");
 			return false;
 		}
 	},

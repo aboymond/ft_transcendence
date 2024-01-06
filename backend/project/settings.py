@@ -51,9 +51,9 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+	"corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
-    "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -184,11 +184,15 @@ SIMPLE_JWT = {
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3001",  # React app running on localhost
-    "http://127.0.0.1:3001",
-    # Add any other origins your frontend is using
-]
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_ALL_ORIGINS=True
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:3001",  # React app running on localhost
+#     "http://127.0.0.1:3001",
+# 	"http://frontend:3001"
+#     # Add any other origins your frontend is using
+# ]
+
 
 LOGGING = {
     "version": 1,

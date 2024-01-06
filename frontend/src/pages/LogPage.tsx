@@ -4,12 +4,30 @@ import Logo from '../components/Logo';
 import styles from '../styles/LogPage.module.css';
 import Login from './Login';
 import Register from './Register';
+import { useNavigate } from 'react-router-dom';
+import { apiService } from '../services/apiService';
+import { useAuth } from '../hooks/useAuth';
 
 const LogPage: React.FC = () => {
 	const [showComponent, setShowComponent] = useState('');
 
+	const [error, setError] = useState('');
+	const navigate = useNavigate();
+	const auth = useAuth();
+
 	const handleClose = () => {
 		setShowComponent('');
+	};
+
+	const handleApiLogin = async (event: React.FormEvent) => {
+		try {
+			const data = await apiService.authlogin();
+			auth.login(data.access, data.user);
+			setError('');
+			navigate('/profile');
+		} catch (error) {
+			setError('Login failed. Please check your credentials.');
+		}
 	};
 
 	return (
@@ -63,10 +81,7 @@ const LogPage: React.FC = () => {
 										variant="primary"
 										type="submit"
 										className={`mt-3 ${styles.button} w-100`}
-										onClick={() =>
-											(window.location.href =
-												'http://localhost:8000/api/users/auth/')
-										}
+										onClick={() => handleApiLogin()}
 									>
 										Sign Up with 42
 									</Button>
