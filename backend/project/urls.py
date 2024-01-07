@@ -24,6 +24,7 @@ urlpatterns = [
     path("api/users/", include("users.urls")),
     # path('api/games/', include('games.urls')),
     path("api/tournaments/", include("tournaments.urls")),
+    path("", include('django_prometheus.urls')),
 ]
 
 if settings.DEBUG:
