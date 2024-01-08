@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect } from 'react';
 import { Container, Row, Col, Button, Card } from 'react-bootstrap';
 import Logo from '../components/Logo';
 import styles from '../styles/LogPage.module.css';
@@ -19,16 +19,19 @@ const LogPage: React.FC = () => {
 		setShowComponent('');
 	};
 
-	const handleApiLogin = async (event: React.FormEvent) => {
-		try {
-			const data = await apiService.authlogin();
-			auth.login(data.access, data.user);
-			setError('');
-			navigate('/profile');
-		} catch (error) {
-			setError('Login failed. Please check your credentials.');
-		}
-	};
+	useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const accessToken = urlParams.get('access_token');
+    
+        if (accessToken) {
+          auth.login(accessToken);
+          navigate('/profile');
+        }
+      }, [auth, navigate]);
+
+	const handleApiLogin = async () => {
+        window.location.href = "http://localhost:8000/api/users/auth";
+    };
 
 	return (
 		<Container fluid id="log-page">

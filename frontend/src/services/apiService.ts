@@ -33,8 +33,7 @@ async function fetchAPI(endpoint: string, options = {}) {
     if (!response.ok) {
         throw new Error(`API call failed: ${response.statusText}`);
     }
-    const text = await response.text();
-    return text ? JSON.parse(text) : {};
+    return response.json();  // Use response.json() to parse JSON
 }
 
 
