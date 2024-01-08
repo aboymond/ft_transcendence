@@ -8,18 +8,19 @@ interface FriendListProps {
 const FriendList = ({ friends, onRemove }: FriendListProps) => {
 	return (
 		<div>
-			<h2>Friends</h2>
-			<ul>
+			<p style={{ textAlign: 'center' }}>Friends</p>
+			<ul style={{ maxHeight: '6em', overflowY: 'auto' }}>
 				{friends.map((friend) => (
 					<li key={friend.id}>
-						{friend.username ? friend.username : 'Unknown User'}
-						<button
-							onClick={() =>
-								friend.friendship_id && onRemove(friend.friendship_id)
-							}
-						>
-							Remove
-						</button>
+						<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+							<p style={{ margin: '0' }}>{friend.username ? friend.username : 'Unknown User'}</p>
+							<button
+								style={{ border: 'none', background: 'transparent' }}
+								onClick={() => friend.friendship_id && onRemove(friend.friendship_id)}
+							>
+								x
+							</button>
+						</div>
 					</li>
 				))}
 			</ul>

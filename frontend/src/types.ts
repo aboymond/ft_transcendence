@@ -2,7 +2,6 @@ export interface User {
 	id: number;
 	username: string;
 	display_name: string;
-	bio: string;
 	wins: number;
 	losses: number;
 	tournament_wins: number;
@@ -27,3 +26,12 @@ export type ApiError = {
 		};
 	};
 };
+
+export interface GameHistory {
+	id: number;
+	players: User[];
+	winner: User;
+	played_at: string;
+	player1_score: number;
+	player2_score: number;
+}

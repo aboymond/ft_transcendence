@@ -11,6 +11,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.views import APIView
+from rest_framework.parsers import MultiPartParser, FormParser
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from dotenv import load_dotenv
@@ -21,9 +22,11 @@ from .serializers import GameHistorySerializer
 from .serializers import AvatarSerializer
 from .intra import ic
 from requests_oauthlib import OAuth2Session
+import logging
 
 User = get_user_model()
 load_dotenv()
+logger = logging.getLogger(__name__)
 
 
 class CreateUserView(generics.CreateAPIView):
@@ -72,8 +75,6 @@ class AuthView(generics.GenericAPIView):
         return redirect(authorization_url)
 
 class CallBackView(APIView):
-    print("CALLBACKVIEW")
-
     def get(self, request, *args, **kwargs):
         print("CALLBACKVIEW TEST")
         token_url = "https://api.intra.42.fr/oauth/token"
@@ -85,7 +86,6 @@ class CallBackView(APIView):
         # Fetch access token
         response = OAuth2Session(client_id, redirect_uri=redirect_uri).fetch_token(
             token_url, authorization_response=request.build_absolute_uri(), code=code, client_secret=client_secret
-        )
 
         access_token = response.get('access_token')
 
@@ -108,6 +108,10 @@ class CallBackView(APIView):
             existing_user = User.objects.get(username=username)
         except User.DoesNotExist:
             existing_user = User.objects.create(username=username, avatar=user["avatar"])
+            # If the user does not exist, create a new user
+            existing_user = User.objects.create(
+                username=username, avatar=user["avatar"]
+            )
         else:
             existing_user.avatar = user["avatar"]
             existing_user.save()
@@ -119,8 +123,6 @@ class CallBackView(APIView):
         return redirect(redirect_url)
 
 class CallBackCodeView(APIView):
-    print("CALLBACKCODEVIEW - last")
-
     def get(self, request, *args, **kwargs):
         print("We're in")
         print(f'access token : {request.GET.get("code")}')
@@ -139,6 +141,11 @@ class LogoutView(generics.GenericAPIView):
         return Response(...)
 
 
+class UserListView(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+
 class UserUpdateView(generics.UpdateAPIView):
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -153,6 +160,21 @@ class UserUpdateView(generics.UpdateAPIView):
             self.perform_update(serializer)
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserGameHistoryView(generics.ListAPIView):
+    serializer_class = GameHistorySerializer
+
+    def get_queryset(self):
+        user_id = self.kwargs["pk"]
+        logger.info(f"Fetching game history for user {user_id}")
+        try:
+            user = User.objects.get(id=user_id)
+            logger.info(f"Found user {user.username} with ID {user_id}")
+            return user.match_history
+        except User.DoesNotExist:
+            logger.error(f"User with ID {user_id} does not exist")
+            return []
 
 
 class CurrentUserProfileView(generics.RetrieveAPIView):
@@ -173,7 +195,7 @@ class GameHistoryRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView
     serializer_class = GameHistorySerializer
 
 
-class CreateFriendRequestView(generics.CreateAPIView):
+class FriendRequestCreateView(generics.CreateAPIView):
     queryset = Friendship.objects.all()
     serializer_class = FriendshipSerializer
     permission_classes = [IsAuthenticated]
@@ -198,12 +220,13 @@ class CreateFriendRequestView(generics.CreateAPIView):
 
         # Send WebSocket message
         channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)(  # type: ignore
-            "friend_requests_%s" % receiver.pk,
+        async_to_sync(channel_layer.group_send)(
+            "friend_requests",  # Group name
             {
-                "type": "friend_request",
-                "message": "You have a new friend request from %s"
-                % self.request.user.username,  # type: ignore
+                "type": "friend.request",
+                "event": "Create",
+                "requester": self.request.user.username,
+                "receiver": receiver.username,
             },
         )
 
@@ -224,13 +247,24 @@ class AcceptFriendRequestView(generics.UpdateAPIView):
     lookup_url_kwarg = "requestId"
 
     def perform_update(self, serializer):
-        friendship = serializer.instance
-        if friendship.status == "sent":
-            serializer.save(status="accepted")
-        else:
-            return Response(
-                {"error": "Invalid request"}, status=status.HTTP_400_BAD_REQUEST
+        instance = self.get_object()
+        if instance.receiver == self.request.user and instance.status == "sent":
+            instance.status = "accepted"
+            instance.save()
+
+            # Send WebSocket message
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                "friend_requests",  # Group name
+                {
+                    "type": "friend.request",
+                    "event": "Accept",
+                    "requester": instance.requester.username,
+                    "receiver": instance.receiver.username,
+                },
             )
+        else:
+            raise PermissionDenied("Cannot accept this friend request")
 
 
 class ListFriendsView(generics.ListAPIView):
@@ -269,6 +303,18 @@ class RejectCancelFriendRequestView(generics.DestroyAPIView):
             or instance.receiver == self.request.user
         ):
             instance.delete()
+
+            # Send WebSocket message
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                "friend_requests",  # Group name
+                {
+                    "type": "friend.request",
+                    "event": "Reject",
+                    "requester": instance.requester.username,
+                    "receiver": instance.receiver.username,
+                },
+            )
         else:
             raise PermissionDenied("Cannot cancel or reject this friend request")
 
@@ -283,6 +329,18 @@ class RemoveFriendView(generics.DestroyAPIView):
             or instance.receiver == self.request.user
         ):
             instance.delete()
+
+            # Send WebSocket message
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                "friend_requests",  # Group name
+                {
+                    "type": "friend.request",
+                    "event": "Remove",
+                    "requester": instance.requester.username,
+                    "receiver": instance.receiver.username,
+                },
+            )
         else:
             raise PermissionDenied("Cannot remove this friend")
 
@@ -290,9 +348,17 @@ class RemoveFriendView(generics.DestroyAPIView):
 class AvatarUploadView(generics.UpdateAPIView):
     serializer_class = AvatarSerializer
     permission_classes = [IsAuthenticated]
+    parser_classes = (MultiPartParser, FormParser)
 
     def get_object(self):
         return self.request.user
 
-    def post(self, request, *args, **kwargs):
-        return self.update(request, *args, **kwargs)
+
+def put(self, request, *args, **kwargs):
+    user = self.get_object()
+    file_serializer = AvatarSerializer(user, data=request.data)
+    if file_serializer.is_valid():
+        file_serializer.save()
+        return Response(file_serializer.data, status=status.HTTP_200_OK)
+    else:
+        return Response(file_serializer.errors, status=status.HTTP_400_BAD_REQUEST)

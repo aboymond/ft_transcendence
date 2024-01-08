@@ -5,6 +5,7 @@
     /* box-shadow: 0 0 5px var(--primary-color) !important; */
     border-color: var(--accent-color) !important;
     margin: 10px;
+    width: auto;
 }
 
 .inputField::placeholder {
@@ -19,6 +20,7 @@
     box-shadow: 0 0 5px var(--primary-color);
     border-color: var(--accent-color);
     margin: 10px;
+    width: auto;
 }
 
 .loginForm {

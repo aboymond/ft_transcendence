@@ -2,10 +2,10 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 import json
 
 
-class FriendRequestConsumer(AsyncWebsocketConsumer):
+class GeneralRequestConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         print("Connecting...")  # Log message before connection
-        self.room_group_name = "friend_requests_%s" % self.scope["user"].pk
+        self.room_group_name = "general_requests_%s" % self.scope["user"].pk
         if self.channel_layer is not None:
             await self.channel_layer.group_add(self.room_group_name, self.channel_name)
         else:
@@ -29,12 +29,21 @@ class FriendRequestConsumer(AsyncWebsocketConsumer):
 
         if self.channel_layer is not None:
             await self.channel_layer.group_send(
-                self.room_group_name, {"type": "friend_request", "message": message}
+                self.room_group_name, {"type": "general_request", "message": message}
             )
+            # Send a message to the WebSocket
+            await self.send(text_data=json.dumps({"message": "Friend request updated"}))
         else:
             print("Error: self.channel_layer is None")
 
-    async def friend_request(self, event):
+    async def general_request(self, event):
         message = event["message"]
 
+        await self.send(text_data=json.dumps({"message": message}))
+
+    async def friend_request(self, event):
+        # Handle the friend request event
+        message = event["message"]
+
+        # Send a message to the WebSocket
         await self.send(text_data=json.dumps({"message": message}))
