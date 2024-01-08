@@ -2,8 +2,6 @@ import React, { useState , useEffect } from 'react';
 import { Container, Row, Col, Button, Card } from 'react-bootstrap';
 import Logo from '../components/Logo';
 import styles from '../styles/LogPage.module.css';
-import Login from './Login';
-import Register from './Register';
 import { useNavigate } from 'react-router-dom';
 import { apiService } from '../services/apiService';
 import { useAuth } from '../hooks/useAuth';

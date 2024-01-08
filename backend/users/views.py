@@ -86,6 +86,7 @@ class CallBackView(APIView):
         # Fetch access token
         response = OAuth2Session(client_id, redirect_uri=redirect_uri).fetch_token(
             token_url, authorization_response=request.build_absolute_uri(), code=code, client_secret=client_secret
+		)
 
         access_token = response.get('access_token')
 

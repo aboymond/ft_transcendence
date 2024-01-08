@@ -59,7 +59,7 @@ export const apiService = {
 			console.log("ERROR fetching api");
 			return false;
 		}
-    
+	},
 	getUserProfile: async () => {
 		return fetchAPI('users/profile/'); // Endpoint for fetching the current user's profile
 	},
