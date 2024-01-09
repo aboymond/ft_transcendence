@@ -95,19 +95,19 @@ body {
 
 #homepage {
     width: 100vw;
-    height: 80vh;
-    padding-top: 20%;
-    padding-bottom: 20%;
+    height: 100vh;
+    /* margin-bottom: 20vh; */
+    /* padding-top: 20%; */
+    /* padding-bottom: 20%; */
     padding-left: 10%;
     padding-right: 10%;
-
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-sizing: border-box;
     
-    background-color: aqua;
+    overflow: hidden;
+    /* display: flex; */
+    /* align-items: center; */
+    /* justify-content: center; */
+    /* box-sizing: border-box; */
+    /* background-color: aqua; */
 }
 
 #p-end {

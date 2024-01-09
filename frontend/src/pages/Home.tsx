@@ -3,20 +3,25 @@ import '../App.css';
 import BarNav from '../components/BarNav';
 import GameWindow from '../components/GameWindow';
 import Window from '../components/Window';
-import { Row, Col } from 'react-bootstrap';
+import { Row, Col, Container } from 'react-bootstrap';
 import styles from '../styles/Home.module.css';
 
 const Home: React.FC = () => {
 	return (
 	<>
-		<BarNav />
 		<div id="homepage" >
-				<Col className={styles.gamecol}>
-					<GameWindow />
-				</Col>
-				<Col className={styles.friendscol}>
-					<Window />
-				</Col>
+		<BarNav />
+			<Container fluid>
+				<Row className={styles.homerow}>
+					<Col xs={7} md={7} lg={7} className={styles.gamecol}>
+						<GameWindow />
+					</Col>
+					<Col xs={5} md={5} lg={5} className={styles.friendscol}>
+						<Window />
+					</Col>
+				</Row>
+			</Container>
+
 		</div>
 	</>);
 };
