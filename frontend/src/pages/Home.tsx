@@ -11,12 +11,12 @@ const Home: React.FC = () => {
 	<>
 		<div id="homepage" >
 		<BarNav />
-			<Container fluid>
+			<Container className={styles.container}>
 				<Row className={styles.homerow}>
-					<Col xs={7} md={7} lg={7} className={styles.gamecol}>
+					<Col xs={7} md={7} lg={7} xl={7} xxl={7} className={styles.gamecol}>
 						<GameWindow />
 					</Col>
-					<Col xs={5} md={5} lg={5} className={styles.friendscol}>
+					<Col xs={5} md={5} lg={5} xl={5} xxl={5} className={styles.friendscol}>
 						<Window />
 					</Col>
 				</Row>

@@ -12,13 +12,13 @@ const BarNav: React.FC = () => {
 	const handleToggle = () => setShow(!show);
 
 	return (
-		<Navbar bg="green" expand={false} style={{ flexWrap: 'nowrap', paddingLeft: '9vw', paddingRight: '5vw', marginTop: '8vh', }}>
+		<Navbar bg="green" expand={false} style={{ flexWrap: 'nowrap', paddingLeft: '0vw', paddingRight: '0vw', marginTop: '8vh', }}>
 			<Container fluid>
 				<Row className="w-100">
-					<Col xs={true} className="d-flex justify-content-start">
-						<Navbar.Brand style={{ color: 'var(--primary-color)' }}>Retroscendence</Navbar.Brand>
+					<Col xs={true} className="d-flex justify-content-start" style={{ paddingLeft: '9vw' }}>
+						<Navbar.Brand style={{ color: 'var(--primary-color)', fontSize: '1.6em' }}>RETROSCENDENCE</Navbar.Brand>
 					</Col>
-					<Col xs="auto" className="d-flex justify-content-end" style={{ paddingRight: '50px' }}>
+					<Col xs="auto" className="d-flex justify-content-end" style={{ paddingRight: '5vw' }}>
 						<Nav.Item>
 							<Image
 								src={avatarUrl}

@@ -53,6 +53,7 @@ const Window: React.FC = () => {
                                 Friends
                             </Button>
                         </Col>
+                        
                     </>
                 )}
                 {showHistory && (
