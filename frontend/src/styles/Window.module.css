@@ -1,7 +1,8 @@
 .cont_window {
-    height: 70%;
+    padding-top: 2vh;
+    height: 100%;
     width: auto;
-    background-color: aqua;
+    /* background-color: aqua; */
 }
 
 

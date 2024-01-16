@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
 import { SceneBase } from './SceneBase';
-import { glowFilter, defaultColor, textStylePVPMenu2, textStylePVBMenu2, textStyleTournamentMenu, textStyleMenuOptionPlay } from '..';
+import { glowFilter, defaultColor, textStyleMenuTournamentCreate, textStyleMenuTournamentName, textStyleMenuTournamentMaxScore, textStyleMenuTournamentMode, textStyleMenuTournamentPlayer, textStyleMenuOptionPlay, textStyleTournamentMenu } from '..';
 
 const selectMaxCreate = 4;
 
@@ -24,19 +24,19 @@ export class SceneMenuTournament extends SceneBase {
 
 	// MENU CREATE ==========================================
 	private _create = new PIXI.Container();
-	private _textCreate = new PIXI.Text('CREATE');
-	private _name = new PIXI.Text('NAME:');
+	private _textCreate = new PIXI.Text('CREATE', textStyleMenuTournamentCreate);
+	private _name = new PIXI.Text('NAME:', textStyleMenuTournamentName);
 	private _nameInputBox = new PIXI.Graphics();
 
 
-	private _nb_player_text = new PIXI.Text('PLAYER: ');
+	private _nb_player_text = new PIXI.Text('PLAYER: ', textStyleMenuTournamentPlayer);
 
-	private _score_max_text = new PIXI.Text('MAX SCORE:');
-	private _mode = new PIXI.Text('MODE:');
-	private _nb_player_tab = new PIXI.Text('< 4 >');
+	private _score_max_text = new PIXI.Text('MAX SCORE:', textStyleMenuTournamentMaxScore);
+	private _mode = new PIXI.Text('MODE:', textStyleMenuTournamentMode);
+	private _nb_player_tab = new PIXI.Text('< 4 >', textStyleMenuTournamentPlayer);
 	private _nbPlayer: number[] = [4, 6, 8];
 
-	private _score_max_tab = new PIXI.Text('< 3 >');
+	private _score_max_tab = new PIXI.Text('< 3 >', textStyleMenuTournamentMaxScore);
 	private _scoreMax: number[] = [3, 5, 10];
 
 	private _currentNbPlayer = 0;
@@ -55,7 +55,7 @@ export class SceneMenuTournament extends SceneBase {
 	// private _selectCreate = true;
 
 	private _inputText = '';
-	private _textInputField = new PIXI.Text(this._inputText, { fill: defaultColor, fontSize: 10 });
+	private _textInputField = new PIXI.Text(this._inputText, { fill: defaultColor, fontSize: 20, });
 
 	//=======================================
 	// Effects
@@ -236,7 +236,8 @@ export class SceneMenuTournament extends SceneBase {
 		this._name.style.fill = 'green';
 		this._name.x = this.root.width / 5;
 		this._name.y = (this.root.height * 30) / 100 - this._name.height / 2;
-		this._name.style.fontSize = 10;
+		// this._name.style.fontSize = 10;
+		this._name.filters = [glowFilter];
 		menu.addChild(this._name);
 
 		this._nameInputBox.lineStyle(1, 'green', 1);
@@ -245,46 +246,54 @@ export class SceneMenuTournament extends SceneBase {
 		this._nameInputBox.x = this.root.width - this._nameInputBox.width - this.root.width / 5;
 		this._nameInputBox.y = this._name.y;
 		this._nameInputBox.endFill();
+		this._nameInputBox.filters = [glowFilter];
 		menu.addChild(this._nameInputBox);
 
 		this._textInputField.x = this.root.width - this._nameInputBox.width - this.root.width / 5;
 		this._textInputField.y = this._name.y  - (this._nameInputBox.height / 2 - this._textInputField.height / 2);
+		this._textInputField.filters = [glowFilter];
 		menu.addChild(this._textInputField);
 
 		this._mode.style.fill = 'green';
 		this._mode.x = this.root.width / 5;
 		this._mode.y = (this.root.height * 17) / 100 + this._name.y - this._mode.height / 2;
-		this._mode.style.fontSize = 10;
+		// this._mode.style.fontSize = 10;
+		this._mode.filters = [glowFilter];
 		menu.addChild(this._mode);
 
 		this._nb_player_text.style.fill = 'green';
 		this._nb_player_text.x = this.root.width / 5;
 		this._nb_player_text.y = (this.root.height * 17) / 100 + this._mode.y - this._nb_player_text.height / 2;
-		this._nb_player_text.style.fontSize = 10;
+		// this._nb_player_text.style.fontSize = 10;
+		this._nb_player_text.filters = [glowFilter];
 		menu.addChild(this._nb_player_text);
 
 		this._nb_player_tab.style.fill = 'green';
 		this._nb_player_tab.x = this.root.width - 100;
 		this._nb_player_tab.y = this._nb_player_text.y;
-		this._nb_player_tab.style.fontSize = 10;
+		// this._nb_player_tab.style.fontSize = 10;
+		this._nb_player_tab.filters = [glowFilter];
 		menu.addChild(this._nb_player_tab);
 	
 
 		this._score_max_text.style.fill = 'green';
 		this._score_max_text.x = this.root.width / 5;
 		this._score_max_text.y = (this.root.height * 17) / 100 + this._nb_player_text.y - this._score_max_text.height / 2;
-		this._score_max_text.style.fontSize = 10;
+		// this._score_max_text.style.fontSize = 10;
+		this._score_max_text.filters = [glowFilter];
 		menu.addChild(this._score_max_text);
 
 		this._score_max_tab.style.fill = 'green';
 		this._score_max_tab.x = this.root.width -  100;
 		this._score_max_tab.y = this._score_max_text.y;
-		this._score_max_tab.style.fontSize = 10;
+		// this._score_max_tab.style.fontSize = 10;
+		this._score_max_tab.filters = [glowFilter];
 		menu.addChild(this._score_max_tab);
 
 		this._textPlay.style.fill = 'green';
 		this._textPlay.x = this.root.width / 2 - this._textPlay.width / 2; 
 		this._textPlay.y = this.root.height - 100;
+		this._textPlay.filters = [glowFilter];
 		menu.addChild(this._textPlay);
 
 		menu.visible = true;

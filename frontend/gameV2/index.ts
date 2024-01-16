@@ -72,6 +72,40 @@ export const textStyleWinOrLoose = new PIXI.TextStyle({
 	fill: defaultColor,
 });
 
+
+//STYLE MENU TOURNAMENT
+
+export const textStyleMenuTournamentCreate = new PIXI.TextStyle({
+	fontSize: 20,
+	fill: defaultColor,
+});
+
+export const textStyleMenuTournamentName = new PIXI.TextStyle({
+	fontSize: 20,
+	fill: defaultColor,
+});
+
+export const textStyleMenuTournamentPlayer = new PIXI.TextStyle({
+	fontSize: 20,
+	fill: defaultColor,
+});
+
+export const textStyleMenuTournamentMaxScore = new PIXI.TextStyle({
+	fontSize: 20,
+	fill: defaultColor,
+});
+
+export const textStyleMenuTournamentMode = new PIXI.TextStyle({
+	fontSize: 20,
+	fill: defaultColor,
+});
+
+
+export const textStyleMenuTournamentJoin = new PIXI.TextStyle({
+	fontSize: 20,
+	fill: defaultColor,
+});
+
 // Effects
 
 export const glowFilter = new GlowFilter({

@@ -8,9 +8,17 @@ import apiService from '../services/apiService';
 import { useAuth } from '../hooks/useAuth';
 import { User } from '../types';
 
+enum Mode {
+    FRIENDS,
+    HISTORY
+}
+
 const Window: React.FC = () => {
-    const [showHistory, setShowHistory] = useState(false);
-    const [showFriends, setShowFriends] = useState(false);
+    // const [showHistory, setShowHistory] = useState(null);
+    // const [showFriends, setShowFriends] = useState(null);
+    const [showContent, setShowContent] = useState(Mode.HISTORY);
+    const handleButtonClick = (content) => {setShowContent(content)};
+
     const [friends, setFriends] = useState<User[]>([]);
     const auth = useAuth();
 
@@ -31,14 +39,14 @@ const Window: React.FC = () => {
     return (
         <Container className={styles.window}>
             <Row className={styles.row}>
-                {!showHistory && !showFriends && (
+                {/* {!showHistory && !showFriends && ( */}
                     <>
                         <Col> 
                             <Button 
                                 variant="primary"
                                 type="submit"
                                 className={styles.button}
-                                onClick={() => setShowHistory(true)}
+                                onClick={() => handleButtonClick(Mode.HISTORY)}
                             >
                                 History
                             </Button>
@@ -48,39 +56,43 @@ const Window: React.FC = () => {
                             variant="primary"
                             type="submit"
                             className={styles.button}
-                            onClick={() => setShowFriends(true)}
+                            onClick={() => handleButtonClick(Mode.FRIENDS)}
                             >
                                 Friends
                             </Button>
                         </Col>
                         
                     </>
-                )}
-                {showHistory && (
-                    <Col className={styles.fullWindowContent}>
-                        <CloseButton 
-                            variant="primary"
-                            type="submit"
-                            className={`${styles.button} ${styles.closeButton}`}
-                            onClick={() => setShowHistory(false)}
-                        >
-                        </CloseButton>
-                        <GameHistoryList />
-                    </Col>
-                )}
-                {showFriends && (
-                    <Col className={styles.fullWindowContent}>
-                        <CloseButton 
-                            variant="primary"
-                            type="submit"
-                            className={`${styles.button} ${styles.closeButton}`}
-                            onClick={() => setShowFriends(false)}
-                        >
-                        </CloseButton>
-                        <PotentialFriends />
-                        {/* {friends.length > 0 ? <Friends /> : <PotentialFriends />} */}
-                    </Col>
-                )}
+                {/* )} */}
+                <Container className={styles.cont_window}>
+                    {showContent === Mode.HISTORY && (
+                        <Col className={styles.fullWindowContent}>
+                            {/* <CloseButton 
+                                variant="primary"
+                                type="submit"
+                                className={`${styles.button} ${styles.closeButton}`}
+                                onClick={() => setShowHistory(false)}
+                            >
+                            </CloseButton> */}
+                            <GameHistoryList />
+                        </Col>
+                    )}
+                    {showContent === Mode.FRIENDS && (
+                        <Col className={styles.fullWindowContent}>
+                            {/* <CloseButton 
+                                variant="primary"
+                                type="submit"
+                                className={`${styles.button} ${styles.closeButton}`}
+                                onClick={() => setShowFriends(false)}
+                            >
+                            </CloseButton> */}
+                            <PotentialFriends />
+                            {/* {friends.length > 0 ? <Friends /> : <PotentialFriends />} */}
+                        </Col>
+                    )}
+
+                </Container>
+
             </Row>
         </Container>
     );
