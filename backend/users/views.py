@@ -3,6 +3,7 @@ import requests
 from django.contrib.auth import authenticate, logout
 from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied
+from django.core.files.base import ContentFile
 from django.db.models import Q
 from django.shortcuts import redirect
 from rest_framework import generics, permissions, status, serializers
@@ -98,9 +99,12 @@ class CallBackView(APIView):
         user = {
             "id": user_data["id"],
             "login": user_data["login"],
-            "avatar": user_data["image"]["versions"]["small"],
+            # "avatar": user_data["image"]["versions"]["small"],
             "access_token": access_token,
         }
+
+        avatar_url = user_data["image"]["versions"]["small"]
+        response = requests.get(avatar_url)
 
         User = get_user_model()
         username = f"{user['login']}#{user['id']}"
@@ -108,14 +112,14 @@ class CallBackView(APIView):
         try:
             existing_user = User.objects.get(username=username)
         except User.DoesNotExist:
-            existing_user = User.objects.create(username=username, avatar=user["avatar"])
             # If the user does not exist, create a new user
-            existing_user = User.objects.create(
-                username=username, avatar=user["avatar"]
-            )
+            existing_user = User.objects.create(username=username)
         else:
-            existing_user.avatar = user["avatar"]
-            existing_user.save()
+            existing_user.avatar.delete()   # Delete the old avatar
+
+        # Save the new avatar
+        existing_user.avatar.save(f"{username}.jpg", ContentFile(response.content))
+        existing_user.save()
 
         # temp JWT
         refresh = RefreshToken.for_user(existing_user)
