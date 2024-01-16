@@ -65,3 +65,6 @@ const FriendRequests = ({ requests, onAccept, onReject }: FriendRequestsProps) =
 	);
 };
 export default FriendRequests;
+
+//on peut uniquement rejeter les demandes d'amis, cela implique que onAcept n'est pas fonctionnel
+//quand on accepte une demande, l'ami ajouter doit apparaitre dans la liste d'amis

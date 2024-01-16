@@ -1,13 +1,20 @@
 import { Container } from 'react-bootstrap';
 import styles from '../styles/GameWindow.module.css';
-import Game from './Game';
+import { launchGame } from '../../gameV2/main';
+import { useEffect} from 'react';
 
 function GameWindow() {
-	return (
-		<Container className={styles.game_window}>
-			<Game />
-		</Container>
-	);
+
+    useEffect(() => {
+        launchGame();
+
+    }, []);
+
+    return (
+        <Container  id='game_window' className={styles.window}> 
+            
+        </Container>
+    );
 }
 
 export default GameWindow;

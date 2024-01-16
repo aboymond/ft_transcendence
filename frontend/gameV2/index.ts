@@ -1,6 +1,8 @@
 import * as PIXI from 'pixi.js';
 import { GlowFilter } from '@pixi/filter-glow';
 import { PixelateFilter } from '@pixi/filter-pixelate';
+import $ from 'jquery';
+import "/font/font.css"
 
 export const defaultColor = 0x1aff00;
 
@@ -67,6 +69,40 @@ export const textStyleMenuOptionError = new PIXI.TextStyle({
 export const textStyleWinOrLoose = new PIXI.TextStyle({
 	fontSize: 20,
 	fontFamily: 'Pixelmania',
+	fill: defaultColor,
+});
+
+
+//STYLE MENU TOURNAMENT
+
+export const textStyleMenuTournamentCreate = new PIXI.TextStyle({
+	fontSize: 20,
+	fill: defaultColor,
+});
+
+export const textStyleMenuTournamentName = new PIXI.TextStyle({
+	fontSize: 20,
+	fill: defaultColor,
+});
+
+export const textStyleMenuTournamentPlayer = new PIXI.TextStyle({
+	fontSize: 20,
+	fill: defaultColor,
+});
+
+export const textStyleMenuTournamentMaxScore = new PIXI.TextStyle({
+	fontSize: 20,
+	fill: defaultColor,
+});
+
+export const textStyleMenuTournamentMode = new PIXI.TextStyle({
+	fontSize: 20,
+	fill: defaultColor,
+});
+
+
+export const textStyleMenuTournamentJoin = new PIXI.TextStyle({
+	fontSize: 20,
 	fill: defaultColor,
 });
 

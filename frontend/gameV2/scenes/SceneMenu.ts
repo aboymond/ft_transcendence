@@ -8,13 +8,6 @@ export class SceneMenu extends SceneBase {
 	private _spaceText = new PIXI.Text('PRESS ENTER TO START', textStyleDefaultMenu1);
 	private _interval = 0;
 
-	//=======================================
-	// Effects
-	//=======================================
-
-	//=======================================
-	// HOOK
-	//=======================================
 
 	public onStart(container: PIXI.Container) {
 		//Init Title text
@@ -31,8 +24,10 @@ export class SceneMenu extends SceneBase {
 			if (this._spaceText) {
 				this._spaceText.visible = !this._spaceText.visible;
 			}
-			console.log(this._spaceText);
+			// console.log(this._spaceText);
 		}, 800);
+		console.log("width: " + this.root.width)
+		console.log("height: " + this.root.height)
 	}
 
 	public onUpdate() {}
@@ -56,8 +51,4 @@ export class SceneMenu extends SceneBase {
 		this._spaceText.filters = [glowFilter];
 		return this._spaceText;
 	}
-
-	//=======================================
-	// UTILS
-	//=======================================
 }

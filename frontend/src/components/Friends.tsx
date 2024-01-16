@@ -89,3 +89,5 @@ const Friends: React.FC = () => {
 };
 
 export default Friends;
+
+//pourquoi FriendsList ne peut que remove les amis et pas afficher la liste d'amis ni accepter de nouveaux amis ?

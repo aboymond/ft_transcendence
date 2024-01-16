@@ -35,7 +35,7 @@ const LogPage: React.FC = () => {
 
 	return (
 		<div id="page">
-			<Container fluid id="log-page">
+			<Container fluid id="log-page" className={styles.scrollableContent}>
 				<Logo />
 				<Row>
 					<Col md="auto">
