@@ -191,6 +191,7 @@ ALLOWED_HOSTS = ['localhost', 'nginx', 'frontend']
 #CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     "https://api.intra.42.fr",  # Add the actual origin of the 42 API
+    "http://localhost",
     "http://localhost:3001",
     "http://frontend:3001",
     "http://frontend:3001"

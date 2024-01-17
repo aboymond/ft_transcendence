@@ -124,7 +124,7 @@ class CallBackView(APIView):
         # temp JWT
         refresh = RefreshToken.for_user(existing_user)
 
-        redirect_url = "http://localhost:3001?access_token=" + str(refresh.access_token)
+        redirect_url = "http://localhost:3001?access_token=" + str(refresh.access_token) # TODO remove port for prod
         return redirect(redirect_url)
 
 class CallBackCodeView(APIView):
