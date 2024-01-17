@@ -50,6 +50,9 @@ export const apiService = {
 			return false;
 		}
 	},
+	getUserById: async (userId: string): Promise<User> => {
+		return fetchAPI(`users/${userId}/`);
+	},
 	getUsers(): Promise<User[]> {
 		return fetchAPI('users/list/');
 	},

@@ -81,9 +81,9 @@ body {
 #page {
     width: 100vw;
     height: 100vh;
-    padding: 15%;
+    padding: 10%; /*padding 10% mieux sur plus petit écran */
     overflow: hidden;
-    background-color: aqua;
+    /* background-color: aqua; */
 }
 
 /* @media (max-width: 992px) {
