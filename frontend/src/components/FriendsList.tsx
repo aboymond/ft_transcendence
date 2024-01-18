@@ -30,5 +30,3 @@ const FriendList = ({ friends, onRemove }: FriendListProps) => {
 
 export default FriendList;
 
-//ajouter de pouvoir accepter les friends avec + car on peut avoir la list et juste refuser 
-//de plus, ça nous affiche pas vraiment la liste ni de nos amis, ni des amis qu'on peut ajouter (potentialFriends le fait)
