@@ -1,17 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+// import { useParams } from 'react-router-dom';
 import apiService from '../services/apiService';
 import { User } from '../types';
 
-const FriendProfile: React.FC = () => {
+interface FriendProfileProps {
+ userId: string;
+}
+
+const FriendProfile: React.FC<FriendProfileProps> = ({ userId }) => {
  const [profile, setProfile] = useState<User | null>(null);
- const { id } = useParams<{ id: string }>();
 
  useEffect(() => {
    const fetchFriendProfile = async () => {
-     if (id) {
+     if (userId) {
        try {
-         const friendProfile = await apiService.getUserById(id);
+         const friendProfile = await apiService.getUserById(userId);
          setProfile(friendProfile);
        } catch (error) {
          console.error('Failed to fetch friend profile:', error);
@@ -19,7 +22,7 @@ const FriendProfile: React.FC = () => {
      }
    };
    fetchFriendProfile();
- }, [id]);
+ }, [userId]);
 
  if (!profile) {
    return <div>Loading...</div>;
