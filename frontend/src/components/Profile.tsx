@@ -17,7 +17,6 @@ const Profile: React.FC = () => {
     const auth = useAuth();
     const navigate = useNavigate();
 
-    const { userId } = useParams<{ userId: string }>();
 
     const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
@@ -50,26 +49,30 @@ const Profile: React.FC = () => {
         }
     };
 
+    const { userId } = useParams<{ userId: string }>();
+    const effectiveUserId = userId || auth.user?.id;
+
     useEffect(() => {
         if (!auth.isAuthenticated) {
             navigate('/');
             return;
         }
-        if (!userId) {
+        if (!effectiveUserId) {
             console.error('User ID is undefined');
+            setError('User ID is undefined');
             return;
         }
 
-        apiService
-        .getUserById(userId)
-        .then((data: User) => {
-            setProfile(data);
-        })
-        .catch((error) => {
-            console.error('Failed to load profile:', error);
-            setError('Failed to load profile');
-        });
-        }, [auth.isAuthenticated, navigate, userId]);
+        apiService.getUserById(effectiveUserId.toString())
+            .then((data: User) => {
+                setProfile(data);
+            })
+            .catch((error) => {
+                console.error('Failed to load profile:', error);
+                setError('Failed to load profile');
+            });
+    }, [auth.isAuthenticated, navigate, effectiveUserId]);   
+    
 
     if (error) {
         return <div>Error: {error}</div>;
