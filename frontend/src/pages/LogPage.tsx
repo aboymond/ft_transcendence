@@ -1,15 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Button, Card } from 'react-bootstrap';
 import Logo from '../components/Logo';
 import styles from '../styles/LogPage.module.css';
+import { useNavigate } from 'react-router-dom';
+import { apiService } from '../services/apiService';
+import { useAuth } from '../hooks/useAuth';
 import Login from '../components/Login';
 import Register from '../components/Register';
 
 const LogPage: React.FC = () => {
 	const [showComponent, setShowComponent] = useState('');
 
+	const [error, setError] = useState('');
+	const navigate = useNavigate();
+	const auth = useAuth();
+
 	const handleClose = () => {
 		setShowComponent('');
+	};
+
+	useEffect(() => {
+		const urlParams = new URLSearchParams(window.location.search);
+		const accessToken = urlParams.get('access_token');
+
+		if (accessToken) {
+			auth.login(accessToken);
+			navigate('/home');
+		}
+	}, [auth, navigate]);
+
+	const handleApiLogin = async () => {
+		window.location.href = 'http://localhost:8000/api/users/auth';
 	};
 
 	return (
@@ -58,7 +79,12 @@ const LogPage: React.FC = () => {
 												</Button>
 											</Col>
 										</Row>
-										<Button variant="primary" type="submit" className={`mt-3 ${styles.button} w-100`}>
+										<Button
+											variant="primary"
+											type="submit"
+											className={`mt-3 ${styles.button} w-100`}
+											onClick={() => handleApiLogin()}
+										>
 											Sign Up with 42
 										</Button>
 									</>

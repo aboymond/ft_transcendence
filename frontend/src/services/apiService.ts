@@ -29,6 +29,7 @@ async function fetchAPI(endpoint: string, options: RequestInit = {}, includeToke
 	return text ? JSON.parse(text) : {};
 }
 
+
 interface UserData {
 	username?: string;
 	display_name?: string;
@@ -50,15 +51,21 @@ export const apiService = {
 			return false;
 		}
 	},
-	getUsers(): Promise<User[]> {
-		return fetchAPI('users/list/');
+  
+	authlogin: async() => {
+		try{
+			return fetchAPI('users/auth');
+		} catch (error) {
+			console.log("ERROR fetching api");
+			return false;
+		}
 	},
 	getUserProfile: async () => {
 		return fetchAPI('users/profile/'); // Endpoint for fetching the current user's profile
 	},
-	// getUser: async (userId: string) => {
-	// 	return fetchAPI(`users/${userId}/`); // Endpoint for fetching user data
-	// },
+	getUser: async (userId: string) => {
+		return fetchAPI(`users/${userId}/`); // Endpoint for fetching user data
+	},
 	getUserGameHistory: async (userId: number): Promise<GameHistory[]> => {
 		return fetchAPI(`users/${userId}/game_history/`);
 	},
