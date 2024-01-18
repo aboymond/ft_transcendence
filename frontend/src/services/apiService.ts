@@ -29,7 +29,6 @@ async function fetchAPI(endpoint: string, options: RequestInit = {}, includeToke
 	return text ? JSON.parse(text) : {};
 }
 
-
 interface UserData {
 	username?: string;
 	display_name?: string;
@@ -51,12 +50,12 @@ export const apiService = {
 			return false;
 		}
 	},
-  
-	authlogin: async() => {
-		try{
+
+	authlogin: async () => {
+		try {
 			return fetchAPI('users/auth');
 		} catch (error) {
-			console.log("ERROR fetching api");
+			console.log('ERROR fetching api');
 			return false;
 		}
 	},
@@ -139,6 +138,9 @@ export const apiService = {
 	},
 	getGameHistory: async (): Promise<GameHistory[]> => {
 		return fetchAPI('users/game_histories/');
+	},
+	getTournaments: async () => {
+		return fetchAPI('tournaments/');
 	},
 };
 
