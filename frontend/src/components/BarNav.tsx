@@ -3,6 +3,7 @@ import { Navbar, Nav, Container, Image, Offcanvas, Row, Col, CloseButton } from 
 import { useAuth } from '../hooks/useAuth';
 import Profile from './Profile';
 import Friends from './Friends';
+import styles from '../styles/BarNav.module.css'
 
 const BarNav: React.FC = () => {
 	const [show, setShow] = useState(false);
@@ -21,11 +22,13 @@ const BarNav: React.FC = () => {
 					<Col xs="auto" className="d-flex justify-content-end" style={{ paddingRight: '5vw' }}>
 						<Nav.Item>
 							<Image
+								className={styles.avatar}
 								src={avatarUrl}
 								roundedCircle
-								style={{ width: '60px', height: '60px', cursor: 'pointer' }}
+								style={{ width: '60px', height: '60px', cursor: 'pointer'}}
 								onClick={handleToggle}
-							/>
+							>
+							</ Image>
 						</Nav.Item>
 					</Col>
 				</Row>

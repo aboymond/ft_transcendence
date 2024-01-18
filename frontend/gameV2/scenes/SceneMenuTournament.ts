@@ -2,7 +2,7 @@ import * as PIXI from 'pixi.js';
 import { SceneBase } from './SceneBase';
 import { glowFilter, defaultColor, textStyleMenuTournamentCreate, textStyleMenuTournamentName, textStyleMenuTournamentMaxScore, textStyleMenuTournamentMode, textStyleMenuTournamentPlayer, textStyleMenuOptionPlay, textStyleTournamentMenu } from '..';
 
-const selectMaxCreate = 4;
+const selectMaxCreate = 3;
 
 enum menuState {
 	SELECT_MENU,
@@ -180,10 +180,10 @@ export class SceneMenuTournament extends SceneBase {
 			this.state = menuState.SELECT_MENU;
 		} 
 		if (this._currentSelectCreate === 0) return this._nameCreate();
-		if (this._currentSelectCreate === 1) return this._modeCreate();
-		if (this._currentSelectCreate === 2) return this._playerCreate();
-		if (this._currentSelectCreate === 3) return this._maxScoreCreate();
-		if (this._currentSelectCreate === 4) return this._textPlayCreate();
+		// if (this._currentSelectCreate === 1) return this._modeCreate();
+		if (this._currentSelectCreate === 1) return this._playerCreate();
+		if (this._currentSelectCreate === 2) return this._maxScoreCreate();
+		if (this._currentSelectCreate === 3) return this._textPlayCreate();
 	}
 
 	private _pressDown() {
@@ -193,20 +193,20 @@ export class SceneMenuTournament extends SceneBase {
 			this.state = menuState.SELECT_MENU;
 		}
 		if (this._currentSelectCreate === 0) return this._nameCreate();
-		if (this._currentSelectCreate === 1) return this._modeCreate();
-		if (this._currentSelectCreate === 2) return this._playerCreate();
-		if (this._currentSelectCreate === 3) return this._maxScoreCreate();
-		if (this._currentSelectCreate === 4) return this._textPlayCreate();
+		// if (this._currentSelectCreate === 1) return this._modeCreate();
+		if (this._currentSelectCreate === 1) return this._playerCreate();
+		if (this._currentSelectCreate === 2) return this._maxScoreCreate();
+		if (this._currentSelectCreate === 3) return this._textPlayCreate();
 	}
 
 	private _pressLeft() {
-		if (this._currentSelectCreate === 2) return this._playerPrev();
-		if (this._currentSelectCreate === 3) return this._maxScorePrev();
+		if (this._currentSelectCreate === 1) return this._playerPrev();
+		if (this._currentSelectCreate === 2) return this._maxScorePrev();
 	}
 
 	private _pressRight() {
-		if (this._currentSelectCreate === 2) return this._playerNext();
-		if (this._currentSelectCreate === 3) return this._maxScoreNext();
+		if (this._currentSelectCreate === 1) return this._playerNext();
+		if (this._currentSelectCreate === 2) return this._maxScoreNext();
 	}
 
 	private _initTextCreate(text: PIXI.Text) {
@@ -254,16 +254,16 @@ export class SceneMenuTournament extends SceneBase {
 		this._textInputField.filters = [glowFilter];
 		menu.addChild(this._textInputField);
 
-		this._mode.style.fill = 'green';
-		this._mode.x = this.root.width / 5;
-		this._mode.y = (this.root.height * 17) / 100 + this._name.y - this._mode.height / 2;
+		// this._mode.style.fill = 'green';
+		// this._mode.x = this.root.width / 5;
+		// this._mode.y = (this.root.height * 17) / 100 + this._name.y - this._mode.height / 2;
 		// this._mode.style.fontSize = 10;
-		this._mode.filters = [glowFilter];
-		menu.addChild(this._mode);
+		// this._mode.filters = [glowFilter];
+		// menu.addChild(this._mode);
 
 		this._nb_player_text.style.fill = 'green';
 		this._nb_player_text.x = this.root.width / 5;
-		this._nb_player_text.y = (this.root.height * 17) / 100 + this._mode.y - this._nb_player_text.height / 2;
+		this._nb_player_text.y = (this.root.height * 17) / 100 + this._nameInputBox.y - this._nb_player_text.height / 2;
 		// this._nb_player_text.style.fontSize = 10;
 		this._nb_player_text.filters = [glowFilter];
 		menu.addChild(this._nb_player_text);
