@@ -140,7 +140,7 @@ export const apiService = {
 		return fetchAPI('users/game_histories/');
 	},
 	getTournaments: async () => {
-		return fetchAPI('tournaments/');
+		return fetchAPI('tournaments/tournaments/');
 	},
 };
 
