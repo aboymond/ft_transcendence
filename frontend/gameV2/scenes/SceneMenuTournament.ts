@@ -1,6 +1,11 @@
 import * as PIXI from 'pixi.js';
 import { SceneBase } from './SceneBase';
+import apiService from '../../src/services/apiService';
 import { glowFilter, defaultColor, textStyleMenuTournamentCreate, textStyleMenuTournamentName, textStyleMenuTournamentMaxScore, textStyleMenuTournamentMode, textStyleMenuTournamentPlayer, textStyleMenuOptionPlay, textStyleTournamentMenu } from '..';
+
+const apiTournament = await apiService.getTournaments();
+
+console.log(apiTournament);
 
 const selectMaxCreate = 3;
 
