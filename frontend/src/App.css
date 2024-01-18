@@ -83,7 +83,7 @@ body {
     height: 100vh;
     padding: 15%;
     overflow: hidden;
-    background-color: aqua;
+    /* background-color: aqua; */
 }
 
 /* @media (max-width: 992px) {
