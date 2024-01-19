@@ -48,6 +48,22 @@
     /* justify-content: space-between; */
 }
 
+.fullWindowContent::-webkit-scrollbar {
+    width: 10px;
+ }
+ 
+ .fullWindowContent::-webkit-scrollbar-track {
+    background: rgb(5, 49, 0); 
+ }
+ 
+ .fullWindowContent::-webkit-scrollbar-thumb {
+    background: rgb(74,246,38); 
+ }
+ 
+ .fullWindowContent::-webkit-scrollbar-thumb:hover {
+    background: rgb(74,246,38); 
+ }
+
 .fullWidth {
     width: 100%;
 }

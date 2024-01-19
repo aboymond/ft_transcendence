@@ -4,7 +4,7 @@
     flex-direction: column;
     /* align-items: stretch; */
     height: calc(100vh - 50px);
-    overflow-y: auto;
+    /* overflow-y: auto; */
     /* padding: 20px; */
 }
    
