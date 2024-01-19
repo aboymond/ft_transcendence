@@ -118,7 +118,7 @@ enum Mode {
 
 const Window: React.FC = () => {
  const [showContent, setShowContent] = useState(Mode.HISTORY);
- const handleButtonClick = (content) => {setShowContent(content)};
+ const handleButtonClick = (content: any) => {setShowContent(content)};
  const [selectedFriend, setSelectedFriend] = useState<User | null>(null);
 
  const [friends, setFriends] = useState<User[]>([]);
@@ -145,7 +145,7 @@ const Window: React.FC = () => {
  return (
    <Container className={styles.window}>
      <Row className={styles.row}>
-       <Col> 
+       <Col className={styles.col}> 
          <Button 
            variant="primary"
            type="submit"
@@ -155,7 +155,7 @@ const Window: React.FC = () => {
            History
          </Button>
        </Col>
-       <Col>
+       <Col className={styles.col}>
          <Button 
            variant="primary"
            type="submit"

@@ -23,7 +23,6 @@
     box-shadow: 0 0 5px rgb(165, 255, 165);
     border-color:rgb(74,246,38);
     padding: 20px;
-    /* background-color: blue; */
 }
 
 .button {
@@ -33,6 +32,11 @@
     font-family: var(--font-family) !important;
     border-color: var(--accent-color) !important;
     white-space: nowrap;
+}
+
+.col {
+    display: flex;
+    justify-content: center;
 }
 
 .row {
@@ -50,19 +54,19 @@
 
 .fullWindowContent::-webkit-scrollbar {
     width: 10px;
- }
+}
  
  .fullWindowContent::-webkit-scrollbar-track {
     background: rgb(5, 49, 0); 
- }
+}
  
  .fullWindowContent::-webkit-scrollbar-thumb {
     background: rgb(74,246,38); 
- }
+}
  
  .fullWindowContent::-webkit-scrollbar-thumb:hover {
     background: rgb(74,246,38); 
- }
+}
 
 .fullWidth {
     width: 100%;

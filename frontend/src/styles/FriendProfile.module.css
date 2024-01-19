@@ -7,7 +7,7 @@
 
 .closeButton {
     position: relative;
-    left: 20vw;
+    float: right;
     border-radius: 20%;
     margin-bottom: 15px;
     background-color: var(--primary-color);
