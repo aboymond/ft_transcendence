@@ -11,6 +11,8 @@ import {
 	textStyleMenuOptionVictory,
 } from '../index';
 import { SceneGameVsBot } from './SceneGameVsBot';
+import { SceneGame } from './SceneGame';
+// import axios from 'axios'; // Import axios to make HTTP requests
 
 const selectMax = 4;
 let errorLock: boolean = false;
@@ -34,7 +36,7 @@ const chooseBotLevel: string[] = ['EASY', 'MEDIUM', 'HARD', 'IMPOSSIBLE!!!'];
 const botLvlNum: number[] = [0.05, 0.075, 0.09, 0.9];
 const choosePad: string[] = ['BASIC', 'LOCKED', 'LOCKED', 'LOCKED', 'LOCKED', 'LOCKED'];
 
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 const textures = [
 	PIXI.Texture.from('gameV2/img/pad0.png'),
@@ -214,18 +216,17 @@ export class SceneMenuOption extends SceneBase {
 	//=======================================
 
 	private _pressSpace() {
-		if (
-			(!this.root.vsPlayer && this._currentSelect === 4) ||
-			(this.root.vsPlayer && this._currentSelect === 3)
-		) {
-			
-			if (this._currentPad === 0) this.root.loadScene(new SceneGameVsBot(this.root));
-			else {
-				errorLock = true;
-				this._popError.visible = true;
-				this._textErrorOK.visible = true;
-				this._textErrorPad.visible = true;
-			}
+		console.log('currentselect: ', this._currentSelect, 'vsPlayer: ', this.root.vsPlayer);
+		if (this.root.vsPlayer) {
+			console.log('Loading SceneGame');
+			this.root.loadScene(new SceneGame(this.root));
+		}
+		if (this._currentPad === 0) this.root.loadScene(new SceneGameVsBot(this.root));
+		else {
+			errorLock = true;
+			this._popError.visible = true;
+			this._textErrorOK.visible = true;
+			this._textErrorPad.visible = true;
 		}
 	}
 

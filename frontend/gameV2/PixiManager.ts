@@ -15,12 +15,18 @@ export class PixiManager {
 	public amountVictory = 5;
 	public botLvl = 0.05;
 	public playerAWin = true;
+	public ws: WebSocket | null;
+
 	//--------------------------
 
 	private _currentScene?: SceneBase = undefined;
 	private _app: PIXI.Application;
 
-	constructor(readonly options: Partial<IPixiManagerOptions> = {}) {
+	constructor(
+		ws: WebSocket | null,
+		readonly options: Partial<IPixiManagerOptions> = {},
+	) {
+		this.ws = ws;
 		PIXI.settings.RESOLUTION = window.devicePixelRatio || 1;
 
 		this._app = new PIXI.Application({
@@ -31,8 +37,14 @@ export class PixiManager {
 		});
 		this._app.ticker.add((delta) => {
 			if (this._currentScene === undefined) return;
-			this._currentScene.onUpdate(delta);
+			this._currentScene.onUpdate(delta); //? TODO
 		});
+		if (this.ws) {
+			this.ws.onmessage = (event) => {
+				const data = JSON.parse(event.data);
+				// TODO Update game state based on data
+			};
+		}
 		window.addEventListener('keydown', this._onKeyDownBind);
 		window.addEventListener('keyup', this._onKeyUpBind);
 		$('#game_window').append(this._app.view as unknown as HTMLElement);
@@ -76,7 +88,7 @@ export class PixiManager {
 		const gameWindow = document.getElementById('game_window');
 		return gameWindow ? gameWindow.clientWidth : winWidth;
 	}
-	
+
 	public get height() {
 		const winHeight = 800;
 		const gameWindow = document.getElementById('game_window');

@@ -4,24 +4,24 @@ import json
 
 class GeneralRequestConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        print("Connecting...")  # Log message before connection
+        print("Connecting... (GeneralRequestConsumer)")  # Log message before connection
         self.room_group_name = "general_requests_%s" % self.scope["user"].pk
         if self.channel_layer is not None:
             await self.channel_layer.group_add(self.room_group_name, self.channel_name)
         else:
             print("Error: self.channel_layer is None")
         await self.accept()
-        print("Connected!")  # Log message after connection
+        print("Connected! (GeneralRequestConsumer)")  # Log message after connection
 
     async def disconnect(self, close_code):
-        print("Disconnecting...")  # Log message before connection
+        print("Disconnecting... (GeneralRequestConsumer)")  # Log message before connection
         if self.channel_layer is not None:
             await self.channel_layer.group_discard(
                 self.room_group_name, self.channel_name
             )
         else:
             print("Error: self.channel_layer is None")
-        print("Disconnected!")  # Log message after connection
+        print("Disconnected! (GeneralRequestConsumer)")  # Log message after connection
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)

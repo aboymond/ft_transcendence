@@ -1,7 +1,8 @@
 from django.db import models
 from django.conf import settings
 from users.models import GameHistory
-
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 
 class Game(models.Model):
     STATUS_CHOICES = [
@@ -56,11 +57,21 @@ class Game(models.Model):
         self.ball_y += self.ball_velocity_y
         self.save()
 
-    def move_pad(self, pad_number, x):
+    def move_pad(self, pad_number, new_x):
         if pad_number == 1:
-            self.pad1_x = x
+            if new_x < self.pad_width / 2:
+                self.pad1_x = self.pad_width / 2
+            elif new_x > self.width - self.pad_width / 2:
+                self.pad1_x = self.width - self.pad_width / 2
+            else:
+                self.pad1_x = new_x
         elif pad_number == 2:
-            self.pad2_x = x
+            if new_x < self.pad_width / 2:
+                self.pad2_x = self.pad_width / 2
+            elif new_x > self.width - self.pad_width / 2:
+                self.pad2_x = self.width - self.pad_width / 2
+            else:
+                self.pad2_x = new_x
         self.save()
 
     @property
@@ -79,6 +90,15 @@ class Game(models.Model):
         else:
             MatchmakingQueue.objects.create(player=user)
             game = None
+
+        if game:
+            channel_layer = get_channel_layer()
+            # Send a WebSocket message with the game id
+            async_to_sync(channel_layer.send)(
+                "general_requests_%s" % user.pk,
+                {"type": "send.game_id", "game_id": game.id},
+            )
+
         return game
 
     def end_game(self, winner, player1_score, player2_score):
@@ -99,7 +119,7 @@ class Game(models.Model):
         game_history.players.add(self.player1, self.player2)
 
     def check_collisions(self):
-        # Add your collision detection logic here
+        # TODO Add your collision detection logic here
         pass
 
 
