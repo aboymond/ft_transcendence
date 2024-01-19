@@ -174,7 +174,7 @@ const Window: React.FC = () => {
          {showContent === Mode.FRIENDS && (
            <Col className={styles.fullWindowContent}>
              {selectedFriend ? (
-               <FriendProfile friend={selectedFriend} />
+               <FriendProfile friend={selectedFriend} onClose={() => setSelectedFriend(null)} />
              ) : (
                <PotentialFriends friends={friends} onSelectFriend={handleFriendSelect} />
              )}

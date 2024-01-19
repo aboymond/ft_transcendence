@@ -41,7 +41,7 @@
     box-shadow: 0 0 5px rgb(165, 255, 165);
     border-color:rgb(74,246,38); */
     padding: 3px;
-    margin: 0 10px; 
+    margin: 0 10px;
 }
 
    
@@ -58,4 +58,8 @@
 .search::placeholder {
     color:black;
     /* color: rgb(74,246,38); */
+}
+
+.p {
+    cursor: pointer;
 }

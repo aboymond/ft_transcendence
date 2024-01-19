@@ -60,10 +60,10 @@ const PotentialFriends: React.FC<PotentialFriendsProps> = ({ friends, onSelectFr
     />
     {filteredUsers.map((user) => (
       <div key={user.id}>
-        <p onClick={() => handleFriendClick(user)}>{user.username}</p>
-        <button className={styles.load} onClick={() => handleAddFriend(user.username)}>+</button>
+         <p className={styles.p} onClick={() => handleFriendClick(user)}>{user.username}</p>
+         <button className={styles.load} onClick={() => handleAddFriend(user.username)}>+</button>
       </div>
-    ))}
+      ))}
   </div>
  );
 };
