@@ -6,6 +6,9 @@
 }
 
 .closeButton {
+    position: relative;
+    left: 19vw;
+    border-radius: 20%;
     margin-bottom: 15px;
     background-color: var(--primary-color);
     color: var(--background-color);
