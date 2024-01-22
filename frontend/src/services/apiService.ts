@@ -142,6 +142,9 @@ export const apiService = {
 	getTournaments: async () => {
 		return fetchAPI('tournaments/tournaments/');
 	},
+	getGames: async () => {
+		return fetchAPI('games/list-create/');
+	},
 };
 
 export default apiService;
