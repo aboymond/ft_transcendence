@@ -4,7 +4,6 @@ import { useAuth } from '../hooks/useAuth';
 import Profile from './Profile';
 import Friends from './Friends';
 import TwoFA from './TwoFA';
-import styles from '../styles/Profile.module.css';
 
 const BarNav: React.FC = () => {
 	const [show, setShow] = useState(false);
