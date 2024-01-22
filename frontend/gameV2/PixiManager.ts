@@ -16,6 +16,7 @@ export class PixiManager {
 	public botLvl = 0.05;
 	public playerAWin = true;
 	public ws: WebSocket | null;
+	public gameState: any;
 
 	//--------------------------
 
@@ -24,9 +25,11 @@ export class PixiManager {
 
 	constructor(
 		ws: WebSocket | null,
+		gameState: any,
 		readonly options: Partial<IPixiManagerOptions> = {},
 	) {
 		this.ws = ws;
+		this.gameState = gameState;
 		PIXI.settings.RESOLUTION = window.devicePixelRatio || 1;
 
 		this._app = new PIXI.Application({

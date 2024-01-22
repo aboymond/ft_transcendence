@@ -1,5 +1,6 @@
 import { useEffect, useRef, ReactNode, createContext, useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
+import { GameState } from '../types';
 
 interface Props {
 	children: ReactNode;
@@ -10,6 +11,8 @@ interface WebSocketContextType {
 	gameSocket: WebSocket | null;
 	message: any;
 	setMessage: React.Dispatch<React.SetStateAction<any>>;
+	gameState: GameState | null;
+	setGameState: React.Dispatch<React.SetStateAction<GameState | null>>;
 }
 
 export const WebSocketContext = createContext<WebSocketContextType | null>(null);
@@ -20,6 +23,7 @@ const WebSocketHandler: React.FC<Props> = ({ children }) => {
 	const gameSocketRef = useRef<WebSocket | null>(null);
 	const [message, setMessage] = useState(null);
 	const [gameId, setGameId] = useState<number | null>(null);
+	const [gameState, setGameState] = useState<GameState | null>(null);
 
 	useEffect(() => {
 		// General request WebSocket
@@ -59,7 +63,15 @@ const WebSocketHandler: React.FC<Props> = ({ children }) => {
 				gameSocketRef.current.onmessage = (e) => {
 					const data = JSON.parse(e.data);
 					console.log('game data:', data);
-					// Handle game data...
+					// Update game state based on received data
+					if (
+						data.ball_x !== undefined &&
+						data.ball_y !== undefined &&
+						data.ball_velocity_x !== undefined &&
+						data.ball_velocity_y !== undefined
+					) {
+						setGameState(data);
+					}
 				};
 			}
 		}
@@ -78,7 +90,14 @@ const WebSocketHandler: React.FC<Props> = ({ children }) => {
 
 	return (
 		<WebSocketContext.Provider
-			value={{ socket: socketRef.current, gameSocket: gameSocketRef.current, message, setMessage }}
+			value={{
+				socket: socketRef.current,
+				gameSocket: gameSocketRef.current,
+				message,
+				setMessage,
+				gameState,
+				setGameState,
+			}}
 		>
 			{children}
 		</WebSocketContext.Provider>

@@ -78,6 +78,14 @@ export class SceneGame extends SceneBase {
 	}
 
 	public onUpdate() {
+		const gameState = this.root.gameState;
+		// Use gameState to update the game state
+		// This is just an example, you'll need to replace it with your actual game logic
+		if (gameState) {
+			this._data.playerAScore = gameState.playerAScore;
+			this._data.playerBScore = gameState.playerBScore;
+		}
+
 		if (!this._exitBool) {
 			if (!this._gameStarted) this._checkTurn();
 			else {
