@@ -4,7 +4,7 @@ import { PixiManager } from '../PixiManager';
 export abstract class SceneBase {
 	constructor(public root: PixiManager) {}
 
-	public abstract onStart(container: PIXI.Container): void;
+	public abstract onStart(container: PIXI.Container): Promise <void>;
 	public abstract onUpdate(delta: number): void;
 	public abstract onFinish(): void;
 	public abstract onKeyDown(e: KeyboardEvent): void;
