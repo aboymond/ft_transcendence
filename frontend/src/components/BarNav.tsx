@@ -3,13 +3,17 @@ import { Navbar, Nav, Container, Image, Offcanvas, Row, Col, CloseButton } from 
 import { useAuth } from '../hooks/useAuth';
 import Profile from './Profile';
 import Friends from './Friends';
+import TwoFA from './TwoFA';
+import styles from '../styles/Profile.module.css';
 
 const BarNav: React.FC = () => {
 	const [show, setShow] = useState(false);
 	const auth = useAuth();
 	const avatarUrl = auth.user?.avatar || '';
+	const [showTwoFA, setShowTwoFA] = useState(false);
 
 	const handleToggle = () => setShow(!show);
+	const handleTwoFAToggle = () => setShowTwoFA(!showTwoFA);
 
 	return (
 		<Navbar bg="green" expand={false} style={{ flexWrap: 'nowrap', paddingLeft: '0vw', paddingRight: '0vw', marginTop: '8vh', }}>
@@ -41,11 +45,15 @@ const BarNav: React.FC = () => {
 					</Offcanvas.Header>
 					<Offcanvas.Body style={{ backgroundColor: 'black' }}>
 						<Profile />
+						<div style={{ marginTop: '10px'}}>
+							<Nav.Link style={{ display: 'inline-block', padding: '5px', border: 'solid', borderColor: 'var(--accent-color)'}} onClick={handleTwoFAToggle}>2FA Settings</Nav.Link>
+						</div>
 						<Friends />
 						<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
 							<Nav.Link onClick={auth.logout}>Log Out</Nav.Link>
+							{/* <Nav.Link onClick={handleTwoFAToggle}>2FA Settings</Nav.Link> */}
 						</div>
-						{/* <Nav.Link onClick={auth.logout}>Log Out</Nav.Link> */}
+						{/* {showTwoFA && <TwoFA />} */}
 					</Offcanvas.Body>
 				</Navbar.Offcanvas>
 			</Container>

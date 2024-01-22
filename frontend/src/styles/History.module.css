@@ -11,7 +11,8 @@
 	border-color:rgb(74,246,38);
 	z-index: 10;
 	padding: 20px;
-	font-size: 1.4vh;
+	/* font-size: 1.4vh; */
+	font-size: 1rem;
 }
 
 @media (max-width: 768px) {
