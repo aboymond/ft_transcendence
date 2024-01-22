@@ -42,3 +42,14 @@
         height: 831px;
     }
 } */
+
+@media (min-width: 1200px) {
+    .container {
+        margin-top: 7vh;
+    }
+
+    .homerow {
+        width: 70%;
+        height: 70%;
+    }
+}

@@ -50,7 +50,6 @@ const BarNav: React.FC = () => {
 						<Friends />
 						<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
 							<Nav.Link onClick={auth.logout}>Log Out</Nav.Link>
-							{/* <Nav.Link onClick={handleTwoFAToggle}>2FA Settings</Nav.Link> */}
 						</div>
 						{/* {showTwoFA && <TwoFA />} */}
 					</Offcanvas.Body>

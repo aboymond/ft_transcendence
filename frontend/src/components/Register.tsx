@@ -75,13 +75,13 @@ const Register: React.FC<RegisterProps> = ({ onClose, onSuccess }) => {
 					/>
 				</div>
 				<div>
-   					<label>Email:</label>
-   					<input
-        			type="email"
-        			value={email}
-        			onChange={(e) => setEmail(e.target.value)}
-        			className={styles.inputField}
-    				/>
+					<label>Email:</label>
+						<input
+						type="email"
+						value={email}
+						onChange={(e) => setEmail(e.target.value)}
+						className={styles.inputField}
+					/>
 				</div>
 				<button type="submit" className={styles.submitButton}>
 					Register
