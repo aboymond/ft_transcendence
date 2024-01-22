@@ -1,0 +1,108 @@
+version: "3.8"
+services:
+    backend:
+        build:
+            context: ./backend
+            dockerfile: Dockerfile
+        image: backend:latest
+        container_name: backend-container
+        ports:
+            - "8000:8000"
+        environment:
+            DATABASE_URL: postgresql://youruser:yourpassword@db:5432/yourdbname
+        env_file: .env
+        networks:
+            - my-network
+        volumes:
+            - ./backend:/app
+            - backend_static:/app/static
+            - media_volume:/app/media
+        depends_on:
+            - db
+        # restart: unless-stopped
+
+    frontend:
+        build:
+            context: ./frontend
+            dockerfile: Dockerfile.prod
+        image: frontend:latest
+        container_name: frontend-container
+        ports:
+            - "8080:80"
+        environment:
+            - VITE_BACKEND_URL=http://backend:8000
+        networks:
+            - my-network
+        volumes:
+            - ./frontend:/usr/src/app
+            - frontend_node_modules:/usr/src/app/node_modules
+        # restart: unless-stopped
+
+    db:
+        image: postgres:latest
+        container_name: db-container
+        ports:
+            - "5433:5432"
+        environment:
+            POSTGRES_DB: dbname
+            POSTGRES_USER: user
+            POSTGRES_PASSWORD: password
+        networks:
+            - my-network
+        volumes:
+            - db-data:/var/lib/postgresql/data
+        # restart: unless-stopped
+
+    pgadmin:
+        image: dpage/pgadmin4
+        container_name: pgadmin-container
+        ports:
+            - "5050:80"
+        environment:
+            PGADMIN_DEFAULT_EMAIL: admin@example.com
+            PGADMIN_DEFAULT_PASSWORD: root
+        networks:
+            - my-network
+        volumes:
+            - pgadmin_data:/var/lib/pgadmin
+        depends_on:
+            - db
+        # restart: unless-stopped
+
+    redis:
+        image: redis:latest
+        container_name: redis-container
+        ports:
+            - "6379:6379"
+        networks:
+            - my-network
+        # restart: unless-stopped
+
+    nginx:
+        build:
+            context: ./nginx
+            dockerfile: Dockerfile
+        image: nginx:1.24
+        container_name: nginx-container
+        ports:
+        - "80:80"
+        depends_on:
+        - backend
+        - frontend
+        networks:
+            - my-network
+        volumes:
+            - ./nginx:/etc/nginx/conf.d
+            - backend_static:/app/static
+            - media_volume:/app/media
+
+volumes:
+    backend_static:
+    frontend_node_modules:
+    db-data:
+    pgadmin_data:
+    media_volume:
+
+networks:
+    my-network:
+        driver: bridge

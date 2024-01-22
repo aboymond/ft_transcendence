@@ -8,9 +8,15 @@ up:
 dev:
 	docker-compose up --build
 
+prod:
+	docker-compose -f docker-compose.prod.yml up --build
+
 # Rule to stop all services
 down:
 	docker-compose down
+
+down-prod:
+	docker-compose -f docker-compose.prod.yml down
 
 # Rule to build or rebuild services
 build:
