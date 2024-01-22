@@ -10,5 +10,5 @@ import { SceneMenuTournament } from './scenes/SceneMenuTournament';
 // launch game
 export function launchGame() {
 	const pixiMan = new PixiManager();
-	pixiMan.loadScene(new SceneMenu2(pixiMan));
+	pixiMan.loadScene(new SceneJoin(pixiMan));
 }

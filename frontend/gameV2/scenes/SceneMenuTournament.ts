@@ -1,24 +1,15 @@
 import * as PIXI from 'pixi.js';
 import { SceneBase } from './SceneBase';
-import apiService from '../../src/services/apiService';
+
 import { glowFilter, defaultColor, textStyleMenuTournamentCreate, textStyleMenuTournamentName, textStyleMenuTournamentMaxScore, textStyleMenuTournamentMode, textStyleMenuTournamentPlayer, textStyleMenuOptionPlay, textStyleTournamentMenu } from '..';
-
-// const apiTournament = 
-
-// console.log(apiTournament);
 
 const selectMaxCreate = 3;
 
-// enum menuState {
-// 	SELECT_MENU,
-// 	CREATE_MENU,
-// 	JOIN_MENU,
-// }
-
-enum menuTournament {
+enum menu {
 	NAME = 0,
 	PLAYER = 1,
 	MAXSCORE = 2,
+	PLAY = 3,
 }
 
 // FOR THE BACK ===============================
@@ -55,14 +46,14 @@ export class SceneMenuTournament extends SceneBase {
 
 	// private _textJoin = new PIXI.Text('JOIN');
 	// private _tournaments: Array<any> = []; 
-	private _tournamentObjects : Array<{container:PIXI.Container, data: any}> = [];
+	// private _tournamentObjects : Array<{container:PIXI.Container, data: any}> = [];
 	// private _GameNameText;
 	// private _modeText;
 	// private _mode = { singleElim: 'SINGLE ELIMINATON', roundRobin: 'ROUND ROBIN' };
 	// private _confirm;
 	private _textPlay = new PIXI.Text('PLAY', textStyleMenuOptionPlay);
 
-	private _join = new PIXI.Container();
+	// private _join = new PIXI.Container();
 	// private _
 
 	// private _selectCreate = true;
@@ -132,7 +123,7 @@ export class SceneMenuTournament extends SceneBase {
 				if (e.code === 'ArrowUp') {
 
 					this._currentSelectCreate--;
-					if (this._currentSelectCreate < 0) {
+					if (this._currentSelectCreate < menu.NAME) {
 						this._currentSelectCreate = selectMaxCreate;
 					}
 					this._pressUp();
@@ -142,7 +133,7 @@ export class SceneMenuTournament extends SceneBase {
 
 					this._currentSelectCreate++;
 					if (this._currentSelectCreate > selectMaxCreate) {
-						this._currentSelectCreate = 0;
+						this._currentSelectCreate = menu.NAME;
 					}
 					this._pressDown();
 				}
@@ -159,7 +150,7 @@ export class SceneMenuTournament extends SceneBase {
 
 				}
 
-				if (this._currentSelectCreate === 0) {
+				if (this._currentSelectCreate === menu.NAME) {
 					if (e.key === 'Backspace') {
 						this._inputText = this._inputText.slice(0, -1);
 					} else if (e.key.length === 1 && this._inputText.length < 15) {
@@ -193,11 +184,11 @@ export class SceneMenuTournament extends SceneBase {
 		// 	this._name.style.fill = 'green';
 		// 	// this.state = menuState.SELECT_MENU;
 		// } 
-		if (this._currentSelectCreate === 0) return this._nameCreate();
+		if (this._currentSelectCreate === menu.NAME) return this._nameCreate();
 		// if (this._currentSelectCreate === 1) return this._modeCreate();
-		if (this._currentSelectCreate === 1) return this._playerCreate();
-		if (this._currentSelectCreate === 2) return this._maxScoreCreate();
-		if (this._currentSelectCreate === 3) return this._textPlayCreate();
+		if (this._currentSelectCreate === menu.PLAYER) return this._playerCreate();
+		if (this._currentSelectCreate === menu.MAXSCORE) return this._maxScoreCreate();
+		if (this._currentSelectCreate === menu.PLAY) return this._textPlayCreate();
 	}
 
 	private _pressDown() {
@@ -206,21 +197,21 @@ export class SceneMenuTournament extends SceneBase {
 		// 	this._textPlay.style.fill = 'green';
 			// this.state = menuState.SELECT_MENU;
 		// }
-		if (this._currentSelectCreate === 0) return this._nameCreate();
+		if (this._currentSelectCreate === menu.NAME) return this._nameCreate();
 		// if (this._currentSelectCreate === 1) return this._modeCreate();
-		if (this._currentSelectCreate === 1) return this._playerCreate();
-		if (this._currentSelectCreate === 2) return this._maxScoreCreate();
-		if (this._currentSelectCreate === 3) return this._textPlayCreate();
+		if (this._currentSelectCreate === menu.PLAYER) return this._playerCreate();
+		if (this._currentSelectCreate === menu.MAXSCORE) return this._maxScoreCreate();
+		if (this._currentSelectCreate === menu.PLAY) return this._textPlayCreate();
 	}
 
 	private _pressLeft() {
-		if (this._currentSelectCreate === 1) return this._playerPrev();
-		if (this._currentSelectCreate === 2) return this._maxScorePrev();
+		if (this._currentSelectCreate === menu.PLAYER) return this._playerPrev();
+		if (this._currentSelectCreate === menu.MAXSCORE) return this._maxScorePrev();
 	}
 
 	private _pressRight() {
-		if (this._currentSelectCreate === 1) return this._playerNext();
-		if (this._currentSelectCreate === 2) return this._maxScoreNext();
+		if (this._currentSelectCreate === menu.PLAYER) return this._playerNext();
+		if (this._currentSelectCreate === menu.MAXSCORE) return this._maxScoreNext();
 	}
 
 	private _initTextCreate(text: PIXI.Text) {
@@ -356,9 +347,9 @@ export class SceneMenuTournament extends SceneBase {
 		this._nameColorCreate();
 	}
 
-	private _modeCreate(){
-		this._modeColorCreate();
-	}
+	// private _modeCreate(){
+	// 	this._modeColorCreate();
+	// }
 
 	private _playerCreate(){
 		this._playerColorCreate();
@@ -382,15 +373,15 @@ export class SceneMenuTournament extends SceneBase {
 		this._textPlay.style.fill = 'green';
 	}
 
-	private _modeColorCreate() {
-		this._name.style.fill = 'green';
-		this._mode.style.fill = defaultColor;
-		this._nb_player_text.style.fill = 'green';
-		this._nb_player_tab.style.fill = 'green';
-		this._score_max_text.style.fill = 'green';
-		this._score_max_tab.style.fill = 'green';
-		this._textPlay.style.fill = 'green';
-	}
+	// private _modeColorCreate() {
+	// 	this._name.style.fill = 'green';
+	// 	this._mode.style.fill = defaultColor;
+	// 	this._nb_player_text.style.fill = 'green';
+	// 	this._nb_player_tab.style.fill = 'green';
+	// 	this._score_max_text.style.fill = 'green';
+	// 	this._score_max_tab.style.fill = 'green';
+	// 	this._textPlay.style.fill = 'green';
+	// }
 
 	private _playerColorCreate() {
 		this._name.style.fill = 'green';
