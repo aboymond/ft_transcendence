@@ -88,90 +88,48 @@ export class SceneMenuTournament extends SceneBase {
 
 	public onKeyDown(e: KeyboardEvent) {
 
-		// switch (this.state) {
-		// 	case menuState.SELECT_MENU:
-		// 		if (e.code === 'ArrowLeft') {
-		// 			this._create.visible = true;
-		// 			this._join.visible = false;
-		// 			this._textCreate.style.fill = defaultColor;
-		// 			this._textJoin.style.fill = 'green';
-		// 		}
-		// 		if (e.code === 'ArrowRight') {
-		// 			this._create.visible = false;
-		// 			this._join.visible = true;
-		// 			this._textJoin.style.fill = defaultColor;
-		// 			this._textCreate.style.fill = 'green';
-		// 		}
-		// 		if (e.code === 'ArrowUp' && this._currentSelectCreate === -1) {
 
-		// 			if (this._create.visible === true) {
-		// 				this._currentSelectCreate = selectMaxCreate;
-		// 				this._textPlayColorCreate();
-		// 				this.state = menuState.CREATE_MENU;
-		// 			} else this.state = menuState.JOIN_MENU;
-		// 		}
-		// 		if (e.code === 'ArrowDown' && this._currentSelectCreate === -1) {
-		// 			if (this._create.visible === true) {
-		// 				this._currentSelectCreate = 0;
-		// 				this._nameColorCreate();
-		// 				this.state = menuState.CREATE_MENU;
-		// 			} else this.state = menuState.JOIN_MENU;
-		// 		}
-		// 		break;
-		// 	case menuState.CREATE_MENU:
+		if (e.code === 'ArrowUp') {
 
-				if (e.code === 'ArrowUp') {
+			this._currentSelectCreate--;
+			if (this._currentSelectCreate < menu.NAME) {
+				this._currentSelectCreate = selectMaxCreate;
+			}
+			this._pressUp();
+		}
 
-					this._currentSelectCreate--;
-					if (this._currentSelectCreate < menu.NAME) {
-						this._currentSelectCreate = selectMaxCreate;
-					}
-					this._pressUp();
-				}
+		if (e.code === 'ArrowDown') {
 
-				if (e.code === 'ArrowDown') {
+			this._currentSelectCreate++;
+			if (this._currentSelectCreate > selectMaxCreate) {
+				this._currentSelectCreate = menu.NAME;
+			}
+			this._pressDown();
+		}
 
-					this._currentSelectCreate++;
-					if (this._currentSelectCreate > selectMaxCreate) {
-						this._currentSelectCreate = menu.NAME;
-					}
-					this._pressDown();
-				}
+		if (e.code === 'ArrowLeft') {
+			this._pressLeft();
+		}
 
-				if (e.code === 'ArrowLeft') {
-					this._pressLeft();
-				}
+		if (e.code === 'ArrowRight') {
+			this._pressRight();
+		}
 
-				if (e.code === 'ArrowRight') {
-					this._pressRight();
-				}
+		if (e.code === 'Enter') {
 
-				if (e.code === 'Enter') {
+		}
 
-				}
+		if (this._currentSelectCreate === menu.NAME) {
+			if (e.key === 'Backspace') {
+				this._inputText = this._inputText.slice(0, -1);
+			} else if (e.key.length === 1 && this._inputText.length < 15) {
+				this._inputText += (e.key);
+			}
+			if (this._inputText.length > 15)
+				return;
+			this._textInputField.text = this._inputText;
+		}
 
-				if (this._currentSelectCreate === menu.NAME) {
-					if (e.key === 'Backspace') {
-						this._inputText = this._inputText.slice(0, -1);
-					} else if (e.key.length === 1 && this._inputText.length < 15) {
-						this._inputText += (e.key);
-					}
-					if (this._inputText.length > 15)
-						return;
-					this._textInputField.text = this._inputText;
-				}
-			// 	break;
-			// case menuState.JOIN_MENU:
-				// if (e.code === 'ArrowUp') {
-
-				// }
-				// if (e.code === 'ArrowDown') {
-
-				// }
-				// if (e.code === 'ArrowLeft' || e.code === 'ArrowRight') {
-
-				// }
-				// break;
 		
 	}
 

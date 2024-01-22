@@ -1,9 +1,10 @@
-import { Container } from 'react-bootstrap';
+// import { Container } from 'react-bootstrap';
 import { defaultColor } from '..';
 import { SceneBase } from './SceneBase';
 import * as PIXI from 'pixi.js';
 import { glowFilter } from '..' ;
 import apiService from '../../src/services/apiService';
+
 
 
 
@@ -14,8 +15,10 @@ export class SceneJoin extends SceneBase {
 	private _line = '';
 	private _lineUnder = new PIXI.Text("");
 	private _join = new PIXI.Container();
-	private _tournamentObjects : Array<{container:PIXI.Container, data: any}> = [];
-	private _selectionLength;
+	private _tournamentObjects: Array<{container:PIXI.Container, data: any}> = [];
+	private _gameObjects: Array<{container:PIXI.Container, data: any}> = [];
+	private _selectionLength = 0;
+	private _currentSelect = 0;
 
 	//=======================================
 	// HOOK
@@ -41,7 +44,22 @@ export class SceneJoin extends SceneBase {
 
 	public onFinish() {}
 
-	public onKeyDown() {}
+	public onKeyDown(e: KeyboardEvent) {
+
+		if (e.code === 'ArrowUp') {
+			this._currentSelect--;
+			if (this._currentSelect < 0)
+				this._currentSelect = this._selectionLength;
+		}
+
+		if (e.code === 'ArrowDown') {
+			this._currentSelect++;
+
+		}
+	}
+
+
+
 
 	public onKeyUp() {}
 
@@ -80,10 +98,21 @@ export class SceneJoin extends SceneBase {
 		const menu = new PIXI.Container();
 		this._tournamentObjects = [];
 		const tournaments = await apiService.getTournaments();
+		const games = await apiService.getGames();
 		this._selectionLength = tournaments.length - 1;
 		console.log("lenght " + this._selectionLength);
 
 		console.log(tournaments);
+		console.log(games);
+
+		apiService.getGames().then(games => {
+			games.forEach(game => {
+				console.log(game.player1.username);
+			});
+		});
+		// const player = apiService.getUser(games.palyer1);
+
+		// console.log(player);
 
 		for (let i =  0; i < tournaments.length; i++) {
 
@@ -110,9 +139,6 @@ export class SceneJoin extends SceneBase {
 			textInfo_tour.filters = [glowFilter];
 
 			
-
-			// menuBox.drawRect(0, 0, this.root.width - 20, 50);
-			// menuBox.visible = true;
 			menuBox.x = 10;
 			menuBox.y = (this.root.height * 20) / 100 + (i * 25);
 			menuBox.endFill();
