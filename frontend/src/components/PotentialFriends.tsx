@@ -3,7 +3,6 @@ import { useAuth } from '../hooks/useAuth';
 import apiService from '../services/apiService';
 import { User } from '../types';
 import styles from '../styles/PotentialFriends.module.css';
-// import { useNavigate } from 'react-router-dom';
 
 interface PotentialFriendsProps {
  friends: User[];
@@ -14,10 +13,10 @@ const PotentialFriends: React.FC<PotentialFriendsProps> = ({ friends, onSelectFr
  const [users, setUsers] = useState<User[]>([]);
  const [searchTerm, setSearchTerm] = useState("");
  const auth = useAuth();
-//  const navigate = useNavigate();
 
-useEffect(() => {
-  const fetchUsers = async () => {
+
+  useEffect(() => {
+    const fetchUsers = async () => {
      if (auth.isAuthenticated && auth.token) {
        try {
          const usersList = await apiService.getUsers();
