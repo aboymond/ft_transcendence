@@ -3,6 +3,7 @@ import type { SceneBase } from './scenes/SceneBase';
 import * as PIXI from 'pixi.js';
 import '../src/styles/GameWindow.module.css';
 import $ from 'jquery';
+import { GameState } from '../src/types';
 
 interface IPixiManagerOptions {
 	backgroundAlpha: number;
@@ -16,7 +17,7 @@ export class PixiManager {
 	public botLvl = 0.05;
 	public playerAWin = true;
 	public ws: WebSocket | null;
-	public gameState: any;
+	public gameState: GameState;
 
 	//--------------------------
 
@@ -25,7 +26,7 @@ export class PixiManager {
 
 	constructor(
 		ws: WebSocket | null,
-		gameState: any,
+		gameState: GameState,
 		readonly options: Partial<IPixiManagerOptions> = {},
 	) {
 		this.ws = ws;

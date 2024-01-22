@@ -17,7 +17,7 @@ function GameWindow() {
 	// };
 
 	useEffect(() => {
-		if (ws) {
+		if (ws && context?.gameState) {
 			launchGame(ws, context?.gameState);
 		}
 	}, [ws, context?.gameState]);
