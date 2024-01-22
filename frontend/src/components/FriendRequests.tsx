@@ -1,5 +1,3 @@
-// import { useEffect } from 'react';
-// import apiService from '../services/apiService';
 import { FriendRequest } from '../types';
 import { useAuth } from '../hooks/useAuth';
 

@@ -6,9 +6,6 @@
 
 .inputField {
     background-color: var(--background-color) !important;
-    /* border-style: solid !important; */
-    /* border-width: 3px !important;  */
-    /* box-shadow: 0 0 5px var(--primary-color) !important; */
     border-color: var(--accent-color) !important;
     margin: 10px;
     width: auto;
