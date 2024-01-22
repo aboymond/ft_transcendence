@@ -27,6 +27,12 @@
 
 @media (min-width: 1200px) {
   .logo {
+    font-size: 4rem;
+  }
+}
+
+@media (min-width: 1400px) {
+  .logo {
     font-size: 5rem;
   }
 }

@@ -81,8 +81,8 @@ body {
 #page {
     width: 100vw;
     height: 100vh;
-    padding: 15%;
-    overflow: hidden;
+    padding: 10%; /*padding 10% mieux sur plus petit écran */
+    overflow: auto;
     /* background-color: aqua; */
 }
 
@@ -102,7 +102,7 @@ body {
     /* padding-left: 10%; */
     /* padding-right: 10%; */
     
-    overflow: hidden;
+    overflow: auto;
     /* display: flex; */
     /* align-items: center; */
     /* justify-content: center; */

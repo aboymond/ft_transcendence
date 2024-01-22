@@ -4,6 +4,7 @@ import { apiService } from '../services/apiService';
 import { User } from '../types';
 import { useNavigate } from 'react-router-dom';
 import styles from '../styles/Profile.module.css';
+import { useParams } from 'react-router-dom';
 
 const Profile: React.FC = () => {
     const [profile, setProfile] = useState<User | null>(null);
@@ -15,6 +16,7 @@ const Profile: React.FC = () => {
     const [filename, setFilename] = useState('');
     const auth = useAuth();
     const navigate = useNavigate();
+
 
     const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
@@ -47,14 +49,21 @@ const Profile: React.FC = () => {
         }
     };
 
+    const { userId } = useParams<{ userId: string }>();
+    const effectiveUserId = userId || auth.user?.id;
+
     useEffect(() => {
         if (!auth.isAuthenticated) {
             navigate('/');
             return;
         }
+        if (!effectiveUserId) {
+            console.error('User ID is undefined');
+            setError('User ID is undefined');
+            return;
+        }
 
-        apiService
-            .getUserProfile()
+        apiService.getUserById(effectiveUserId.toString())
             .then((data: User) => {
                 setProfile(data);
             })
@@ -62,7 +71,8 @@ const Profile: React.FC = () => {
                 console.error('Failed to load profile:', error);
                 setError('Failed to load profile');
             });
-    }, [auth.isAuthenticated, navigate]);
+    }, [auth.isAuthenticated, navigate, effectiveUserId]);   
+    
 
     if (error) {
         return <div>Error: {error}</div>;

@@ -13,11 +13,12 @@ const Register: React.FC<RegisterProps> = ({ onClose, onSuccess }) => {
 	const [password, setPassword] = useState('');
 	const [displayName, setDisplayName] = useState('');
 	const [error, setError] = useState('');
+	const [email, setEmail] = useState('');
 
 	const handleSubmit = async (event: React.FormEvent) => {
 		event.preventDefault();
 		try {
-			await apiService.register(username, password, displayName);
+			await apiService.register(username, password, displayName, email);
 			console.log('Registration successful');
 			setError('');
 			onSuccess();
@@ -70,6 +71,15 @@ const Register: React.FC<RegisterProps> = ({ onClose, onSuccess }) => {
 						type="text"
 						value={displayName}
 						onChange={(e) => setDisplayName(e.target.value)}
+						className={styles.inputField}
+					/>
+				</div>
+				<div>
+					<label>Email:</label>
+						<input
+						type="email"
+						value={email}
+						onChange={(e) => setEmail(e.target.value)}
 						className={styles.inputField}
 					/>
 				</div>
