@@ -16,18 +16,20 @@ const PotentialFriends: React.FC<PotentialFriendsProps> = ({ friends, onSelectFr
  const auth = useAuth();
 //  const navigate = useNavigate();
 
- useEffect(() => {
+useEffect(() => {
   const fetchUsers = async () => {
-    if (auth.isAuthenticated && auth.token) {
-      try {
-        const usersList = await apiService.getUsers();
-        setUsers(usersList);
-      } catch (error) {
-        console.error('Failed to fetch users:', error);
-      }
-    }
+     if (auth.isAuthenticated && auth.token) {
+       try {
+         const usersList = await apiService.getUsers();
+         const filteredUsers = usersList.filter(user => user.username !== auth.user?.username);
+         setUsers(filteredUsers);
+       } catch (error) {
+         console.error('Failed to fetch users:', error);
+       }
+     }
   };
   fetchUsers();
+ // eslint-disable-next-line react-hooks/exhaustive-deps
  }, [auth.isAuthenticated, auth.token]);
 
  const filteredUsers = users.filter(user => 
