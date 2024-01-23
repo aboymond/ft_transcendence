@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js';
 import { SceneBase } from './SceneBase';
+import { SceneMenu2 } from './SceneMenu2';
 import {
 	defaultColor,
 	glowFilter,
@@ -141,6 +142,9 @@ export class SceneMenuOption extends SceneBase {
 				this._textErrorOK.visible = false;
 				this._textErrorPad.visible = false;
 			} else this._pressSpace();
+		}
+		if (e.code === 'Escape') {
+			this.root.loadScene(new SceneMenu2(this.root));
 		}
 	}
 

@@ -2,6 +2,7 @@ import * as PIXI from 'pixi.js';
 import { SceneBase } from './SceneBase';
 
 import { glowFilter, defaultColor, textStyleMenuTournamentCreate, textStyleMenuTournamentName, textStyleMenuTournamentMaxScore, textStyleMenuTournamentMode, textStyleMenuTournamentPlayer, textStyleMenuOptionPlay, textStyleTournamentMenu } from '..';
+import { SceneMenu2 } from './SceneMenu2';
 
 const selectMaxCreate = 3;
 
@@ -117,6 +118,10 @@ export class SceneMenuTournament extends SceneBase {
 
 		if (e.code === 'Enter') {
 
+		}
+
+		if (e.code === 'Escape') {
+			this.root.loadScene(new SceneMenu2(this.root));
 		}
 
 		if (this._currentSelectCreate === menu.NAME) {

@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js';
 import { SceneBase } from './SceneBase';
+import { SceneMenu } from './SceneMenu';
 import { SceneMenuOption } from './SceneMenuOption';
 import { SceneMenuTournament } from './SceneMenuTournament';
 import { SceneGame } from './SceneGame';
@@ -110,6 +111,10 @@ export class SceneMenu2 extends SceneBase {
 			else if (this._currentSelect === menu.JOIN) {
 				this.root.loadScene(new SceneJoin(this.root));
 			}
+		}
+
+		if (e.code === 'Escape') {
+			this.root.loadScene(new SceneMenu(this.root));
 		}
 	}
 
