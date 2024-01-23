@@ -9,8 +9,8 @@ interface Props {
 interface WebSocketContextType {
 	socket: WebSocket | null;
 	gameSocket: WebSocket | null;
-	message: any;
-	setMessage: React.Dispatch<React.SetStateAction<any>>;
+	message: unknown; // TODO type this
+	setMessage: React.Dispatch<React.SetStateAction<unknown>>; //TODO type this
 	gameState: GameState | null;
 	setGameState: React.Dispatch<React.SetStateAction<GameState | null>>;
 }
@@ -21,7 +21,7 @@ const WebSocketHandler: React.FC<Props> = ({ children }) => {
 	const { user } = useAuth();
 	const socketRef = useRef<WebSocket | null>(null);
 	const gameSocketRef = useRef<WebSocket | null>(null);
-	const [message, setMessage] = useState(null);
+	const [message, setMessage] = useState<unknown>(null); // TODO type this
 	const [gameId, setGameId] = useState<number | null>(null);
 	const [gameState, setGameState] = useState<GameState | null>(null);
 

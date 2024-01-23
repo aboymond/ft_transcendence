@@ -43,12 +43,6 @@ export class PixiManager {
 			if (this._currentScene === undefined) return;
 			this._currentScene.onUpdate(delta); //? TODO
 		});
-		if (this.ws) {
-			this.ws.onmessage = (event) => {
-				const data = JSON.parse(event.data);
-				// TODO Update game state based on data
-			};
-		}
 		window.addEventListener('keydown', this._onKeyDownBind);
 		window.addEventListener('keyup', this._onKeyUpBind);
 		$('#game_window').append(this._app.view as unknown as HTMLElement);
