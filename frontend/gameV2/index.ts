@@ -35,7 +35,7 @@ export const textStylePVBMenu2 = new PIXI.TextStyle({
 
 export const textStyleJoinMenu2 = new PIXI.TextStyle({
 	fontFamily: 'Pixelmania',
-	fontSize: $('#game_window').width() / 20,
+	fontSize: ($('#game_window').width() || 600) / 20,
 });
 
 export const textStyleTournamentMenu = new PIXI.TextStyle({
