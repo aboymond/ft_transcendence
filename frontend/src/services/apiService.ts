@@ -59,6 +59,12 @@ export const apiService = {
 			return false;
 		}
 	},
+	getUserById: async (userId: string): Promise<User> => {
+		return fetchAPI(`users/${userId}/`);
+	},
+	getUsers(): Promise<User[]> {
+		return fetchAPI('users/list/');
+	},
 	getUserProfile: async () => {
 		return fetchAPI('users/profile/'); // Endpoint for fetching the current user's profile
 	},

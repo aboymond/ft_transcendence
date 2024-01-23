@@ -6,7 +6,6 @@ import * as PIXI from 'pixi.js';
 import { gsap } from 'gsap';
 
 export class SceneGameVsBot extends SceneBase {
-
 	// FOR THE BACK ======================================
 	private _data = {
 		ballVelocity: { x: 0, y: 5 },
@@ -31,16 +30,15 @@ export class SceneGameVsBot extends SceneBase {
 	private _escapeKeyPressed = false;
 
 	private _exitMenu = new PIXI.Container();
-	private _yesOption: PIXI.Text;
-	private _noOption: PIXI.Text;
-	private _exitText: PIXI.Text;
+	private _yesOption!: PIXI.Text;
+	private _noOption!: PIXI.Text;
+	private _exitText!: PIXI.Text;
 
 	//=======================================
 	// HOOK
 	//=======================================
 
 	public onStart(container: PIXI.Container) {
-		
 		//Init Ball
 		container.addChild(this._initBall(10, 0x1aff00));
 		this._ball.x = this.root.width / 2;
