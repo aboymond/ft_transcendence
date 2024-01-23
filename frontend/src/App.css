@@ -76,7 +76,7 @@ body {
 #page {
     width: 100vw;
     height: 100vh;
-    padding: 10%; /*padding 10% mieux sur plus petit écran */
+    padding: 10%;
     overflow: auto;
 }
 

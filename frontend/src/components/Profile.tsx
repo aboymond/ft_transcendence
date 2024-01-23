@@ -58,7 +58,6 @@ const Profile: React.FC = () => {
             return;
         }
         if (!effectiveUserId) {
-            console.error('User ID is undefined');
             setError('User ID is undefined');
             return;
         }
