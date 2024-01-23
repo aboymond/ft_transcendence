@@ -306,7 +306,7 @@ export class SceneJoin extends SceneBase {
 			const tournament = tournaments[i];
 			console.log(tournament);
 			const textName_tour = new PIXI.Text(tournament.name);
-			const textMode_tour = new PIXI.Text("Tournament");
+			const textMode_tour = new PIXI.Text(tournament.max_score);
 			const textInfo_tour = new PIXI.Text(tournament.participants.length + "/" + tournament.max_participants);
 
 			textName_tour.x = ((this.root.width * 2) / 100);	
@@ -360,7 +360,7 @@ export class SceneJoin extends SceneBase {
 			}
 			else {
 				const textName_PvP = new PIXI.Text(game.player1);
-				const textMode_PvP = new PIXI.Text("PvP");
+				const textMode_PvP = new PIXI.Text(game.max_gascore);
 				let player2 = 0;
 				
 				if (game.player2 != null)
