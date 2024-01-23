@@ -50,8 +50,8 @@ export class SceneJoin extends SceneBase {
 
 		this._tourn_container = await this._initMenuJoinTournament();
 		container.addChild(this._tourn_container);
-		// this._pvp_container = await this._initMenuJoinPvP();
-		// container.addChild(this._pvp_container);
+		this._pvp_container = await this._initMenuJoinPvP();
+		container.addChild(this._pvp_container);
 
 
 	}
@@ -93,7 +93,7 @@ export class SceneJoin extends SceneBase {
 				}
 				if (e.key === 'ArrowDown' && this._currentSelectPvP === -1 ) {
 					this._currentSelectPvP++;
-					this._pressDown();
+					this._pressDownPvP();
 				}
 
 				break;
@@ -159,6 +159,66 @@ export class SceneJoin extends SceneBase {
 			}
 		}
 	}
+
+	private _pressDownPvP() {
+
+		if (this._currentSelectPvP > this._gameObjects.length - 2) {
+			return;
+		}
+		else
+			this._currentSelectPvP++;
+	
+		let selectedPvP = this._gameObjects[this._currentSelectPvP];
+	
+		if (!selectedPvP) {
+			return;
+		}
+	
+		for (let i = 0; i < selectedPvP.container.children.length; i++) {
+			const textName = selectedPvP.container.getChildAt(i) as PIXI.Text;
+			textName.style.fill = defaultColor;
+		}
+		
+		if (this._currentSelectPvP != 0) {
+			selectedPvP = this._gameObjects[this._currentSelectPvP - 1];
+			for (let i = 0; i < selectedPvP.container.children.length; i++) {
+				const textName = selectedPvP.container.getChildAt(i) as PIXI.Text;
+				textName.style.fill = 'green';
+			}
+		}
+	}
+
+	private _pressUpPvP() {
+		console.log("UP: " + this._currentSelectPvP);
+		if (this._currentSelectPvP < 1) {
+			return;
+		}
+		else 
+			this._currentSelectPvP--;
+	
+		let selectedPvP = this._gameObjects[this._currentSelectPvP];
+	
+		if (!selectedPvP) {
+			return;
+		}
+	
+		for (let i = 0; i < selectedPvP.container.children.length; i++) {
+			const textName = selectedPvP.container.getChildAt(i) as PIXI.Text;
+			textName.style.fill = defaultColor;
+		}
+		
+		if (this._currentSelectPvP != this._gameObjects.length - 1) {
+			selectedPvP = this._gameObjects[this._currentSelectPvP + 1];
+			for (let i = 0; i < selectedPvP.container.children.length; i++) {
+				const textName = selectedPvP.container.getChildAt(i) as PIXI.Text;
+				textName.style.fill = 'green';
+			}
+		}
+	}
+
+
+
+
 
 
 
@@ -252,58 +312,58 @@ export class SceneJoin extends SceneBase {
 		return menu;
 	}
 
-	// private async _initMenuJoinPvP(): Promise < PIXI.Container > {
-	// 	const menu = new PIXI.Container();
-	// 	this._tournamentObjects = [];
-	// 	const tournaments = await apiService.getTournaments();
-	// 	this._tournamentLength = tournaments.length - 1;
-	// 	// const games = await apiService.getGames();
-	// 	// this._allLength = (tournaments.length - 1) + (games.length - 1);
-
-	// 	console.log(this._tournamentLength);
+	private async _initMenuJoinPvP(): Promise < PIXI.Container > {
+		const menu = new PIXI.Container();
+		this._gameObjects = [];
+		const games = await apiService.getGames();
 
 
-	// 	for (let i =  0; i < 1; i++) {
+		for (let i =  0; i < games.length; i++) {
 			
-	// 		this._menuBoxPvP = new PIXI.Graphics();
-	// 		const tournament = tournaments[i];
-	// 		const textName_tour = new PIXI.Text(tournament.name);
-	// 		const textMode_tour = new PIXI.Text("Tournament");
-	// 		const textInfo_tour = new PIXI.Text(tournament.participants.length + "/" + tournament.max_participants);
+			const menuBoxPvP = new PIXI.Graphics();
+			const game = games[i];
+			const textName_tour = new PIXI.Text(game.player1);
+			const textMode_tour = new PIXI.Text("PvP");
+			let player2 = 0;
+			console.log(game);
 
+			if (game.player2 != "")
+				player2 = 1;
+			const textInfo_tour = new PIXI.Text(player2 + 1 + "/2");
 
-
-			
-	// 		textName_tour.style.fontSize = (this.root.width * 4) / 100;
-	// 		textName_tour.style.fill = defaultColor;
-	// 		textName_tour.filters = [glowFilter];
-
-	// 		textMode_tour.x = (this.root.width / 2 - textMode_tour.width / 2);
-	// 		textMode_tour.style.fontSize = (this.root.width * 4) / 100;
-	// 		textMode_tour.style.fill = defaultColor;
-	// 		textMode_tour.filters = [glowFilter];
-
-
-	// 		textInfo_tour.x = this.root.width - 120;
-	// 		textInfo_tour.style.fontSize = (this.root.width * 4) / 100;
-	// 		textInfo_tour.style.fill = defaultColor;
-	// 		textInfo_tour.filters = [glowFilter];
 
 
 			
-	// 		this._menuBoxPvP.x = 10;
-	// 		this._menuBoxPvP.y = (this.root.height * 20) / 100 + (i * 25);
-	// 		this._menuBoxPvP.endFill();
-	// 		this._menuBoxPvP.addChild(textName_tour, textMode_tour, textInfo_tour);
-			
-			
-	// 		this._tournamentObjects.push({container: this._menuBoxPvP, data: tournament})
-	// 		menu.addChild(this._menuBoxPvP);
-			
-	// 	}
-	// 	menu.visible = false;
+			textName_tour.style.fontSize = (this.root.width * 4) / 100;
+			textName_tour.style.fill = 'green';
+			textName_tour.filters = [glowFilter];
 
-	// 	return menu;
-	// }
+			textMode_tour.x = (this.root.width / 2 - textMode_tour.width / 2);
+			textMode_tour.style.fontSize = (this.root.width * 4) / 100;
+			textMode_tour.style.fill = 'green';
+			textMode_tour.filters = [glowFilter];
+
+
+			textInfo_tour.x = this.root.width - 120;
+			textInfo_tour.style.fontSize = (this.root.width * 4) / 100;
+			textInfo_tour.style.fill = 'green';
+			textInfo_tour.filters = [glowFilter];
+
+
+			
+			menuBoxPvP.x = 10;
+			menuBoxPvP.y = (this.root.height * 20) / 100 + (i * 25);
+			menuBoxPvP.endFill();
+			menuBoxPvP.addChild(textName_tour, textMode_tour, textInfo_tour);
+			
+			
+			this._gameObjects.push({container: menuBoxPvP, data: game})
+			menu.addChild(menuBoxPvP);
+			
+		}
+		menu.visible = false;
+
+		return menu;
+	}
 
 }
