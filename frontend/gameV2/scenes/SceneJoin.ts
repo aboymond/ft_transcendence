@@ -1,6 +1,7 @@
 // import { Container } from 'react-bootstrap';
 import { defaultColor } from '..';
 import { SceneBase } from './SceneBase';
+import { SceneMenu2 } from './SceneMenu2';
 import * as PIXI from 'pixi.js';
 import { glowFilter } from '..' ;
 import apiService from '../../src/services/apiService';
@@ -85,6 +86,9 @@ export class SceneJoin extends SceneBase {
 				if(e.key === 'ArrowUp') {
 					this._pressUpTournament();
 				}
+				if (e.code === 'Escape') {
+					this.root.loadScene(new SceneMenu2(this.root));
+				}
 				break;
 			case menuState.PVP_MENU:
 				if (e.key === 'ArrowLeft') {
@@ -100,6 +104,9 @@ export class SceneJoin extends SceneBase {
 				}
 				if(e.key === 'ArrowUp') {
 					this._pressUpPvP();
+				}
+				if (e.code === 'Escape') {
+					this.root.loadScene(new SceneMenu2(this.root));
 				}
 
 
