@@ -30,9 +30,9 @@ export class SceneGameVsBot extends SceneBase {
 	private _escapeKeyPressed = false;
 
 	private _exitMenu = new PIXI.Container();
-	private _yesOption: PIXI.Text;
-	private _noOption: PIXI.Text;
-	private _exitText: PIXI.Text;
+	private _yesOption!: PIXI.Text;
+	private _noOption!: PIXI.Text;
+	private _exitText!: PIXI.Text;
 
 	//=======================================
 	// HOOK

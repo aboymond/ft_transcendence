@@ -17,7 +17,7 @@ export class PixiManager {
 	public botLvl = 0.05;
 	public playerAWin = true;
 	public ws: WebSocket | null;
-	public gameState: GameState;
+	public gameState: GameState | null;
 
 	//--------------------------
 
@@ -26,7 +26,7 @@ export class PixiManager {
 
 	constructor(
 		ws: WebSocket | null,
-		gameState: GameState,
+		gameState: GameState | null,
 		readonly options: Partial<IPixiManagerOptions> = {},
 	) {
 		this.ws = ws;
