@@ -46,6 +46,8 @@ class Game(models.Model):
     player1_score = models.IntegerField(default=0)
     player2_score = models.IntegerField(default=0)
 
+    max_score = models.IntegerField(default=5)
+
     ball_x = models.FloatField(default=0)
     ball_y = models.FloatField(default=0)
     ball_velocity_x = models.FloatField(default=0)
