@@ -13,6 +13,8 @@ interface WebSocketContextType {
 	setMessage: React.Dispatch<React.SetStateAction<unknown>>; //TODO type this
 	gameState: GameState | null;
 	setGameState: React.Dispatch<React.SetStateAction<GameState | null>>;
+	userStatus: { [userId: string]: string };
+	setUserStatus: React.Dispatch<React.SetStateAction<{ [userId: string]: string }>>;
 }
 
 export const WebSocketContext = createContext<WebSocketContextType | null>(null);
@@ -24,6 +26,7 @@ const WebSocketHandler: React.FC<Props> = ({ children }) => {
 	const [message, setMessage] = useState<unknown>(null); // TODO type this
 	const [gameId, setGameId] = useState<number | null>(null);
 	const [gameState, setGameState] = useState<GameState | null>(null);
+	const [userStatus, setUserStatus] = useState<{ [userId: string]: string }>({});
 
 	useEffect(() => {
 		// General request WebSocket
@@ -46,6 +49,9 @@ const WebSocketHandler: React.FC<Props> = ({ children }) => {
 
 				if (data.game_id) {
 					setGameId(data.game_id);
+				}
+				if (data.type === 'USER_STATUS') {
+					setUserStatus((prevStatus) => ({ ...prevStatus, [data.user_id]: data.status }));
 				}
 			};
 		}
@@ -97,6 +103,8 @@ const WebSocketHandler: React.FC<Props> = ({ children }) => {
 				setMessage,
 				gameState,
 				setGameState,
+				userStatus,
+				setUserStatus,
 			}}
 		>
 			{children}
