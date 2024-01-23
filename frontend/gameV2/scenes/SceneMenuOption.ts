@@ -76,7 +76,7 @@ export class SceneMenuOption extends SceneBase {
 	private _textErrorPad = new PIXI.Text('SELECT AN AVALIBLE PAD', textStyleMenuOptionError);
 	private _textErrorOK = new PIXI.Text('[ ENTER ]', textStyleMenuOptionError);
 
-	public onStart(container: PIXI.Container) {
+	public async onStart(container: PIXI.Container) {
 		// Init text
 		container.addChild(this._createTextColorAvatar(this._textColorAvatar));
 		container.addChild(this._createTextPad(this._textPad));

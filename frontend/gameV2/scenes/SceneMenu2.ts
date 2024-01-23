@@ -2,7 +2,8 @@ import * as PIXI from 'pixi.js';
 import { SceneBase } from './SceneBase';
 import { SceneMenuOption } from './SceneMenuOption';
 import { SceneMenuTournament } from './SceneMenuTournament';
-import { SceneGameVsBot } from './SceneGameVsBot';
+import { SceneGame } from './SceneGame';
+import { SceneJoin } from './SceneJoin';
 // import { glowFilter, defaultColor, textStylePVPMenu2, textStylePVBMenu2, textStyleTournamentMenu, textStyleJoinMenu2 } from '..';
 
 const selectMax = 2;
@@ -22,7 +23,7 @@ enum allSprite {
 enum menu {
 	TOURNAMENT = 0,
 	PVP_PVB = 1,
-	JOIN = 2 
+	JOIN = 2,
 }
 
 const textures = [
@@ -36,14 +37,12 @@ const textures = [
 	PIXI.Texture.from('gameV2/img/JoinPartyUnselect.png'),
 ];
 
-
 export class SceneMenu2 extends SceneBase {
 	private _currentSelect = menu.TOURNAMENT;
 	private _currentSelect_LR = 0;
 	private _sprites: PIXI.Sprite[] = [];
 
-
-	public onStart(container: PIXI.Container) {
+	public async onStart(container: PIXI.Container) {
 		for (let i = 0; i < textures.length; i++) {
 			this._sprites.push(new PIXI.Sprite(textures[i]));
 		}
@@ -51,7 +50,6 @@ export class SceneMenu2 extends SceneBase {
 			container.addChild(this._menuBoxInitSprite(this._sprites[i]));
 		}
 
-		
 		this._initSpritePvP(this._sprites[allSprite.PVP_S]);
 		this._initSpritePvP(this._sprites[allSprite.PVP_U]);
 		this._initSpriteJoin(this._sprites[allSprite.JOIN_S]);
@@ -66,7 +64,6 @@ export class SceneMenu2 extends SceneBase {
 		this._sprites[allSprite.JOIN_U].visible = true;
 		this._sprites[allSprite.PVB_S].visible = false;
 		this._sprites[allSprite.PVB_U].visible = true;
-
 	}
 
 	public onUpdate() {}
@@ -97,17 +94,13 @@ export class SceneMenu2 extends SceneBase {
 		if (e.code === 'Enter') {
 			if (this._currentSelect === menu.TOURNAMENT) {
 				this.root.loadScene(new SceneMenuTournament(this.root));
-			
-			}
-			else if (this._currentSelect === menu.PVP_PVB) {
+			} else if (this._currentSelect === menu.PVP_PVB) {
 				if (this._currentSelect_LR === 0) {
 					this.root.loadScene(new SceneGame(this.root));
-				}
-				else {
+				} else {
 					this.root.loadScene(new SceneJoin(this.root));
 				}
-			}
-			else this.root.loadScene(new SceneMenuOption(this.root));
+			} else this.root.loadScene(new SceneMenuOption(this.root));
 		}
 	}
 
@@ -117,33 +110,27 @@ export class SceneMenu2 extends SceneBase {
 	// UTILS
 	//=======================================
 
+	private _initSpritePvP(sprite: PIXI.Sprite) {
+		sprite.width = this.root.width / 2;
 
-	private  _initSpritePvP(sprite: PIXI.Sprite) {
-		sprite.width = this.root.width / 2 ;
-		
-		sprite.y =  this.root.height / 2 - this._sprites[allSprite.PVP_U].height / 2;
+		sprite.y = this.root.height / 2 - this._sprites[allSprite.PVP_U].height / 2;
 	}
-	private  _initSpriteJoin(sprite: PIXI.Sprite) {
+	private _initSpriteJoin(sprite: PIXI.Sprite) {
 		sprite.y = this.root.height / 3 + this.root.height / 2 - sprite.height / 2;
 	}
-	private  _initSpritePvB(sprite: PIXI.Sprite) {
-		sprite.width = this.root.width / 2 ;
+	private _initSpritePvB(sprite: PIXI.Sprite) {
+		sprite.width = this.root.width / 2;
 		// sprite.x = this.root.width / 2;
 		sprite.x = this.root.width / 2;
-		sprite.y =  this.root.height / 2 - this._sprites[allSprite.PVB_U].height / 2;
-
-		
-
+		sprite.y = this.root.height / 2 - this._sprites[allSprite.PVB_U].height / 2;
 	}
 
-	private _menuBoxInitSprite (menuBox: PIXI.Sprite) {
+	private _menuBoxInitSprite(menuBox: PIXI.Sprite) {
 		menuBox.width = this.root.width;
 		menuBox.height = this.root.height / 3;
 
-		return  menuBox;
+		return menuBox;
 	}
-
-
 
 	//=======================================
 	// UTILS
@@ -175,41 +162,33 @@ export class SceneMenu2 extends SceneBase {
 
 	private _updateMenuColor() {
 		if (this._currentSelect === menu.TOURNAMENT) {
-
 			this._sprites[allSprite.TOURNAMENT_S].visible = true;
 			this._sprites[allSprite.PVP_S].visible = false;
 			this._sprites[allSprite.JOIN_S].visible = false;
 			this._sprites[allSprite.PVB_S].visible = false;
 
-
 			this._sprites[allSprite.TOURNAMENT_U].visible = false;
 			this._sprites[allSprite.PVP_U].visible = true;
 			this._sprites[allSprite.JOIN_U].visible = true;
 			this._sprites[allSprite.PVB_U].visible = true;
-
 		}
 
 		if (this._currentSelect === menu.PVP_PVB) {
-
 			this._sprites[allSprite.TOURNAMENT_S].visible = false;
 			this._sprites[allSprite.PVP_S].visible = true;
 			this._sprites[allSprite.JOIN_S].visible = false;
 			this._sprites[allSprite.PVB_S].visible = false;
 
-
 			this._sprites[allSprite.TOURNAMENT_U].visible = true;
 			this._sprites[allSprite.PVP_U].visible = false;
 			this._sprites[allSprite.JOIN_U].visible = true;
 			this._sprites[allSprite.PVB_U].visible = true;
-			
-			if (this._currentSelect_LR === 0) {
-				
 
+			if (this._currentSelect_LR === 0) {
 				this._sprites[allSprite.TOURNAMENT_S].visible = false;
 				this._sprites[allSprite.PVP_S].visible = true;
 				this._sprites[allSprite.JOIN_S].visible = false;
 				this._sprites[allSprite.PVB_S].visible = false;
-
 
 				this._sprites[allSprite.TOURNAMENT_U].visible = true;
 				this._sprites[allSprite.PVP_U].visible = false;
@@ -217,39 +196,30 @@ export class SceneMenu2 extends SceneBase {
 				this._sprites[allSprite.PVB_U].visible = true;
 			}
 			if (this._currentSelect_LR === 1) {
-
 				this._sprites[allSprite.TOURNAMENT_S].visible = false;
 				this._sprites[allSprite.JOIN_S].visible = false;
 				this._sprites[allSprite.PVP_S].visible = false;
 				this._sprites[allSprite.PVB_S].visible = true;
-				
-				
+
 				this._sprites[allSprite.TOURNAMENT_U].visible = true;
 				this._sprites[allSprite.JOIN_U].visible = true;
 				this._sprites[allSprite.PVP_U].visible = true;
 				this._sprites[allSprite.PVB_U].visible = false;
 
-			this.root.vsPlayer = true;
-			
+				this.root.vsPlayer = true;
+			}
 		}
-	}
 
 		if (this._currentSelect === menu.JOIN) {
-
-
 			this._sprites[allSprite.TOURNAMENT_S].visible = false;
 			this._sprites[allSprite.PVP_S].visible = false;
 			this._sprites[allSprite.JOIN_S].visible = true;
 			this._sprites[allSprite.PVB_S].visible = false;
 
-
 			this._sprites[allSprite.TOURNAMENT_U].visible = true;
 			this._sprites[allSprite.PVP_U].visible = true;
 			this._sprites[allSprite.JOIN_U].visible = false;
 			this._sprites[allSprite.PVB_U].visible = true;
-
-
-
 		}
 	}
 }

@@ -15,7 +15,7 @@ export class SceneWinOrLoose extends SceneBase {
 	// HOOK
 	//=======================================
 
-	public onStart(container: PIXI.Container) {
+	public async onStart(container: PIXI.Container) {
 		container.addChild(this._initTextWin(this._textWin));
 		container.addChild(this._initTextLoose(this._textLoose));
 

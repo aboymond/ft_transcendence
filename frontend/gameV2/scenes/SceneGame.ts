@@ -52,7 +52,7 @@ export class SceneGame extends SceneBase {
 	// HOOK
 	//=======================================
 
-	public onStart(container: PIXI.Container) {
+	public async onStart(container: PIXI.Container) {
 		//Init Ball
 		container.addChild(this._initBall(10, 0x1aff00));
 		this._ball.x = this.root.width / 2;
