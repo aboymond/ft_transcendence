@@ -55,6 +55,3 @@ const AddFriend = () => {
 };
 
 export default AddFriend;
-
-//ce component est sensé ajouter les amis selon le nom utilisateur, MAIS quand on ajouter un ami
-//il n'est pas ajouter à notre liste d'amis 

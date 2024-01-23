@@ -24,6 +24,7 @@ from .views import (
     RejectCancelFriendRequestView,
     RemoveFriendView,
     AvatarUploadView,
+    UserDetailView,
 )
 
 urlpatterns = [
@@ -39,6 +40,7 @@ urlpatterns = [
     path("list/", UserListView.as_view(), name="user-list"),
     path("update/", UserUpdateView.as_view(), name="update"),
     path("avatar/upload/", AvatarUploadView.as_view(), name="avatar-upload"),
+    path('<int:id>/', UserDetailView.as_view(), name='user-detail'),
     path("profile/", CurrentUserProfileView.as_view(), name="current-user-profile"),
     path("game_histories/", GameHistoryListCreateView.as_view(), name="game_histories"),
     path(

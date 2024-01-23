@@ -181,6 +181,10 @@ class UserGameHistoryView(generics.ListAPIView):
             logger.error(f"User with ID {user_id} does not exist")
             return []
 
+class UserDetailView(generics.RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    lookup_field = 'id'
 
 class CurrentUserProfileView(generics.RetrieveAPIView):
     serializer_class = UserSerializer
