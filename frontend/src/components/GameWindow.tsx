@@ -6,17 +6,11 @@ import { WebSocketContext } from '../components/WebSocketHandler';
 
 function GameWindow() {
 	const context = React.useContext(WebSocketContext);
-	const ws = context?.socket; // Access the WebSocket
-
-	// const [playerNumber, setPlayerNumber] = useState<number>(1); // TODO Set to 1 or 2 depending on the player
-
-	// const handleKeyPress = (event) => {
-	// 	if (ws) {
-	// 		ws.send(JSON.stringify({ action: 'key_press', key: event.key, player: playerNumber }));
-	// 	}
-	// };
+	const ws = context?.socket;
 
 	useEffect(() => {
+		console.log('ws:', ws);
+		console.log('context.gameState:', context?.gameState);
 		if (ws && context?.gameState) {
 			launchGame(ws, context?.gameState);
 		}

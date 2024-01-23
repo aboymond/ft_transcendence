@@ -2,12 +2,15 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 import json
 
 
-class General(AsyncWebsocketConsumer):
+class GeneralRequestConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         print("Connecting... (General)")  # Log message before connection
         self.room_group_name = "general_requests_%s" % self.scope["user"].pk
-        self.scope["user"].status = "online"
-        self.scope["user"].save()
+        if self.scope["user"].is_authenticated:
+            self.scope["user"].status = "online"
+            self.scope["user"].save()
+        else:
+            print("Error: self.scope['user'] is not authenticated")
 
         if self.channel_layer is not None:
             await self.channel_layer.group_add(self.room_group_name, self.channel_name)
@@ -27,8 +30,11 @@ class General(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code):
         print("Disconnecting... (General)")  # Log message before connection
-        self.scope["user"].status = "offline"
-        self.scope["user"].save()
+        if self.scope["user"].is_authenticated:
+            self.scope["user"].status = "offline"
+            self.scope["user"].save()
+        else:
+            print("Error: self.scope['user'] is not authenticated")
 
         if self.channel_layer is not None:
             await self.channel_layer.group_discard(

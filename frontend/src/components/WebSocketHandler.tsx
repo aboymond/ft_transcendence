@@ -44,7 +44,7 @@ const WebSocketHandler: React.FC<Props> = ({ children }) => {
 
 			socketRef.current.onmessage = (e) => {
 				const data = JSON.parse(e.data);
-				console.log('data:', data);
+				console.log('general request data:', data);
 				setMessage(data);
 
 				if (data.game_id) {
