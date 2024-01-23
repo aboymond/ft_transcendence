@@ -6,5 +6,5 @@ import { GameState } from '../src/types';
 export function launchGame(ws: WebSocket | null, gameState: GameState | null) {
 	console.log('launchGame');
 	const pixiMan = new PixiManager(ws, gameState);
-	pixiMan.loadScene(new SceneJoin(pixiMan));
+	pixiMan.loadScene(new SceneMenu(pixiMan));
 }
