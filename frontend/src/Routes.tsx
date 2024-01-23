@@ -10,8 +10,8 @@ const AuthenticatedRoutes: React.FC = () => (
 	<>
 		<Routes>
 			<Route path="/home" element={<Home />} />
-			<Route path="/profile" element={<Profile />} />
-			<Route path="/friends" element={<Friends />} />
+			{/* <Route path="/profile" element={<Profile />} /> */}
+			{/* <Route path="/friends" element={<Friends />} /> */}
 			<Route path="/credits" element={<Credits />} />
 			<Route path="*" element={<Navigate to="/home" replace />} />
 		</Routes>
