@@ -2,6 +2,7 @@
     margin-top: 9vh;
     display: flex;
     justify-content: center;
+    position: relative;
 }
 
 
@@ -27,3 +28,10 @@
     }
 }
 
+.credits {
+    position: absolute;
+    margin-top: 15px;
+    /* bottom: 2; */
+    left: 50%;
+    transform: translateX(-50%);
+}
