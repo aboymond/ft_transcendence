@@ -5,6 +5,7 @@ import GameWindow from '../components/GameWindow';
 import Window from '../components/Window';
 import { Row, Col, Container } from 'react-bootstrap';
 import styles from '../styles/Home.module.css';
+import { Link } from 'react-router-dom';
 
 const Home: React.FC = () => {
 	return (
@@ -21,7 +22,9 @@ const Home: React.FC = () => {
 					</Col>
 				</Row>
 			</Container>
-
+			<div className={styles.credits}>
+				<Link to="/credits" style={{ color: 'rgb(74, 246, 38)'}}>Credits</Link>
+			</div>
 		</div>
 	</>);
 };
