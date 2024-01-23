@@ -8,12 +8,10 @@ from .models import Friendship, TournamentHistory
 
 User = get_user_model()
 
-
-class UserNameSerializer(serializers.ModelSerializer):
+class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["username"]
-
+        fields = ('otp', 'otp_expiry_time', 'other_fields_from_user_model')
 
 class GameHistorySerializer(serializers.ModelSerializer):
     players = serializers.SerializerMethodField()
@@ -62,6 +60,7 @@ class UserSerializer(serializers.ModelSerializer):
             "username",
             "password",
             "display_name",
+            "email",
             "avatar",
             "wins",
             "losses",
@@ -70,6 +69,9 @@ class UserSerializer(serializers.ModelSerializer):
             "match_history",
             "friendship_id",
             "tournament_history_played",
+            # "otp", 
+            # "otp_expiry_time",
+            # "other_fields_from_user_model"
         )
         extra_kwargs = {
             "password": {"write_only": True},
@@ -82,6 +84,7 @@ class UserSerializer(serializers.ModelSerializer):
             username=validated_data["username"],
             password=validated_data["password"],
             display_name=display_name,
+            email=validated_data["email"],
         )
         return user
 

@@ -4,14 +4,6 @@
   margin: 2rem 0;
 }
 
-/* @media (max-width: 768px) {
-  .logo {
-      font-size: 1rem;
-      margin: 1rem 0;
-  }
-} */
-
-
 @media (max-width: 992px) {
   .logo {
     font-size: 2rem;
@@ -26,6 +18,12 @@
 }
 
 @media (min-width: 1200px) {
+  .logo {
+    font-size: 4rem;
+  }
+}
+
+@media (min-width: 1400px) {
   .logo {
     font-size: 5rem;
   }

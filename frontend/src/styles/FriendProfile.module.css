@@ -1,0 +1,17 @@
+.container {
+    padding: 20px;
+    margin-top: 50px;
+    border: solid;
+    border-color: rgb(74, 246, 38);
+}
+
+.closeButton {
+    position: relative;
+    float: right;
+    border-radius: 20%;
+    margin-bottom: 15px;
+    background-color: var(--primary-color);
+    color: var(--background-color);
+    font-family: var(--font-family);
+    border-color: var(--accent-color);
+}

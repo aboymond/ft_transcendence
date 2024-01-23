@@ -21,7 +21,6 @@ from .serializers import FriendshipSerializer
 from .models import GameHistory, Friendship
 from .serializers import GameHistorySerializer
 from .serializers import AvatarSerializer
-from .intra import ic
 from requests_oauthlib import OAuth2Session
 import logging
 
@@ -75,6 +74,7 @@ class AuthView(generics.GenericAPIView):
         )
         return redirect(authorization_url)
 
+
 class CallBackView(APIView):
     def get(self, request, *args, **kwargs):
         print("CALLBACKVIEW TEST")
@@ -86,14 +86,19 @@ class CallBackView(APIView):
 
         # Fetch access token
         response = OAuth2Session(client_id, redirect_uri=redirect_uri).fetch_token(
-            token_url, authorization_response=request.build_absolute_uri(), code=code, client_secret=client_secret
-		)
+            token_url,
+            authorization_response=request.build_absolute_uri(),
+            code=code,
+            client_secret=client_secret,
+        )
 
-        access_token = response.get('access_token')
+        access_token = response.get("access_token")
 
         # Fetch user details
         user_url = "https://api.intra.42.fr/v2/me"
-        user_response = OAuth2Session(client_id, token={'access_token': access_token}).get(user_url)
+        user_response = OAuth2Session(
+            client_id, token={"access_token": access_token}
+        ).get(user_url)
         user_data = user_response.json()
 
         user = {
@@ -115,7 +120,7 @@ class CallBackView(APIView):
             # If the user does not exist, create a new user
             existing_user = User.objects.create(username=username)
         else:
-            existing_user.avatar.delete()   # Delete the old avatar
+            existing_user.avatar.delete()  # Delete the old avatar
 
         # Save the new avatar
         existing_user.avatar.save(f"{username}.jpg", ContentFile(response.content))
@@ -124,8 +129,11 @@ class CallBackView(APIView):
         # temp JWT
         refresh = RefreshToken.for_user(existing_user)
 
-        redirect_url = "http://localhost:3001?access_token=" + str(refresh.access_token)
+        redirect_url = "http://localhost:3001?access_token=" + str(
+            refresh.access_token
+        )  # TODO remove port for prod
         return redirect(redirect_url)
+
 
 class CallBackCodeView(APIView):
     def get(self, request, *args, **kwargs):
@@ -180,6 +188,12 @@ class UserGameHistoryView(generics.ListAPIView):
         except User.DoesNotExist:
             logger.error(f"User with ID {user_id} does not exist")
             return []
+
+
+class UserDetailView(generics.RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    lookup_field = "id"
 
 
 class CurrentUserProfileView(generics.RetrieveAPIView):

@@ -2,7 +2,7 @@ import * as PIXI from 'pixi.js';
 import { GlowFilter } from '@pixi/filter-glow';
 import { PixelateFilter } from '@pixi/filter-pixelate';
 import $ from 'jquery';
-import "/font/font.css"
+import '/font/font.css';
 
 export const defaultColor = 0x1aff00;
 
@@ -24,13 +24,13 @@ export const textStyleDefaultMenu1 = new PIXI.TextStyle({
 export const textStylePVPMenu2 = new PIXI.TextStyle({
 	fontFamily: 'Pixelmania',
 	// fill: defaultColor,
-	fontSize: $('#game_window').width() / 20,
+	fontSize: ($('#game_window').width() || 600) / 20,
 });
 
 export const textStylePVBMenu2 = new PIXI.TextStyle({
 	fontFamily: 'Pixelmania',
 	// fill: defaultColor,
-	fontSize: $('#game_window').width() / 20,
+	fontSize: ($('#game_window').width() || 600) / 20,
 });
 
 export const textStyleJoinMenu2 = new PIXI.TextStyle({
@@ -41,7 +41,7 @@ export const textStyleJoinMenu2 = new PIXI.TextStyle({
 export const textStyleTournamentMenu = new PIXI.TextStyle({
 	fontFamily: 'Pixelmania',
 	// fill: defaultColor,
-	fontSize: $('#game_window').width() / 20,
+	fontSize: ($('#game_window').width() || 600) / 20,
 });
 
 // Menu Option
@@ -77,7 +77,6 @@ export const textStyleWinOrLoose = new PIXI.TextStyle({
 	fill: defaultColor,
 });
 
-
 //STYLE MENU TOURNAMENT
 
 export const textStyleMenuTournamentCreate = new PIXI.TextStyle({
@@ -105,7 +104,6 @@ export const textStyleMenuTournamentMode = new PIXI.TextStyle({
 	fill: defaultColor,
 });
 
-
 export const textStyleMenuTournamentJoin = new PIXI.TextStyle({
 	fontSize: 20,
 	fill: defaultColor,
@@ -120,4 +118,4 @@ export const glowFilter = new GlowFilter({
 	color: 0x86ff86,
 }) as unknown as PIXI.Filter;
 
-export const PixelPad = new PixelateFilter({}) as unknown as PIXI.Filter;
+export const PixelPad = new PixelateFilter(undefined) as unknown as PIXI.Filter;

@@ -1,4 +1,3 @@
-// frontend/src/App.tsx
 import React from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
@@ -16,7 +15,6 @@ const App: React.FC = () => {
 						<img src="./img/scanlines.png" alt="Scanlines" id="scan" />
 						<img src="./img/bezel.png" alt="Bezel" id="bezel" />
 					</div>
-					
 					<AppRoutes />
 				</Router>
 			</WebSocketHandler>

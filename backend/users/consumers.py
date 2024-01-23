@@ -4,24 +4,54 @@ import json
 
 class GeneralRequestConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        print("Connecting...")  # Log message before connection
+        print("Connecting... (General)")  # Log message before connection
         self.room_group_name = "general_requests_%s" % self.scope["user"].pk
+        if self.scope["user"].is_authenticated:
+            self.scope["user"].status = "online"
+            self.scope["user"].save()
+        else:
+            print("Error: self.scope['user'] is not authenticated")
+
         if self.channel_layer is not None:
             await self.channel_layer.group_add(self.room_group_name, self.channel_name)
+            await self.channel_layer.group_add("online_status", self.channel_name)
+            await self.channel_layer.group_send(
+                "online_status",
+                {
+                    "type": "user_status",
+                    "user_id": self.scope["user"].id,
+                    "status": "online",
+                },
+            )
         else:
             print("Error: self.channel_layer is None")
         await self.accept()
-        print("Connected!")  # Log message after connection
+        print("Connected! (General)")  # Log message after connection
 
     async def disconnect(self, close_code):
-        print("Disconnecting...")  # Log message before connection
+        print("Disconnecting... (General)")  # Log message before connection
+        if self.scope["user"].is_authenticated:
+            self.scope["user"].status = "offline"
+            self.scope["user"].save()
+        else:
+            print("Error: self.scope['user'] is not authenticated")
+
         if self.channel_layer is not None:
             await self.channel_layer.group_discard(
                 self.room_group_name, self.channel_name
             )
+            await self.channel_layer.group_discard("online_status", self.channel_name)
+            await self.channel_layer.group_send(
+                "online_status",
+                {
+                    "type": "user_status",
+                    "user_id": self.scope["user"].id,
+                    "status": "offline",
+                },
+            )
         else:
             print("Error: self.channel_layer is None")
-        print("Disconnected!")  # Log message after connection
+        print("Disconnected! (General)")  # Log message after connection
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
@@ -35,6 +65,17 @@ class GeneralRequestConsumer(AsyncWebsocketConsumer):
             await self.send(text_data=json.dumps({"message": "Friend request updated"}))
         else:
             print("Error: self.channel_layer is None")
+
+    async def user_status(self, event):
+        await self.send(
+            text_data=json.dumps(
+                {
+                    "type": "USER_STATUS",
+                    "user_id": event["user_id"],
+                    "status": event["status"],
+                }
+            )
+        )
 
     async def general_request(self, event):
         message = event["message"]
