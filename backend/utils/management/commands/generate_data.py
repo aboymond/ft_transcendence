@@ -25,6 +25,13 @@ class Command(BaseCommand):
             for _ in range(total)
         ]
 
+        # Create games with status "Waiting for Player"
+        for user in users:
+            Game.objects.create(
+                player1=user,
+                status="waiting",
+            )
+
         # Create friendships
         for user1, user2 in combinations(users, 2):
             Friendship.objects.create(

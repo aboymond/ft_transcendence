@@ -3,7 +3,6 @@ import { useAuth } from '../hooks/useAuth';
 import apiService from '../services/apiService';
 import { User } from '../types';
 import styles from '../styles/PotentialFriends.module.css';
-// import { useNavigate } from 'react-router-dom';
 
 interface PotentialFriendsProps {
  friends: User[];
@@ -14,20 +13,22 @@ const PotentialFriends: React.FC<PotentialFriendsProps> = ({ friends, onSelectFr
  const [users, setUsers] = useState<User[]>([]);
  const [searchTerm, setSearchTerm] = useState("");
  const auth = useAuth();
-//  const navigate = useNavigate();
 
- useEffect(() => {
-  const fetchUsers = async () => {
-    if (auth.isAuthenticated && auth.token) {
-      try {
-        const usersList = await apiService.getUsers();
-        setUsers(usersList);
-      } catch (error) {
-        console.error('Failed to fetch users:', error);
-      }
-    }
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+     if (auth.isAuthenticated && auth.token) {
+       try {
+         const usersList = await apiService.getUsers();
+         const filteredUsers = usersList.filter(user => user.username !== auth.user?.username);
+         setUsers(filteredUsers);
+       } catch (error) {
+         console.error('Failed to fetch users:', error);
+       }
+     }
   };
   fetchUsers();
+ // eslint-disable-next-line react-hooks/exhaustive-deps
  }, [auth.isAuthenticated, auth.token]);
 
  const filteredUsers = users.filter(user => 

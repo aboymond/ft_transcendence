@@ -145,6 +145,12 @@ export const apiService = {
 	getGameHistory: async (): Promise<GameHistory[]> => {
 		return fetchAPI('users/game_histories/');
 	},
+	getTournaments: async () => {
+		return fetchAPI('tournaments/tournaments/');
+	},
+	getGames: async () => {
+		return fetchAPI('games/list-create/');
+	},
 };
 
 export default apiService;

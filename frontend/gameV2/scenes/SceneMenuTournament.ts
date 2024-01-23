@@ -1,13 +1,15 @@
 import * as PIXI from 'pixi.js';
 import { SceneBase } from './SceneBase';
+
 import { glowFilter, defaultColor, textStyleMenuTournamentCreate, textStyleMenuTournamentName, textStyleMenuTournamentMaxScore, textStyleMenuTournamentMode, textStyleMenuTournamentPlayer, textStyleMenuOptionPlay, textStyleTournamentMenu } from '..';
 
-const selectMaxCreate = 4;
+const selectMaxCreate = 3;
 
-enum menuState {
-	SELECT_MENU,
-	CREATE_MENU,
-	JOIN_MENU,
+enum menu {
+	NAME = 0,
+	PLAYER = 1,
+	MAXSCORE = 2,
+	PLAY = 3,
 }
 
 // FOR THE BACK ===============================
@@ -19,7 +21,7 @@ let nb_scoreForBack = 0;
 export class SceneMenuTournament extends SceneBase {
 
 
-	private state: menuState = menuState.SELECT_MENU;
+	// private state: menuState = menuState.SELECT_MENU;
 	private _currentSelectCreate = -1;
 
 	// MENU CREATE ==========================================
@@ -42,20 +44,24 @@ export class SceneMenuTournament extends SceneBase {
 	private _currentNbPlayer = 0;
 	private _currentMaxScore = 0;
 
-	private _textJoin = new PIXI.Text('JOIN');
+	// private _textJoin = new PIXI.Text('JOIN');
+	// private _tournaments: Array<any> = []; 
+	// private _tournamentObjects : Array<{container:PIXI.Container, data: any}> = [];
 	// private _GameNameText;
 	// private _modeText;
 	// private _mode = { singleElim: 'SINGLE ELIMINATON', roundRobin: 'ROUND ROBIN' };
-	private _confirm;
+	// private _confirm;
 	private _textPlay = new PIXI.Text('PLAY', textStyleMenuOptionPlay);
 
-	private _join = new PIXI.Container();
+	// private _join = new PIXI.Container();
 	// private _
 
 	// private _selectCreate = true;
 
 	private _inputText = '';
 	private _textInputField = new PIXI.Text(this._inputText, { fill: defaultColor, fontSize: 20, });
+
+
 
 	//=======================================
 	// Effects
@@ -65,16 +71,15 @@ export class SceneMenuTournament extends SceneBase {
 	// HOOK
 	//=======================================
 
-	public onStart(container: PIXI.Container) {
+	public async onStart(container: PIXI.Container) {
 		container.addChild(this._initTextCreate(this._textCreate));
-		container.addChild(this._initTextJoin(this._textJoin));
+		// container.addChild(this._initTextJoin(this._textJoin));
 		this._create = this._initMenuCreate();
 		container.addChild(this._create);
-		this._join = this._initMenuJoin();
-		container.addChild(this._join);
+		// this._join = await this._initMenuJoin();
+		// container.addChild(this._join);
 
-		// this._create = this._initMenuCreate();
-		// container.addChild(this._create);
+
 	}
 
 	public onUpdate() {}
@@ -83,91 +88,49 @@ export class SceneMenuTournament extends SceneBase {
 
 	public onKeyDown(e: KeyboardEvent) {
 
-		switch (this.state) {
-			case menuState.SELECT_MENU:
-				if (e.code === 'ArrowLeft') {
-					this._create.visible = true;
-					this._join.visible = false;
-					this._textCreate.style.fill = defaultColor;
-					this._textJoin.style.fill = 'green';
-				}
-				if (e.code === 'ArrowRight') {
-					this._create.visible = false;
-					this._join.visible = true;
-					this._textJoin.style.fill = defaultColor;
-					this._textCreate.style.fill = 'green';
-				}
-				if (e.code === 'ArrowUp' && this._currentSelectCreate === -1) {
 
-					if (this._create.visible === true) {
-						this._currentSelectCreate = selectMaxCreate;
-						this._textPlayColorCreate();
-						this.state = menuState.CREATE_MENU;
-					} else this.state = menuState.JOIN_MENU;
-				}
-				if (e.code === 'ArrowDown' && this._currentSelectCreate === -1) {
-					if (this._create.visible === true) {
-						this._currentSelectCreate = 0;
-						this._nameColorCreate();
-						this.state = menuState.CREATE_MENU;
-					} else this.state = menuState.JOIN_MENU;
-				}
-				break;
-			case menuState.CREATE_MENU:
+		if (e.code === 'ArrowUp') {
 
-				if (e.code === 'ArrowUp') {
-
-					this._currentSelectCreate--;
-					if (this._currentSelectCreate < -1) {
-						this._currentSelectCreate = selectMaxCreate;
-					}
-					this._pressUp();
-				}
-
-				if (e.code === 'ArrowDown') {
-
-					this._currentSelectCreate++;
-					if (this._currentSelectCreate > selectMaxCreate) {
-						this._currentSelectCreate = -1;
-					}
-					this._pressDown();
-				}
-
-				if (e.code === 'ArrowLeft') {
-					this._pressLeft();
-				}
-
-				if (e.code === 'ArrowRight') {
-					this._pressRight();
-				}
-
-				if (e.code === 'Enter') {
-
-				}
-
-				if (this._currentSelectCreate === 0) {
-					if (e.key === 'Backspace') {
-						this._inputText = this._inputText.slice(0, -1);
-					} else if (e.key.length === 1 && this._inputText.length < 10) {
-						this._inputText += e.key;
-					}
-					if (this._inputText.length > 10)
-						return;
-					this._textInputField.text = this._inputText;
-				}
-				break;
-			case menuState.JOIN_MENU:
-				// if (e.code === 'ArrowUp') {
-
-				// }
-				// if (e.code === 'ArrowDown') {
-
-				// }
-				// if (e.code === 'ArrowLeft' || e.code === 'ArrowRight') {
-
-				// }
-				break;
+			this._currentSelectCreate--;
+			if (this._currentSelectCreate < menu.NAME) {
+				this._currentSelectCreate = selectMaxCreate;
+			}
+			this._pressUp();
 		}
+
+		if (e.code === 'ArrowDown') {
+
+			this._currentSelectCreate++;
+			if (this._currentSelectCreate > selectMaxCreate) {
+				this._currentSelectCreate = menu.NAME;
+			}
+			this._pressDown();
+		}
+
+		if (e.code === 'ArrowLeft') {
+			this._pressLeft();
+		}
+
+		if (e.code === 'ArrowRight') {
+			this._pressRight();
+		}
+
+		if (e.code === 'Enter') {
+
+		}
+
+		if (this._currentSelectCreate === menu.NAME) {
+			if (e.key === 'Backspace') {
+				this._inputText = this._inputText.slice(0, -1);
+			} else if (e.key.length === 1 && this._inputText.length < 15) {
+				this._inputText += (e.key);
+			}
+			if (this._inputText.length > 15)
+				return;
+			this._textInputField.text = this._inputText;
+		}
+
+		
 	}
 
 	public onKeyUp() {}
@@ -175,38 +138,38 @@ export class SceneMenuTournament extends SceneBase {
 
 	private _pressUp() {
 
-		if (this._currentSelectCreate === -1) {
-			this._name.style.fill = 'green';
-			this.state = menuState.SELECT_MENU;
-		} 
-		if (this._currentSelectCreate === 0) return this._nameCreate();
-		if (this._currentSelectCreate === 1) return this._modeCreate();
-		if (this._currentSelectCreate === 2) return this._playerCreate();
-		if (this._currentSelectCreate === 3) return this._maxScoreCreate();
-		if (this._currentSelectCreate === 4) return this._textPlayCreate();
+		// if (this._currentSelectCreate === -1) {
+		// 	this._name.style.fill = 'green';
+		// 	// this.state = menuState.SELECT_MENU;
+		// } 
+		if (this._currentSelectCreate === menu.NAME) return this._nameCreate();
+		// if (this._currentSelectCreate === 1) return this._modeCreate();
+		if (this._currentSelectCreate === menu.PLAYER) return this._playerCreate();
+		if (this._currentSelectCreate === menu.MAXSCORE) return this._maxScoreCreate();
+		if (this._currentSelectCreate === menu.PLAY) return this._textPlayCreate();
 	}
 
 	private _pressDown() {
 
-		if (this._currentSelectCreate === -1) {
-			this._textPlay.style.fill = 'green';
-			this.state = menuState.SELECT_MENU;
-		}
-		if (this._currentSelectCreate === 0) return this._nameCreate();
-		if (this._currentSelectCreate === 1) return this._modeCreate();
-		if (this._currentSelectCreate === 2) return this._playerCreate();
-		if (this._currentSelectCreate === 3) return this._maxScoreCreate();
-		if (this._currentSelectCreate === 4) return this._textPlayCreate();
+		// if (this._currentSelectCreate === -1) {
+		// 	this._textPlay.style.fill = 'green';
+			// this.state = menuState.SELECT_MENU;
+		// }
+		if (this._currentSelectCreate === menu.NAME) return this._nameCreate();
+		// if (this._currentSelectCreate === 1) return this._modeCreate();
+		if (this._currentSelectCreate === menu.PLAYER) return this._playerCreate();
+		if (this._currentSelectCreate === menu.MAXSCORE) return this._maxScoreCreate();
+		if (this._currentSelectCreate === menu.PLAY) return this._textPlayCreate();
 	}
 
 	private _pressLeft() {
-		if (this._currentSelectCreate === 2) return this._playerPrev();
-		if (this._currentSelectCreate === 3) return this._maxScorePrev();
+		if (this._currentSelectCreate === menu.PLAYER) return this._playerPrev();
+		if (this._currentSelectCreate === menu.MAXSCORE) return this._maxScorePrev();
 	}
 
 	private _pressRight() {
-		if (this._currentSelectCreate === 2) return this._playerNext();
-		if (this._currentSelectCreate === 3) return this._maxScoreNext();
+		if (this._currentSelectCreate === menu.PLAYER) return this._playerNext();
+		if (this._currentSelectCreate === menu.MAXSCORE) return this._maxScoreNext();
 	}
 
 	private _initTextCreate(text: PIXI.Text) {
@@ -218,14 +181,14 @@ export class SceneMenuTournament extends SceneBase {
 		return text;
 	}
 
-	private _initTextJoin(text: PIXI.Text) {
-		text.x = (this.root.width * 90) / 100 - text.width;
-		text.y = (this.root.height * 5) / 100;
-		text.style.fontSize = (this.root.width * 5) / 100;
-		text.style.fill = 'green';
-		text.filters = [glowFilter];
-		return text;
-	}
+	// private _initTextJoin(text: PIXI.Text) {
+	// 	text.x = (this.root.width * 90) / 100 - text.width;
+	// 	text.y = (this.root.height * 5) / 100;
+	// 	text.style.fontSize = (this.root.width * 5) / 100;
+	// 	text.style.fill = 'green';
+	// 	text.filters = [glowFilter];
+	// 	return text;
+	// }
 
 
 
@@ -241,29 +204,29 @@ export class SceneMenuTournament extends SceneBase {
 		menu.addChild(this._name);
 
 		this._nameInputBox.lineStyle(1, 'green', 1);
-		this._nameInputBox.drawRect(0, 0, (this.root.width * 30) / 100, 15);
+		this._nameInputBox.drawRect(0, 0, (this.root.width * 45) / 100, 25);
 		this._nameInputBox.visible = true;
-		this._nameInputBox.x = this.root.width - this._nameInputBox.width - this.root.width / 5;
+		this._nameInputBox.x = this.root.width - this._nameInputBox.width - 20;
 		this._nameInputBox.y = this._name.y;
 		this._nameInputBox.endFill();
 		this._nameInputBox.filters = [glowFilter];
 		menu.addChild(this._nameInputBox);
 
-		this._textInputField.x = this.root.width - this._nameInputBox.width - this.root.width / 5;
-		this._textInputField.y = this._name.y  - (this._nameInputBox.height / 2 - this._textInputField.height / 2);
+		this._textInputField.x = this.root.width - this._nameInputBox.width - 20;
+		this._textInputField.y = this._name.y ;
 		this._textInputField.filters = [glowFilter];
 		menu.addChild(this._textInputField);
 
-		this._mode.style.fill = 'green';
-		this._mode.x = this.root.width / 5;
-		this._mode.y = (this.root.height * 17) / 100 + this._name.y - this._mode.height / 2;
+		// this._mode.style.fill = 'green';
+		// this._mode.x = this.root.width / 5;
+		// this._mode.y = (this.root.height * 17) / 100 + this._name.y - this._mode.height / 2;
 		// this._mode.style.fontSize = 10;
-		this._mode.filters = [glowFilter];
-		menu.addChild(this._mode);
+		// this._mode.filters = [glowFilter];
+		// menu.addChild(this._mode);
 
 		this._nb_player_text.style.fill = 'green';
 		this._nb_player_text.x = this.root.width / 5;
-		this._nb_player_text.y = (this.root.height * 17) / 100 + this._mode.y - this._nb_player_text.height / 2;
+		this._nb_player_text.y = (this.root.height * 17) / 100 + this._nameInputBox.y - this._nb_player_text.height / 2;
 		// this._nb_player_text.style.fontSize = 10;
 		this._nb_player_text.filters = [glowFilter];
 		menu.addChild(this._nb_player_text);
@@ -301,30 +264,50 @@ export class SceneMenuTournament extends SceneBase {
 		return menu;
 	}
 
-	private _initMenuJoin(): PIXI.Container {
-		const menu = new PIXI.Container();
-		const menuBox = new PIXI.Graphics();
+	// private async _initMenuJoin(): Promise < PIXI.Container > {
+	// 	const menu = new PIXI.Container();
+	// 	this._tournamentObjects = [];
+	// 	const tournaments = await apiService.getTournaments();
+	// 	for (let i =  0;i < tournaments.length; i++) {
 
-		menuBox.beginFill('blue');
-		menuBox.drawRect(0, 0, this.root.width - 20, 100);
-		menuBox.visible = true;
-		menuBox.x = this.root.width / 2 - menuBox.width / 2;
-		menuBox.y = this.root.height / 2 - menuBox.height / 2;
-		menuBox.endFill();
-		menu.addChild(menuBox);
+	// 		const menuBox = new PIXI.Graphics();
+	// 		const tournament = tournaments[i];
+	// 		const textName = new PIXI.Text(tournament.name);
+	// 		const textInfo = new PIXI.Text("5/6");
 
-		menu.visible = false;
+	// 		textInfo.x = 150;
+	// 		textInfo.style.fontSize = 12;
+	// 		menuBox.beginFill('blue');
+	// 		menuBox.drawRect(0, 0, this.root.width - 20, 50);
+	// 		menuBox.visible = true;
+	// 		menuBox.x = (this.root.width / 2 - menuBox.width / 2);
+	// 		menuBox.y = (this.root.height / 2 - menuBox.height / 2)  + (i * 100);
+	// 		menuBox.endFill();
 
-		return menu;
-	}
+	// 		menuBox.addChild(textName, textInfo);
+	// 		menu.addChild(menuBox);
+			
+
+	// 		this._tournamentObjects.push({container: menuBox, data: tournament})
+
+	// 	}
+		// apiTournament.foreach (e => {
+			
+		// })
+
+
+	// 	menu.visible = false;
+
+	// 	return menu;
+	// }
 
 	private _nameCreate() {
 		this._nameColorCreate();
 	}
 
-	private _modeCreate(){
-		this._modeColorCreate();
-	}
+	// private _modeCreate(){
+	// 	this._modeColorCreate();
+	// }
 
 	private _playerCreate(){
 		this._playerColorCreate();
@@ -348,15 +331,15 @@ export class SceneMenuTournament extends SceneBase {
 		this._textPlay.style.fill = 'green';
 	}
 
-	private _modeColorCreate() {
-		this._name.style.fill = 'green';
-		this._mode.style.fill = defaultColor;
-		this._nb_player_text.style.fill = 'green';
-		this._nb_player_tab.style.fill = 'green';
-		this._score_max_text.style.fill = 'green';
-		this._score_max_tab.style.fill = 'green';
-		this._textPlay.style.fill = 'green';
-	}
+	// private _modeColorCreate() {
+	// 	this._name.style.fill = 'green';
+	// 	this._mode.style.fill = defaultColor;
+	// 	this._nb_player_text.style.fill = 'green';
+	// 	this._nb_player_tab.style.fill = 'green';
+	// 	this._score_max_text.style.fill = 'green';
+	// 	this._score_max_tab.style.fill = 'green';
+	// 	this._textPlay.style.fill = 'green';
+	// }
 
 	private _playerColorCreate() {
 		this._name.style.fill = 'green';
