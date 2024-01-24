@@ -47,7 +47,7 @@ class GeneralRequestConsumer(AsyncWebsocketConsumer):
         print("Disconnecting... (General)")  # Log message before connection
         if self.scope["user"].is_authenticated:
             self.scope["user"].status = "offline"
-            self.scope["user"].save()
+            await sync_to_async(self.scope["user"].save)()
         else:
             print("Error: self.scope['user'] is not authenticated")
 
