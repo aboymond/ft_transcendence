@@ -4,7 +4,7 @@ import styles from "../styles/CreditsPage.module.css";
 const Credits: React.FC = () => {
     return (
         <div id="page">
-            <img className={styles.img} src="./img/love-story.png" />
+            <img className={styles.img} src="./img/love-story2.png" />
             <p></p>
         </div>
     );
