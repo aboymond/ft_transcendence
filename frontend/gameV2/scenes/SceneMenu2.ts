@@ -27,14 +27,14 @@ enum menu {
 }
 
 const textures = [
-	PIXI.Texture.from('gameV2/img/TournamentSelected.png'),
-	PIXI.Texture.from('gameV2/img/TournamentUnselect.png'),
-	PIXI.Texture.from('gameV2/img/PvPSelected.png'),
-	PIXI.Texture.from('gameV2/img/PvPUnselect.png'),
-	PIXI.Texture.from('gameV2/img/PlayerVsBotSelected.png'),
-	PIXI.Texture.from('gameV2/img/PlayerVsBotUnselect.png'),
-	PIXI.Texture.from('gameV2/img/JoinPartySelected.png'),
-	PIXI.Texture.from('gameV2/img/JoinPartyUnselect.png'),
+	PIXI.Texture.from('./img/TournamentSelected.png'),
+	PIXI.Texture.from('./img/TournamentUnselect.png'),
+	PIXI.Texture.from('./img/PvPSelected.png'),
+	PIXI.Texture.from('./img/PvPUnselect.png'),
+	PIXI.Texture.from('./img/PlayerVsBotSelected.png'),
+	PIXI.Texture.from('./img/PlayerVsBotUnselect.png'),
+	PIXI.Texture.from('./img/JoinPartySelected.png'),
+	PIXI.Texture.from('./img/JoinPartyUnselect.png'),
 ];
 
 export class SceneMenu2 extends SceneBase {
