@@ -23,10 +23,8 @@ export class SceneMenu extends SceneBase {
 			if (this._spaceText) {
 				this._spaceText.visible = !this._spaceText.visible;
 			}
-			// console.log(this._spaceText);
 		}, 800);
-		console.log('width: ' + this.root.width);
-		console.log('height: ' + this.root.height);
+	
 	}
 
 	public onUpdate() {}
