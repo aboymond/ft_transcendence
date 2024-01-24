@@ -11,8 +11,9 @@ import {
 	textStyleMenuOptionError,
 	textStyleMenuOptionVictory,
 } from '../index';
-import { SceneGameVsBot } from './SceneGameVsBot';
 import { SceneGame } from './SceneGame';
+import { SceneGameVsBot } from './SceneGameVsBot';
+import { SceneLoadingPage } from './SceneLoadingPage';
 
 const selectMax = 4;
 let errorLock: boolean = false;
@@ -219,16 +220,8 @@ export class SceneMenuOption extends SceneBase {
 	//=======================================
 
 	private _pressSpace() {
-		// console.log(
-		// 	'currentselect: ',
-		// 	this._currentSelect,
-		// 	'vsPlayer: ',
-		// 	this.root.vsPlayer,
-		// 	'ws: ',
-		// 	this.root.ws,
-		// );
 		if (this.root.vsPlayer) {
-			// Send a request to the backend to add the user to the queue
+			// Send a request to the backend to create a game
 			if (this.root.ws) {
 				console.log('Sending request to create_game');
 				this.root.ws.send(
@@ -242,7 +235,7 @@ export class SceneMenuOption extends SceneBase {
 						},
 					}),
 				);
-				//TODO: load queue scene
+				this.root.loadScene(new SceneLoadingPage(this.root));
 				this.root.ws.onmessage = (e) => {
 					const data = JSON.parse(e.data);
 					if (data.action === 'start_game') {

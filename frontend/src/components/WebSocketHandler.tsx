@@ -1,12 +1,14 @@
 import { useEffect, useRef, ReactNode, createContext, useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { GameState } from '../types';
+import { User } from '../types';
 
 interface Props {
 	children: ReactNode;
 }
 
 interface WebSocketContextType {
+	user: User | null;
 	socket: WebSocket | null;
 	gameSocket: WebSocket | null;
 	message: unknown; // TODO type this
@@ -20,7 +22,7 @@ interface WebSocketContextType {
 export const WebSocketContext = createContext<WebSocketContextType | null>(null);
 
 const WebSocketHandler: React.FC<Props> = ({ children }) => {
-	const { user } = useAuth();
+	const { user, isAuthenticated } = useAuth();
 	const socketRef = useRef<WebSocket | null>(null);
 	const gameSocketRef = useRef<WebSocket | null>(null);
 	const [message, setMessage] = useState<unknown>(null); // TODO type this
@@ -89,11 +91,12 @@ const WebSocketHandler: React.FC<Props> = ({ children }) => {
 				console.log('Game WebSocket closed');
 			}
 		};
-	}, [user?.id, gameId]);
+	}, [user?.id, isAuthenticated, gameId]);
 
 	return (
 		<WebSocketContext.Provider
 			value={{
+				user,
 				socket: socketRef.current,
 				gameSocket: gameSocketRef.current,
 				message,
