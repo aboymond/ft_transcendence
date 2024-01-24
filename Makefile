@@ -18,6 +18,9 @@ down:
 down-prod:
 	docker-compose -f docker-compose.prod.yml down
 
+restart:
+	docker-compose restart
+
 # Rule to build or rebuild services
 build:
 	docker-compose build
