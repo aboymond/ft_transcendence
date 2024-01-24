@@ -43,14 +43,15 @@ const WebSocketHandler: React.FC<Props> = ({ children }) => {
 			};
 
 			socketRef.current.onmessage = (e) => {
-				const data = JSON.parse(e.data);
-				console.log('general request data:', data);
-				setMessage(data);
+				const { type, payload } = JSON.parse(e.data);
+				const { action, data } = payload;
+				console.log('general request data:', { type, action, data });
+				setMessage({ type, action, data });
 
-				if (data.game_id) {
+				if (type === 'game_event' && action === 'game_created') {
 					setGameId(data.game_id);
 				}
-				if (data.type === 'USER_STATUS') {
+				if (type === 'user_event' && action === 'user_status') {
 					setUserStatus((prevStatus) => ({ ...prevStatus, [data.user_id]: data.status }));
 				}
 			};
@@ -67,15 +68,11 @@ const WebSocketHandler: React.FC<Props> = ({ children }) => {
 				};
 
 				gameSocketRef.current.onmessage = (e) => {
-					const data = JSON.parse(e.data);
-					console.log('game data:', data);
+					const { type, payload } = JSON.parse(e.data);
+					const { action, data } = payload;
+					console.log('game data:', { type, action, data });
 					// Update game state based on received data
-					if (
-						data.ball_x !== undefined &&
-						data.ball_y !== undefined &&
-						data.ball_velocity_x !== undefined &&
-						data.ball_velocity_y !== undefined
-					) {
+					if (type === 'game_event' && action === 'game_state') {
 						setGameState(data);
 					}
 				};

@@ -13,7 +13,6 @@ import {
 } from '../index';
 import { SceneGameVsBot } from './SceneGameVsBot';
 import { SceneGame } from './SceneGame';
-// import axios from 'axios'; // Import axios to make HTTP requests
 
 const selectMax = 4;
 let errorLock: boolean = false;
@@ -220,13 +219,43 @@ export class SceneMenuOption extends SceneBase {
 	//=======================================
 
 	private _pressSpace() {
-		console.log('currentselect: ', this._currentSelect, 'vsPlayer: ', this.root.vsPlayer);
+		// console.log(
+		// 	'currentselect: ',
+		// 	this._currentSelect,
+		// 	'vsPlayer: ',
+		// 	this.root.vsPlayer,
+		// 	'ws: ',
+		// 	this.root.ws,
+		// );
 		if (this.root.vsPlayer) {
-			console.log('Loading SceneGame');
-			this.root.loadScene(new SceneGame(this.root));
-		}
-		if (this._currentPad === 0) this.root.loadScene(new SceneGameVsBot(this.root));
-		else {
+			// Send a request to the backend to add the user to the queue
+			if (this.root.ws) {
+				console.log('Sending request to create_game');
+				this.root.ws.send(
+					JSON.stringify({
+						type: 'game_event',
+						payload: {
+							action: 'create_game',
+							data: {
+								user_id: Number(this.root.userId),
+							},
+						},
+					}),
+				);
+				//TODO: load queue scene
+				this.root.ws.onmessage = (e) => {
+					const data = JSON.parse(e.data);
+					if (data.action === 'start_game') {
+						console.log('Loading SceneGame');
+						this.root.loadScene(new SceneGame(this.root));
+					}
+				};
+			}
+		} else if (this._currentPad === 0) {
+			//TODO: enable other pads ?
+			console.log('Loading SceneGameVsBot');
+			this.root.loadScene(new SceneGameVsBot(this.root));
+		} else {
 			errorLock = true;
 			this._popError.visible = true;
 			this._textErrorOK.visible = true;

@@ -38,12 +38,17 @@ export class SceneGame extends SceneBase {
 	constructor(public root: PixiManager) {
 		super(root);
 
-		// Set up WebSocket message handler
 		if (this.root.ws) {
 			this.root.ws.onmessage = (e) => {
 				const data = JSON.parse(e.data);
-				console.log(data);
-				// TODO Update game state based on data
+				const action_type = data.type;
+				const payload = data.payload;
+				const action = payload.action;
+				const action_data = payload.data;
+
+				if (action_type === 'game_event' && action === 'update_state') {
+					// TODO: Update game state based on action_data
+				}
 			};
 		}
 	}

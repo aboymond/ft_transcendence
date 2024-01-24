@@ -12,11 +12,15 @@ class GameConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_add(self.game_group_name, self.channel_name)
 
         await self.accept()
-        print(f'WebSocket for game {self.game_id} opened')  # Log when WebSocket is opened
+        print(
+            f"WebSocket for game {self.game_id} opened"
+        )  # Log when WebSocket is opened
 
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(self.game_group_name, self.channel_name)
-        print(f'WebSocket for game {self.game_id} closed')  # Log when WebSocket is closed
+        print(
+            f"WebSocket for game {self.game_id} closed"
+        )  # Log when WebSocket is closed
 
     async def receive(self, text_data):
         data = json.loads(text_data)
