@@ -1,0 +1,32 @@
+.update {
+    background-color: black;
+    border-style: solid;
+    border-color: var(--accent-color);
+    padding: 5px;
+    margin-top: 10px;
+}
+
+.nameContainer {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.input {
+    background-color: black;
+    border-style: solid;
+    border-color: var(--accent-color);
+    padding: 5px;
+}
+
+.fileInput {
+    background-color: black;
+    color: var(--primary-color);
+    border-style: solid;
+    border-color: var(--accent-color);
+    padding: 5px;
+    cursor: pointer;
+    align-items: left;
+    font-size: 10px;
+    white-space: nowrap;
+}

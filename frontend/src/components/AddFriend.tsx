@@ -44,9 +44,9 @@ const AddFriend = () => {
 					value={username}
 					onChange={(e) => setUsername(e.target.value)}
 					placeholder="Username"
-					style={{ background: 'transparent', marginRight: '10px', border: 'none', textAlign: 'center' }}
+					style={{ background: 'black', marginRight: '10px', border: 'none', textAlign: 'center', borderStyle: 'solid', borderColor: 'var(--accent-color)' }}
 				/>
-				<button style={{ background: 'grey' }} onClick={handleAddFriend}>
+				<button style={{ background: 'black', borderStyle: 'solid', borderColor: 'var(--accent-color)' }} onClick={handleAddFriend}>
 					+
 				</button>
 			</div>

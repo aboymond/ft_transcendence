@@ -1,0 +1,69 @@
+.cont_window {
+    padding-top: 2vh;
+    height: 100%;
+    width: auto;
+}
+
+
+.window {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 4 / 5 ;
+    justify-content: flex-end;
+    border-style: solid;
+    border-width: 2px;
+    box-shadow: 0 0 5px rgb(165, 255, 165);
+    border-color:rgb(74,246,38);
+    padding: 20px;
+}
+
+.button {
+    background-color: var(--primary-color) !important;
+    color: var(--background-color) !important;
+    font-family: var(--font-family) !important;
+    border-color: var(--accent-color) !important;
+    white-space: nowrap;
+}
+
+.col {
+    display: flex;
+    justify-content: center;
+}
+
+.row {
+    height: 100%;
+}
+
+.fullWindowContent {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.fullWindowContent::-webkit-scrollbar {
+    width: 10px;
+}
+ 
+ .fullWindowContent::-webkit-scrollbar-track {
+    background: rgb(5, 49, 0); 
+}
+ 
+ .fullWindowContent::-webkit-scrollbar-thumb {
+    background: rgb(74,246,38); 
+}
+ 
+ .fullWindowContent::-webkit-scrollbar-thumb:hover {
+    background: rgb(74,246,38); 
+}
+
+.fullWidth {
+    width: 100%;
+}
+
+.closeButton {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

@@ -29,3 +29,4 @@ const FriendList = ({ friends, onRemove }: FriendListProps) => {
 };
 
 export default FriendList;
+

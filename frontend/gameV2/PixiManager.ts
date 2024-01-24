@@ -1,6 +1,9 @@
 import type { SceneBase } from './scenes/SceneBase';
 // import { jQuery as $ } from 'jquery'
 import * as PIXI from 'pixi.js';
+import '../src/styles/GameWindow.module.css';
+import $ from 'jquery';
+import { GameState } from '../src/types';
 
 interface IPixiManagerOptions {
 	backgroundAlpha: number;
@@ -8,15 +11,26 @@ interface IPixiManagerOptions {
 }
 
 export class PixiManager {
+	//For the back -------------
 	public vsPlayer = false;
 	public amountVictory = 5;
 	public botLvl = 0.05;
 	public playerAWin = true;
+	public ws: WebSocket | null;
+	public gameState: GameState | null;
+
+	//--------------------------
 
 	private _currentScene?: SceneBase = undefined;
 	private _app: PIXI.Application;
 
-	constructor(readonly options: Partial<IPixiManagerOptions> = {}) {
+	constructor(
+		ws: WebSocket | null,
+		gameState: GameState | null,
+		readonly options: Partial<IPixiManagerOptions> = {},
+	) {
+		this.ws = ws;
+		this.gameState = gameState;
 		PIXI.settings.RESOLUTION = window.devicePixelRatio || 1;
 
 		this._app = new PIXI.Application({
@@ -27,11 +41,11 @@ export class PixiManager {
 		});
 		this._app.ticker.add((delta) => {
 			if (this._currentScene === undefined) return;
-			this._currentScene.onUpdate(delta);
+			this._currentScene.onUpdate(delta); //? TODO
 		});
 		window.addEventListener('keydown', this._onKeyDownBind);
 		window.addEventListener('keyup', this._onKeyUpBind);
-		$('#game_window').append(this._app.view);
+		$('#game_window').append(this._app.view as unknown as HTMLElement);
 	}
 
 	public destroy() {
@@ -68,10 +82,14 @@ export class PixiManager {
 	}
 
 	public get width() {
-		return $('#game_window').width();
+		const winWidth = 600;
+		const gameWindow = document.getElementById('game_window');
+		return gameWindow ? gameWindow.clientWidth : winWidth;
 	}
 
 	public get height() {
-		return $('#game_window').height();
+		const winHeight = 800;
+		const gameWindow = document.getElementById('game_window');
+		return gameWindow ? gameWindow.clientHeight : winHeight;
 	}
 }

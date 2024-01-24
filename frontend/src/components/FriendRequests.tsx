@@ -1,5 +1,3 @@
-// import { useEffect } from 'react';
-// import apiService from '../services/apiService';
 import { FriendRequest } from '../types';
 import { useAuth } from '../hooks/useAuth';
 
@@ -27,13 +25,13 @@ const FriendRequests = ({ requests, onAccept, onReject }: FriendRequestsProps) =
 						<p style={{ margin: '0' }}>{`${request.requester?.username || 'Unknown User'}`}</p>
 						<div style={{ display: 'flex', alignItems: 'center' }}>
 							<button
-								style={{ border: 'none', background: 'transparent', padding: '0' }}
+								style={{ border: 'none', background: 'transparent', padding: '0', marginRight: '7px' }}
 								onClick={() => onAccept(request.id)}
 							>
 								+
 							</button>
 							<button
-								style={{ border: 'none', background: 'transparent', padding: '0' }}
+								style={{ border: 'none', background: 'transparent', padding: '0'}}
 								onClick={() => onReject(request.id)}
 							>
 								x
@@ -65,3 +63,5 @@ const FriendRequests = ({ requests, onAccept, onReject }: FriendRequestsProps) =
 	);
 };
 export default FriendRequests;
+
+

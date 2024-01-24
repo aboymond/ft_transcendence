@@ -21,9 +21,16 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         total = kwargs["total"]
         users = [
-            CustomUser.objects.create(username=get_random_string(10), password="123")
+            CustomUser.objects.create(username=get_random_string(10), email=get_random_string(10) + "@example.com", password="123")
             for _ in range(total)
         ]
+
+        # Create games with status "Waiting for Player"
+        for user in users:
+            Game.objects.create(
+                player1=user,
+                status="waiting",
+            )
 
         # Create friendships
         for user1, user2 in combinations(users, 2):

@@ -3,6 +3,7 @@ import requests
 from django.contrib.auth import authenticate, logout
 from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied
+from django.core.files.base import ContentFile
 from django.db.models import Q
 from django.shortcuts import redirect
 from rest_framework import generics, permissions, status, serializers
@@ -20,7 +21,7 @@ from .serializers import FriendshipSerializer
 from .models import GameHistory, Friendship
 from .serializers import GameHistorySerializer
 from .serializers import AvatarSerializer
-from .intra import ic
+from requests_oauthlib import OAuth2Session
 import logging
 
 User = get_user_model()
@@ -67,72 +68,82 @@ class LoginView(generics.GenericAPIView):
 
 class AuthView(generics.GenericAPIView):
     def get(self, request, *args, **kwargs):
+        print("AUTH - GET")
         authorization_url = "https://api.intra.42.fr/oauth/authorize?client_id={}&redirect_uri={}&response_type=code".format(
             os.getenv("CLIENT"), "http://localhost:8000/api/users/auth/callback"
         )
         return redirect(authorization_url)
 
-    def authorize(self):
-        response = ic.get("https://api.intra.42.fr/oauth/authorize?")
-        print("AUTHORIZE : ", response)
-
 
 class CallBackView(APIView):
     def get(self, request, *args, **kwargs):
-        response = requests.post(
-            "https://api.intra.42.fr/oauth/token",
-            data={
-                "grant_type": "authorization_code",
-                "client_id": os.getenv("CLIENT"),
-                "client_secret": os.getenv("SECRET"),
-                "code": {request.GET.get("code")},
-                "redirect_uri": "http://localhost:8000/api/users/auth/callback",
-            },
+        print("CALLBACKVIEW TEST")
+        token_url = "https://api.intra.42.fr/oauth/token"
+        client_id = os.getenv("CLIENT")
+        client_secret = os.getenv("SECRET")
+        redirect_uri = "http://localhost:8000/api/users/auth/callback"
+        code = request.GET.get("code")
+
+        # Fetch access token
+        response = OAuth2Session(client_id, redirect_uri=redirect_uri).fetch_token(
+            token_url,
+            authorization_response=request.build_absolute_uri(),
+            code=code,
+            client_secret=client_secret,
         )
-        data = response.json()
-        response = requests.get(
-            "https://api.intra.42.fr/v2/me",
-            headers={"Authorization": f'Bearer {data['access_token']}'},
-        )
-        user = {}
-        user["id"] = response.json()["id"]
-        user["login"] = response.json()["login"]
-        user["avatar"] = response.json()["image"]["versions"]["small"]
-        user["access_token"] = data["access_token"]
-        print(user)
-        # Get or create the user
+
+        access_token = response.get("access_token")
+
+        # Fetch user details
+        user_url = "https://api.intra.42.fr/v2/me"
+        user_response = OAuth2Session(
+            client_id, token={"access_token": access_token}
+        ).get(user_url)
+        user_data = user_response.json()
+
+        user = {
+            "id": user_data["id"],
+            "login": user_data["login"],
+            # "avatar": user_data["image"]["versions"]["small"],
+            "access_token": access_token,
+        }
+
+        avatar_url = user_data["image"]["versions"]["small"]
+        response = requests.get(avatar_url)
+
         User = get_user_model()
         username = f"{user['login']}#{user['id']}"
-        print(username)
-        # Try to get the user from the database
+
         try:
             existing_user = User.objects.get(username=username)
         except User.DoesNotExist:
             # If the user does not exist, create a new user
-            existing_user = User.objects.create(
-                username=username, avatar=user["avatar"]
-            )
+            existing_user = User.objects.create(username=username)
         else:
-            # If the user exists, update their avatar
-            existing_user.avatar = user["avatar"]
-            existing_user.save()
+            existing_user.avatar.delete()  # Delete the old avatar
 
-        # Generate a JWT token for the user
+        # Save the new avatar
+        existing_user.avatar.save(f"{username}.jpg", ContentFile(response.content))
+        existing_user.save()
+
+        # temp JWT
         refresh = RefreshToken.for_user(existing_user)
 
-        # Return the token in the response
-        return Response(
-            {
-                "refresh": str(refresh),
-                "access": str(refresh.access_token),
-                "user": UserSerializer(existing_user).data,
-            }
-        )
+        redirect_url = "http://localhost:3001?access_token=" + str(
+            refresh.access_token
+        )  # TODO remove port for prod
+        return redirect(redirect_url)
 
 
 class CallBackCodeView(APIView):
     def get(self, request, *args, **kwargs):
-        print(f'access token : {request.GET.get('code')}')
+        print("We're in")
+        print(f'access token : {request.GET.get("code")}')
+        return Response(
+            {
+                "test": "koukou",
+            }
+        )
 
 
 class LogoutView(generics.GenericAPIView):
@@ -177,6 +188,12 @@ class UserGameHistoryView(generics.ListAPIView):
         except User.DoesNotExist:
             logger.error(f"User with ID {user_id} does not exist")
             return []
+
+
+class UserDetailView(generics.RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    lookup_field = "id"
 
 
 class CurrentUserProfileView(generics.RetrieveAPIView):

@@ -50,25 +50,37 @@ export const apiService = {
 			return false;
 		}
 	},
+
+	authlogin: async () => {
+		try {
+			return fetchAPI('users/auth');
+		} catch (error) {
+			console.log('ERROR fetching api');
+			return false;
+		}
+	},
+	getUserById: async (userId: string): Promise<User> => {
+		return fetchAPI(`users/${userId}/`);
+	},
 	getUsers(): Promise<User[]> {
 		return fetchAPI('users/list/');
 	},
 	getUserProfile: async () => {
 		return fetchAPI('users/profile/'); // Endpoint for fetching the current user's profile
 	},
-	// getUser: async (userId: string) => {
-	// 	return fetchAPI(`users/${userId}/`); // Endpoint for fetching user data
-	// },
+	getUser: async (userId: string) => {
+		return fetchAPI(`users/${userId}/`); // Endpoint for fetching user data
+	},
 	getUserGameHistory: async (userId: number): Promise<GameHistory[]> => {
 		return fetchAPI(`users/${userId}/game_history/`);
 	},
-	register: async (username: string, password: string, displayName: string) => {
+	register: async (username: string, password: string, displayName: string, email: string) => {
 		return fetchAPI(
 			'users/register/',
 			{
 				// Update with your actual registration endpoint
 				method: 'POST',
-				body: JSON.stringify({ username, password, display_name: displayName }),
+				body: JSON.stringify({ username, password, display_name: displayName, email }),
 			},
 			false,
 		);
@@ -132,6 +144,12 @@ export const apiService = {
 	},
 	getGameHistory: async (): Promise<GameHistory[]> => {
 		return fetchAPI('users/game_histories/');
+	},
+	getTournaments: async () => {
+		return fetchAPI('tournaments/tournaments/');
+	},
+	getGames: async () => {
+		return fetchAPI('games/list-create/');
 	},
 };
 

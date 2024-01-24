@@ -3,6 +3,8 @@ import { useAuth } from '../hooks/useAuth';
 import { apiService } from '../services/apiService';
 import { User } from '../types';
 import { useNavigate } from 'react-router-dom';
+import styles from '../styles/Profile.module.css';
+import { useParams } from 'react-router-dom';
 
 const Profile: React.FC = () => {
 	const [profile, setProfile] = useState<User | null>(null);
@@ -11,12 +13,17 @@ const Profile: React.FC = () => {
 	const [username, setUsername] = useState('');
 	const [display_name, setDisplayName] = useState('');
 	const [avatar, setAvatar] = useState<File | null>(null);
+	const [filename, setFilename] = useState('');
 	const auth = useAuth();
 	const navigate = useNavigate();
 
 	const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		if (e.target.files) {
+		if (e.target.files && e.target.files[0]) {
 			setAvatar(e.target.files[0]);
+			setFilename(e.target.files[0].name);
+		} else {
+			setAvatar(null);
+			setFilename('');
 		}
 	};
 
@@ -41,14 +48,22 @@ const Profile: React.FC = () => {
 		}
 	};
 
+	const { userId } = useParams<{ userId: string }>();
+	const effectiveUserId = userId || auth.user?.id;
+
 	useEffect(() => {
 		if (!auth.isAuthenticated) {
 			navigate('/');
 			return;
 		}
+		if (!effectiveUserId) {
+			// console.error('User ID is undefined');
+			setError('User ID is undefined');
+			return;
+		}
 
 		apiService
-			.getUserProfile()
+			.getUserById(effectiveUserId.toString())
 			.then((data: User) => {
 				setProfile(data);
 			})
@@ -56,7 +71,7 @@ const Profile: React.FC = () => {
 				console.error('Failed to load profile:', error);
 				setError('Failed to load profile');
 			});
-	}, [auth.isAuthenticated, navigate]);
+	}, [auth.isAuthenticated, navigate, effectiveUserId]);
 
 	if (error) {
 		return <div>Error: {error}</div>;
@@ -69,20 +84,40 @@ const Profile: React.FC = () => {
 	return (
 		<div>
 			<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-				{isEditing && <input type="file" onChange={handleAvatarChange} />}
+				{isEditing && (
+					<div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+						<label htmlFor="fileInput" className={styles.fileInput}>
+							Choose File
+						</label>
+						<span style={{ fontSize: '10px' }}>{filename || 'No Chosen File'}</span>
+						<input type="file" id="fileInput" onChange={handleAvatarChange} style={{ display: 'none' }} />
+					</div>
+				)}
 			</div>
 			{isEditing ? (
 				<>
-					<div style={{ display: 'flex', alignItems: 'center' }}>
-						<p style={{ marginRight: '10px' }}>Username:</p>
-						<input type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
+					<div className={styles.nameContainer}>
+						<p style={{ marginBottom: '5px' }}>Username:</p>
+						<input
+							className={styles.input}
+							type="text"
+							value={username}
+							onChange={(e) => setUsername(e.target.value)}
+						/>
 					</div>
-					<div style={{ display: 'flex', alignItems: 'center' }}>
-						<p style={{ marginRight: '10px' }}>Display Name:</p>
-						<input type="text" value={display_name} onChange={(e) => setDisplayName(e.target.value)} />
+					<div className={styles.nameContainer}>
+						<p style={{ marginBottom: '5px' }}>Display Name:</p>
+						<input
+							className={styles.input}
+							type="text"
+							value={display_name}
+							onChange={(e) => setDisplayName(e.target.value)}
+						/>
 					</div>
 					<div>
-						<button onClick={handleUpdate}>Update</button>
+						<button className={styles.update} onClick={handleUpdate}>
+							Update
+						</button>
 					</div>
 				</>
 			) : (
@@ -92,7 +127,7 @@ const Profile: React.FC = () => {
 					<p>Wins: {profile.wins}</p>
 					<p>Losses: {profile.losses}</p>
 					{auth.user && auth.user.id === profile.id && (
-						<button style={{ background: 'grey' }} onClick={() => setIsEditing(true)}>
+						<button className={styles.update} onClick={() => setIsEditing(true)}>
 							Update Profile
 						</button>
 					)}
