@@ -13,7 +13,7 @@ function GameWindow() {
 
 	useEffect(() => {
 		if (ws && user && user.id && !gameLaunched) {
-			launchGame(ws, null, user.id);
+			launchGame(ws, user.id);
 			setGameLaunched(true);
 		}
 	}, [ws, user, gameLaunched]);

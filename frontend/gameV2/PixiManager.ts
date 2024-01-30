@@ -29,7 +29,6 @@ export class PixiManager {
 	constructor(
 		readonly options: Partial<IPixiManagerOptions> = {},
 		ws: WebSocket | null,
-		gameState: GameState | null,
 		userId: number | null = null,
 	) {
 		this.ws = ws;
