@@ -1,4 +1,5 @@
-.img {
-    width: 30%;
-    height: auto;
+.size {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
 }
