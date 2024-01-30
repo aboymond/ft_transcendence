@@ -10,7 +10,7 @@ export function launchGame(ws: WebSocket | null, gameState: GameState | null, us
 			urls: ['/font/font.css'],
 		},
 		active: function () {
-			const pixiMan = new PixiManager(ws, gameState, {}, userId);
+			const pixiMan = new PixiManager({}, ws, gameState, userId);
 			pixiMan.loadScene(new SceneMenu(pixiMan));
 		},
 	});

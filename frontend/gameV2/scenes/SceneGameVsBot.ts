@@ -9,8 +9,8 @@ export class SceneGameVsBot extends SceneBase {
 	// FOR THE BACK ======================================
 	private _data = {
 		ballVelocity: { x: 0, y: 5 },
-		playerAScore: 0,
-		playerBScore: 0,
+		player1_score: 0,
+		player2_score: 0,
 		playerTurnA: Math.random() < 0.5,
 	};
 
@@ -74,10 +74,10 @@ export class SceneGameVsBot extends SceneBase {
 			}
 		}
 		this._updatePadPosition();
-		if (this._data.playerAScore === this.root.amountVictory) {
+		if (this._data.player1_score === this.root.amountVictory) {
 			this.root.playerAWin = true;
 			this.root.loadScene(new SceneWinOrLoose(this.root));
-		} else if (this._data.playerBScore === this.root.amountVictory) {
+		} else if (this._data.player2_score === this.root.amountVictory) {
 			this.root.playerAWin = false;
 			this.root.loadScene(new SceneWinOrLoose(this.root));
 		}
@@ -243,7 +243,7 @@ export class SceneGameVsBot extends SceneBase {
 			this._ball.x = this._padPlayer.x;
 			this._gameStarted = false;
 			this._playerTurn = false;
-			this._data.playerAScore++;
+			this._data.player1_score++;
 			this._updateScoreText();
 		}
 		if (this._ball.y > this.root.height - 10 || this._ball.y > this._padPlayer.y) {
@@ -255,7 +255,7 @@ export class SceneGameVsBot extends SceneBase {
 			this._ball.x = this._padPlayer.x;
 			this._gameStarted = false;
 			this._playerTurn = true;
-			this._data.playerBScore++;
+			this._data.player2_score++;
 			this._updateScoreText();
 		}
 		console.log('X in GO = ' + this._data.ballVelocity.x);
@@ -263,7 +263,7 @@ export class SceneGameVsBot extends SceneBase {
 	}
 
 	private _updateScoreText() {
-		this._scoreText.text = this._data.playerAScore + ' - ' + this._data.playerBScore;
+		this._scoreText.text = this._data.player1_score + ' - ' + this._data.player2_score;
 		this._scoreText.x = this.root.width / 2 - this._scoreText.width / 2;
 		this._scoreText.y = this.root.height / 2 - this._scoreText.height / 2;
 		this._scoreText.alpha = 0.2;

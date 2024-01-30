@@ -245,9 +245,11 @@ export class SceneMenuOption extends SceneBase {
 				};
 			}
 		} else if (this._currentPad === 0) {
-			//TODO: enable other pads ?
-			console.log('Loading SceneGameVsBot');
-			this.root.loadScene(new SceneGameVsBot(this.root));
+			//TODO: load scene vs bot
+			console.log('Loading SceneGame');
+			this.root.loadScene(new SceneGame(this.root));
+			// console.log('Loading SceneGameVsBot');
+			// this.root.loadScene(new SceneGameVsBot(this.root));
 		} else {
 			errorLock = true;
 			this._popError.visible = true;

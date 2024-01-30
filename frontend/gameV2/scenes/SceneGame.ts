@@ -10,15 +10,15 @@ export class SceneGame extends SceneBase {
 	// FOR THE BACK ======================================
 	private _data = {
 		ballVelocity: { x: 0, y: 5 },
-		playerAScore: 0,
-		playerBScore: 0,
+		player1_score: 0,
+		player2_score: 0,
 		playerTurnA: Math.random() < 0.5,
 	};
 
 	// private _botLvl = this.root.botLvl;
 	private _gameStarted = false;
-	private _playerTurn = true;
-	private _player2Turn = false;
+	private _player1_turn = true;
+	private _player2_turn = false;
 	private _exitBool = false;
 	private _exitYesNO = true;
 	//==========================================================
@@ -86,10 +86,14 @@ export class SceneGame extends SceneBase {
 		const gameState = this.root.gameState;
 		// TODO Use gameState to update the game state
 		if (gameState) {
-			this._data.playerAScore = gameState.playerAScore;
-			this._data.playerBScore = gameState.playerBScore;
+			this._data.player1_score = gameState.player1_score;
+			this._data.player2_score = gameState.player2_score;
 			this._ball.x = gameState.ballPosition.x;
 			this._ball.y = gameState.ballPosition.y;
+			this._padPlayer.x = gameState.pad1_position.x;
+			// this._padPlayer.y = gameState.pad1_y;
+			this._padPlayer2.x = gameState.pad2_position.x;
+			// this._padPlayer2.y = gameState.pad2_y;
 		}
 
 		if (!this._exitBool) {
@@ -104,10 +108,10 @@ export class SceneGame extends SceneBase {
 		this._updatePadPosition();
 
 		//TODO end game in backend and set winner
-		if (this._data.playerAScore === this.root.amountVictory) {
+		if (this._data.player1_score === this.root.amountVictory) {
 			this.root.playerAWin = true;
 			this.root.loadScene(new SceneWinOrLoose(this.root));
-		} else if (this._data.playerBScore === this.root.amountVictory) {
+		} else if (this._data.player2_score === this.root.amountVictory) {
 			this.root.playerAWin = false;
 			this.root.loadScene(new SceneWinOrLoose(this.root));
 		}
@@ -179,7 +183,7 @@ export class SceneGame extends SceneBase {
 
 	//TODO move logic to backend
 	private _addVelocity() {
-		if (this._playerTurn) this._ball.y -= this._data.ballVelocity.y;
+		if (this._player1_turn) this._ball.y -= this._data.ballVelocity.y;
 		else this._ball.y += this._data.ballVelocity.y;
 		this._ball.x += this._data.ballVelocity.x;
 	}
@@ -215,7 +219,7 @@ export class SceneGame extends SceneBase {
 	private _checkTurn() {
 		// turn player or computer
 
-		if (this._playerTurn) {
+		if (this._player1_turn) {
 			// ball position
 			if (this._ball.x - this._ball.width / 2 < this._padPlayer.x - this._padPlayer.width / 2) {
 				this._ball.x = this._padPlayer.x - this._padPlayer.width / 2 - this._ball.width / 2;
@@ -272,6 +276,7 @@ export class SceneGame extends SceneBase {
 			}
 			if (this._keysPressed['Enter']) {
 				if (this._exitYesNO) {
+					//TODO send exit to backend
 					this.root.loadScene(new SceneMenu(this.root));
 				} else {
 					this._exitBool = false;
@@ -284,44 +289,44 @@ export class SceneGame extends SceneBase {
 	//TODO move logic to backend
 	private _checkifBallIsOut() {
 		if (this._ball.y < 10 || this._ball.y < this._padPlayer2.y) {
-			console.log('Player win !');
+			console.log('Player 1 scores !');
 			this._data.ballVelocity.x = 0;
 			this._data.ballVelocity.y = 5;
 			this._padPlayer.x = this.root.width / 2;
 			this._padPlayer2.x = this.root.width / 2;
 			this._ball.x = this._padPlayer.x;
 			this._gameStarted = false;
-			this._playerTurn = false;
-			this._data.playerAScore++;
+			this._player1_turn = false;
+			this._data.player1_score++;
 			this._updateScoreText();
 		}
 		if (this._ball.y > this.root.height - 10 || this._ball.y > this._padPlayer.y) {
-			console.log('Bot win !');
+			console.log('Player 2 scores !');
 			this._data.ballVelocity.x = 0;
 			this._data.ballVelocity.y = 5;
 			this._padPlayer.x = this.root.width / 2;
 			this._padPlayer2.x = this.root.width / 2;
 			this._ball.x = this._padPlayer.x;
 			this._gameStarted = false;
-			this._playerTurn = true;
-			this._data.playerBScore++;
+			this._player1_turn = true;
+			this._data.player2_score++;
 			this._updateScoreText();
 		}
-		console.log('X in GO = ' + this._data.ballVelocity.x);
-		console.log('Y in GO = ' + this._data.ballVelocity.y);
+		// console.log('X in GO = ' + this._data.ballVelocity.x);
+		// console.log('Y in GO = ' + this._data.ballVelocity.y);
 	}
 
 	private _updateScoreText() {
-		this._scoreText.text = this._data.playerAScore + ' - ' + this._data.playerBScore;
+		this._scoreText.text = this._data.player1_score + ' - ' + this._data.player2_score;
 		this._scoreText.x = this.root.width / 2 - this._scoreText.width / 2;
 		this._scoreText.y = this.root.height / 2 - this._scoreText.height / 2;
 		this._scoreText.alpha = 0.2;
 	}
 
 	private _player2Start() {
-		if (this._player2Turn) return;
+		if (this._player2_turn) return;
 
-		this._player2Turn = true;
+		this._player2_turn = true;
 		let targetX = Math.random() * this.root.width;
 		// let targetX = this.root.width;
 		if (targetX < this._padPlayer2.width / 2) targetX = this._padPlayer2.width / 2;
@@ -336,7 +341,7 @@ export class SceneGame extends SceneBase {
 			ease: ease,
 			onComplete: () => {
 				this._gameStarted = true;
-				this._player2Turn = false;
+				this._player2_turn = false;
 			},
 		});
 	}

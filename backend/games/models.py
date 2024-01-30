@@ -26,9 +26,12 @@ class Game(models.Model):
         null=True,
         blank=True,
     )
+
+    max_score = models.IntegerField(default=5)
     status = models.CharField(max_length=15, choices=STATUS_CHOICES, default="waiting")
     start_time = models.DateTimeField(null=True, blank=True)
     end_time = models.DateTimeField(null=True, blank=True)
+
     winner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         related_name="games_won",
@@ -43,17 +46,19 @@ class Game(models.Model):
         null=True,
         blank=True,
     )
-    player1_score = models.IntegerField(default=0)
-    player2_score = models.IntegerField(default=0)
 
-    max_score = models.IntegerField(default=5)
-
+    # GameState
     ball_x = models.FloatField(default=0)
     ball_y = models.FloatField(default=0)
     ball_velocity_x = models.FloatField(default=0)
     ball_velocity_y = models.FloatField(default=0)
+    player1_score = models.IntegerField(default=0)
+    player2_score = models.IntegerField(default=0)
     pad1_x = models.FloatField(default=0)
+    pad1_y = models.FloatField(default=0)
     pad2_x = models.FloatField(default=0)
+    pad2_y = models.FloatField(default=0)
+    player_turn = models.IntegerField(default=1)
 
     def update_ball_position(self):
         self.ball_x += self.ball_velocity_x
