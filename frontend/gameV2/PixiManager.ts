@@ -39,14 +39,14 @@ export class PixiManager {
 	constructor(
 		// currentTournament: Tournament | null,
 		ws: WebSocket | null,
-		gameState: GameState | null,
 		readonly options: Partial<IPixiManagerOptions> = {},
 		userId: number | null = null,
+		gameSocket: WebSocket | null = null,
 	) {
 		this.ws = ws;
-		this.gameState = gameState;
 		PIXI.settings.RESOLUTION = window.devicePixelRatio || 1;
 		this.userId = userId;
+		this.gameSocket = gameSocket;
 
 		this._app = new PIXI.Application({
 			width: this.width,

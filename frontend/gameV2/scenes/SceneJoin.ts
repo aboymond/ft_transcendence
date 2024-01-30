@@ -382,6 +382,25 @@ export class SceneJoin extends SceneBase {
 					},
 				}),
 			);
+			// // Open game socket connection here
+			// const gameSocketUrl = 'ws://localhost:8000/ws/game/' + gameId + '/';
+			// this.root.gameSocket = new WebSocket(gameSocketUrl);
+			// this.root.gameSocket.onopen = () => {
+			// 	console.log('Game WebSocket opened');
+			// };
+			// this.root.gameSocket.onmessage = (e) => {
+			// 	const { type, payload } = JSON.parse(e.data);
+			// 	const { action, data } = payload;
+			// 	console.log('game data:', { type, action, data });
+			// 	// Update game state based on received data
+			// 	if (type === 'game_event' && action === 'game_state') {
+			// 		this.root.setGameState(data);
+			// 	}
+			// 	if (action === 'start_game') {
+			// 		console.log('Loading SceneGame');
+			// 		this.root.loadScene(new SceneGame(this.root));
+			// 	}
+			// };
 			this.root.loadScene(new SceneLoadingPage(this.root));
 			this.root.ws.onmessage = (e) => {
 				const data = JSON.parse(e.data);

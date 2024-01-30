@@ -24,7 +24,7 @@ export class SceneGame extends SceneBase {
 	//==========================================================
 
 	private _ball = new PIXI.Graphics();
-	private _padBot = new PIXI.Graphics();
+	private _padPlayer2 = new PIXI.Graphics();
 	private _padPlayer = new PIXI.Graphics();
 	private _scoreText = new PIXI.Text('0 - 0', { fill: defaultColor });
 	private _keysPressed: { [key: string]: boolean } = {};
@@ -47,7 +47,7 @@ export class SceneGame extends SceneBase {
 				const action_data = payload.data;
 
 				if (action_type === 'game_event' && action === 'update_state') {
-					// TODO: Update game state based on action_data
+					this._data = action_data;
 				}
 			};
 		}
@@ -64,14 +64,14 @@ export class SceneGame extends SceneBase {
 		this._ball.y = this.root.height / 2;
 
 		//Init Pad A
-		container.addChild(this._initPad(this._padBot, 100, 10, defaultColor));
+		container.addChild(this._initPad(this._padPlayer2, 100, 10, defaultColor));
 		this._padPlayer.x = this.root.width / 2;
 		this._padPlayer.y = this.root.height - 50;
 
 		//Init Pad B
 		container.addChild(this._initPad(this._padPlayer, 100, 10, defaultColor));
-		this._padBot.x = this.root.width / 2;
-		this._padBot.y = 50;
+		this._padPlayer2.x = this.root.width / 2;
+		this._padPlayer2.y = 50;
 
 		//Init Score Text
 		container.addChild(this._initScoreText());
@@ -84,22 +84,26 @@ export class SceneGame extends SceneBase {
 
 	public onUpdate() {
 		const gameState = this.root.gameState;
-		// Use gameState to update the game state
-		// This is just an example, you'll need to replace it with your actual game logic
+		// TODO Use gameState to update the game state
 		if (gameState) {
 			this._data.playerAScore = gameState.playerAScore;
 			this._data.playerBScore = gameState.playerBScore;
+			this._ball.x = gameState.ballPosition.x;
+			this._ball.y = gameState.ballPosition.y;
 		}
 
 		if (!this._exitBool) {
 			if (!this._gameStarted) this._checkTurn();
 			else {
+				//TODO move logic to backend
 				this._addVelocity();
 				this._checkCollisions();
 				this._checkifBallIsOut();
 			}
 		}
 		this._updatePadPosition();
+
+		//TODO end game in backend and set winner
 		if (this._data.playerAScore === this.root.amountVictory) {
 			this.root.playerAWin = true;
 			this.root.loadScene(new SceneWinOrLoose(this.root));
@@ -119,6 +123,20 @@ export class SceneGame extends SceneBase {
 			this._exitBool = !this._exitBool;
 			this._exitMenu.visible = this._exitBool;
 			console.log('Escape ' + (this._exitBool ? 'true' : 'false'));
+		}
+
+		if (e.code === 'ArrowRight' || e.code === 'ArrowLeft') {
+			//TODO use gamesocket instead of ws ?
+			this.root.ws?.send(
+				JSON.stringify({
+					type: 'game_event',
+					payload: {
+						action: 'key_press',
+						data: { key: e.code, player: this.root.userId },
+					},
+				}),
+			);
+			console.log('send key_press: ' + e.code);
 		}
 	}
 
@@ -159,12 +177,14 @@ export class SceneGame extends SceneBase {
 	// UTILS
 	//=======================================
 
+	//TODO move logic to backend
 	private _addVelocity() {
 		if (this._playerTurn) this._ball.y -= this._data.ballVelocity.y;
 		else this._ball.y += this._data.ballVelocity.y;
 		this._ball.x += this._data.ballVelocity.x;
 	}
 
+	//TODO move logic to backend
 	private _checkCollisions() {
 		// Wall colision
 		if (this._ball.x <= 1 || this._ball.x + this._ball.width / 2 >= this.root.width - 1)
@@ -172,12 +192,12 @@ export class SceneGame extends SceneBase {
 
 		// Pad colision
 		if (
-			this._ball.x > this._padBot.x - this._padBot.width / 2 &&
-			this._ball.x < this._padBot.x + this._padBot.width / 2
+			this._ball.x > this._padPlayer2.x - this._padPlayer2.width / 2 &&
+			this._ball.x < this._padPlayer2.x + this._padPlayer2.width / 2
 		) {
-			if (this._ball.y <= this._padBot.y + this._padBot.height / 2 + 1) {
+			if (this._ball.y <= this._padPlayer2.y + this._padPlayer2.height / 2 + 1) {
 				this._data.ballVelocity.y = -this._data.ballVelocity.y;
-				this._data.ballVelocity.x = ((this._ball.x - this._padBot.x) / (this._padBot.width / 2)) * 5;
+				this._data.ballVelocity.x = ((this._ball.x - this._padPlayer2.x) / (this._padPlayer2.width / 2)) * 5;
 			}
 		}
 		if (
@@ -191,6 +211,7 @@ export class SceneGame extends SceneBase {
 		}
 	}
 
+	//TODO move logic to backend
 	private _checkTurn() {
 		// turn player or computer
 
@@ -205,17 +226,18 @@ export class SceneGame extends SceneBase {
 			this._ball.y = this._padPlayer.y - this._padPlayer.height / 2 - this._ball.height * 2;
 		} else {
 			// ball position
-			this._botStart();
-			if (this._ball.x - this._ball.width / 2 < this._padBot.x - this._padBot.width / 2) {
-				this._ball.x = this._padBot.x - this._padBot.width / 2 - this._ball.width / 2;
-			} else if (this._ball.x + this._ball.width / 2 > this._padBot.x + this._padBot.width / 2) {
-				this._ball.x = this._padBot.x + this._padBot.width / 2 - this._ball.width / 2;
+			this._player2Start();
+			if (this._ball.x - this._ball.width / 2 < this._padPlayer2.x - this._padPlayer2.width / 2) {
+				this._ball.x = this._padPlayer2.x - this._padPlayer2.width / 2 - this._ball.width / 2;
+			} else if (this._ball.x + this._ball.width / 2 > this._padPlayer2.x + this._padPlayer2.width / 2) {
+				this._ball.x = this._padPlayer2.x + this._padPlayer2.width / 2 - this._ball.width / 2;
 			}
-			this._data.ballVelocity.x = ((this._ball.x - this._padBot.x) / (this._padBot.width / 2)) * 5;
-			this._ball.y = this._padBot.y - this._padBot.height / 2 + this._ball.height * 2;
+			this._data.ballVelocity.x = ((this._ball.x - this._padPlayer2.x) / (this._padPlayer2.width / 2)) * 5;
+			this._ball.y = this._padPlayer2.y - this._padPlayer2.height / 2 + this._ball.height * 2;
 		}
 	}
 
+	//TODO move logic to backend
 	private _updatePadPosition() {
 		if (!this._exitBool) {
 			// player movement right
@@ -259,13 +281,14 @@ export class SceneGame extends SceneBase {
 		}
 	}
 
+	//TODO move logic to backend
 	private _checkifBallIsOut() {
-		if (this._ball.y < 10 || this._ball.y < this._padBot.y) {
+		if (this._ball.y < 10 || this._ball.y < this._padPlayer2.y) {
 			console.log('Player win !');
 			this._data.ballVelocity.x = 0;
 			this._data.ballVelocity.y = 5;
 			this._padPlayer.x = this.root.width / 2;
-			this._padBot.x = this.root.width / 2;
+			this._padPlayer2.x = this.root.width / 2;
 			this._ball.x = this._padPlayer.x;
 			this._gameStarted = false;
 			this._playerTurn = false;
@@ -277,7 +300,7 @@ export class SceneGame extends SceneBase {
 			this._data.ballVelocity.x = 0;
 			this._data.ballVelocity.y = 5;
 			this._padPlayer.x = this.root.width / 2;
-			this._padBot.x = this.root.width / 2;
+			this._padPlayer2.x = this.root.width / 2;
 			this._ball.x = this._padPlayer.x;
 			this._gameStarted = false;
 			this._playerTurn = true;
@@ -295,19 +318,19 @@ export class SceneGame extends SceneBase {
 		this._scoreText.alpha = 0.2;
 	}
 
-	private _botStart() {
+	private _player2Start() {
 		if (this._player2Turn) return;
 
 		this._player2Turn = true;
 		let targetX = Math.random() * this.root.width;
 		// let targetX = this.root.width;
-		if (targetX < this._padBot.width / 2) targetX = this._padBot.width / 2;
-		else if (targetX > this.root.width - this._padBot.width / 2)
-			targetX = this.root.width - this._padBot.width / 2;
+		if (targetX < this._padPlayer2.width / 2) targetX = this._padPlayer2.width / 2;
+		else if (targetX > this.root.width - this._padPlayer2.width / 2)
+			targetX = this.root.width - this._padPlayer2.width / 2;
 		const duration = 1;
 		const ease = 'expo.Out';
 
-		gsap.to(this._padBot, {
+		gsap.to(this._padPlayer2, {
 			x: targetX,
 			duration: duration,
 			ease: ease,
