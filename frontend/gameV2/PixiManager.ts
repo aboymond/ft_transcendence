@@ -10,6 +10,15 @@ interface IPixiManagerOptions {
 	antialias: boolean;
 }
 
+interface Tournament {
+	name: string;
+	id: number;
+	max_score: number;
+	max_participants: number;
+	status: string;
+
+}
+
 export class PixiManager {
 	//For the back -------------
 	public vsPlayer = false;
@@ -19,6 +28,8 @@ export class PixiManager {
 	public ws: WebSocket | null;
 	public gameState: GameState | null;
 	public userId: number | null = null;
+	public currentTournament: Tournament | null = null;
+	
 
 	//--------------------------
 
@@ -26,6 +37,7 @@ export class PixiManager {
 	private _app: PIXI.Application;
 
 	constructor(
+		// currentTournament: Tournament | null,
 		ws: WebSocket | null,
 		gameState: GameState | null,
 		readonly options: Partial<IPixiManagerOptions> = {},

@@ -12,7 +12,6 @@ enum menuState {
 }
 
 
-
 export class SceneJoin extends SceneBase {
 	
 	private state: menuState = menuState.TOURN_MENU;
@@ -29,10 +28,6 @@ export class SceneJoin extends SceneBase {
 	private _gameObjects: Array<{container:PIXI.Container, data: any}> = [];
 	private _currentSelectTournament = -1;
 	private _currentSelectPvP = -1;
-	// private _menuBoxTournament: any;
-	// private _menuBoxPvP: any;
-	// private _allLength = 0;
-
 
 	
 	//=======================================
@@ -86,7 +81,8 @@ export class SceneJoin extends SceneBase {
 				if(e.key === 'ArrowUp') {
 					this._pressUpTournament();
 				}
-				if (e.code === 'Escape') {
+				if (e.code === 'Enter') {
+					this._initCurrentTournament();
 					this.root.loadScene(new SceneMenu2(this.root));
 				}
 				break;
@@ -105,7 +101,7 @@ export class SceneJoin extends SceneBase {
 				if(e.key === 'ArrowUp') {
 					this._pressUpPvP();
 				}
-				if (e.code === 'Escape') {
+				if (e.code === 'Enter') {
 					this.root.loadScene(new SceneMenu2(this.root));
 				}
 
@@ -176,17 +172,12 @@ export class SceneJoin extends SceneBase {
 	}
 
 	private _pressDownPvP() {
-		console.log("curr pvp " + this._currentSelectPvP)
-		console.log("game objects " + this._gameObjects.length);
 		if (this._currentSelectPvP > this._gameObjects.length - 2) {
 			return;
 		}
 		else
 		this._currentSelectPvP++;
-	
-		console.log("curr pvp after " + this._currentSelectPvP)
 		let selectedPvP = this._gameObjects[this._currentSelectPvP];
-		console.log("select pvp " + selectedPvP);
 		if (!selectedPvP) {
 			return;
 		}
@@ -206,7 +197,6 @@ export class SceneJoin extends SceneBase {
 	}
 
 	private _pressUpPvP() {
-		console.log("UP: " + this._currentSelectPvP);
 		if (this._currentSelectPvP < 1) {
 			return;
 		}
@@ -361,7 +351,6 @@ export class SceneJoin extends SceneBase {
 			const menuBoxPvP = new PIXI.Graphics();
 			const game = games[i];
 
-			console.log(game);
 			if (game.status === 'completed') {
 				i++;
 			}
@@ -408,6 +397,14 @@ export class SceneJoin extends SceneBase {
 		menu.visible = false;
 
 		return menu;
+	}
+
+	private _initCurrentTournament() {
+		// const selectedTournament = this._tournamentObjects[this._currentSelectTournament];
+		if (this._currentSelectTournament < 0)
+			return;
+		this.root.currentTournament = this._tournamentObjects[this._currentSelectTournament].data;
+
 	}
 
 }

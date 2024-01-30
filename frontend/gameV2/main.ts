@@ -1,5 +1,7 @@
 import { PixiManager } from './PixiManager';
 import { SceneMenu } from './scenes/SceneMenu';
+import { SceneJoin } from './scenes/SceneJoin';
+import { SceneTournamentLoadingVs } from './scenes/SceneTournamentLoadingVs';
 import { GameState } from '../src/types';
 import WebFont from 'webfontloader';
 
@@ -11,7 +13,7 @@ export function launchGame(ws: WebSocket | null, gameState: GameState | null, us
 		},
 		active: function () {
 			const pixiMan = new PixiManager(ws, gameState, {}, userId);
-			pixiMan.loadScene(new SceneMenu(pixiMan));
+			pixiMan.loadScene(new SceneJoin(pixiMan));
 		},
 	});
 }

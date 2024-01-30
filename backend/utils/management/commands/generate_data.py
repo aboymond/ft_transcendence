@@ -93,7 +93,7 @@ class Command(BaseCommand):
         # Create tournaments and matches
         i = 0
         while i < total:
-            max_participants = choice([2, 4, 6, 8])
+            max_participants = choice([4, 8])
             if i + max_participants > total:
                 # Not enough users left to create a tournament with max_participants participants
                 break

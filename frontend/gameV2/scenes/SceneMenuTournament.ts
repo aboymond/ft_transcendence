@@ -37,7 +37,7 @@ export class SceneMenuTournament extends SceneBase {
 	private _score_max_text = new PIXI.Text('MAX SCORE:', textStyleMenuTournamentMaxScore);
 	private _mode = new PIXI.Text('MODE:', textStyleMenuTournamentMode);
 	private _nb_player_tab = new PIXI.Text('< 4 >', textStyleMenuTournamentPlayer);
-	private _nbPlayer: number[] = [4, 6, 8];
+	private _nbPlayer: number[] = [4, 8];
 
 	private _score_max_tab = new PIXI.Text('< 3 >', textStyleMenuTournamentMaxScore);
 	private _scoreMax: number[] = [3, 5, 10];
@@ -143,12 +143,7 @@ export class SceneMenuTournament extends SceneBase {
 
 	private _pressUp() {
 
-		// if (this._currentSelectCreate === -1) {
-		// 	this._name.style.fill = 'green';
-		// 	// this.state = menuState.SELECT_MENU;
-		// } 
 		if (this._currentSelectCreate === menu.NAME) return this._nameCreate();
-		// if (this._currentSelectCreate === 1) return this._modeCreate();
 		if (this._currentSelectCreate === menu.PLAYER) return this._playerCreate();
 		if (this._currentSelectCreate === menu.MAXSCORE) return this._maxScoreCreate();
 		if (this._currentSelectCreate === menu.PLAY) return this._textPlayCreate();
@@ -156,12 +151,7 @@ export class SceneMenuTournament extends SceneBase {
 
 	private _pressDown() {
 
-		// if (this._currentSelectCreate === -1) {
-		// 	this._textPlay.style.fill = 'green';
-			// this.state = menuState.SELECT_MENU;
-		// }
 		if (this._currentSelectCreate === menu.NAME) return this._nameCreate();
-		// if (this._currentSelectCreate === 1) return this._modeCreate();
 		if (this._currentSelectCreate === menu.PLAYER) return this._playerCreate();
 		if (this._currentSelectCreate === menu.MAXSCORE) return this._maxScoreCreate();
 		if (this._currentSelectCreate === menu.PLAY) return this._textPlayCreate();
@@ -186,16 +176,6 @@ export class SceneMenuTournament extends SceneBase {
 		return text;
 	}
 
-	// private _initTextJoin(text: PIXI.Text) {
-	// 	text.x = (this.root.width * 90) / 100 - text.width;
-	// 	text.y = (this.root.height * 5) / 100;
-	// 	text.style.fontSize = (this.root.width * 5) / 100;
-	// 	text.style.fill = 'green';
-	// 	text.filters = [glowFilter];
-	// 	return text;
-	// }
-
-
 
 	private _initMenuCreate(): PIXI.Container {
 		const menu = new PIXI.Container();
@@ -204,7 +184,6 @@ export class SceneMenuTournament extends SceneBase {
 		this._name.style.fill = 'green';
 		this._name.x = this.root.width / 5;
 		this._name.y = (this.root.height * 30) / 100 - this._name.height / 2;
-		// this._name.style.fontSize = 10;
 		this._name.filters = [glowFilter];
 		menu.addChild(this._name);
 
@@ -222,24 +201,15 @@ export class SceneMenuTournament extends SceneBase {
 		this._textInputField.filters = [glowFilter];
 		menu.addChild(this._textInputField);
 
-		// this._mode.style.fill = 'green';
-		// this._mode.x = this.root.width / 5;
-		// this._mode.y = (this.root.height * 17) / 100 + this._name.y - this._mode.height / 2;
-		// this._mode.style.fontSize = 10;
-		// this._mode.filters = [glowFilter];
-		// menu.addChild(this._mode);
-
 		this._nb_player_text.style.fill = 'green';
 		this._nb_player_text.x = this.root.width / 5;
 		this._nb_player_text.y = (this.root.height * 17) / 100 + this._nameInputBox.y - this._nb_player_text.height / 2;
-		// this._nb_player_text.style.fontSize = 10;
 		this._nb_player_text.filters = [glowFilter];
 		menu.addChild(this._nb_player_text);
 
 		this._nb_player_tab.style.fill = 'green';
 		this._nb_player_tab.x = this.root.width - 100;
 		this._nb_player_tab.y = this._nb_player_text.y;
-		// this._nb_player_tab.style.fontSize = 10;
 		this._nb_player_tab.filters = [glowFilter];
 		menu.addChild(this._nb_player_tab);
 	
@@ -247,14 +217,12 @@ export class SceneMenuTournament extends SceneBase {
 		this._score_max_text.style.fill = 'green';
 		this._score_max_text.x = this.root.width / 5;
 		this._score_max_text.y = (this.root.height * 17) / 100 + this._nb_player_text.y - this._score_max_text.height / 2;
-		// this._score_max_text.style.fontSize = 10;
 		this._score_max_text.filters = [glowFilter];
 		menu.addChild(this._score_max_text);
 
 		this._score_max_tab.style.fill = 'green';
 		this._score_max_tab.x = this.root.width -  100;
 		this._score_max_tab.y = this._score_max_text.y;
-		// this._score_max_tab.style.fontSize = 10;
 		this._score_max_tab.filters = [glowFilter];
 		menu.addChild(this._score_max_tab);
 
@@ -269,50 +237,11 @@ export class SceneMenuTournament extends SceneBase {
 		return menu;
 	}
 
-	// private async _initMenuJoin(): Promise < PIXI.Container > {
-	// 	const menu = new PIXI.Container();
-	// 	this._tournamentObjects = [];
-	// 	const tournaments = await apiService.getTournaments();
-	// 	for (let i =  0;i < tournaments.length; i++) {
-
-	// 		const menuBox = new PIXI.Graphics();
-	// 		const tournament = tournaments[i];
-	// 		const textName = new PIXI.Text(tournament.name);
-	// 		const textInfo = new PIXI.Text("5/6");
-
-	// 		textInfo.x = 150;
-	// 		textInfo.style.fontSize = 12;
-	// 		menuBox.beginFill('blue');
-	// 		menuBox.drawRect(0, 0, this.root.width - 20, 50);
-	// 		menuBox.visible = true;
-	// 		menuBox.x = (this.root.width / 2 - menuBox.width / 2);
-	// 		menuBox.y = (this.root.height / 2 - menuBox.height / 2)  + (i * 100);
-	// 		menuBox.endFill();
-
-	// 		menuBox.addChild(textName, textInfo);
-	// 		menu.addChild(menuBox);
-			
-
-	// 		this._tournamentObjects.push({container: menuBox, data: tournament})
-
-	// 	}
-		// apiTournament.foreach (e => {
-			
-		// })
-
-
-	// 	menu.visible = false;
-
-	// 	return menu;
-	// }
 
 	private _nameCreate() {
 		this._nameColorCreate();
 	}
 
-	// private _modeCreate(){
-	// 	this._modeColorCreate();
-	// }
 
 	private _playerCreate(){
 		this._playerColorCreate();
@@ -370,7 +299,7 @@ export class SceneMenuTournament extends SceneBase {
 	private _playerPrev() {
 		this._currentNbPlayer--;
 		if (this._currentNbPlayer < 0) {
-			this._currentNbPlayer = 2;
+			this._currentNbPlayer = 1;
 		}
 		this._nb_player_tab.text = '< ' + this._nbPlayer[this._currentNbPlayer] + ' >'; 
 
@@ -380,7 +309,7 @@ export class SceneMenuTournament extends SceneBase {
 
 	private _playerNext() {
 		this._currentNbPlayer++;
-		if (this._currentNbPlayer > 2) {
+		if (this._currentNbPlayer > 1                                ) {
 			this._currentNbPlayer = 0;
 		}
 		this._nb_player_tab.text = '< ' + this._nbPlayer[this._currentNbPlayer] + ' >';

@@ -8,6 +8,7 @@ class TournamentSerializer(serializers.ModelSerializer):
     participants = serializers.PrimaryKeyRelatedField(
         many=True, queryset=get_user_model().objects.all(), required=False
     )
+    max_participants = serializers.IntegerField(required = False)
 
     class Meta:
         model = Tournament

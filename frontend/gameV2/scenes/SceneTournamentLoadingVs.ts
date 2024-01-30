@@ -8,7 +8,7 @@ import { PixiManager } from '../PixiManager';
 
 
 
-const tournamentLine = PIXI.Texture.from('gameV2/img/tourmnamentLine.png');
+// const tournamentLine = PIXI.Texture.from('gameV2/img/tourmnamentLine.png');
 
 
 
@@ -51,9 +51,13 @@ export class SceneTournamentLoadingVs extends SceneBase {
 
 	private _initLineTournament () {
 
+		if (this.root.currentTournament?.max_participants === 4) {
+			for ()
+		}
 		this.tournamentLines = [];
 
-		
+
+
 	}
 
 
