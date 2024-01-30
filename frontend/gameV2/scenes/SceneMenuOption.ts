@@ -40,12 +40,12 @@ const choosePad: string[] = ['BASIC', 'LOCKED', 'LOCKED', 'LOCKED', 'LOCKED', 'L
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 const textures = [
-	PIXI.Texture.from('gameV2/img/pad0.png'),
-	PIXI.Texture.from('gameV2/img/pad1.png'),
-	PIXI.Texture.from('gameV2/img/pad2.png'),
-	PIXI.Texture.from('gameV2/img/pad3.png'),
-	PIXI.Texture.from('gameV2/img/pad4.png'),
-	PIXI.Texture.from('gameV2/img/pad5.png'),
+	PIXI.Texture.from('./img/pad0.png'),
+	PIXI.Texture.from('./img/pad1.png'),
+	PIXI.Texture.from('./img/pad2.png'),
+	PIXI.Texture.from('./img/pad3.png'),
+	PIXI.Texture.from('./img/pad4.png'),
+	PIXI.Texture.from('./img/pad5.png'),
 ];
 
 export class SceneMenuOption extends SceneBase {
