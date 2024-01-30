@@ -70,6 +70,7 @@ class GeneralRequestConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         data = json.loads(text_data)
+        print("Received data", data)
         action_type = data.get("type")
         payload = data.get("payload", {})
         action = payload.get("action")

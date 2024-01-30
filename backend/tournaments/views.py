@@ -1,15 +1,21 @@
 from rest_framework import generics, status
 from rest_framework.response import Response
-from .models import Tournament
-from .serializers import TournamentSerializer
-from .models import Match
-from .serializers import MatchSerializer
+from .models import Tournament, Match
+from .serializers import (
+    TournamentSerializer,
+    TournamentUpdateSerializer,
+    MatchSerializer,
+)
 
 
 # List all tournaments or create a new one
 class TournamentListCreateView(generics.ListCreateAPIView):
     queryset = Tournament.objects.all()
-    serializer_class = TournamentSerializer
+
+    def get_serializer_class(self):
+        if self.request.method in ["POST", "PUT"]:
+            return TournamentUpdateSerializer
+        return TournamentSerializer
 
 
 # Retrieve, update or delete a tournament instance
