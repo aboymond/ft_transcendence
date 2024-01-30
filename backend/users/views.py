@@ -22,11 +22,19 @@ from .models import GameHistory, Friendship
 from .serializers import GameHistorySerializer
 from .serializers import AvatarSerializer
 from requests_oauthlib import OAuth2Session
+from django.core.mail import send_mail
 import logging
 
 User = get_user_model()
 load_dotenv()
 logger = logging.getLogger(__name__)
+
+def send_welcome_email(request):
+    subject = 'BONJOUR'
+    message = 'OUI, ça marche, je crois !!'
+    from_email = 'retroscendence@mail.ch'
+    recipient_list = ['syntheticgeneration09@gmail.com']
+    send_mail(subject, message, from_email, recipient_list)
 
 
 class CreateUserView(generics.CreateAPIView):
@@ -77,7 +85,6 @@ class AuthView(generics.GenericAPIView):
 
 class CallBackView(APIView):
     def get(self, request, *args, **kwargs):
-        print("CALLBACKVIEW TEST")
         token_url = "https://api.intra.42.fr/oauth/token"
         client_id = os.getenv("CLIENT")
         client_secret = os.getenv("SECRET")
@@ -100,11 +107,10 @@ class CallBackView(APIView):
             client_id, token={"access_token": access_token}
         ).get(user_url)
         user_data = user_response.json()
-
         user = {
             "id": user_data["id"],
             "login": user_data["login"],
-            # "avatar": user_data["image"]["versions"]["small"],
+            "email": user_data["email"],
             "access_token": access_token,
         }
 
@@ -115,10 +121,10 @@ class CallBackView(APIView):
         username = f"{user['login']}#{user['id']}"
 
         try:
-            existing_user = User.objects.get(username=username)
+            existing_user = User.objects.get(username=username, email=user["email"])
         except User.DoesNotExist:
             # If the user does not exist, create a new user
-            existing_user = User.objects.create(username=username)
+            existing_user = User.objects.create(username=username, email=user["email"])
         else:
             existing_user.avatar.delete()  # Delete the old avatar
 

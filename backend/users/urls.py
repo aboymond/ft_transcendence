@@ -5,6 +5,7 @@ from rest_framework_simplejwt.views import (
     TokenVerifyView,
 )
 from .views import (
+    send_welcome_email,
     CreateUserView,
     LoginView,
     AuthView,
@@ -28,6 +29,7 @@ from .views import (
 )
 
 urlpatterns = [
+    path("send_welcome_email/", send_welcome_email, name="send_welcome_email"),
     path("register/", CreateUserView.as_view(), name="register"),
     path("login/", LoginView.as_view(), name="login"),
     path("auth/", AuthView.as_view(), name="auth"),
