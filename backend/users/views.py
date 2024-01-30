@@ -112,27 +112,30 @@ class CallBackView(APIView):
         response = requests.get(avatar_url)
 
         User = get_user_model()
-        username = f"{user['login']}#{user['id']}"
+        username = user["login"]
 
-        try:
-            existing_user = User.objects.get(username=username)
-        except User.DoesNotExist:
-            # If the user does not exist, create a new user
-            existing_user = User.objects.create(username=username)
+        if User.objects.filter(username=username).exists():
+            # If the user exists, append the user id to the username
+            username = f"{username}#{user['id']}"
+
+        # Create a new user with the (potentially modified) username
+        # only if a user with the new username doesn't already exist
+        if not User.objects.filter(username=username).exists():
+            new_user = User.objects.create(username=username)
+            new_user.avatar.save(f"{username}.jpg", ContentFile(response.content))
+            new_user.save()
         else:
-            existing_user.avatar.delete()  # Delete the old avatar
-
-        # Save the new avatar
-        existing_user.avatar.save(f"{username}.jpg", ContentFile(response.content))
-        existing_user.save()
+            new_user = User.objects.get(username=username)
 
         # temp JWT
-        refresh = RefreshToken.for_user(existing_user)
+        refresh = RefreshToken.for_user(new_user)
 
         redirect_url = (
             os.environ.get("FRONTEND_URL", "http://localhost:3001")
             + "?access_token="
             + str(refresh.access_token)
+            + "&user_id="
+            + str(new_user.id)
         )
         return redirect(redirect_url)
 
