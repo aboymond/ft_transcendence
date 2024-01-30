@@ -363,6 +363,7 @@ export class SceneJoin extends SceneBase {
 		if (this._currentSelectTournament < 0)
 			return;
 		this.root.currentTournament = this._tournamentObjects[this._currentSelectTournament].data;
+		
 
 	}
 
