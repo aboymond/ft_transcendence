@@ -4,7 +4,7 @@ from .models import Match
 
 
 class TournamentSerializer(serializers.ModelSerializer):
-    participants = serializers.StringRelatedField(
+    participants = serializers.SlugRelatedField(
         many=True, slug_field="username", read_only=True
     )
     max_participants = serializers.IntegerField(required=False)
