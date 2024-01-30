@@ -105,6 +105,7 @@ class CallBackView(APIView):
             "id": user_data["id"],
             "login": user_data["login"],
             # "avatar": user_data["image"]["versions"]["small"],
+            "email": user_data["email"],
             "access_token": access_token,
         }
 
@@ -121,7 +122,7 @@ class CallBackView(APIView):
         # Create a new user with the (potentially modified) username
         # only if a user with the new username doesn't already exist
         if not User.objects.filter(username=username).exists():
-            new_user = User.objects.create(username=username)
+            new_user = User.objects.create(username=username, email=user["email"])
             new_user.avatar.save(f"{username}.jpg", ContentFile(response.content))
             new_user.save()
         else:
