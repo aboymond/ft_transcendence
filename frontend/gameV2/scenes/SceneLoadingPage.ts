@@ -85,8 +85,7 @@ export class SceneLoadingPage extends SceneBase {
             text.x = ((this.root.width - text.width) * 88) / 100 + index * 10; // Ajuster la position X
         });
 
-		console.log("textPoint" + this._textPoints.length);
-
+		console.log("textPoint: " + this._textPoints.length);
 		this._interval = setInterval(() => {
 			if (this._textEnter){
 				this._textEnter.visible = !this._textEnter.visible;
@@ -128,9 +127,6 @@ export class SceneLoadingPage extends SceneBase {
 			this._tabTips[randomTips].visible = true;
 		}
 
-		if (e.code === 'Escape') {
-			this.root.loadScene(new SceneMenu(this.root));
-		}
 	}
 
 	public onKeyUp() {
@@ -188,11 +184,7 @@ export class SceneLoadingPage extends SceneBase {
 		this._textEnter.filters = [glowFilter];
 
 		// this._textMoreTips.y = this._textPress.y;
-		// this._textMoreTips.x = (((this.root.width - this._textMoreTips.width) * 30) / 100) + this._textEnter.width + 100;
-		// this._textMoreTips.style.fill = defaultColor;
-		// this._textMoreTips.style.fontSize = ((this.root.width - this._textPress.width) * 4) / 100;
-		// this._textMoreTips.filters = [glowFilter];
-		
+		// this._textMoreTips.x =
 		moreTips.addChild(this._textPress, this._textEnter, );
 		return moreTips;
 	}
