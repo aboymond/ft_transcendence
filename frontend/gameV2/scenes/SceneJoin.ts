@@ -100,7 +100,7 @@ export class SceneJoin extends SceneBase {
 					this.root.loadScene(new SceneMenu2(this.root));
 				}
 				if (e.code === 'Enter') {
-					console.log(this._gameObjects[this._currentSelectPvP].data.id);
+					// console.log(this._gameObjects[this._currentSelectPvP].data.id);
 					this._joinGame(this._gameObjects[this._currentSelectPvP].data.id);
 				}
 
@@ -281,7 +281,7 @@ export class SceneJoin extends SceneBase {
 		for (let i = 0; i < tournaments.length; i++) {
 			const menuBoxTournament = new PIXI.Graphics();
 			const tournament = tournaments[i];
-			console.log(tournament);
+			// console.log(tournament);
 			const textName_tour = new PIXI.Text(tournament.name);
 			const textMode_tour = new PIXI.Text(tournament.max_score);
 			const textInfo_tour = new PIXI.Text(tournament.participants.length + '/' + tournament.max_participants);
@@ -324,7 +324,7 @@ export class SceneJoin extends SceneBase {
 			const menuBoxPvP = new PIXI.Graphics();
 			const game = games[i];
 
-			console.log(game);
+			// console.log(game);
 			if (game.status === 'completed') {
 				i++;
 			} else {

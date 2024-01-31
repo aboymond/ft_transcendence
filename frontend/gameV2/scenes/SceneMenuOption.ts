@@ -262,14 +262,14 @@ export class SceneMenuOption extends SceneBase {
 		this._currentSelect--;
 		if (this._currentSelect === 1 && this.root.vsPlayer) this._currentSelect--;
 		if (this._currentSelect < 0) this._currentSelect = selectMax;
-		console.log('up: ' + this._currentSelect);
+		// console.log('up: ' + this._currentSelect);
 	}
 
 	private _pressDown() {
 		this._currentSelect++;
 		if (this._currentSelect === 1 && this.root.vsPlayer) this._currentSelect++;
 		if (this._currentSelect > selectMax) this._currentSelect = 0;
-		console.log('down: ' + this._currentSelect);
+		// console.log('down: ' + this._currentSelect);
 	}
 
 	private _pressLeft() {

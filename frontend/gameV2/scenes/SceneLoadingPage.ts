@@ -81,7 +81,7 @@ export class SceneLoadingPage extends SceneBase {
 	//=======================================
 
 	public async onStart(container: PIXI.Container) {
-		console.log('sprite: ' + this._sprite);
+		// console.log('sprite: ' + this._sprite);
 		this._initKeyExplanation(this._sprite);
 		container.addChild(this._sprite);
 		// this._containerTips = this._initTipsTab();
@@ -100,7 +100,7 @@ export class SceneLoadingPage extends SceneBase {
 			text.x = ((this.root.width - text.width) * 88) / 100 + index * 10; // Ajuster la position X
 		});
 
-		console.log('textPoint' + this._textPoints.length);
+		// console.log('textPoint' + this._textPoints.length);
 
 		this._interval = setInterval(() => {
 			if (this._textEnter) {
@@ -117,7 +117,7 @@ export class SceneLoadingPage extends SceneBase {
 			} else {
 				this._textPoints[this._index - 1].visible = true;
 			}
-			console.log(this._index);
+			// console.log(this._index);
 			this._textPoints[this._index].visible = false;
 			this._index++;
 		}, 800);
@@ -174,7 +174,7 @@ export class SceneLoadingPage extends SceneBase {
 			tipsBox.endFill();
 			tipsBox.addChild(this._tabTips[i]);
 			tips.addChild(tipsBox);
-			console.log(this._tabTips[i]);
+			// console.log(this._tabTips[i]);
 		}
 		return tips;
 	}
