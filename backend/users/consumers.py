@@ -29,6 +29,7 @@ class GeneralRequestConsumer(AsyncWebsocketConsumer):
 
         if self.channel_layer is not None:
             await self.channel_layer.group_add(self.room_group_name, self.channel_name)
+            # await self.channel_layer.group_add("common_group", self.channel_name)
             await self.channel_layer.group_add("online_status", self.channel_name)
             await self.channel_layer.group_send(
                 "online_status",
@@ -131,6 +132,8 @@ class GeneralRequestConsumer(AsyncWebsocketConsumer):
         )
         # After the game is created, form the group name using the game id
         group_name = f"game_{game.id}"
+        game.group_name = group_name
+        await sync_to_async(game.save)()
         # Then add the game creator's channel to the game's group
         await self.channel_layer.group_add(
             group_name,  # The game's group name
@@ -168,7 +171,14 @@ class GeneralRequestConsumer(AsyncWebsocketConsumer):
                 f"game_{game.id}",  # The game's group name
                 self.channel_name,  # The joining user's channel name
             )
-            print("Sending start_game to both users")
+            # print("Sending start_game to both users")
+            # await self.channel_layer.group_send(
+            #     f"game_{game.id}",  # The game's group name
+            #     {
+            #         "type": "start_game",
+            #         "game_id": game.id,
+            #     },
+            # )
             # Send the 'start_game' message to the game's group
             await self.channel_layer.group_send(
                 f"game_{game.id}",  # The game's group name
@@ -201,5 +211,22 @@ class GeneralRequestConsumer(AsyncWebsocketConsumer):
             )
 
     async def game_event(self, event):
-        # Handle the game_event message here
         print("Game event:\n", event)
+        event_type = event.get("type")
+
+        if event_type == "start_game":
+            await self.start_game(event)
+
+    async def start_game(self, event):
+        # Logic to start the game
+        game_id = event.get("game_id")
+        print(f"Starting game {game_id}")
+
+        # Example: Send a message to both players to start the game
+        await self.channel_layer.group_send(
+            f"game_{game_id}",  # Assuming you have a group for each game
+            {
+                "type": "game.message",
+                "message": "The game is starting!",
+            },
+        )

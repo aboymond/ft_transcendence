@@ -76,25 +76,32 @@ export class SceneLoadingPage extends SceneBase {
 	private _textPoints: PIXI.Text[] = [];
 	private _interval = 0;
 	private _index = 0;
+	private messageHandler: (this: WebSocket, ev: MessageEvent) => any;
 
 	constructor(root: PixiManager) {
 		super(root);
-		if (this.root.ws) {
-			this.root.ws.onmessage = (e) => {
-				const data = JSON.parse(e.data);
-				console.log('ScneLoadingPage:', data);
-				if (data.payload.action === 'start_game') {
-					console.log('Loading SceneGame');
-					this.root.loadScene(new SceneGame(this.root));
-				}
-			};
-		}
+		// Define the message handling function
+		this.messageHandler = (event) => {
+			const data = JSON.parse(event.data);
+			console.log('SceneLoadingPage:', data);
+			if (data.payload.action === 'game_created') {
+				this.openGameSocket(data.payload.data.game_id);
+			}
+			if (data.payload.action === 'start_game') {
+				console.log('Loading SceneGame');
+				this.root.loadScene(new SceneGame(this.root));
+			}
+		};
 	}
 	//=======================================
 	// HOOK
 	//=======================================
 
 	public async onStart(container: PIXI.Container) {
+		if (this.root.ws) {
+			console.log('SceneLoadingPage: addEventListener');
+			this.root.ws.addEventListener('message', this.messageHandler);
+		}
 		// console.log('sprite: ' + this._sprite);
 		this._initKeyExplanation(this._sprite);
 		container.addChild(this._sprite);
@@ -141,6 +148,11 @@ export class SceneLoadingPage extends SceneBase {
 
 	public onFinish() {
 		clearInterval(this._interval);
+		// Remove the event listener
+		if (this.root.ws) {
+			console.log('SceneLoadingPage: removeEventListener');
+			this.root.ws.removeEventListener('message', this.messageHandler);
+		}
 	}
 
 	public onKeyDown(e: KeyboardEvent) {
@@ -243,5 +255,21 @@ export class SceneLoadingPage extends SceneBase {
 
 	private _randomizer() {
 		return Math.floor(Math.random() * this._tabTips.length);
+	}
+
+	private openGameSocket(gameId: number) {
+		const gameSocketUrl = 'ws://localhost:8000/ws/game/' + gameId + '/';
+		this.root.gameSocket = new WebSocket(gameSocketUrl);
+		this.root.gameSocket.onopen = () => {
+			console.log('Game WebSocket opened:', gameId);
+		};
+		this.root.gameSocket.onmessage = (event) => {
+			const data = JSON.parse(event.data);
+			console.log('Game WebSocket message:', data);
+			if (data.payload.action === 'start_game') {
+				console.log('Loading SceneGame');
+				this.root.loadScene(new SceneGame(this.root));
+			}
+		};
 	}
 }

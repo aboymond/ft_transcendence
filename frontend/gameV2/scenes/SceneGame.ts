@@ -35,23 +35,16 @@ export class SceneGame extends SceneBase {
 	private _noOption!: PIXI.Text;
 	private _exitText!: PIXI.Text;
 
+	private messageHandler: (this: WebSocket, ev: MessageEvent) => any;
+
 	constructor(public root: PixiManager) {
 		super(root);
-
-		if (this.root.ws) {
-			this.root.ws.onmessage = (e) => {
-				const data = JSON.parse(e.data);
-				console.log('ScneGame:', data);
-				const action_type = data.type;
-				const payload = data.payload;
-				const action = payload.action;
-				const action_data = payload.data;
-
-				if (action_type === 'game_event' && action === 'update_state') {
-					this._data = action_data;
-				}
-			};
-		}
+		this.messageHandler = (event) => {
+			const data = JSON.parse(event.data);
+			// if (data.payload.action === 'game_created') {
+			// 	this.openGameSocket(data.payload.data.game_id);
+			// }
+		};
 	}
 
 	//=======================================
@@ -59,6 +52,11 @@ export class SceneGame extends SceneBase {
 	//=======================================
 
 	public async onStart(container: PIXI.Container) {
+		if (this.root.ws) {
+			console.log('SceneGame: addEventListener');
+			this.root.ws.addEventListener('message', this.messageHandler);
+		}
+
 		//Init Ball
 		container.addChild(this._initBall(10, 0x1aff00));
 		this._ball.x = this.root.width / 2;
@@ -118,7 +116,16 @@ export class SceneGame extends SceneBase {
 		}
 	}
 
-	public onFinish() {}
+	public onFinish() {
+		if (this.root.ws) {
+			console.log('SceneGame: removeEventListener');
+			this.root.ws.removeEventListener('message', this.messageHandler);
+		}
+		if (this.root.gameSocket) {
+			this.root.gameSocket.close();
+			this.root.gameSocket = null;
+		}
+	}
 
 	public onKeyDown(e: KeyboardEvent) {
 		this._keysPressed[e.code] = true;

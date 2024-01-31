@@ -2,6 +2,7 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
 import json
 from .models import Game
+from asgiref.sync import sync_to_async
 
 
 class GameConsumer(AsyncWebsocketConsumer):
@@ -11,6 +12,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         self.game_group_name = f"game_{self.game_id}"
 
         await self.channel_layer.group_add(self.game_group_name, self.channel_name)
+        # await self.channel_layer.group_add("common_group", self.channel_name)
 
         await self.accept()
         print(
@@ -66,3 +68,6 @@ class GameConsumer(AsyncWebsocketConsumer):
             # Add other game state fields...
         }
         await self.send(text_data=json.dumps(message))
+
+    async def start_game(self, event):
+        print("Start game event: Game\n", event)
