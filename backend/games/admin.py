@@ -15,6 +15,7 @@ class GameAdmin(admin.ModelAdmin):
         "player1_score",
         "player2_score",
         "max_score",
+        "group_name",
     )
 
 

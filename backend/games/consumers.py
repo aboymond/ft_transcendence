@@ -6,6 +6,7 @@ from .models import Game
 
 class GameConsumer(AsyncWebsocketConsumer):
     async def connect(self):
+        print("Connecting... (Game)")  # Log message before connection
         self.game_id = self.scope["url_route"]["kwargs"]["game_id"]
         self.game_group_name = f"game_{self.game_id}"
 
@@ -13,17 +14,19 @@ class GameConsumer(AsyncWebsocketConsumer):
 
         await self.accept()
         print(
-            f"WebSocket for game {self.game_id} opened"
+            f"WebSocket for game {self.game_id} and group {self.game_group_name} opened"
         )  # Log when WebSocket is opened
 
     async def disconnect(self, close_code):
+        print("Disconnecting... (Game)")  # Log message before disconnection
         await self.channel_layer.group_discard(self.game_group_name, self.channel_name)
         print(
-            f"WebSocket for game {self.game_id} closed"
+            f"WebSocket for game {self.game_id} and group {self.game_group_name} closed"
         )  # Log when WebSocket is closed
 
     async def receive(self, text_data):
         data = json.loads(text_data)
+        print("Game data", data)
         action = data.get("action")
         game = Game.objects.get(id=self.game_id)
         if action == "move_pad":

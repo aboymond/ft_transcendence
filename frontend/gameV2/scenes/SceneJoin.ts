@@ -399,13 +399,13 @@ export class SceneJoin extends SceneBase {
 			// 	}
 			// };
 			this.root.loadScene(new SceneLoadingPage(this.root));
-			this.root.ws.onmessage = (e) => {
-				const data = JSON.parse(e.data);
-				if (data.action === 'start_game') {
-					console.log('Loading SceneGame');
-					this.root.loadScene(new SceneGame(this.root));
-				}
-			};
+			// this.root.ws.onmessage = (e) => {
+			// 	const data = JSON.parse(e.data);
+			// 	if (data.action === 'start_game') {
+			// 		console.log('Loading SceneGame');
+			// 		this.root.loadScene(new SceneGame(this.root));
+			// 	}
+			// };
 		}
 	}
 }

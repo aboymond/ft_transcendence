@@ -38,7 +38,8 @@ const Friends: React.FC = () => {
 
 	useEffect(() => {
 		if (ws?.message) {
-			console.log('friends ws.message:', ws.message);
+			//TODO: handle friend request notifications
+			// console.log('friends ws.message:', ws.message);
 			// Fetch the updated list of friends from the server
 			const fetchFriends = async () => {
 				try {

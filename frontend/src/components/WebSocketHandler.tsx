@@ -47,10 +47,11 @@ const WebSocketHandler: React.FC<Props> = ({ children }) => {
 			socketRef.current.onmessage = (e) => {
 				const { type, payload } = JSON.parse(e.data);
 				const { action, data } = payload;
-				console.log('general request data:', { type, action, data });
+				console.log('WebSocketHandler:', { type, action, data });
 				setMessage({ type, action, data });
 
 				if (type === 'game_event' && action === 'game_created') {
+					console.log('game created:', data.game_id);
 					setGameId(data.game_id);
 				}
 				if (type === 'user_event' && action === 'user_status') {

@@ -1,6 +1,7 @@
 import { defaultColor, glowFilter } from '..';
 import { SceneBase } from './SceneBase';
 import { SceneMenu } from './SceneMenu';
+import { SceneGame } from './SceneGame';
 import { SceneWinOrLoose } from './SceneWinOrLoose';
 import * as PIXI from 'pixi.js';
 import { gsap } from 'gsap';
@@ -76,6 +77,19 @@ export class SceneLoadingPage extends SceneBase {
 	private _interval = 0;
 	private _index = 0;
 
+	constructor(root: PixiManager) {
+		super(root);
+		if (this.root.ws) {
+			this.root.ws.onmessage = (e) => {
+				const data = JSON.parse(e.data);
+				console.log('ScneLoadingPage:', data);
+				if (data.payload.action === 'start_game') {
+					console.log('Loading SceneGame');
+					this.root.loadScene(new SceneGame(this.root));
+				}
+			};
+		}
+	}
 	//=======================================
 	// HOOK
 	//=======================================
@@ -228,6 +242,6 @@ export class SceneLoadingPage extends SceneBase {
 	//=======================================
 
 	private _randomizer() {
-		return Math.floor(Math.random() * this._tabTips.length - 1);
+		return Math.floor(Math.random() * this._tabTips.length);
 	}
 }

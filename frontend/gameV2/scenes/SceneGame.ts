@@ -41,6 +41,7 @@ export class SceneGame extends SceneBase {
 		if (this.root.ws) {
 			this.root.ws.onmessage = (e) => {
 				const data = JSON.parse(e.data);
+				console.log('ScneGame:', data);
 				const action_type = data.type;
 				const payload = data.payload;
 				const action = payload.action;

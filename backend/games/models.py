@@ -3,6 +3,8 @@ from django.conf import settings
 from users.models import GameHistory
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
+from asgiref.sync import sync_to_async
+import operator
 
 
 class Game(models.Model):
@@ -31,6 +33,7 @@ class Game(models.Model):
     status = models.CharField(max_length=15, choices=STATUS_CHOICES, default="waiting")
     start_time = models.DateTimeField(null=True, blank=True)
     end_time = models.DateTimeField(null=True, blank=True)
+    group_name = models.CharField(max_length=255, null=True, blank=True)
 
     winner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -117,9 +120,10 @@ class Game(models.Model):
             ) * 5
         self.save()
 
-    @property
-    def is_full(self):
-        return self.player1 is not None and self.player2 is not None
+    async def is_full(self):
+        player1 = await sync_to_async(operator.attrgetter("player1"))(self)
+        player2 = await sync_to_async(operator.attrgetter("player2"))(self)
+        return player1 is not None and player2 is not None
 
     @classmethod
     def create_game(cls, user):

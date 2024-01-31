@@ -70,7 +70,7 @@ class GeneralRequestConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         data = json.loads(text_data)
-        print("Received data", data)
+        print("General data:\n", data)
         action_type = data.get("type")
         payload = data.get("payload", {})
         action = payload.get("action")
@@ -78,8 +78,11 @@ class GeneralRequestConsumer(AsyncWebsocketConsumer):
 
         if action_type == "game_event" and action == "create_game":
             user_id = action_data.get("user_id")
-            print("Creating game for user", user_id)
+            print("Creating game for user:", user_id)
             await self.create_game(user_id)
+
+        if action == "join_game":
+            await self.join_game(data)
 
     async def user_status(self, event):
         await self.send(
@@ -99,6 +102,7 @@ class GeneralRequestConsumer(AsyncWebsocketConsumer):
 
     async def general_request(self, event):
         message = event["message"]
+        print("General request message:\n", message)
         await self.send(
             text_data=json.dumps(
                 {
@@ -110,6 +114,7 @@ class GeneralRequestConsumer(AsyncWebsocketConsumer):
 
     async def friend_request(self, event):
         message = event["message"]
+        print("Friend request message:\n", message)
         await self.send(
             text_data=json.dumps(
                 {
@@ -121,16 +126,80 @@ class GeneralRequestConsumer(AsyncWebsocketConsumer):
 
     async def create_game(self, user_id):
         user = await sync_to_async(User.objects.get)(pk=user_id)
-        game = await sync_to_async(Game.create_game)(user)
-        print("Game created", game.id)
-        await self.send(
-            text_data=json.dumps(
+        game = await sync_to_async(Game.objects.create)(
+            player1=user, player2=None, status="waiting"
+        )
+        # After the game is created, form the group name using the game id
+        group_name = f"game_{game.id}"
+        # Then add the game creator's channel to the game's group
+        await self.channel_layer.group_add(
+            group_name,  # The game's group name
+            self.channel_name,  # The game creator's channel name
+        )
+        logger.info(f"Added channel {self.channel_name} to group {group_name}")
+        print("Game created:", game.id)
+        message = json.dumps(
+            {
+                "type": "game_event",
+                "payload": {
+                    "action": "game_created",
+                    "data": {"game_id": game.id},
+                },
+            }
+        )
+        print("Sending message:\n", message)
+        await self.send(text_data=message)
+
+    async def join_game(self, data):
+        game_id = data["payload"]["data"]["game_id"]
+        user_id = data["payload"]["data"]["user_id"]
+        game = await sync_to_async(Game.objects.get)(id=game_id)
+        user = await sync_to_async(User.objects.get)(id=user_id)
+
+        # Check if the game is full
+        is_full = await game.is_full()
+        if not is_full:
+            game.player2 = user
+            game.status = "in_progress"
+            await sync_to_async(game.save)()
+
+            # Add the joining user's channel to the game's group
+            await self.channel_layer.group_add(
+                f"game_{game.id}",  # The game's group name
+                self.channel_name,  # The joining user's channel name
+            )
+            print("Sending start_game to both users")
+            # Send the 'start_game' message to the game's group
+            await self.channel_layer.group_send(
+                f"game_{game.id}",  # The game's group name
                 {
                     "type": "game_event",
                     "payload": {
-                        "action": "game_created",
-                        "data": {"game_id": game.id},
+                        "action": "start_game",
+                        "data": {
+                            "game_id": game.id,
+                        },
                     },
-                }
+                },
             )
-        )
+            logger.info(f"Sent start_game message to group game_{game.id}")
+        else:
+            print("Error: The game is already full")
+            # Optionally, send a message back to the user attempting to join the full game
+            await self.send(
+                text_data=json.dumps(
+                    {
+                        "type": "game_error",
+                        "payload": {
+                            "action": "join_game",
+                            "data": {
+                                "error": "The game is already full",
+                            },
+                        },
+                    }
+                )
+            )
+
+    async def game_event(self, event):
+        # Handle the game_event message here
+        print("Game event:\n", event)
