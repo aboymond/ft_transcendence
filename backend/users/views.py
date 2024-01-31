@@ -114,15 +114,26 @@ class CallBackView(APIView):
 
         User = get_user_model()
         username = user["login"]
+        email = user["email"]
 
-        if User.objects.filter(username=username).exists():
-            # If the user exists, append the user id to the username
+        # TODO handle this better
+        if email and User.objects.filter(email=email, is_oauth_user=False).exists():
+            # If a non-OAuth user with the same email exists, do nothing and return
+            return Response(
+                {"Error": "A user with this email already exists."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if User.objects.filter(username=username, is_oauth_user=False).exists():
+            # If a non-OAuth user with the same username exists, append the user id to the username
             username = f"{username}#{user['id']}"
 
         # Create a new user with the (potentially modified) username
         # only if a user with the new username doesn't already exist
         if not User.objects.filter(username=username).exists():
-            new_user = User.objects.create(username=username, email=user["email"])
+            new_user = User.objects.create(
+                username=username, email=email, is_oauth_user=True
+            )
             new_user.avatar.save(f"{username}.jpg", ContentFile(response.content))
             new_user.save()
         else:

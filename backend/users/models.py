@@ -11,6 +11,7 @@ class CustomUser(AbstractUser):
         ("queuing", "Queuing"),
     ]
 
+    is_oauth_user = models.BooleanField(default=False)
     display_name = models.CharField(
         max_length=100, unique=True, blank=True, null=True, default=None
     )
