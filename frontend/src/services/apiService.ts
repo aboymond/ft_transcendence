@@ -18,10 +18,16 @@ async function fetchAPI(endpoint: string, options: RequestInit = {}, includeToke
 	if (options.body instanceof FormData && headers instanceof Headers) {
 		headers.delete('Content-Type');
 	}
+
 	const response = await fetch(`${API_BASE_URL}/${endpoint}`, {
 		...options,
 		headers: headers,
 	});
+
+	if (response.status === 401) {
+		localStorage.removeItem('token');
+		throw new Error('Unauthorized');
+	}
 	if (!response.ok) {
 		throw new Error(`API call failed: ${response.statusText}`);
 	}

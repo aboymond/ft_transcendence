@@ -14,7 +14,7 @@ const Profile: React.FC = () => {
 	const [display_name, setDisplayName] = useState('');
 	const [avatar, setAvatar] = useState<File | null>(null);
 	const [filename, setFilename] = useState('');
-	const auth = useAuth();
+	const { user, isAuthenticated, logout, updateUser } = useAuth();
 	const navigate = useNavigate();
 
 	const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -42,22 +42,26 @@ const Profile: React.FC = () => {
 			const updatedProfile = await apiService.getUserProfile();
 			setProfile(updatedProfile);
 
-			auth.updateUser(updatedProfile);
+			updateUser(updatedProfile);
 		} catch (error) {
-			console.error('Error updating profile:', error);
+			if ((error as Error).message === 'Unauthorized') {
+				logout();
+				navigate('/');
+			} else {
+				console.error('Failed to fetch friends:', error);
+			}
 		}
 	};
 
 	const { userId } = useParams<{ userId: string }>();
-	const effectiveUserId = userId || auth.user?.id;
+	const effectiveUserId = userId || user?.id;
 
 	useEffect(() => {
-		if (!auth.isAuthenticated) {
+		if (!isAuthenticated) {
 			navigate('/');
 			return;
 		}
 		if (!effectiveUserId) {
-			// console.error('User ID is undefined');
 			setError('User ID is undefined');
 			return;
 		}
@@ -68,10 +72,15 @@ const Profile: React.FC = () => {
 				setProfile(data);
 			})
 			.catch((error) => {
-				console.error('Failed to load profile:', error);
-				setError('Failed to load profile');
+				if ((error as Error).message === 'Unauthorized') {
+					logout();
+					navigate('/');
+				} else {
+					console.error('Failed to load profile:', error);
+					setError('Failed to load profile');
+				}
 			});
-	}, [auth.isAuthenticated, navigate, effectiveUserId]);
+	}, [isAuthenticated, navigate, effectiveUserId, logout]);
 
 	if (error) {
 		return <div>Error: {error}</div>;
@@ -126,7 +135,7 @@ const Profile: React.FC = () => {
 					<p>Display Name: {profile.display_name}</p>
 					<p>Wins: {profile.wins}</p>
 					<p>Losses: {profile.losses}</p>
-					{auth.user && auth.user.id === profile.id && (
+					{user && user.id === profile.id && (
 						<button className={styles.update} onClick={() => setIsEditing(true)}>
 							Update Profile
 						</button>
