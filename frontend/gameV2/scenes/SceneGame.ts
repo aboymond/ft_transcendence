@@ -35,15 +35,16 @@ export class SceneGame extends SceneBase {
 	private _noOption!: PIXI.Text;
 	private _exitText!: PIXI.Text;
 
-	private messageHandler: (this: WebSocket, ev: MessageEvent) => any;
+	private messageHandler: (this: WebSocket, ev: MessageEvent) => void;
 
 	constructor(public root: PixiManager) {
 		super(root);
-		this.messageHandler = (event) => {
+		this.messageHandler = (event: MessageEvent) => {
 			const data = JSON.parse(event.data);
-			// if (data.payload.action === 'game_created') {
-			// 	this.openGameSocket(data.payload.data.game_id);
-			// }
+			//TODO
+			if (data.payload.action === 'game_created') {
+				console.log('game_created');
+			}
 		};
 	}
 

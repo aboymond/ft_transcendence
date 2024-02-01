@@ -21,14 +21,14 @@ export class SceneWinOrLoose extends SceneBase {
 
 		if (this.root.playerAWin) {
 			this._textWin.visible = true;
-			this._interval = setInterval(() => {
+			this._interval = window.setInterval(() => {
 				if (this._textWin) {
 					this._textWin.visible = !this._textWin.visible;
 				}
 			}, 800);
 		} else {
 			this._textLoose.visible = true;
-			this._interval = setInterval(() => {
+			this._interval = window.setInterval(() => {
 				if (this._textLoose) {
 					this._textLoose.visible = !this._textLoose.visible;
 				}

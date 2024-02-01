@@ -2,9 +2,9 @@ import { defaultColor, glowFilter } from '..';
 import { SceneBase } from './SceneBase';
 import { SceneMenu } from './SceneMenu';
 import { SceneGame } from './SceneGame';
-import { SceneWinOrLoose } from './SceneWinOrLoose';
+// import { SceneWinOrLoose } from './SceneWinOrLoose';
 import * as PIXI from 'pixi.js';
-import { gsap } from 'gsap';
+// import { gsap } from 'gsap';
 import { PixiManager } from '../PixiManager';
 
 const keyExplanation = PIXI.Texture.from('./img/keyExplanation.png');
@@ -76,7 +76,7 @@ export class SceneLoadingPage extends SceneBase {
 	private _textPoints: PIXI.Text[] = [];
 	private _interval = 0;
 	private _index = 0;
-	private messageHandler: (this: WebSocket, ev: MessageEvent) => any;
+	private messageHandler: (this: WebSocket, ev: MessageEvent) => void;
 
 	constructor(root: PixiManager) {
 		super(root);
@@ -123,7 +123,7 @@ export class SceneLoadingPage extends SceneBase {
 
 		// console.log('textPoint' + this._textPoints.length);
 
-		this._interval = setInterval(() => {
+		this._interval = window.setInterval(() => {
 			if (this._textEnter) {
 				this._textEnter.visible = !this._textEnter.visible;
 			}
@@ -263,13 +263,14 @@ export class SceneLoadingPage extends SceneBase {
 		this.root.gameSocket.onopen = () => {
 			console.log('Game WebSocket opened:', gameId);
 		};
-		this.root.gameSocket.onmessage = (event) => {
+		console.log('SceneLoadingPage: addEventListener');
+		this.root.gameSocket.addEventListener('message', (event) => {
 			const data = JSON.parse(event.data);
 			console.log('Game WebSocket message:', data);
 			if (data.payload.action === 'start_game') {
 				console.log('Loading SceneGame');
 				this.root.loadScene(new SceneGame(this.root));
 			}
-		};
+		});
 	}
 }

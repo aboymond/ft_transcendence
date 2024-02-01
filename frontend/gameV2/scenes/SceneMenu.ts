@@ -19,12 +19,11 @@ export class SceneMenu extends SceneBase {
 		this._spaceText.x = this.root.width / 2 - this._spaceText.width / 2;
 		this._spaceText.y = this.root.height - 100 - this._spaceText.height / 2;
 
-		this._interval = setInterval(() => {
+		this._interval = window.setInterval(() => {
 			if (this._spaceText) {
 				this._spaceText.visible = !this._spaceText.visible;
 			}
 		}, 800);
-	
 	}
 
 	public onUpdate() {}

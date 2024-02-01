@@ -1,8 +1,6 @@
-# consumers.py
 from channels.generic.websocket import AsyncWebsocketConsumer
 import json
 from .models import Game
-from asgiref.sync import sync_to_async
 
 
 class GameConsumer(AsyncWebsocketConsumer):
@@ -57,6 +55,12 @@ class GameConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_send(
             self.game_group_name, {"type": "game_update", "message": data}
         )
+
+    async def game_event(self, event):
+        # Handle a generic game event here
+        print(f"Handling game_event: {event}")
+        # You can add your custom logic here based on the event's content
+        # For example, updating the game state, notifying players, etc.
 
     async def game_update(self, event):
         game = Game.objects.get(id=self.game_id)

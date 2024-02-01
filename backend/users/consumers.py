@@ -1,18 +1,10 @@
-import os
-import django
 from channels.generic.websocket import AsyncWebsocketConsumer
 import json
 import logging
 from django.contrib.auth import get_user_model
 from asgiref.sync import sync_to_async
-
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "project.settings")
-django.setup()
-
 from games.models import Game  # noqa: E402
-# from games.consumers import GameConsumer
 
-...
 logger = logging.getLogger(__name__)
 User = get_user_model()
 

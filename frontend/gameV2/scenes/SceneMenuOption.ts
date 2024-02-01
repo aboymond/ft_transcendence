@@ -12,7 +12,6 @@ import {
 	textStyleMenuOptionVictory,
 } from '../index';
 import { SceneGame } from './SceneGame';
-import { SceneGameVsBot } from './SceneGameVsBot';
 import { SceneLoadingPage } from './SceneLoadingPage';
 
 const selectMax = 4;

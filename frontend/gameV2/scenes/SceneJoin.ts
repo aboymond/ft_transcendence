@@ -6,7 +6,7 @@ import * as PIXI from 'pixi.js';
 import { glowFilter } from '..';
 import apiService from '../../src/services/apiService';
 import { SceneLoadingPage } from './SceneLoadingPage';
-import { SceneGame } from './SceneGame';
+import { Tournament, Game } from '../../src/types';
 
 enum menuState {
 	TOURN_MENU,
@@ -24,8 +24,8 @@ export class SceneJoin extends SceneBase {
 	private _textTabPlayers = new PIXI.Text('| PLAYERS');
 	private _line = '';
 	private _lineUnder = new PIXI.Text('');
-	private _tournamentObjects: Array<{ container: PIXI.Container; data: any }> = [];
-	private _gameObjects: Array<{ container: PIXI.Container; data: any }> = [];
+	private _tournamentObjects: Array<{ container: PIXI.Container; data: Tournament }> = [];
+	private _gameObjects: Array<{ container: PIXI.Container; data: Game }> = [];
 	private _currentSelectTournament = -1;
 	private _currentSelectPvP = -1;
 	// private _menuBoxTournament: any;
@@ -328,8 +328,12 @@ export class SceneJoin extends SceneBase {
 			if (game.status === 'completed') {
 				i++;
 			} else {
+				//TODO: use game.player1.username
+				// const textName_PvP = new PIXI.Text(game.player1 ? game.player1.username : 'Waiting for Player');
 				const textName_PvP = new PIXI.Text(game.player1);
-				const textMode_PvP = new PIXI.Text(game.max_gascore);
+				//TODO: use this
+				// const textMode_PvP = new PIXI.Text(game.max_score.toString());
+				const textMode_PvP = new PIXI.Text(game.max_score);
 				let player2 = 0;
 
 				if (game.player2 != null) player2 = 1;
