@@ -37,9 +37,7 @@ const Friends: React.FC = () => {
 	}, [isAuthenticated, token, logout, navigate]);
 
 	useEffect(() => {
-		if (ws?.message) {
-			//TODO: handle friend request notifications
-			// console.log('friends ws.message:', ws.message);
+		if (ws?.message?.type === 'user_event') {
 			// Fetch the updated list of friends from the server
 			const fetchFriends = async () => {
 				try {
