@@ -45,19 +45,7 @@ export class SceneMenuTournament extends SceneBase {
 	private _currentNbPlayer = 0;
 	private _currentMaxScore = 0;
 
-	// private _textJoin = new PIXI.Text('JOIN');
-	// private _tournaments: Array<any> = []; 
-	// private _tournamentObjects : Array<{container:PIXI.Container, data: any}> = [];
-	// private _GameNameText;
-	// private _modeText;
-	// private _mode = { singleElim: 'SINGLE ELIMINATON', roundRobin: 'ROUND ROBIN' };
-	// private _confirm;
 	private _textPlay = new PIXI.Text('PLAY', textStyleMenuOptionPlay);
-
-	// private _join = new PIXI.Container();
-	// private _
-
-	// private _selectCreate = true;
 
 	private _inputText = '';
 	private _textInputField = new PIXI.Text(this._inputText, { fill: defaultColor, fontSize: 20, });
@@ -74,12 +62,8 @@ export class SceneMenuTournament extends SceneBase {
 
 	public async onStart(container: PIXI.Container) {
 		container.addChild(this._initTextCreate(this._textCreate));
-		// container.addChild(this._initTextJoin(this._textJoin));
 		this._create = this._initMenuCreate();
 		container.addChild(this._create);
-		// this._join = await this._initMenuJoin();
-		// container.addChild(this._join);
-
 
 	}
 

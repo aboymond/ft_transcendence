@@ -7,6 +7,7 @@ import { glowFilter } from '..';
 import apiService from '../../src/services/apiService';
 import { SceneLoadingPage } from './SceneLoadingPage';
 import { SceneGame } from './SceneGame';
+import { SceneTournamentLoadingVs } from './SceneTournamentLoadingVs';
 
 enum menuState {
 	TOURN_MENU,
@@ -77,7 +78,7 @@ export class SceneJoin extends SceneBase {
 				}
 				if (e.code === 'Enter') {
 					this._initCurrentTournament();
-					this.root.loadScene(new SceneMenu2(this.root));
+					this.root.loadScene(new SceneTournamentLoadingVs(this.root));
 				}
 				break;
 			case menuState.PVP_MENU:
@@ -96,7 +97,7 @@ export class SceneJoin extends SceneBase {
 					this._pressUpPvP();
 				}
 				if (e.code === 'Enter') {
-					this.root.loadScene(new SceneMenu2(this.root));
+					// this.root.loadScene(new SceneMenu2(this.root));
 				}
 				if (e.code === 'Enter') {
 					console.log(this._gameObjects[this._currentSelectPvP].data.id);
@@ -276,7 +277,6 @@ export class SceneJoin extends SceneBase {
 		for (let i = 0; i < tournaments.length; i++) {
 			const menuBoxTournament = new PIXI.Graphics();
 			const tournament = tournaments[i];
-			console.log(tournament);
 			const textName_tour = new PIXI.Text(tournament.name);
 			const textMode_tour = new PIXI.Text(tournament.max_score);
 			const textInfo_tour = new PIXI.Text(tournament.participants.length + '/' + tournament.max_participants);
@@ -359,12 +359,10 @@ export class SceneJoin extends SceneBase {
 	}
 
 	private _initCurrentTournament() {
-		// const selectedTournament = this._tournamentObjects[this._currentSelectTournament];
 		if (this._currentSelectTournament < 0)
 			return;
 		this.root.currentTournament = this._tournamentObjects[this._currentSelectTournament].data;
-		
-
+		console.log(this.root.currentTournament?.max_participants);
 	}
 
 	private _joinGame(gameId: number) {
