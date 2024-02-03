@@ -1,8 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const TwoFA: React.FC = () => {
-    // State variable to track toggle status, initialized to false
-    const [isTwoFAToggled, setIsTwoFAToggled] = useState(false);
+    const [isTwoFAToggled, setIsTwoFAToggled] = useState(() => {
+        const savedState = localStorage.getItem('isTwoFAToggled');
+        return savedState !== null ? JSON.parse(savedState) : false;
+    });
+
+    // Effect hook to save state to localStorage when it changes
+    useEffect(() => {
+        localStorage.setItem('isTwoFAToggled', JSON.stringify(isTwoFAToggled));
+    }, [isTwoFAToggled]);
 
     // Function to handle toggle
     const handleTwoFAToggle = () => {
@@ -13,12 +20,12 @@ const TwoFA: React.FC = () => {
         <div>
             {/* Toggle button */}
             <button onClick={handleTwoFAToggle} style={{
-                                    backgroundColor: 'black',
+                                    backgroundColor: isTwoFAToggled ? 'green' : 'grey',
                                     display: 'inline-block',
-									padding: '5px',
+									padding: '4px',
 									border: 'solid',
 									borderColor: 'var(--accent-color)', 
-                                    fontSize: '16px', 
+                                    fontSize: '14px', 
                                     cursor: 'pointer' }}>
                 {isTwoFAToggled ? '2FA ON' : '2FA OFF'}
             </button>
