@@ -1,8 +1,10 @@
 import * as PIXI from 'pixi.js';
 import { SceneBase } from './SceneBase';
 
-import { glowFilter, defaultColor, textStyleMenuTournamentCreate, textStyleMenuTournamentName, textStyleMenuTournamentMaxScore, textStyleMenuTournamentMode, textStyleMenuTournamentPlayer, textStyleMenuOptionPlay, textStyleTournamentMenu } from '..';
+import { glowFilter, defaultColor, textStyleMenuTournamentCreate, textStyleMenuTournamentName, textStyleMenuTournamentMaxScore, textStyleMenuTournamentMode, textStyleMenuTournamentPlayer, textStyleMenuOptionPlay } from '..';
 import { SceneMenu2 } from './SceneMenu2';
+import { SceneLoadingPage } from './SceneLoadingPage';
+import {sound} from '@pixi/sound';
 
 const selectMaxCreate = 3;
 
@@ -13,13 +15,15 @@ enum menu {
 	PLAY = 3,
 }
 
-// FOR THE BACK ===============================
-
-let nb_playerForBack = 0;
-let nb_scoreForBack = 0;
-// ====================================================
 
 export class SceneMenuTournament extends SceneBase {
+	
+	
+	// FOR THE BACK ================
+	private _nb_playerForBack: number = 0;
+	private _nb_scoreForBack: number = 0; 
+	// ====================================================
+
 
 
 	// private state: menuState = menuState.SELECT_MENU;
@@ -61,6 +65,9 @@ export class SceneMenuTournament extends SceneBase {
 	//=======================================
 
 	public async onStart(container: PIXI.Container) {
+		sound.add('select', './sound/Select.mp3');
+		sound.add('enter', './sound/game-start.mp3');
+
 		container.addChild(this._initTextCreate(this._textCreate));
 		this._create = this._initMenuCreate();
 		container.addChild(this._create);
@@ -75,6 +82,7 @@ export class SceneMenuTournament extends SceneBase {
 
 
 		if (e.code === 'ArrowUp') {
+			sound.play('select');
 
 			this._currentSelectCreate--;
 			if (this._currentSelectCreate < menu.NAME) {
@@ -84,6 +92,7 @@ export class SceneMenuTournament extends SceneBase {
 		}
 
 		if (e.code === 'ArrowDown') {
+			sound.play('select');
 
 			this._currentSelectCreate++;
 			if (this._currentSelectCreate > selectMaxCreate) {
@@ -93,17 +102,26 @@ export class SceneMenuTournament extends SceneBase {
 		}
 
 		if (e.code === 'ArrowLeft') {
+			sound.play('select');
+
 			this._pressLeft();
 		}
 
 		if (e.code === 'ArrowRight') {
+			sound.play('select');
+
 			this._pressRight();
 		}
 
 		if (e.code === 'Enter') {
+			if (this._currentSelectCreate === menu.PLAY) {
+				sound.play('enter');
+
+				this.root.loadScene(new SceneLoadingPage(this.root));
+			}
 
 		}
-
+		
 		if (e.code === 'Escape') {
 			this.root.loadScene(new SceneMenu2(this.root));
 		}
@@ -287,7 +305,7 @@ export class SceneMenuTournament extends SceneBase {
 		}
 		this._nb_player_tab.text = '< ' + this._nbPlayer[this._currentNbPlayer] + ' >'; 
 
-		nb_playerForBack = this._nbPlayer[this._currentNbPlayer];
+		this._nb_playerForBack = this._nbPlayer[this._currentNbPlayer];
 
 	}
 
@@ -298,7 +316,7 @@ export class SceneMenuTournament extends SceneBase {
 		}
 		this._nb_player_tab.text = '< ' + this._nbPlayer[this._currentNbPlayer] + ' >';
 		
-		nb_playerForBack = this._nbPlayer[this._currentNbPlayer];
+		this._nb_playerForBack = this._nbPlayer[this._currentNbPlayer];
 	}
 
 	private _maxScorePrev() {
@@ -308,7 +326,7 @@ export class SceneMenuTournament extends SceneBase {
 		}
 		this._score_max_tab.text = '< ' + this._scoreMax[this._currentMaxScore] + ' >';
 
-		nb_scoreForBack = this._scoreMax[this._currentMaxScore];
+		this._nb_scoreForBack = this._scoreMax[this._currentMaxScore];
 	}
 
 	private _maxScoreNext() {
@@ -318,7 +336,7 @@ export class SceneMenuTournament extends SceneBase {
 		}
 		this._score_max_tab.text = '< ' + this._scoreMax[this._currentMaxScore] + ' >';
 
-		nb_scoreForBack = this._scoreMax[this._currentMaxScore];
+		this._nb_scoreForBack = this._scoreMax[this._currentMaxScore];
 	}
 
 }

@@ -1,10 +1,10 @@
 import { defaultColor, glowFilter } from '..';
 import { SceneBase } from './SceneBase';
 import * as PIXI from 'pixi.js';
-import { PixiManager } from '../PixiManager';
-import apiService from '../../src/services/apiService';
-import { SceneLoadingPage } from './SceneLoadingPage';
-import { SceneGame } from './SceneGame';
+// import { PixiManager } from '../PixiManager';
+// import apiService from '../../src/services/apiService';
+// import { SceneLoadingPage } from './SceneLoadingPage';
+// import { SceneGame } from './SceneGame';
 
 
 const tournamentLine = PIXI.Texture.from('./img/tournamentLine.png');
@@ -63,7 +63,7 @@ export class SceneTournamentLoadingVs extends SceneBase {
 
 	}
 
-	public onKeyDown(e: KeyboardEvent) {
+	public onKeyDown() {
 
 	}
 
@@ -240,15 +240,15 @@ export class SceneTournamentLoadingVs extends SceneBase {
 					while (i < 8) {
 						console.log(playerName[i]);
 						const newName = new PIXI.Text(playerName[i]);
-						newName.style.fontSize = (this.root.width * 1.5) / 100;
-						newName.y =  (this.root.height * 70) / 100;
-						newName.x = ((this.root.width * 2) / 100) + i * ((this.root.width * 12.5) / 100);
+						const adjustment = (this.root.height * 70 * 0.03) / 100;
+						newName.style.fontSize = (this.root.width * 2) / 100;
+						newName.y = (this.root.height * 70) / 100 + (i % 2 === 1 ? adjustment : 0);
+						newName.x = ((this.root.width * 2) / 100) + i * ((this.root.width * 12.2) / 100);
 						newName.style.fill = defaultColor;
 						newName.filters = [glowFilter];
 						this._nameVs[i] = newName;
 						i++;
 					}
-
 			}
 		}
 		for (let i = 0; i < this._nameVs.length; i++) {

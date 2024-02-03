@@ -1,10 +1,10 @@
 import { defaultColor, glowFilter } from '..';
 import { SceneBase } from './SceneBase';
-import { SceneMenu } from './SceneMenu';
-import { SceneWinOrLoose } from './SceneWinOrLoose';
+// import { SceneMenu } from './SceneMenu';
+// import { SceneWinOrLoose } from './SceneWinOrLoose';
 import * as PIXI from 'pixi.js';
-import { gsap } from 'gsap';
-import { PixiManager } from '../PixiManager';
+// import { gsap } from 'gsap';
+// import { PixiManager } from '../PixiManager';
 
 const keyExplanation = PIXI.Texture.from('./img/keyExplanation.png');
 
@@ -146,9 +146,13 @@ export class SceneLoadingPage extends SceneBase {
 	//=======================================
 
 	private _initKeyExplanation(texture: PIXI.Sprite) {
-		texture.width = this.root.width - 100;
-		texture.height = this.root.height / 2;
-		// texture.y = texture.height / 2;
+		const pourcentage = 60;
+		const newWidth = ((this.root.width * pourcentage) / 100);
+		const ratio = this._sprite.width / this._sprite.height;
+		const newHigth = newWidth / ratio;
+		texture.width = newWidth;
+		texture.height = newHigth;
+		texture.y = 20;
 		texture.x = this.root.width / 2 - texture.width / 2;
 		texture.visible = true;
 	}

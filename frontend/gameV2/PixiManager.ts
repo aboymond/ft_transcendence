@@ -16,6 +16,7 @@ interface Tournament {
 	max_score: number;
 	max_participants: number;
 	status: string;
+	participants: string[];
 
 }
 
@@ -27,6 +28,7 @@ export class PixiManager {
 	public playerAWin = true;
 	public ws: WebSocket | null;
 	public gameState: GameState | null;
+	public gameSocket: WebSocket | null = null;
 	public userId: number | null = null;
 	public currentTournament: Tournament | null = null;
 	
