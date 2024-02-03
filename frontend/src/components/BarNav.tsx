@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Navbar, Nav, Container, Image, Offcanvas, Row, Col, CloseButton } from 'react-bootstrap';
 import { useAuth } from '../hooks/useAuth';
 import Profile from './Profile';
+import TwoFA from './TwoFA';
 import Friends from './Friends';
 import styles from '../styles/BarNav.module.css';
 
@@ -74,11 +75,11 @@ const BarNav: React.FC = () => {
 								2FA Settings
 							</Nav.Link>
 						</div>
+						{showTwoFA && <TwoFA />}
 						<Friends />
 						<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
 							<Nav.Link onClick={auth.logout}>Log Out</Nav.Link>
 						</div>
-						{/* {showTwoFA && <TwoFA />} */}
 					</Offcanvas.Body>
 				</Navbar.Offcanvas>
 			</Container>

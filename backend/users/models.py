@@ -2,7 +2,6 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.conf import settings
 
-
 class CustomUser(AbstractUser):
     STATUS_CHOICES = [
         ("online", "Online"),
@@ -23,6 +22,9 @@ class CustomUser(AbstractUser):
     friends = models.ManyToManyField("self", symmetrical=False)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="offline")
     email = models.EmailField(unique=True, blank=False, null=False)
+    twofa = models.BooleanField(default=False)
+    otp = models.CharField(max_length=6, blank=True)
+    otp_expiry_time = models.DateTimeField(blank=True, null=True)
 
     @property
     def match_history(self):

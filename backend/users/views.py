@@ -1,12 +1,17 @@
 import os
 import requests
-from django.contrib.auth import authenticate, logout
+import random
+from datetime import timedelta
+from django.utils import timezone
+from django.contrib.auth import authenticate, logout, login as django_login
 from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied
 from django.core.files.base import ContentFile
 from django.db.models import Q
 from django.shortcuts import redirect
 from rest_framework import generics, permissions, status, serializers
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
@@ -29,13 +34,8 @@ User = get_user_model()
 load_dotenv()
 logger = logging.getLogger(__name__)
 
-def send_welcome_email(request):
-    subject = 'BONJOUR'
-    message = 'OUI, ça marche, je crois !!'
-    from_email = 'retroscendence@mail.ch'
-    recipient_list = ['syntheticgeneration09@gmail.com']
-    send_mail(subject, message, from_email, recipient_list)
-
+def generate_random_digits(n=6):
+    return "".join(map(str, random.sample(range(0, 10), n)))
 
 class CreateUserView(generics.CreateAPIView):
     serializer_class = UserSerializer
@@ -60,8 +60,18 @@ class LoginView(generics.GenericAPIView):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             user.status = "online"  # type: ignore
+            verification_code = generate_random_digits()
+            user.otp = verification_code
+            user.otp_expiry_time = timezone.now() + timedelta(hours=1)
             user.save()
             refresh = RefreshToken.for_user(user)
+            send_mail(
+            'Verification Code',
+            f'Your verification code is: {user.otp}',
+            os.getenv('EMAIL_H_U'),
+            [user.email],
+            fail_silently=True,
+            )
             return Response(
                 {
                     "refresh": str(refresh),
