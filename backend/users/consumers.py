@@ -3,7 +3,6 @@ import json
 import logging
 from django.contrib.auth import get_user_model
 from asgiref.sync import sync_to_async
-from games.models import Game  # noqa: E402
 
 logger = logging.getLogger(__name__)
 User = get_user_model()
