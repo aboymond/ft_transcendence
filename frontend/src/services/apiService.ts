@@ -157,6 +157,18 @@ export const apiService = {
 	getGames: async () => {
 		return fetchAPI('games/list-create/');
 	},
+	createGame: async (userId: number) => {
+		return fetchAPI('games/create/', {
+			method: 'POST',
+			body: JSON.stringify({ user_id: userId }),
+		});
+	},
+	joinGame: async (gameId: number, userId: number) => {
+		return fetchAPI(`games/join/${gameId}/`, {
+			method: 'PATCH',
+			body: JSON.stringify({ user_id: userId }),
+		});
+	},
 };
 
 export default apiService;

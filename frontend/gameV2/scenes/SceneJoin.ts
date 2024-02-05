@@ -7,6 +7,7 @@ import { glowFilter } from '..';
 import apiService from '../../src/services/apiService';
 import { SceneLoadingPage } from './SceneLoadingPage';
 import { Tournament, Game } from '../../src/types';
+import { SceneGame } from './SceneGame';
 
 enum menuState {
 	TOURN_MENU,
@@ -369,47 +370,33 @@ export class SceneJoin extends SceneBase {
 	}
 
 	private _joinGame(gameId: number) {
-		if (this.root.ws) {
-			console.log('Sending request to join_game');
-			this.root.ws.send(
-				JSON.stringify({
-					type: 'game_event',
-					payload: {
-						action: 'join_game',
-						data: {
-							game_id: gameId,
-							user_id: Number(this.root.userId),
-						},
-					},
-				}),
-			);
-			// // Open game socket connection here
-			// const gameSocketUrl = 'ws://localhost:8000/ws/game/' + gameId + '/';
-			// this.root.gameSocket = new WebSocket(gameSocketUrl);
-			// this.root.gameSocket.onopen = () => {
-			// 	console.log('Game WebSocket opened');
-			// };
-			// this.root.gameSocket.onmessage = (e) => {
-			// 	const { type, payload } = JSON.parse(e.data);
-			// 	const { action, data } = payload;
-			// 	console.log('game data:', { type, action, data });
-			// 	// Update game state based on received data
-			// 	if (type === 'game_event' && action === 'game_state') {
-			// 		this.root.setGameState(data);
-			// 	}
-			// 	if (action === 'start_game') {
-			// 		console.log('Loading SceneGame');
-			// 		this.root.loadScene(new SceneGame(this.root));
-			// 	}
-			// };
-			this.root.loadScene(new SceneLoadingPage(this.root));
-			// this.root.ws.onmessage = (e) => {
-			// 	const data = JSON.parse(e.data);
-			// 	if (data.action === 'start_game') {
-			// 		console.log('Loading SceneGame');
-			// 		this.root.loadScene(new SceneGame(this.root));
-			// 	}
-			// };
-		}
+		apiService
+			.joinGame(gameId, this.root.userId ?? 0)
+			.then((response) => {
+				console.log('Joined game successfully', response);
+				this.openGameSocket(response.id); // Assuming response contains game_id
+			})
+			.catch((error) => console.error('Error joining game', error));
+		this.root.loadScene(new SceneLoadingPage(this.root));
+	}
+
+	private openGameSocket(gameId: number) {
+		const gameSocketUrl = `ws://localhost:8000/ws/game/${gameId}/`;
+		this.root.gameSocket = new WebSocket(gameSocketUrl);
+
+		this.root.gameSocket.onopen = () => {
+			console.log('Game WebSocket opened:', gameId);
+		};
+
+		this.root.gameSocket.addEventListener('message', (event) => {
+			const data = JSON.parse(event.data);
+			console.log('Game WebSocket message:', data);
+
+			// Check if the message contains the 'start_game' action
+			if (data.action === 'start_game') {
+				console.log('Starting SceneGame');
+				this.root.loadScene(new SceneGame(this.root));
+			}
+		});
 	}
 }

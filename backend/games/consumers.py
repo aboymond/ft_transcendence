@@ -1,6 +1,7 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
 import json
 from .models import Game
+from asgiref.sync import sync_to_async
 
 
 class GameConsumer(AsyncWebsocketConsumer):
@@ -16,6 +17,10 @@ class GameConsumer(AsyncWebsocketConsumer):
         print(
             f"WebSocket for game {self.game_id} and group {self.game_group_name} opened"
         )  # Log when WebSocket is opened
+
+        # Check if both players are connected. This is a placeholder for your logic.
+        if await self.ready_to_start_game():
+            await self.start_game()
 
     async def disconnect(self, close_code):
         print("Disconnecting... (Game)")  # Log message before disconnection
@@ -73,5 +78,23 @@ class GameConsumer(AsyncWebsocketConsumer):
         }
         await self.send(text_data=json.dumps(message))
 
-    async def start_game(self, event):
-        print("Start game event: Game\n", event)
+    async def start_game(self):
+        await self.channel_layer.group_send(
+            self.game_group_name,
+            {
+                "type": "game_message",  # Corresponds to the method that handles this message
+                "message": {
+                    "action": "start_game",
+                    # You can include other game start related data here
+                },
+            },
+        )
+
+    async def game_message(self, event):
+        await self.send(text_data=json.dumps(event["message"]))
+
+    async def ready_to_start_game(self):
+        game = await sync_to_async(Game.objects.get)(id=self.game_id)
+        player1 = await sync_to_async(getattr)(game, "player1", None)
+        player2 = await sync_to_async(getattr)(game, "player2", None)
+        return player1 is not None and player2 is not None

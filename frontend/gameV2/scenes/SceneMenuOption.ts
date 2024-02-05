@@ -12,7 +12,9 @@ import {
 	textStyleMenuOptionVictory,
 } from '../index';
 import { SceneGame } from './SceneGame';
+import { SceneGameVsBot } from './SceneGameVsBot';
 import { SceneLoadingPage } from './SceneLoadingPage';
+import { apiService } from '../../src/services/apiService';
 
 const selectMax = 4;
 let errorLock: boolean = false;
@@ -140,7 +142,7 @@ export class SceneMenuOption extends SceneBase {
 				this._popError.visible = false;
 				this._textErrorOK.visible = false;
 				this._textErrorPad.visible = false;
-			} else this._pressSpace();
+			} else this._pressEnter();
 		}
 		if (e.code === 'Escape') {
 			this.root.loadScene(new SceneMenu2(this.root));
@@ -218,37 +220,20 @@ export class SceneMenuOption extends SceneBase {
 	// UTILS NAVIGATOR
 	//=======================================
 
-	private _pressSpace() {
+	private _pressEnter() {
 		if (this.root.vsPlayer) {
 			// Send a request to the backend to create a game
-			if (this.root.ws) {
-				console.log('Sending request to create_game');
-				this.root.ws.send(
-					JSON.stringify({
-						type: 'game_event',
-						payload: {
-							action: 'create_game',
-							data: {
-								user_id: Number(this.root.userId),
-							},
-						},
-					}),
-				);
-				this.root.loadScene(new SceneLoadingPage(this.root));
-				// this.root.ws.onmessage = (e) => {
-				// 	const data = JSON.parse(e.data);
-				// 	if (data.action === 'start_game') {
-				// 		console.log('Loading SceneGame');
-				// 		this.root.loadScene(new SceneGame(this.root));
-				// 	}
-				// };
-			}
+			apiService
+				.createGame(this.root.userId ?? 0) //TODO
+				.then((response) => {
+					console.log('Game created successfully', response);
+					this.openGameSocket(response.id); // Assuming response contains game_id
+				})
+				.catch((error) => console.error('Error creating game', error));
+			this.root.loadScene(new SceneLoadingPage(this.root));
 		} else if (this._currentPad === 0) {
-			//TODO: load scene vs bot
-			console.log('Loading SceneGame');
-			this.root.loadScene(new SceneGame(this.root));
-			// console.log('Loading SceneGameVsBot');
-			// this.root.loadScene(new SceneGameVsBot(this.root));
+			console.log('Loading SceneGameVsBot');
+			this.root.loadScene(new SceneGameVsBot(this.root));
 		} else {
 			errorLock = true;
 			this._popError.visible = true;
@@ -405,5 +390,25 @@ export class SceneMenuOption extends SceneBase {
 		this._padColor.y = this._textColorAvatar.y - 20;
 		this._padColor.x = this.root.width / 2 + this._padColor.width / 2;
 		this._padColor.endFill();
+	}
+
+	private openGameSocket(gameId: number) {
+		const gameSocketUrl = `ws://localhost:8000/ws/game/${gameId}/`;
+		this.root.gameSocket = new WebSocket(gameSocketUrl);
+
+		this.root.gameSocket.onopen = () => {
+			console.log('Game WebSocket opened:', gameId);
+		};
+
+		this.root.gameSocket.addEventListener('message', (event) => {
+			const data = JSON.parse(event.data);
+			console.log('Game WebSocket message:', data);
+
+			// Check if the message contains the 'start_game' action
+			if (data.action === 'start_game') {
+				console.log('Starting SceneGame');
+				this.root.loadScene(new SceneGame(this.root));
+			}
+		});
 	}
 }
