@@ -35,3 +35,12 @@ export interface GameHistory {
 	player1_score: number;
 	player2_score: number;
 }
+
+export interface GameState {
+	ballVelocity: { x: number; y: number };
+	playerAScore: number;
+	playerBScore: number;
+	playerTurnA: boolean;
+	ballPosition: { x: number; y: number };
+	// Add other fields as needed
+}

@@ -30,6 +30,8 @@ class Tournament(models.Model):
         on_delete=models.CASCADE,
     )
     max_participants = models.IntegerField()
+    max_score = models.IntegerField(default=5)
+
     participants = models.ManyToManyField(
         settings.AUTH_USER_MODEL, related_name="tournaments"
     )

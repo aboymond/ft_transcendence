@@ -1,0 +1,11 @@
+
+
+.avatar {
+
+    filter: drop-shadow(0 0 2px rgb(26, 255, 0));
+}
+
+.dark-offcanvas {
+    background-color: #333;
+    color: #fff;
+  }

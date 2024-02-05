@@ -3,7 +3,6 @@ import { Container, Row, Col, Button, Card } from 'react-bootstrap';
 import Logo from '../components/Logo';
 import styles from '../styles/LogPage.module.css';
 import { useNavigate } from 'react-router-dom';
-import { apiService } from '../services/apiService';
 import { useAuth } from '../hooks/useAuth';
 import Login from '../components/Login';
 import Register from '../components/Register';
@@ -11,7 +10,6 @@ import Register from '../components/Register';
 const LogPage: React.FC = () => {
 	const [showComponent, setShowComponent] = useState('');
 
-	const [error, setError] = useState('');
 	const navigate = useNavigate();
 	const auth = useAuth();
 

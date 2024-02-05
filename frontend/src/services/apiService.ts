@@ -74,13 +74,13 @@ export const apiService = {
 	getUserGameHistory: async (userId: number): Promise<GameHistory[]> => {
 		return fetchAPI(`users/${userId}/game_history/`);
 	},
-	register: async (username: string, password: string, displayName: string) => {
+	register: async (username: string, password: string, displayName: string, email: string) => {
 		return fetchAPI(
 			'users/register/',
 			{
 				// Update with your actual registration endpoint
 				method: 'POST',
-				body: JSON.stringify({ username, password, display_name: displayName }),
+				body: JSON.stringify({ username, password, display_name: displayName, email }),
 			},
 			false,
 		);
@@ -144,6 +144,12 @@ export const apiService = {
 	},
 	getGameHistory: async (): Promise<GameHistory[]> => {
 		return fetchAPI('users/game_histories/');
+	},
+	getTournaments: async () => {
+		return fetchAPI('tournaments/tournaments/');
+	},
+	getGames: async () => {
+		return fetchAPI('games/list-create/');
 	},
 };
 

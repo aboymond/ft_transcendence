@@ -1,5 +1,5 @@
-import React from "react";
-import styles from "../styles/CreditsPage.module.css";
+import React from 'react';
+import styles from '../styles/CreditsPage.module.css';
 
 const Credits: React.FC = () => {
     return (

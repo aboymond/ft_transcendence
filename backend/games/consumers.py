@@ -12,9 +12,15 @@ class GameConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_add(self.game_group_name, self.channel_name)
 
         await self.accept()
+        print(
+            f"WebSocket for game {self.game_id} opened"
+        )  # Log when WebSocket is opened
 
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(self.game_group_name, self.channel_name)
+        print(
+            f"WebSocket for game {self.game_id} closed"
+        )  # Log when WebSocket is closed
 
     async def receive(self, text_data):
         data = json.loads(text_data)
@@ -22,6 +28,19 @@ class GameConsumer(AsyncWebsocketConsumer):
         game = Game.objects.get(id=self.game_id)
         if action == "move_pad":
             game.move_pad(data.get("pad_number"), data.get("x"))
+        elif action == "key_press":
+            key = data.get("key")
+            player = data.get("player")
+            if player == 1:
+                if key == "ArrowRight":
+                    game.move_pad(1, game.pad1_x + 10)  # Move pad 1 to the right
+                elif key == "ArrowLeft":
+                    game.move_pad(1, game.pad1_x - 10)  # Move pad 1 to the left
+            elif player == 2:
+                if key == "KeyD":
+                    game.move_pad(2, game.pad2_x + 10)  # Move pad 2 to the right
+                elif key == "KeyA":
+                    game.move_pad(2, game.pad2_x - 10)  # Move pad 2 to the left
         elif action == "check_collisions":
             game.check_collisions()
         # Process other game actions...

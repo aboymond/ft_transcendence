@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js';
 import { SceneBase } from './SceneBase';
+import { SceneMenu2 } from './SceneMenu2';
 import {
 	defaultColor,
 	glowFilter,
@@ -10,7 +11,9 @@ import {
 	textStyleMenuOptionError,
 	textStyleMenuOptionVictory,
 } from '../index';
+import { SceneGame } from './SceneGame';
 import { SceneGameVsBot } from './SceneGameVsBot';
+import { SceneLoadingPage } from './SceneLoadingPage';
 
 const selectMax = 4;
 let errorLock: boolean = false;
@@ -34,15 +37,15 @@ const chooseBotLevel: string[] = ['EASY', 'MEDIUM', 'HARD', 'IMPOSSIBLE!!!'];
 const botLvlNum: number[] = [0.05, 0.075, 0.09, 0.9];
 const choosePad: string[] = ['BASIC', 'LOCKED', 'LOCKED', 'LOCKED', 'LOCKED', 'LOCKED'];
 
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 const textures = [
-	PIXI.Texture.from('gameV2/img/pad0.png'),
-	PIXI.Texture.from('gameV2/img/pad1.png'),
-	PIXI.Texture.from('gameV2/img/pad2.png'),
-	PIXI.Texture.from('gameV2/img/pad3.png'),
-	PIXI.Texture.from('gameV2/img/pad4.png'),
-	PIXI.Texture.from('gameV2/img/pad5.png'),
+	PIXI.Texture.from('./img/pad0.png'),
+	PIXI.Texture.from('./img/pad1.png'),
+	PIXI.Texture.from('./img/pad2.png'),
+	PIXI.Texture.from('./img/pad3.png'),
+	PIXI.Texture.from('./img/pad4.png'),
+	PIXI.Texture.from('./img/pad5.png'),
 ];
 
 export class SceneMenuOption extends SceneBase {
@@ -74,7 +77,7 @@ export class SceneMenuOption extends SceneBase {
 	private _textErrorPad = new PIXI.Text('SELECT AN AVALIBLE PAD', textStyleMenuOptionError);
 	private _textErrorOK = new PIXI.Text('[ ENTER ]', textStyleMenuOptionError);
 
-	public onStart(container: PIXI.Container) {
+	public async onStart(container: PIXI.Container) {
 		// Init text
 		container.addChild(this._createTextColorAvatar(this._textColorAvatar));
 		container.addChild(this._createTextPad(this._textPad));
@@ -139,6 +142,9 @@ export class SceneMenuOption extends SceneBase {
 				this._textErrorOK.visible = false;
 				this._textErrorPad.visible = false;
 			} else this._pressSpace();
+		}
+		if (e.code === 'Escape') {
+			this.root.loadScene(new SceneMenu2(this.root));
 		}
 	}
 
@@ -214,18 +220,39 @@ export class SceneMenuOption extends SceneBase {
 	//=======================================
 
 	private _pressSpace() {
-		if (
-			(!this.root.vsPlayer && this._currentSelect === 4) ||
-			(this.root.vsPlayer && this._currentSelect === 3)
-		) {
-			
-			if (this._currentPad === 0) this.root.loadScene(new SceneGameVsBot(this.root));
-			else {
-				errorLock = true;
-				this._popError.visible = true;
-				this._textErrorOK.visible = true;
-				this._textErrorPad.visible = true;
+		if (this.root.vsPlayer) {
+			// Send a request to the backend to create a game
+			if (this.root.ws) {
+				console.log('Sending request to create_game');
+				this.root.ws.send(
+					JSON.stringify({
+						type: 'game_event',
+						payload: {
+							action: 'create_game',
+							data: {
+								user_id: Number(this.root.userId),
+							},
+						},
+					}),
+				);
+				this.root.loadScene(new SceneLoadingPage(this.root));
+				this.root.ws.onmessage = (e) => {
+					const data = JSON.parse(e.data);
+					if (data.action === 'start_game') {
+						console.log('Loading SceneGame');
+						this.root.loadScene(new SceneGame(this.root));
+					}
+				};
 			}
+		} else if (this._currentPad === 0) {
+			//TODO: enable other pads ?
+			console.log('Loading SceneGameVsBot');
+			this.root.loadScene(new SceneGameVsBot(this.root));
+		} else {
+			errorLock = true;
+			this._popError.visible = true;
+			this._textErrorOK.visible = true;
+			this._textErrorPad.visible = true;
 		}
 	}
 

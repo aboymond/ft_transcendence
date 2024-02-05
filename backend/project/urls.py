@@ -22,8 +22,9 @@ from django.conf.urls.static import static
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/users/", include("users.urls")),
-    # path('api/games/', include('games.urls')),
+    path('api/games/', include('games.urls')),
     path("api/tournaments/", include("tournaments.urls")),
+    path("", include('django_prometheus.urls')),
 ]
 
 if settings.DEBUG:

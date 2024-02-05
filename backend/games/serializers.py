@@ -4,6 +4,9 @@ from .models import MatchmakingQueue
 
 
 class GameSerializer(serializers.ModelSerializer):
+    player1 = serializers.SlugRelatedField(read_only=True, slug_field="username")
+    player2 = serializers.SlugRelatedField(read_only=True, slug_field="username")
+
     class Meta:
         model = Game
         fields = "__all__"
