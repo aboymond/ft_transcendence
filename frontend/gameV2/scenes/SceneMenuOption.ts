@@ -404,10 +404,9 @@ export class SceneMenuOption extends SceneBase {
 			const data = JSON.parse(event.data);
 			console.log('Game WebSocket message:', data);
 
-			// Check if the message contains the 'start_game' action
 			if (data.action === 'start_game') {
 				console.log('Starting SceneGame');
-				this.root.loadScene(new SceneGame(this.root));
+				this.root.loadScene(new SceneGame(this.root, gameId));
 			}
 		});
 	}

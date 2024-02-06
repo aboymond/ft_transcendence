@@ -5,6 +5,7 @@ import { SceneWinOrLoose } from './SceneWinOrLoose';
 import * as PIXI from 'pixi.js';
 import { gsap } from 'gsap';
 import { PixiManager } from '../PixiManager';
+import { apiService } from '../../src/services/apiService';
 
 export class SceneGame extends SceneBase {
 	// FOR THE BACK ======================================
@@ -24,8 +25,8 @@ export class SceneGame extends SceneBase {
 	//==========================================================
 
 	private _ball = new PIXI.Graphics();
-	private _padPlayer2 = new PIXI.Graphics();
-	private _padPlayer = new PIXI.Graphics();
+	private _pad1 = new PIXI.Graphics();
+	private _pad2 = new PIXI.Graphics();
 	private _scoreText = new PIXI.Text('0 - 0', { fill: defaultColor });
 	private _keysPressed: { [key: string]: boolean } = {};
 	private _escapeKeyPressed = false;
@@ -35,43 +36,35 @@ export class SceneGame extends SceneBase {
 	private _noOption!: PIXI.Text;
 	private _exitText!: PIXI.Text;
 
-	private messageHandler: (this: WebSocket, ev: MessageEvent) => void;
+	// private messageHandler: (this: WebSocket, ev: MessageEvent) => void;
 
-	constructor(public root: PixiManager) {
+	constructor(
+		public root: PixiManager,
+		private _gameId: number,
+	) {
 		super(root);
-		this.messageHandler = (event: MessageEvent) => {
-			const data = JSON.parse(event.data);
-			//TODO
-			if (data.payload.action === 'game_created') {
-				console.log('game_created');
-			}
-		};
 	}
 
 	//=======================================
 	// HOOK
 	//=======================================
 
+	//TODO init state in backend
 	public async onStart(container: PIXI.Container) {
-		if (this.root.ws) {
-			console.log('SceneGame: addEventListener');
-			this.root.ws.addEventListener('message', this.messageHandler);
-		}
-
 		//Init Ball
 		container.addChild(this._initBall(10, 0x1aff00));
 		this._ball.x = this.root.width / 2;
 		this._ball.y = this.root.height / 2;
 
-		//Init Pad A
-		container.addChild(this._initPad(this._padPlayer2, 100, 10, defaultColor));
-		this._padPlayer.x = this.root.width / 2;
-		this._padPlayer.y = this.root.height - 50;
+		//Init Pad 1
+		container.addChild(this._initPad(this._pad2, 100, 10, defaultColor));
+		this._pad1.x = this.root.width / 2;
+		this._pad1.y = this.root.height - 50;
 
-		//Init Pad B
-		container.addChild(this._initPad(this._padPlayer, 100, 10, defaultColor));
-		this._padPlayer2.x = this.root.width / 2;
-		this._padPlayer2.y = 50;
+		//Init Pad 2
+		container.addChild(this._initPad(this._pad1, 100, 10, defaultColor));
+		this._pad2.x = this.root.width / 2;
+		this._pad2.y = 50;
 
 		//Init Score Text
 		container.addChild(this._initScoreText());
@@ -90,10 +83,10 @@ export class SceneGame extends SceneBase {
 			this._data.player2_score = gameState.player2_score;
 			this._ball.x = gameState.ballPosition.x;
 			this._ball.y = gameState.ballPosition.y;
-			this._padPlayer.x = gameState.pad1_position.x;
-			// this._padPlayer.y = gameState.pad1_y;
-			this._padPlayer2.x = gameState.pad2_position.x;
-			// this._padPlayer2.y = gameState.pad2_y;
+			this._pad1.x = gameState.pad1_position.x;
+			// this._pad1.y = gameState.pad1_y;
+			this._pad2.x = gameState.pad2_position.x;
+			// this._pad2.y = gameState.pad2_y;
 		}
 
 		if (!this._exitBool) {
@@ -118,10 +111,6 @@ export class SceneGame extends SceneBase {
 	}
 
 	public onFinish() {
-		if (this.root.ws) {
-			console.log('SceneGame: removeEventListener');
-			this.root.ws.removeEventListener('message', this.messageHandler);
-		}
 		if (this.root.gameSocket) {
 			this.root.gameSocket.close();
 			this.root.gameSocket = null;
@@ -139,17 +128,12 @@ export class SceneGame extends SceneBase {
 		}
 
 		if (e.code === 'ArrowRight' || e.code === 'ArrowLeft') {
-			//TODO use gamesocket instead of ws ?
-			this.root.ws?.send(
-				JSON.stringify({
-					type: 'game_event',
-					payload: {
-						action: 'key_press',
-						data: { key: e.code, player: this.root.userId },
-					},
-				}),
-			);
-			console.log('send key_press: ' + e.code);
+			console.log('Sending key press: ' + e.code);
+			console.log('Game ID: ' + this._gameId);
+			apiService
+				.sendKeyPress(this._gameId, 1, e.code) // Assuming player 1 for demonstration
+				.then((response) => console.log(response))
+				.catch((error) => console.error('Error sending key press', error));
 		}
 	}
 
@@ -205,20 +189,20 @@ export class SceneGame extends SceneBase {
 
 		// Pad colision
 		if (
-			this._ball.x > this._padPlayer2.x - this._padPlayer2.width / 2 &&
-			this._ball.x < this._padPlayer2.x + this._padPlayer2.width / 2
+			this._ball.x > this._pad2.x - this._pad2.width / 2 &&
+			this._ball.x < this._pad2.x + this._pad2.width / 2
 		) {
-			if (this._ball.y <= this._padPlayer2.y + this._padPlayer2.height / 2 + 1) {
+			if (this._ball.y <= this._pad2.y + this._pad2.height / 2 + 1) {
 				this._data.ballVelocity.y = -this._data.ballVelocity.y;
-				this._data.ballVelocity.x = ((this._ball.x - this._padPlayer2.x) / (this._padPlayer2.width / 2)) * 5;
+				this._data.ballVelocity.x = ((this._ball.x - this._pad2.x) / (this._pad2.width / 2)) * 5;
 			}
 		}
 		if (
-			this._ball.x > this._padPlayer.x - this._padPlayer.width / 2 &&
-			this._ball.x < this._padPlayer.x + this._padPlayer.width / 2
+			this._ball.x > this._pad1.x - this._pad1.width / 2 &&
+			this._ball.x < this._pad1.x + this._pad1.width / 2
 		) {
-			if (this._ball.y >= this._padPlayer.y - this._padPlayer.height - 1) {
-				this._data.ballVelocity.x = ((this._ball.x - this._padPlayer.x) / (this._padPlayer.width / 2)) * 5;
+			if (this._ball.y >= this._pad1.y - this._pad1.height - 1) {
+				this._data.ballVelocity.x = ((this._ball.x - this._pad1.x) / (this._pad1.width / 2)) * 5;
 				this._data.ballVelocity.y = -this._data.ballVelocity.y;
 			}
 		}
@@ -230,23 +214,23 @@ export class SceneGame extends SceneBase {
 
 		if (this._player1_turn) {
 			// ball position
-			if (this._ball.x - this._ball.width / 2 < this._padPlayer.x - this._padPlayer.width / 2) {
-				this._ball.x = this._padPlayer.x - this._padPlayer.width / 2 - this._ball.width / 2;
-			} else if (this._ball.x + this._ball.width / 2 > this._padPlayer.x + this._padPlayer.width / 2) {
-				this._ball.x = this._padPlayer.x + this._padPlayer.width / 2 - this._ball.width / 2;
+			if (this._ball.x - this._ball.width / 2 < this._pad1.x - this._pad1.width / 2) {
+				this._ball.x = this._pad1.x - this._pad1.width / 2 - this._ball.width / 2;
+			} else if (this._ball.x + this._ball.width / 2 > this._pad1.x + this._pad1.width / 2) {
+				this._ball.x = this._pad1.x + this._pad1.width / 2 - this._ball.width / 2;
 			}
-			this._data.ballVelocity.x = ((this._ball.x - this._padPlayer.x) / (this._padPlayer.width / 2)) * 5;
-			this._ball.y = this._padPlayer.y - this._padPlayer.height / 2 - this._ball.height * 2;
+			this._data.ballVelocity.x = ((this._ball.x - this._pad1.x) / (this._pad1.width / 2)) * 5;
+			this._ball.y = this._pad1.y - this._pad1.height / 2 - this._ball.height * 2;
 		} else {
 			// ball position
 			this._player2Start();
-			if (this._ball.x - this._ball.width / 2 < this._padPlayer2.x - this._padPlayer2.width / 2) {
-				this._ball.x = this._padPlayer2.x - this._padPlayer2.width / 2 - this._ball.width / 2;
-			} else if (this._ball.x + this._ball.width / 2 > this._padPlayer2.x + this._padPlayer2.width / 2) {
-				this._ball.x = this._padPlayer2.x + this._padPlayer2.width / 2 - this._ball.width / 2;
+			if (this._ball.x - this._ball.width / 2 < this._pad2.x - this._pad2.width / 2) {
+				this._ball.x = this._pad2.x - this._pad2.width / 2 - this._ball.width / 2;
+			} else if (this._ball.x + this._ball.width / 2 > this._pad2.x + this._pad2.width / 2) {
+				this._ball.x = this._pad2.x + this._pad2.width / 2 - this._ball.width / 2;
 			}
-			this._data.ballVelocity.x = ((this._ball.x - this._padPlayer2.x) / (this._padPlayer2.width / 2)) * 5;
-			this._ball.y = this._padPlayer2.y - this._padPlayer2.height / 2 + this._ball.height * 2;
+			this._data.ballVelocity.x = ((this._ball.x - this._pad2.x) / (this._pad2.width / 2)) * 5;
+			this._ball.y = this._pad2.y - this._pad2.height / 2 + this._ball.height * 2;
 		}
 	}
 
@@ -255,15 +239,15 @@ export class SceneGame extends SceneBase {
 		if (!this._exitBool) {
 			// player movement right
 			if (this._keysPressed['ArrowRight']) {
-				if (!(this._padPlayer.x + this._padPlayer.width / 2 > this.root.width)) {
-					this._padPlayer.x += 10;
+				if (!(this._pad1.x + this._pad1.width / 2 > this.root.width)) {
+					this._pad1.x += 10;
 				}
 			}
 
 			// player movement left
 			if (this._keysPressed['ArrowLeft']) {
-				if (!(this._padPlayer.x - this._padPlayer.width / 2 < 0)) {
-					this._padPlayer.x -= 10;
+				if (!(this._pad1.x - this._pad1.width / 2 < 0)) {
+					this._pad1.x -= 10;
 				}
 			}
 
@@ -297,25 +281,25 @@ export class SceneGame extends SceneBase {
 
 	//TODO move logic to backend
 	private _checkifBallIsOut() {
-		if (this._ball.y < 10 || this._ball.y < this._padPlayer2.y) {
+		if (this._ball.y < 10 || this._ball.y < this._pad2.y) {
 			console.log('Player 1 scores !');
 			this._data.ballVelocity.x = 0;
 			this._data.ballVelocity.y = 5;
-			this._padPlayer.x = this.root.width / 2;
-			this._padPlayer2.x = this.root.width / 2;
-			this._ball.x = this._padPlayer.x;
+			this._pad1.x = this.root.width / 2;
+			this._pad2.x = this.root.width / 2;
+			this._ball.x = this._pad1.x;
 			this._gameStarted = false;
 			this._player1_turn = false;
 			this._data.player1_score++;
 			this._updateScoreText();
 		}
-		if (this._ball.y > this.root.height - 10 || this._ball.y > this._padPlayer.y) {
+		if (this._ball.y > this.root.height - 10 || this._ball.y > this._pad1.y) {
 			console.log('Player 2 scores !');
 			this._data.ballVelocity.x = 0;
 			this._data.ballVelocity.y = 5;
-			this._padPlayer.x = this.root.width / 2;
-			this._padPlayer2.x = this.root.width / 2;
-			this._ball.x = this._padPlayer.x;
+			this._pad1.x = this.root.width / 2;
+			this._pad2.x = this.root.width / 2;
+			this._ball.x = this._pad1.x;
 			this._gameStarted = false;
 			this._player1_turn = true;
 			this._data.player2_score++;
@@ -338,13 +322,13 @@ export class SceneGame extends SceneBase {
 		this._player2_turn = true;
 		let targetX = Math.random() * this.root.width;
 		// let targetX = this.root.width;
-		if (targetX < this._padPlayer2.width / 2) targetX = this._padPlayer2.width / 2;
-		else if (targetX > this.root.width - this._padPlayer2.width / 2)
-			targetX = this.root.width - this._padPlayer2.width / 2;
+		if (targetX < this._pad2.width / 2) targetX = this._pad2.width / 2;
+		else if (targetX > this.root.width - this._pad2.width / 2)
+			targetX = this.root.width - this._pad2.width / 2;
 		const duration = 1;
 		const ease = 'expo.Out';
 
-		gsap.to(this._padPlayer2, {
+		gsap.to(this._pad2, {
 			x: targetX,
 			duration: duration,
 			ease: ease,

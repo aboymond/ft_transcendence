@@ -14,6 +14,11 @@ class Game(models.Model):
         ("completed", "Completed"),
     ]
 
+    PLAYER_TURN_CHOICES = [
+        (1, "Player 1"),
+        (2, "Player 2"),
+    ]
+
     player1 = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         related_name="games_as_player1",
@@ -61,7 +66,14 @@ class Game(models.Model):
     pad1_y = models.FloatField(default=0)
     pad2_x = models.FloatField(default=0)
     pad2_y = models.FloatField(default=0)
-    player_turn = models.IntegerField(default=1)
+    player_turn = models.PositiveSmallIntegerField(
+        choices=PLAYER_TURN_CHOICES, default=1
+    )
+
+    pad_width = models.FloatField(default=0)
+    pad_height = models.FloatField(default=0)
+    width = models.FloatField(default=600)
+    height = models.FloatField(default=800)
 
     def update_ball_position(self):
         self.ball_x += self.ball_velocity_x

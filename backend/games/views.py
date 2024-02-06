@@ -4,8 +4,11 @@ from .models import Game
 from .serializers import GameSerializer
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
-from channels.layers import get_channel_layer
-from asgiref.sync import async_to_sync
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+from django.http import JsonResponse
+from django.views import View
+import json
 
 User = get_user_model()
 
@@ -50,3 +53,21 @@ class JoinGameView(generics.UpdateAPIView):
         game.save()
 
         return Response(self.get_serializer(game).data, status=status.HTTP_200_OK)
+
+
+@method_decorator(csrf_exempt, name="dispatch")
+class KeyPressView(View):
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+        game_id = data.get("game_id")
+        player = data.get("player")
+        key = data.get("key")
+
+        game = get_object_or_404(Game, id=game_id)
+        if key == "ArrowRight":
+            game.move_pad(player, 10)  # Move pad to the right
+        elif key == "ArrowLeft":
+            game.move_pad(player, -10)  # Move pad to the left
+        game.save()
+
+        return JsonResponse({"status": "success"})

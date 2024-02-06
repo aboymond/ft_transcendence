@@ -4,6 +4,7 @@ from .views import (
     GameRetrieveUpdateDestroyView,
     CreateGameView,
     JoinGameView,
+    KeyPressView,
 )
 
 urlpatterns = [
@@ -15,4 +16,5 @@ urlpatterns = [
     ),
     path("create/", CreateGameView.as_view(), name="create_game"),
     path("join/<int:pk>/", JoinGameView.as_view(), name="join_game"),
+    path("keypress/", KeyPressView.as_view(), name="keypress"),
 ]
