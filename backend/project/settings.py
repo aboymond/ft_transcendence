@@ -102,7 +102,7 @@ CHANNEL_LAYERS = {
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
+        "ENGINE": "django_prometheus.db.backends.postgresql",
         "NAME": "dbname",
         "USER": "user",
         "PASSWORD": "password",
@@ -188,7 +188,7 @@ SIMPLE_JWT = {
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
-ALLOWED_HOSTS = ['localhost', 'nginx', 'frontend']
+ALLOWED_HOSTS = ['localhost', 'nginx', 'frontend', 'backend']
 #ALLOWED_HOSTS=['*']
 #CORS_ORIGIN_ALLOW_ALL = True
 #CORS_ALLOW_CREDENTIALS = True
@@ -215,3 +215,5 @@ LOGGING = {
         "level": "INFO",
     },
 }
+
+PROMETHEUS_METRIC_NAMESPACE = "transcendence"

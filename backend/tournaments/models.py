@@ -2,9 +2,9 @@ from django.db import models
 from django.conf import settings
 from games.models import Game
 from itertools import combinations
+from django_prometheus.models import ExportModelOperationsMixin
 
-
-class Tournament(models.Model):
+class Tournament(ExportModelOperationsMixin("Tournament"), models.Model):
     SINGLE_ELIMINATION = "SE"
     ROUND_ROBIN = "RR"
 
@@ -124,7 +124,7 @@ class Tournament(models.Model):
         tournament.save()
 
 
-class Match(models.Model):
+class Match(ExportModelOperationsMixin("Match"), models.Model):
     tournament = models.ForeignKey(
         Tournament, related_name="matches", on_delete=models.CASCADE
     )
