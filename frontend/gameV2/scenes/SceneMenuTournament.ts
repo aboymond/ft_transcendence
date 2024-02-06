@@ -336,15 +336,6 @@ export class SceneMenuTournament extends SceneBase {
 		this._textPlay.style.fill = 'green';
 	}
 
-	// private _modeColorCreate() {
-	// 	this._name.style.fill = 'green';
-	// 	this._mode.style.fill = defaultColor;
-	// 	this._nb_player_text.style.fill = 'green';
-	// 	this._nb_player_tab.style.fill = 'green';
-	// 	this._score_max_text.style.fill = 'green';
-	// 	this._score_max_tab.style.fill = 'green';
-	// 	this._textPlay.style.fill = 'green';
-	// }
 
 	private _playerColorCreate() {
 		this._name.style.fill = 'green';

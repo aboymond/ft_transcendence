@@ -3,9 +3,7 @@ import { SceneBase } from './SceneBase';
 import { SceneMenu } from './SceneMenu';
 import { SceneMenuOption } from './SceneMenuOption';
 import { SceneMenuTournament } from './SceneMenuTournament';
-import { SceneGame } from './SceneGame';
 import { SceneJoin } from './SceneJoin';
-import { SceneGameVsBot } from './SceneGameVsBot';
 // import { glowFilter, defaultColor, textStylePVPMenu2, textStylePVBMenu2, textStyleTournamentMenu, textStyleJoinMenu2 } from '..';
 
 const selectMax = 2;
@@ -29,14 +27,14 @@ enum menu {
 }
 
 const textures = [
-	PIXI.Texture.from('gameV2/img/TournamentSelected.png'),
-	PIXI.Texture.from('gameV2/img/TournamentUnselect.png'),
-	PIXI.Texture.from('gameV2/img/PvPSelected.png'),
-	PIXI.Texture.from('gameV2/img/PvPUnselect.png'),
-	PIXI.Texture.from('gameV2/img/PlayerVsBotSelected.png'),
-	PIXI.Texture.from('gameV2/img/PlayerVsBotUnselect.png'),
-	PIXI.Texture.from('gameV2/img/JoinPartySelected.png'),
-	PIXI.Texture.from('gameV2/img/JoinPartyUnselect.png'),
+	PIXI.Texture.from('./img/TournamentSelected.png'),
+	PIXI.Texture.from('./img/TournamentUnselect.png'),
+	PIXI.Texture.from('./img/PvPSelected.png'),
+	PIXI.Texture.from('./img/PvPUnselect.png'),
+	PIXI.Texture.from('./img/PlayerVsBotSelected.png'),
+	PIXI.Texture.from('./img/PlayerVsBotUnselect.png'),
+	PIXI.Texture.from('./img/JoinPartySelected.png'),
+	PIXI.Texture.from('./img/JoinPartyUnselect.png'),
 ];
 
 export class SceneMenu2 extends SceneBase {
@@ -96,19 +94,15 @@ export class SceneMenu2 extends SceneBase {
 		if (e.code === 'Enter') {
 			if (this._currentSelect === menu.TOURNAMENT) {
 				this.root.loadScene(new SceneMenuTournament(this.root));
-			}
-			else if (this._currentSelect === menu.PVP_PVB) {
+			} else if (this._currentSelect === menu.PVP_PVB) {
 				if (this._currentSelect_LR === 0) {
 					this.root.vsPlayer = true;
 					this.root.loadScene(new SceneMenuOption(this.root));
-				}
-				else {
+				} else {
 					this.root.vsPlayer = false;
 					this.root.loadScene(new SceneMenuOption(this.root));
 				}
-			}
-		
-			else if (this._currentSelect === menu.JOIN) {
+			} else if (this._currentSelect === menu.JOIN) {
 				this.root.loadScene(new SceneJoin(this.root));
 			}
 		}

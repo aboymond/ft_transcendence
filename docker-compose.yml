@@ -9,7 +9,8 @@ services:
         ports:
             - "8000:8000"
         environment:
-            DATABASE_URL: postgresql://youruser:yourpassword@db:5432/yourdbname
+            DATABASE_URL: postgresql://youruser:yourpassword@db:5432/yourdbname #TODO: change this
+            FRONTEND_URL: http://localhost:3001
         env_file: .env
         networks:
             - my-network
@@ -59,8 +60,8 @@ services:
         ports:
             - "5050:80"
         environment:
-            PGADMIN_DEFAULT_EMAIL: admin@example.com
-            PGADMIN_DEFAULT_PASSWORD: root
+            PGADMIN_DEFAULT_EMAIL: admin@example.com #TODO: change this
+            PGADMIN_DEFAULT_PASSWORD: root #TODO: change this
         networks:
             - my-network
         volumes:

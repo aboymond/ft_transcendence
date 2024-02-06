@@ -14,6 +14,7 @@ class GameAdmin(admin.ModelAdmin):
         "loser",
         "player1_score",
         "player2_score",
+        "max_score",
     )
 
 

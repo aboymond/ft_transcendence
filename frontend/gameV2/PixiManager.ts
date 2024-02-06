@@ -18,6 +18,7 @@ export class PixiManager {
 	public playerAWin = true;
 	public ws: WebSocket | null;
 	public gameState: GameState | null;
+	public userId: number | null = null;
 
 	//--------------------------
 
@@ -28,10 +29,12 @@ export class PixiManager {
 		ws: WebSocket | null,
 		gameState: GameState | null,
 		readonly options: Partial<IPixiManagerOptions> = {},
+		userId: number | null = null,
 	) {
 		this.ws = ws;
 		this.gameState = gameState;
 		PIXI.settings.RESOLUTION = window.devicePixelRatio || 1;
+		this.userId = userId;
 
 		this._app = new PIXI.Application({
 			width: this.width,

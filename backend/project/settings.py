@@ -27,8 +27,7 @@ SECRET_KEY = "django-insecure-vql&r!gfbg(jca6&+=__qm61((z9m#st28)3_af^cq09jl@1t3
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
-
+ALLOWED_HOSTS = ["localhost", "nginx", "frontend", "backend"]
 
 # Application definition
 
@@ -54,7 +53,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django_prometheus.middleware.PrometheusBeforeMiddleware",
-	"corsheaders.middleware.CorsMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -188,17 +187,13 @@ SIMPLE_JWT = {
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
-ALLOWED_HOSTS = ['localhost', 'nginx', 'frontend', 'backend']
-#ALLOWED_HOSTS=['*']
-#CORS_ORIGIN_ALLOW_ALL = True
-#CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     "https://api.intra.42.fr",  # Add the actual origin of the 42 API
     "http://localhost",
     "http://localhost:3001",
     "http://frontend:3001",
-    "http://frontend:3001"
-        # Add the origin of your Django application
+    "http://frontend:3001",
+    # Add the origin of your Django application
 ]
 
 
