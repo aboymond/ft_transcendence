@@ -4,6 +4,7 @@ import * as PIXI from 'pixi.js';
 import '../src/styles/GameWindow.module.css';
 import $ from 'jquery';
 import { GameState } from '../src/types';
+import { SceneGame } from './scenes/SceneGame';
 
 interface IPixiManagerOptions {
 	backgroundAlpha: number;
@@ -97,6 +98,7 @@ export class PixiManager {
 		return gameWindow ? gameWindow.clientHeight : winHeight;
 	}
 
+	//TODO: check if needed
 	public adjustGameView(gameWidth: number, gameHeight: number) {
 		// Adjust the PIXI.Application size to fit the standardized game dimensions
 		// while maintaining aspect ratio
@@ -108,11 +110,46 @@ export class PixiManager {
 		// Additional adjustments as needed to center the game view, etc.
 	}
 
+	//TODO: check if needed
 	private handleResize() {
 		console.log('Resizing game window');
-		// Assuming standardized dimensions are stored in this.gameState
 		if (this.gameState) {
 			this.adjustGameView(this.gameState.winWidth, this.gameState.winHeight);
 		}
+	}
+
+	public openGameSocket(gameId: number) {
+		const gameSocketUrl = `ws://localhost:8000/ws/game/${gameId}/`;
+		this.gameSocket = new WebSocket(gameSocketUrl);
+
+		this.gameSocket.onopen = () => {
+			console.log('Game WebSocket opened:', gameId);
+		};
+
+		this.gameSocket.addEventListener('message', (event) => {
+			const message = JSON.parse(event.data);
+
+			const { action, data } = message; // Directly destructure action and data
+			switch (action) {
+				case 'start_game':
+					console.log('Starting SceneGame');
+					this.loadScene(new SceneGame(this, gameId));
+					break;
+				case 'game_state_update':
+					console.log('Received game state update:', data);
+					this.gameState = {
+						ballPosition: { x: data.ball_x, y: data.ball_y },
+						pad1: { x: data.pad1_x, y: data.pad1_y },
+						pad2: { x: data.pad2_x, y: data.pad2_y },
+						player1_score: data.player1_score,
+						player2_score: data.player2_score,
+						ballVelocity: { x: data.ball_velocity_x, y: data.ball_velocity_y },
+						playerTurnA: data.playerTurnA,
+						winWidth: this.width,
+						winHeight: this.height,
+					};
+					break;
+			}
+		});
 	}
 }

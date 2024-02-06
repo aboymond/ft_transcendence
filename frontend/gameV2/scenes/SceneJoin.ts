@@ -7,7 +7,6 @@ import { glowFilter } from '..';
 import apiService from '../../src/services/apiService';
 import { SceneLoadingPage } from './SceneLoadingPage';
 import { Tournament, Game } from '../../src/types';
-import { SceneGame } from './SceneGame';
 
 enum menuState {
 	TOURN_MENU,
@@ -374,29 +373,9 @@ export class SceneJoin extends SceneBase {
 			.joinGame(gameId, this.root.userId ?? 0)
 			.then((response) => {
 				console.log('Joined game successfully', response);
-				this.openGameSocket(response.id); // Assuming response contains game_id
+				this.root.openGameSocket(response.id);
 			})
 			.catch((error) => console.error('Error joining game', error));
 		this.root.loadScene(new SceneLoadingPage(this.root));
-	}
-
-	private openGameSocket(gameId: number) {
-		const gameSocketUrl = `ws://localhost:8000/ws/game/${gameId}/`;
-		this.root.gameSocket = new WebSocket(gameSocketUrl);
-
-		this.root.gameSocket.onopen = () => {
-			console.log('Game WebSocket opened:', gameId);
-		};
-
-		this.root.gameSocket.addEventListener('message', (event) => {
-			const data = JSON.parse(event.data);
-			console.log('Game WebSocket message:', data);
-
-			// Check if the message contains the 'start_game' action
-			if (data.action === 'start_game') {
-				console.log('Starting SceneGame');
-				this.root.loadScene(new SceneGame(this.root, gameId));
-			}
-		});
 	}
 }

@@ -11,7 +11,6 @@ import {
 	textStyleMenuOptionError,
 	textStyleMenuOptionVictory,
 } from '../index';
-import { SceneGame } from './SceneGame';
 import { SceneGameVsBot } from './SceneGameVsBot';
 import { SceneLoadingPage } from './SceneLoadingPage';
 import { apiService } from '../../src/services/apiService';
@@ -227,7 +226,7 @@ export class SceneMenuOption extends SceneBase {
 				.createGame(this.root.userId ?? 0) //TODO
 				.then((response) => {
 					console.log('Game created successfully', response);
-					this.openGameSocket(response.id); // Assuming response contains game_id
+					this.root.openGameSocket(response.id); // Assuming response contains game_id
 				})
 				.catch((error) => console.error('Error creating game', error));
 			this.root.loadScene(new SceneLoadingPage(this.root));
@@ -390,24 +389,5 @@ export class SceneMenuOption extends SceneBase {
 		this._padColor.y = this._textColorAvatar.y - 20;
 		this._padColor.x = this.root.width / 2 + this._padColor.width / 2;
 		this._padColor.endFill();
-	}
-
-	private openGameSocket(gameId: number) {
-		const gameSocketUrl = `ws://localhost:8000/ws/game/${gameId}/`;
-		this.root.gameSocket = new WebSocket(gameSocketUrl);
-
-		this.root.gameSocket.onopen = () => {
-			console.log('Game WebSocket opened:', gameId);
-		};
-
-		this.root.gameSocket.addEventListener('message', (event) => {
-			const data = JSON.parse(event.data);
-			console.log('Game WebSocket message:', data);
-
-			if (data.action === 'start_game') {
-				console.log('Starting SceneGame');
-				this.root.loadScene(new SceneGame(this.root, gameId));
-			}
-		});
 	}
 }

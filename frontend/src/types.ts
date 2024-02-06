@@ -46,8 +46,8 @@ export interface GameState {
 	//TODO change to player1 and player2 ?
 	playerTurnA: boolean;
 
-	pad1_position: { x: number; y: number };
-	pad2_position: { x: number; y: number };
+	pad1: { x: number; y: number };
+	pad2: { x: number; y: number };
 
 	winWidth: number;
 	winHeight: number;

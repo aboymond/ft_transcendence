@@ -54,7 +54,7 @@ const WebSocketHandler: React.FC<Props> = ({ children }) => {
 			if (socketRef.current) {
 				socketRef.current.removeEventListener('message', messageHandler);
 				socketRef.current.close();
-				console.log('General request WebSocket closed');
+				console.log('General request WebSocket closed:', user.id);
 			}
 		};
 	}, [user?.id, isAuthenticated]);
