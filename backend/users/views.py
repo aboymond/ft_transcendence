@@ -83,6 +83,16 @@ class LoginView(generics.GenericAPIView):
         else:
             raise AuthenticationFailed("Invalid Credentials")
 
+class TwoFAEnablingView(generics.UpdateAPIView):
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+    parser_classes = (MultiPartParser, FormParser)
+
+    def patch(self, request, *args, **kwargs):
+        user_id = request.user.id
+        two_fa = request.data.get("twofa")
+        print(f'2FA : {two_fa}')
+        return Response(status=status.HTTP_200_OK)
 
 class AuthView(generics.GenericAPIView):
     def get(self, request, *args, **kwargs):

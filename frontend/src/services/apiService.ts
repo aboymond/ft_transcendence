@@ -59,6 +59,13 @@ export const apiService = {
 			return false;
 		}
 	},
+
+	twoFAEnabling: async (twofa:boolean) => {
+		return fetchAPI('users/twofa/', {
+			method : 'PATCH',
+			body: JSON.stringify({twofa})});
+	},
+
 	getUserById: async (userId: string): Promise<User> => {
 		return fetchAPI(`users/${userId}/`);
 	},
