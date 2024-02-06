@@ -101,7 +101,7 @@ CHANNEL_LAYERS = {
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
+        "ENGINE": "django_prometheus.db.backends.postgresql",
         "NAME": "dbname",
         "USER": "user",
         "PASSWORD": "password",
@@ -210,3 +210,5 @@ LOGGING = {
         "level": "INFO",
     },
 }
+
+PROMETHEUS_METRIC_NAMESPACE = "transcendence"

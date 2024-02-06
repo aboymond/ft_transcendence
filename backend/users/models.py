@@ -1,9 +1,10 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.conf import settings
+from django_prometheus.models import ExportModelOperationsMixin
 
 
-class CustomUser(AbstractUser):
+class CustomUser(ExportModelOperationsMixin("CustomUser"), AbstractUser):
     STATUS_CHOICES = [
         ("online", "Online"),
         ("offline", "Offline"),
@@ -32,7 +33,7 @@ class CustomUser(AbstractUser):
         return self.username
 
 
-class GameHistory(models.Model):
+class GameHistory(ExportModelOperationsMixin("GameHistory"), models.Model):
     players = models.ManyToManyField(
         settings.AUTH_USER_MODEL, related_name="games_history_played"
     )
@@ -50,7 +51,7 @@ class GameHistory(models.Model):
         return f"Game on {self.played_at.strftime('%Y-%m-%d %H:%M')}"
 
 
-class TournamentHistory(models.Model):
+class TournamentHistory(ExportModelOperationsMixin('TournamentHistory'), models.Model):
     players = models.ManyToManyField(
         settings.AUTH_USER_MODEL, related_name="tournament_history_played"
     )
@@ -67,7 +68,7 @@ class TournamentHistory(models.Model):
         return f"Tournament on {self.played_at.strftime('%Y-%m-%d %H:%M')}"
 
 
-class Friendship(models.Model):
+class Friendship(ExportModelOperationsMixin('Friendship'), models.Model):
     STATUS_CHOICES = (
         ("sent", "Sent"),
         ("accepted", "Accepted"),

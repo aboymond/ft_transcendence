@@ -3,9 +3,9 @@ from django.conf import settings
 from users.models import GameHistory
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
+from django_prometheus.models import ExportModelOperationsMixin
 
-
-class Game(models.Model):
+class Game(ExportModelOperationsMixin('game'), models.Model):
     STATUS_CHOICES = [
         ("waiting", "Waiting for Player"),
         ("in_progress", "In Progress"),
@@ -193,6 +193,6 @@ class Game(models.Model):
         return game
 
 
-class MatchmakingQueue(models.Model):
+class MatchmakingQueue(ExportModelOperationsMixin('MatchmakingQueue'), models.Model):
     player = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now_add=True)
