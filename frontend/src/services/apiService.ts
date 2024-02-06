@@ -169,10 +169,10 @@ export const apiService = {
 			body: JSON.stringify({ user_id: userId }),
 		});
 	},
-	sendKeyPress: async (gameId: number, player: number, key: string) => {
+	sendKeyPress: async (gameId: number, playerId: number, key: string) => {
 		return fetchAPI('games/keypress/', {
 			method: 'POST',
-			body: JSON.stringify({ game_id: gameId, player, key }),
+			body: JSON.stringify({ game_id: gameId, player_id: playerId, key }),
 		});
 	},
 };

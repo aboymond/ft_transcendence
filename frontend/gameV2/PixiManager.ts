@@ -47,12 +47,14 @@ export class PixiManager {
 		});
 		window.addEventListener('keydown', this._onKeyDownBind);
 		window.addEventListener('keyup', this._onKeyUpBind);
+		window.addEventListener('resize', this.handleResize.bind(this));
 		$('#game_window').append(this._app.view as unknown as HTMLElement);
 	}
 
 	public destroy() {
 		window.removeEventListener('keydown', this._onKeyDownBind);
 		window.removeEventListener('keyup', this._onKeyUpBind);
+		window.removeEventListener('resize', this.handleResize.bind(this));
 		this._app.destroy(true);
 	}
 
@@ -93,5 +95,24 @@ export class PixiManager {
 		const winHeight = 800;
 		const gameWindow = document.getElementById('game_window');
 		return gameWindow ? gameWindow.clientHeight : winHeight;
+	}
+
+	public adjustGameView(gameWidth: number, gameHeight: number) {
+		// Adjust the PIXI.Application size to fit the standardized game dimensions
+		// while maintaining aspect ratio
+		const scaleX = window.innerWidth / gameWidth;
+		const scaleY = window.innerHeight / gameHeight;
+		const scaleToFit = Math.min(scaleX, scaleY);
+
+		this._app.renderer.resize(gameWidth * scaleToFit, gameHeight * scaleToFit);
+		// Additional adjustments as needed to center the game view, etc.
+	}
+
+	private handleResize() {
+		console.log('Resizing game window');
+		// Assuming standardized dimensions are stored in this.gameState
+		if (this.gameState) {
+			this.adjustGameView(this.gameState.winWidth, this.gameState.winHeight);
+		}
 	}
 }

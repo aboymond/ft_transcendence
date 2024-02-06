@@ -127,11 +127,9 @@ export class SceneGame extends SceneBase {
 			console.log('Escape ' + (this._exitBool ? 'true' : 'false'));
 		}
 
-		if (e.code === 'ArrowRight' || e.code === 'ArrowLeft') {
-			console.log('Sending key press: ' + e.code);
-			console.log('Game ID: ' + this._gameId);
+		if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) {
 			apiService
-				.sendKeyPress(this._gameId, 1, e.code) // Assuming player 1 for demonstration
+				.sendKeyPress(this._gameId, this.root.userId ?? 0, e.code)
 				.then((response) => console.log(response))
 				.catch((error) => console.error('Error sending key press', error));
 		}

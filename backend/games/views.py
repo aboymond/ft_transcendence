@@ -60,14 +60,15 @@ class KeyPressView(View):
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)
         game_id = data.get("game_id")
-        player = data.get("player")
+        player_id = data.get("player_id")
         key = data.get("key")
 
+        # TODO Handle up and down key presses ?
         game = get_object_or_404(Game, id=game_id)
         if key == "ArrowRight":
-            game.move_pad(player, 10)  # Move pad to the right
+            game.move_pad(player_id, 10)  # Move pad to the right
         elif key == "ArrowLeft":
-            game.move_pad(player, -10)  # Move pad to the left
+            game.move_pad(player_id, -10)  # Move pad to the left
         game.save()
 
         return JsonResponse({"status": "success"})

@@ -48,6 +48,9 @@ export interface GameState {
 
 	pad1_position: { x: number; y: number };
 	pad2_position: { x: number; y: number };
+
+	winWidth: number;
+	winHeight: number;
 }
 
 //TODO move game state to GameState ?
