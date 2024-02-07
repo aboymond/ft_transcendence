@@ -86,12 +86,14 @@ class LoginView(generics.GenericAPIView):
 class TwoFAEnablingView(generics.UpdateAPIView):
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
-    parser_classes = (MultiPartParser, FormParser)
 
-    def patch(self, request, *args, **kwargs):
-        user_id = request.user.id
-        two_fa = request.data.get("twofa")
-        print(f'2FA : {two_fa}')
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        print(f'2FA BEFORE: {user.twofa}')
+        user.twofa = request.data.get("twofa")
+        print(f'2FA AFTER: {user.twofa}')
+        user.save()
+
         return Response(status=status.HTTP_200_OK)
 
 class AuthView(generics.GenericAPIView):

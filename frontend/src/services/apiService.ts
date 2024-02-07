@@ -62,7 +62,7 @@ export const apiService = {
 
 	twoFAEnabling: async (twofa:boolean) => {
 		return fetchAPI('users/twofa/', {
-			method : 'PATCH',
+			method : 'POST',
 			body: JSON.stringify({twofa})});
 	},
 

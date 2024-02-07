@@ -2,10 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { apiService } from '../services/apiService';
 
 const TwoFA: React.FC = () => {
-    const [isTwoFAToggled, setIsTwoFAToggled] = useState(() => {
+    const [isTwoFAToggled, setIsTwoFAToggled] = useState<boolean>(() => {
+        console.log(localStorage);
         const savedState = localStorage.getItem('isTwoFAToggled');
+        console.log("Test:", savedState)
         return savedState !== null ? JSON.parse(savedState) : false;
     });
+    console.log("BEGIN ", isTwoFAToggled);
 
     // Effect hook to save state to localStorage when it changes
     useEffect(() => {
@@ -15,7 +18,7 @@ const TwoFA: React.FC = () => {
     // Function to handle toggle
     const handleTwoFAToggle = () => {
         setIsTwoFAToggled(!isTwoFAToggled);
-        apiService.twoFAEnabling(isTwoFAToggled);
+        apiService.twoFAEnabling(!isTwoFAToggled);
     };
 
     return (
