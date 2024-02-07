@@ -16,14 +16,13 @@ class GameConsumer(AsyncWebsocketConsumer):
         self.game_group_name = f"game_{self.game_id}"
 
         await self.channel_layer.group_add(self.game_group_name, self.channel_name)
-        # await self.channel_layer.group_add("common_group", self.channel_name)
 
         await self.accept()
+
         print(
             f"WebSocket for game {self.game_id} and group {self.game_group_name} opened"
         )  # Log when WebSocket is opened
 
-        # Check if both players are connected. This is a placeholder for your logic.
         if await self.ready_to_start_game():
             await self.start_game()
 
@@ -70,19 +69,29 @@ class GameConsumer(AsyncWebsocketConsumer):
         return player1 is not None and player2 is not None
 
     async def update_game_state(self):
-        # Implement game logic here
-        # Update the Game model instance with the new state
-        # For example:
         game = await sync_to_async(Game.objects.get)(id=self.game_id)
-        game.ball_x += game.ball_velocity_x
-        game.ball_y += game.ball_velocity_y
-        # Check collisions, update scores, etc.
-        await sync_to_async(game.save)()
 
-        # Send updated game state to both players
+        if game.ball_moving and not game.paused:
+            game.ball_x += game.ball_velocity_x
+            game.ball_y += game.ball_velocity_y
+
+        if game.ball_y < 10 or game.ball_y > game.win_height - 10:
+            if game.ball_y < 10:
+                game.player1_score += 1
+                game.player_turn = 2
+                game.ball_x = game.pad2_x + game.pad_width / 2
+                game.ball_velocity_x = 5
+            else:
+                game.player2_score += 1
+                game.player_turn = 1
+                game.ball_x = game.pad1_x + game.pad_width / 2
+                game.ball_velocity_x = -5
+        await sync_to_async(game.save)()
         await self.send_game_state()
 
     async def send_game_state(self):
+        if not self.game_active:  # Check if the game is still active
+            return  # Exit the method if the game is not active
         game = await sync_to_async(Game.objects.get)(id=self.game_id)
         message = {
             "action": "game_state_update",
@@ -104,6 +113,5 @@ class GameConsumer(AsyncWebsocketConsumer):
         while self.game_active:
             if not self.game_active:
                 break
-            print("Updating game state...")
             await self.update_game_state()
-            await asyncio.sleep(5)  # TODO  Sleep for approximately 1/60th of a second
+            await asyncio.sleep(1 / 60)

@@ -6,7 +6,6 @@ import { SceneWinOrLoose } from './SceneWinOrLoose';
 import { gsap } from 'gsap';
 import { PixiManager } from '../PixiManager';
 import { apiService } from '../../src/services/apiService';
-// import { GameState } from '../../src/types';
 
 export class SceneGame extends SceneBase {
 	// FOR THE BACK ======================================
@@ -74,27 +73,6 @@ export class SceneGame extends SceneBase {
 
 		this._exitMenu = this._initExitMenu();
 		container.addChild(this._exitMenu);
-
-		// // Construct initial game state object
-		// const initialState: GameState = {
-		// 	ballPosition: { x: this._ball.x, y: this._ball.y },
-		// 	ballVelocity: { x: this._data.ballVelocity.x, y: this._data.ballVelocity.y },
-		// 	pad1: { x: this._pad1.x, y: this._pad1.y },
-		// 	pad2: { x: this._pad2.x, y: this._pad2.y },
-		// 	player1_score: 0,
-		// 	player2_score: 0,
-		// 	playerTurn: 1,
-		// 	winWidth: this.root.width,
-		// 	winHeight: this.root.height,
-		// };
-
-		// // Send initial game state to backend
-		// try {
-		// 	await apiService.initGameState(this._gameId, initialState);
-		// 	console.log('Game state initialized in backend');
-		// } catch (error) {
-		// 	console.error('Error initializing game state in backend', error);
-		// }
 	}
 
 	public onUpdate() {
@@ -111,15 +89,15 @@ export class SceneGame extends SceneBase {
 			this._pad2.y = gameState.pad2.y;
 		}
 
-		if (!this._exitBool) {
-			if (!this._gameStarted) this._checkTurn();
-			else {
-				//TODO move logic to backend
-				this._addVelocity();
-				this._checkCollisions();
-				this._checkifBallIsOut();
-			}
-		}
+		// if (!this._exitBool) {
+		// 	if (!this._gameStarted) this._checkTurn();
+		// 	else {
+		// 		//TODO move logic to backend
+		// 		this._addVelocity();
+		// 		this._checkCollisions();
+		// 		this._checkifBallIsOut();
+		// 	}
+		// }
 		this._updatePadPosition();
 
 		//TODO end game in backend and set winner
@@ -149,7 +127,7 @@ export class SceneGame extends SceneBase {
 			console.log('Escape ' + (this._exitBool ? 'true' : 'false'));
 		}
 
-		if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) {
+		if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Escape'].includes(e.code)) {
 			apiService
 				.sendKeyPress(this._gameId, this.root.userId ?? 0, e.code)
 				.then((response) => console.log(response))
@@ -257,21 +235,6 @@ export class SceneGame extends SceneBase {
 	//TODO move logic to backend
 	private _updatePadPosition() {
 		if (!this._exitBool) {
-			// player movement right
-			if (this._keysPressed['ArrowRight']) {
-				if (!(this._pad1.x + this._pad1.width / 2 > this.root.width)) {
-					this._pad1.x += 10;
-				}
-			}
-
-			// player movement left
-			if (this._keysPressed['ArrowLeft']) {
-				if (!(this._pad1.x - this._pad1.width / 2 < 0)) {
-					this._pad1.x -= 10;
-				}
-			}
-
-			// start with space
 			if (this._keysPressed['Space']) {
 				if (this._gameStarted == false) this._gameStarted = true;
 				console.log('press space ' + this._gameStarted);
@@ -329,6 +292,7 @@ export class SceneGame extends SceneBase {
 		// console.log('Y in GO = ' + this._data.ballVelocity.y);
 	}
 
+	//TODO call this elsewhere
 	private _updateScoreText() {
 		this._scoreText.text = this._data.player1_score + ' - ' + this._data.player2_score;
 		this._scoreText.x = this.root.width / 2 - this._scoreText.width / 2;
@@ -336,6 +300,7 @@ export class SceneGame extends SceneBase {
 		this._scoreText.alpha = 0.2;
 	}
 
+	//TODO bot logic to remove
 	private _player2Start() {
 		if (this._player2_turn) return;
 

@@ -8,7 +8,6 @@ from django.views import View
 from rest_framework import generics, status
 from rest_framework.response import Response
 
-# from rest_framework.views import APIView
 from .models import Game
 from .serializers import GameSerializer  # GameStateSerializer
 
@@ -32,7 +31,9 @@ class CreateGameView(generics.CreateAPIView):
     def perform_create(self, serializer):
         user_id = self.request.data.get("user_id")
         user = get_object_or_404(User, pk=user_id)
-        serializer.save(player1=user, player2=None, status="waiting")
+        serializer.save(
+            player1=user, player2=None, status="waiting", player_turn=user.id
+        )
 
 
 class JoinGameView(generics.UpdateAPIView):
@@ -64,39 +65,37 @@ class KeyPressView(View):
         game_id = data.get("game_id")
         player_id = data.get("player_id")
         key = data.get("key")
-
-        # TODO Handle up and down key presses ?
         game = get_object_or_404(Game, id=game_id)
-        if key == "ArrowRight":
-            game.move_pad(player_id, 10)  # Move pad to the right
-        elif key == "ArrowLeft":
-            game.move_pad(player_id, -10)  # Move pad to the left
+
+        # Determine which pad to move based on the player_id
+        if game.player1_id == player_id:
+            pad_x = "pad1_x"
+            pad_y = "pad1_y"
+        elif game.player2_id == player_id:
+            pad_x = "pad2_x"
+            pad_y = "pad2_y"
+        else:
+            return JsonResponse({"error": "Invalid player ID"}, status=400)
+
+        if key == "Space" and game.player_turn == player_id:
+            game.ball_moving = True
+        elif key in ["ArrowRight", "ArrowLeft"]:
+            move_x = 10 if key == "ArrowRight" else -10
+            if not (
+                (getattr(game, pad_x) + move_x + game.pad_width / 2 > game.win_width)
+                or (getattr(game, pad_x) + move_x - game.pad_width / 2 < 0)
+            ):
+                game.move_pad(player_id, move_x, 0)
+        elif key in ["ArrowUp", "ArrowDown"]:
+            move_y = 10 if key == "ArrowDown" else -10
+            if not (
+                (getattr(game, pad_y) + move_y + game.pad_height / 2 > game.win_height)
+                or (getattr(game, pad_y) + move_y - game.pad_height / 2 < 0)
+            ):
+                game.move_pad(player_id, 0, move_y)
+        elif key == "Escape":
+            game.paused = not game.paused
+
         game.save()
 
         return JsonResponse({"status": "success"})
-
-
-# class InitGameStateView(APIView):
-#     def post(self, request, *args, **kwargs):
-#         serializer = GameStateSerializer(data=request.data)
-#         if serializer.is_valid():
-#             print("Game state initialized")
-#             game_id = kwargs.get("game_id")
-#             game = get_object_or_404(Game, pk=game_id)
-#             game_data = serializer.validated_data
-#             game.ball_x = game_data["ballPosition"]["x"]
-#             game.ball_y = game_data["ballPosition"]["y"]
-#             game.ball_velocity_x = game_data["ballVelocity"]["x"]
-#             game.ball_velocity_y = game_data["ballVelocity"]["y"]
-#             game.player1_score = game_data["player1Score"]
-#             game.player2_score = game_data["player2Score"]
-#             game.pad1_x = game_data["pad1"]["x"]
-#             game.pad1_y = game_data["pad1"]["y"]
-#             game.pad2_x = game_data["pad2"]["x"]
-#             game.pad2_y = game_data["pad2"]["y"]
-#             game.player_turn = game_data["playerTurn"]
-#             game.width = game_data["winWidth"]
-#             game.height = game_data["winHeight"]
-#             game.save()
-#             return Response({"message": "Game state initialized"}, status=200)
-#         return Response(serializer.errors, status=400)

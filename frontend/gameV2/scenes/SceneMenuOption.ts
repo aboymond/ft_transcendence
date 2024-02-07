@@ -141,7 +141,7 @@ export class SceneMenuOption extends SceneBase {
 				this._popError.visible = false;
 				this._textErrorOK.visible = false;
 				this._textErrorPad.visible = false;
-			} else this._pressEnter();
+			} else this._createGame();
 		}
 		if (e.code === 'Escape') {
 			this.root.loadScene(new SceneMenu2(this.root));
@@ -219,7 +219,7 @@ export class SceneMenuOption extends SceneBase {
 	// UTILS NAVIGATOR
 	//=======================================
 
-	private _pressEnter() {
+	private _createGame() {
 		if (this.root.vsPlayer) {
 			// Send a request to the backend to create a game
 			apiService
@@ -231,7 +231,6 @@ export class SceneMenuOption extends SceneBase {
 				.catch((error) => console.error('Error creating game', error));
 			this.root.loadScene(new SceneLoadingPage(this.root));
 		} else if (this._currentPad === 0) {
-			console.log('Loading SceneGameVsBot');
 			this.root.loadScene(new SceneGameVsBot(this.root));
 		} else {
 			errorLock = true;

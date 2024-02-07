@@ -128,6 +128,10 @@ export class SceneLoadingPage extends SceneBase {
 
 	public onFinish() {
 		clearInterval(this._interval);
+		if (this.root.gameSocket) {
+			this.root.gameSocket.close();
+			this.root.gameSocket = null;
+		}
 	}
 
 	public onKeyDown(e: KeyboardEvent) {

@@ -14,11 +14,6 @@ class Game(models.Model):
         ("completed", "Completed"),
     ]
 
-    PLAYER_TURN_CHOICES = [
-        (1, "Player 1"),
-        (2, "Player 2"),
-    ]
-
     player1 = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         related_name="games_as_player1",
@@ -59,16 +54,17 @@ class Game(models.Model):
     ball_x = models.FloatField(default=213)
     ball_y = models.FloatField(default=281.5)
     ball_velocity_x = models.FloatField(default=0)
-    ball_velocity_y = models.FloatField(default=5)
+    ball_velocity_y = models.FloatField(default=-5)
     player1_score = models.IntegerField(default=0)
     player2_score = models.IntegerField(default=0)
     pad1_x = models.FloatField(default=213)
     pad1_y = models.FloatField(default=513)
     pad2_x = models.FloatField(default=213)
     pad2_y = models.FloatField(default=50)
-    player_turn = models.PositiveSmallIntegerField(
-        choices=PLAYER_TURN_CHOICES, default=1
-    )
+    player_turn = models.PositiveIntegerField(null=True, blank=True)
+
+    ball_moving = models.BooleanField(default=False)
+    paused = models.BooleanField(default=False)
 
     win_width = models.FloatField(default=426)
     win_height = models.FloatField(default=563)
@@ -82,21 +78,13 @@ class Game(models.Model):
         self.check_collisions()
         self.save()
 
-    def move_pad(self, pad_number, new_x):
-        if pad_number == 1:
-            if new_x < self.pad_width / 2:
-                self.pad1_x = self.pad_width / 2
-            elif new_x > self.width - self.pad_width / 2:
-                self.pad1_x = self.width - self.pad_width / 2
-            else:
-                self.pad1_x = new_x
-        elif pad_number == 2:
-            if new_x < self.pad_width / 2:
-                self.pad2_x = self.pad_width / 2
-            elif new_x > self.width - self.pad_width / 2:
-                self.pad2_x = self.width - self.pad_width / 2
-            else:
-                self.pad2_x = new_x
+    def move_pad(self, player_id, x, y):
+        if self.player1.id == player_id:
+            self.pad1_x += x
+            self.pad1_y += y
+        elif self.player2.id == player_id:
+            self.pad2_x += x
+            self.pad2_y += y
         self.save()
 
     def check_collisions(self):
@@ -140,7 +128,7 @@ class Game(models.Model):
 
     @classmethod
     def create_game(cls, user):
-        game = cls.objects.create(player1=user, status="waiting")
+        game = cls.objects.create(player1=user, status="waiting", player_turn=user.id)
         return game
 
     @classmethod
