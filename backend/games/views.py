@@ -1,14 +1,16 @@
-from rest_framework import generics, status
-from rest_framework.response import Response
-from .models import Game
-from .serializers import GameSerializer
+import json
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.http import JsonResponse
 from django.views import View
-import json
+from rest_framework import generics, status
+from rest_framework.response import Response
+
+# from rest_framework.views import APIView
+from .models import Game
+from .serializers import GameSerializer  # GameStateSerializer
 
 User = get_user_model()
 
@@ -72,3 +74,29 @@ class KeyPressView(View):
         game.save()
 
         return JsonResponse({"status": "success"})
+
+
+# class InitGameStateView(APIView):
+#     def post(self, request, *args, **kwargs):
+#         serializer = GameStateSerializer(data=request.data)
+#         if serializer.is_valid():
+#             print("Game state initialized")
+#             game_id = kwargs.get("game_id")
+#             game = get_object_or_404(Game, pk=game_id)
+#             game_data = serializer.validated_data
+#             game.ball_x = game_data["ballPosition"]["x"]
+#             game.ball_y = game_data["ballPosition"]["y"]
+#             game.ball_velocity_x = game_data["ballVelocity"]["x"]
+#             game.ball_velocity_y = game_data["ballVelocity"]["y"]
+#             game.player1_score = game_data["player1Score"]
+#             game.player2_score = game_data["player2Score"]
+#             game.pad1_x = game_data["pad1"]["x"]
+#             game.pad1_y = game_data["pad1"]["y"]
+#             game.pad2_x = game_data["pad2"]["x"]
+#             game.pad2_y = game_data["pad2"]["y"]
+#             game.player_turn = game_data["playerTurn"]
+#             game.width = game_data["winWidth"]
+#             game.height = game_data["winHeight"]
+#             game.save()
+#             return Response({"message": "Game state initialized"}, status=200)
+#         return Response(serializer.errors, status=400)

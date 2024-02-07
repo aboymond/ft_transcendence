@@ -1,5 +1,4 @@
-import { User, FriendRequest } from '../types';
-import { GameHistory } from '../types';
+import { User, FriendRequest, GameHistory, GameState } from '../types';
 
 const API_BASE_URL = 'http://localhost:8000/api'; // Update with your actual backend URL
 
@@ -173,6 +172,12 @@ export const apiService = {
 		return fetchAPI('games/keypress/', {
 			method: 'POST',
 			body: JSON.stringify({ game_id: gameId, player_id: playerId, key }),
+		});
+	},
+	initGameState: async (gameId: number, gameState: GameState) => {
+		return fetchAPI(`games/init/${gameId}/`, {
+			method: 'POST',
+			body: JSON.stringify({ game_id: gameId, game_state: gameState }),
 		});
 	},
 };

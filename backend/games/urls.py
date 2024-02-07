@@ -5,6 +5,7 @@ from .views import (
     CreateGameView,
     JoinGameView,
     KeyPressView,
+    # InitGameStateView,
 )
 
 urlpatterns = [
@@ -17,4 +18,5 @@ urlpatterns = [
     path("create/", CreateGameView.as_view(), name="create_game"),
     path("join/<int:pk>/", JoinGameView.as_view(), name="join_game"),
     path("keypress/", KeyPressView.as_view(), name="keypress"),
+    # path("init/<int:game_id>/", InitGameStateView.as_view(), name="init_game"),
 ]

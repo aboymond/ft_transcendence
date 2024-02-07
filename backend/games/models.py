@@ -56,24 +56,25 @@ class Game(models.Model):
     )
 
     # GameState
-    ball_x = models.FloatField(default=0)
-    ball_y = models.FloatField(default=0)
+    ball_x = models.FloatField(default=213)
+    ball_y = models.FloatField(default=281.5)
     ball_velocity_x = models.FloatField(default=0)
-    ball_velocity_y = models.FloatField(default=0)
+    ball_velocity_y = models.FloatField(default=5)
     player1_score = models.IntegerField(default=0)
     player2_score = models.IntegerField(default=0)
-    pad1_x = models.FloatField(default=0)
-    pad1_y = models.FloatField(default=0)
-    pad2_x = models.FloatField(default=0)
-    pad2_y = models.FloatField(default=0)
+    pad1_x = models.FloatField(default=213)
+    pad1_y = models.FloatField(default=513)
+    pad2_x = models.FloatField(default=213)
+    pad2_y = models.FloatField(default=50)
     player_turn = models.PositiveSmallIntegerField(
         choices=PLAYER_TURN_CHOICES, default=1
     )
 
-    pad_width = models.FloatField(default=0)
-    pad_height = models.FloatField(default=0)
-    width = models.FloatField(default=600)
-    height = models.FloatField(default=800)
+    win_width = models.FloatField(default=426)
+    win_height = models.FloatField(default=563)
+    ball_width = models.FloatField(default=10)
+    pad_width = models.FloatField(default=100)
+    pad_height = models.FloatField(default=10)
 
     def update_ball_position(self):
         self.ball_x += self.ball_velocity_x

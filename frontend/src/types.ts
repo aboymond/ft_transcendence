@@ -44,7 +44,7 @@ export interface GameState {
 	player2_score: number;
 
 	//TODO change to player1 and player2 ?
-	playerTurnA: boolean;
+	playerTurn: number;
 
 	pad1: { x: number; y: number };
 	pad2: { x: number; y: number };
@@ -53,7 +53,6 @@ export interface GameState {
 	winHeight: number;
 }
 
-//TODO move game state to GameState ?
 export interface Game {
 	id: number;
 	player1: User | null;
@@ -65,17 +64,7 @@ export interface Game {
 	group_name?: string;
 	winner?: User;
 	loser?: User;
-	ball_x: number;
-	ball_y: number;
-	ball_velocity_x: number;
-	ball_velocity_y: number;
-	player1_score: number;
-	player2_score: number;
-	pad1_x: number;
-	pad1_y: number;
-	pad2_x: number;
-	pad2_y: number;
-	player_turn: number; //TODO
+	game_state?: GameState;
 }
 
 export interface Tournament {

@@ -144,9 +144,9 @@ export class PixiManager {
 						player1_score: data.player1_score,
 						player2_score: data.player2_score,
 						ballVelocity: { x: data.ball_velocity_x, y: data.ball_velocity_y },
-						playerTurnA: data.playerTurnA,
-						winWidth: this.width,
-						winHeight: this.height,
+						playerTurn: data.player_turn,
+						winWidth: this.width, //TODO: check if needed
+						winHeight: this.height, //TODO: check if needed
 					};
 					break;
 			}

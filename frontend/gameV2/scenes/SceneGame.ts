@@ -1,11 +1,12 @@
+import * as PIXI from 'pixi.js';
 import { defaultColor, glowFilter } from '..';
 import { SceneBase } from './SceneBase';
 import { SceneMenu } from './SceneMenu';
 import { SceneWinOrLoose } from './SceneWinOrLoose';
-import * as PIXI from 'pixi.js';
 import { gsap } from 'gsap';
 import { PixiManager } from '../PixiManager';
 import { apiService } from '../../src/services/apiService';
+// import { GameState } from '../../src/types';
 
 export class SceneGame extends SceneBase {
 	// FOR THE BACK ======================================
@@ -73,6 +74,27 @@ export class SceneGame extends SceneBase {
 
 		this._exitMenu = this._initExitMenu();
 		container.addChild(this._exitMenu);
+
+		// // Construct initial game state object
+		// const initialState: GameState = {
+		// 	ballPosition: { x: this._ball.x, y: this._ball.y },
+		// 	ballVelocity: { x: this._data.ballVelocity.x, y: this._data.ballVelocity.y },
+		// 	pad1: { x: this._pad1.x, y: this._pad1.y },
+		// 	pad2: { x: this._pad2.x, y: this._pad2.y },
+		// 	player1_score: 0,
+		// 	player2_score: 0,
+		// 	playerTurn: 1,
+		// 	winWidth: this.root.width,
+		// 	winHeight: this.root.height,
+		// };
+
+		// // Send initial game state to backend
+		// try {
+		// 	await apiService.initGameState(this._gameId, initialState);
+		// 	console.log('Game state initialized in backend');
+		// } catch (error) {
+		// 	console.error('Error initializing game state in backend', error);
+		// }
 	}
 
 	public onUpdate() {
