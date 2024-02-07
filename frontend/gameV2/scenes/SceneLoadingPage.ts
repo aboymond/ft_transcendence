@@ -100,7 +100,6 @@ export class SceneLoadingPage extends SceneBase {
 			text.x = ((this.root.width - text.width) * 88) / 100 + index * 10; // Ajuster la position X
 		});
 
-		console.log("textPoint: " + this._textPoints.length);
 		this._interval = setInterval(() => {
 			if (this._textEnter) {
 				this._textEnter.visible = !this._textEnter.visible;
@@ -116,7 +115,6 @@ export class SceneLoadingPage extends SceneBase {
 			} else {
 				this._textPoints[this._index - 1].visible = true;
 			}
-			console.log(this._index);
 			this._textPoints[this._index].visible = false;
 			this._index++;
 		}, 800);
@@ -224,6 +222,6 @@ export class SceneLoadingPage extends SceneBase {
 	//=======================================
 
 	private _randomizer() {
-		return Math.floor(Math.random() * this._tabTips.length - 1);
+		return Math.floor(Math.random() * (this._tabTips.length - 1));
 	}
 }
