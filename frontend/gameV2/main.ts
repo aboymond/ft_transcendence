@@ -7,6 +7,7 @@ import WebFont from 'webfontloader';
 import { SceneMenu2 } from './scenes/SceneMenu2';
 import { SceneMenuOption } from './scenes/SceneMenuOption';
 import { SceneLoadingPage } from './scenes/SceneLoadingPage';
+import { SceneGameVsBot } from './scenes/SceneGameVsBot';
 
 export function launchGame(ws: WebSocket | null, gameState: GameState | null, userId: number | null) {
 	WebFont.load({
@@ -16,7 +17,7 @@ export function launchGame(ws: WebSocket | null, gameState: GameState | null, us
 		},
 		active: function () {
 			const pixiMan = new PixiManager(ws, gameState, {}, userId);
-			pixiMan.loadScene(new SceneLoadingPage(pixiMan));
+			pixiMan.loadScene(new SceneGameVsBot(pixiMan));
 		},
 	});
 }

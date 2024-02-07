@@ -50,13 +50,13 @@ export class SceneGameVsBot extends SceneBase {
 
 		//Init Pad A
 		container.addChild(this._initPad(this._padBot, 100, 10, defaultColor));
-		this._padPlayer.x = this.root.width / 2;
-		this._padPlayer.y = this.root.height - 50;
+		this._padBot.x = this.root.width / 2;
+		this._padBot.y = (this.root.height * 10) / 100;
 
 		//Init Pad B
 		container.addChild(this._initPad(this._padPlayer, 100, 10, defaultColor));
-		this._padBot.x = this.root.width / 2;
-		this._padBot.y = 50;
+		this._padPlayer.x = this.root.width / 2;
+		this._padPlayer.y = (this.root.height * 90) / 100;
 
 		//Init Score Text
 		container.addChild(this._initScoreText());
@@ -113,16 +113,26 @@ export class SceneGameVsBot extends SceneBase {
 	//=======================================
 
 	private _initBall(size: number, color: number) {
+		const pourcentage = 3;
+		const newWidth = Math.floor((this.root.width * pourcentage) / 100);
+		const ratio = 1;
+		const newHigth = Math.floor(newWidth / ratio);
+
 		this._ball.beginFill(color);
-		this._ball.drawRect(0, 0, size, size);
+		this._ball.drawRect(0, 0, newWidth, newHigth);
 		this._ball.filters = [glowFilter];
 		this._ball.endFill();
 		return this._ball;
 	}
 
 	private _initPad(pad: PIXI.Graphics, width: number, height: number, color: number) {
+		const pourcentage = 25;
+		const newWidth = Math.floor((this.root.width * pourcentage) / 100);
+		const ratio = width / height;
+		const newHigth = Math.floor(newWidth / ratio);
+		
 		pad.beginFill(color);
-		pad.drawRect(-width / 2, -height / 2, width, height);
+		pad.drawRect(-newWidth / 2, -newHigth / 2, newWidth, newHigth);
 		pad.filters = [glowFilter];
 		pad.endFill();
 		return pad;
@@ -165,7 +175,7 @@ export class SceneGameVsBot extends SceneBase {
 			this._ball.x > this._padPlayer.x - this._padPlayer.width / 2 &&
 			this._ball.x < this._padPlayer.x + this._padPlayer.width / 2
 		) {
-			if (this._ball.y >= this._padPlayer.y - this._padPlayer.height - 1) {
+			if (this._ball.y + this._ball.height / 2 >= this._padPlayer.y - this._padPlayer.height - 1) {
 				sound.play('touchPad');
 				this._data.ballVelocity.x = ((this._ball.x - this._padPlayer.x) / (this._padPlayer.width / 2)) * 5;
 				this._data.ballVelocity.y = -this._data.ballVelocity.y;
@@ -178,13 +188,13 @@ export class SceneGameVsBot extends SceneBase {
 
 		if (this._playerTurn) {
 			// ball position
-			if (this._ball.x - this._ball.width / 2 < this._padPlayer.x - this._padPlayer.width / 2) {
-				this._ball.x = this._padPlayer.x - this._padPlayer.width / 2 - this._ball.width / 2;
-			} else if (this._ball.x + this._ball.width / 2 > this._padPlayer.x + this._padPlayer.width / 2) {
-				this._ball.x = this._padPlayer.x + this._padPlayer.width / 2 - this._ball.width / 2;
+			if (this._ball.x - (this._ball.width / 2) < this._padPlayer.x - (this._padPlayer.width / 2)) {
+				this._ball.x = this._padPlayer.x - (this._padPlayer.width / 2);
+			} else if (this._ball.x + (this._ball.width / 2) > this._padPlayer.x + (this._padPlayer.width / 2)) {
+				this._ball.x = this._padPlayer.x + (this._padPlayer.width / 2) - this._ball.width;
 			}
 			this._data.ballVelocity.x = ((this._ball.x - this._padPlayer.x) / (this._padPlayer.width / 2)) * 5;
-			this._ball.y = this._padPlayer.y - this._padPlayer.height / 2 - this._ball.height * 2;
+			this._ball.y = this._padPlayer.y - (this._padPlayer.height / 2) - this._ball.height * 2;
 		} else {
 			// ball position
 			this._botStart();
@@ -266,8 +276,6 @@ export class SceneGameVsBot extends SceneBase {
 			this._data.playerBScore++;
 			this._updateScoreText();
 		}
-		console.log('X in GO = ' + this._data.ballVelocity.x);
-		console.log('Y in GO = ' + this._data.ballVelocity.y);
 	}
 
 	private _updateScoreText() {
