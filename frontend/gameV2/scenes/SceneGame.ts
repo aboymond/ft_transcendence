@@ -79,16 +79,18 @@ export class SceneGame extends SceneBase {
 		const gameState = this.root.gameState;
 		// TODO Use backend gameState to update the game state
 		if (gameState) {
-			this._data.player1_score = gameState.player1_score;
-			this._data.player2_score = gameState.player2_score;
 			this._ball.x = gameState.ballPosition.x;
 			this._ball.y = gameState.ballPosition.y;
+			this._data.player1_score = gameState.player1_score;
+			this._data.player2_score = gameState.player2_score;
 			this._pad1.x = gameState.pad1.x;
 			this._pad1.y = gameState.pad1.y;
 			this._pad2.x = gameState.pad2.x;
 			this._pad2.y = gameState.pad2.y;
 		}
 
+		//TODO call this after backend update
+		this._updateScoreText();
 		// if (!this._exitBool) {
 		// 	if (!this._gameStarted) this._checkTurn();
 		// 	else {

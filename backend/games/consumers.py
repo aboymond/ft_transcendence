@@ -76,16 +76,27 @@ class GameConsumer(AsyncWebsocketConsumer):
             game.ball_y += game.ball_velocity_y
 
         if game.ball_y < 10 or game.ball_y > game.win_height - 10:
+            game.ball_moving = False
             if game.ball_y < 10:
                 game.player1_score += 1
-                game.player_turn = 2
-                game.ball_x = game.pad2_x + game.pad_width / 2
-                game.ball_velocity_x = 5
+                game.player_turn = 2  # TODO
+                game.pad1_x = game.win_width / 2
+                game.pad1_y = game.win_height - 10
+                game.pad2_x = game.win_width / 2
+                game.pad2_y = 10
+                game.ball_x = game.pad2_x
+                game.ball_y = game.pad2_y + game.pad_height - game.ball_width / 2
+                game.ball_velocity_y *= -1
             else:
                 game.player2_score += 1
-                game.player_turn = 1
-                game.ball_x = game.pad1_x + game.pad_width / 2
-                game.ball_velocity_x = -5
+                game.player_turn = 1  # TODO
+                game.pad1_x = game.win_width / 2
+                game.pad1_y = game.win_height - 10
+                game.pad2_x = game.win_width / 2
+                game.pad2_y = 10
+                game.ball_x = game.pad1_x
+                game.ball_y = game.pad1_y - game.pad_height - game.ball_width / 2
+                game.ball_velocity_y *= -1
         await sync_to_async(game.save)()
         await self.send_game_state()
 
@@ -98,12 +109,12 @@ class GameConsumer(AsyncWebsocketConsumer):
             "data": {
                 "ball_x": game.ball_x,
                 "ball_y": game.ball_y,
+                "player1_score": game.player1_score,
+                "player2_score": game.player2_score,
                 "pad1_x": game.pad1_x,
                 "pad1_y": game.pad1_y,
                 "pad2_x": game.pad2_x,
                 "pad2_y": game.pad2_y,
-                "player1_score": game.player1_score,
-                "player2_score": game.player2_score,
                 "player_turn": game.player_turn,
             },
         }
