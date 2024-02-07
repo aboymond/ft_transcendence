@@ -98,7 +98,7 @@ export class SceneGame extends SceneBase {
 		// 		this._checkifBallIsOut();
 		// 	}
 		// }
-		this._updatePadPosition();
+		this._handleExit();
 
 		//TODO end game in backend and set winner
 		if (this._data.player1_score === this.root.amountVictory) {
@@ -233,13 +233,8 @@ export class SceneGame extends SceneBase {
 	}
 
 	//TODO move logic to backend
-	private _updatePadPosition() {
-		if (!this._exitBool) {
-			if (this._keysPressed['Space']) {
-				if (this._gameStarted == false) this._gameStarted = true;
-				console.log('press space ' + this._gameStarted);
-			}
-		} else {
+	private _handleExit() {
+		if (this._exitBool) {
 			if (this._keysPressed['ArrowRight']) {
 				this._exitYesNO = false;
 				this._noOption.style.fill = defaultColor;
