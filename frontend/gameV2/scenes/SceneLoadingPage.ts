@@ -149,10 +149,10 @@ export class SceneLoadingPage extends SceneBase {
 				.leaveLoading(this._gameId)
 				.then(() => console.log('Left loading scene'))
 				.catch((error: ErrorResponse) => console.error('Error leaving loading', error));
-			// if (this.root.gameSocket) {
-			// 	this.root.gameSocket.close();
-			// 	this.root.gameSocket = null;
-			// }
+			if (this.root.gameSocket) {
+				this.root.gameSocket.close();
+				this.root.gameSocket = null;
+			}
 			this.root.loadScene(new SceneMenu(this.root));
 		}
 	}
