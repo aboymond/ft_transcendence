@@ -75,8 +75,11 @@ class GameConsumer(AsyncWebsocketConsumer):
             game.ball_x += game.ball_velocity_x
             game.ball_y += game.ball_velocity_y
 
+        await self.check_collisions(game)
+
         if game.ball_y < 10 or game.ball_y > game.win_height - 10:
             game.ball_moving = False
+            game.ball_velocity_x = 0
             if game.ball_y < 10:
                 game.player1_score += 1
                 game.player_turn = 2  # TODO
@@ -84,8 +87,8 @@ class GameConsumer(AsyncWebsocketConsumer):
                 game.pad1_y = game.win_height - 10
                 game.pad2_x = game.win_width / 2
                 game.pad2_y = 10
-                game.ball_x = game.pad2_x
-                game.ball_y = game.pad2_y + game.pad_height - game.ball_width / 2
+                game.ball_x = game.win_width / 2
+                game.ball_y = 20
                 game.ball_velocity_y *= -1
             else:
                 game.player2_score += 1
@@ -94,8 +97,8 @@ class GameConsumer(AsyncWebsocketConsumer):
                 game.pad1_y = game.win_height - 10
                 game.pad2_x = game.win_width / 2
                 game.pad2_y = 10
-                game.ball_x = game.pad1_x
-                game.ball_y = game.pad1_y - game.pad_height - game.ball_width / 2
+                game.ball_x = game.win_width / 2
+                game.ball_y = game.win_height - 25
                 game.ball_velocity_y *= -1
         await sync_to_async(game.save)()
         await self.send_game_state()
@@ -126,3 +129,32 @@ class GameConsumer(AsyncWebsocketConsumer):
                 break
             await self.update_game_state()
             await asyncio.sleep(1 / 60)
+
+    async def check_collisions(self, game):
+        # Wall collision
+        if game.ball_x <= 1 or game.ball_x + game.ball_width / 2 >= game.win_width - 1:
+            game.ball_velocity_x = -game.ball_velocity_x
+
+        # Pad 2 collision
+        if (
+            game.pad2_x - game.pad_width / 2
+            < game.ball_x
+            < game.pad2_x + game.pad_width / 2
+        ):
+            if game.ball_y <= game.pad2_y + game.pad_height / 2 + 1:
+                game.ball_velocity_y = -game.ball_velocity_y
+                game.ball_velocity_x = (
+                    (game.ball_x - game.pad2_x) / (game.pad_width / 2)
+                ) * 5
+
+        # Pad 1 collision
+        if (
+            game.pad1_x - game.pad_width / 2
+            < game.ball_x
+            < game.pad1_x + game.pad_width / 2
+        ):
+            if game.ball_y >= game.pad1_y - game.pad_height - 1:
+                game.ball_velocity_x = (
+                    (game.ball_x - game.pad1_x) / (game.pad_width / 2)
+                ) * 5
+                game.ball_velocity_y = -game.ball_velocity_y

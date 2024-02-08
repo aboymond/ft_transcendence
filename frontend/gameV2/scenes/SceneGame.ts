@@ -289,7 +289,6 @@ export class SceneGame extends SceneBase {
 		// console.log('Y in GO = ' + this._data.ballVelocity.y);
 	}
 
-	//TODO call this elsewhere
 	private _updateScoreText() {
 		this._scoreText.text = this._data.player1_score + ' - ' + this._data.player2_score;
 		this._scoreText.x = this.root.width / 2 - this._scoreText.width / 2;
