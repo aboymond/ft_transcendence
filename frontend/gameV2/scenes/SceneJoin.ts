@@ -100,8 +100,9 @@ export class SceneJoin extends SceneBase {
 					this.root.loadScene(new SceneMenu2(this.root));
 				}
 				if (e.code === 'Enter') {
-					// console.log(this._gameObjects[this._currentSelectPvP].data.id);
-					this._joinGame(this._gameObjects[this._currentSelectPvP].data.id);
+					if (this._gameObjects[this._currentSelectPvP]) {
+						this._joinGame(this._gameObjects[this._currentSelectPvP].data.id);
+					}
 				}
 
 				break;
