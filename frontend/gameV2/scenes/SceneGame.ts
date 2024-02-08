@@ -75,6 +75,17 @@ export class SceneGame extends SceneBase {
 	}
 
 	public onUpdate() {
+		const keysOfInterest = ['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Escape'];
+		const pressedKeys = keysOfInterest.filter((key) => this._keysPressed[key]);
+
+		if (pressedKeys.length > 0) {
+			pressedKeys.forEach((key) => {
+				apiService
+					.sendKeyPress(this._gameId, this.root.userId ?? 0, key)
+					.then((response) => console.log(`${key} press response:`, response))
+					.catch((error) => console.error(`Error sending ${key} press`, error));
+			});
+		}
 		const gameState = this.root.gameState;
 		// TODO Use backend gameState to update the game state
 		if (gameState) {
@@ -100,15 +111,6 @@ export class SceneGame extends SceneBase {
 		// 	}
 		// }
 		this._handleExit();
-
-		// //TODO end game in backend and set winner
-		// if (this._data.player1_score === this.root.amountVictory) {
-		// 	this.root.playerAWin = true;
-		// 	this.root.loadScene(new SceneWinOrLoose(this.root));
-		// } else if (this._data.player2_score === this.root.amountVictory) {
-		// 	this.root.playerAWin = false;
-		// 	this.root.loadScene(new SceneWinOrLoose(this.root));
-		// }
 	}
 
 	public onFinish() {
@@ -125,13 +127,6 @@ export class SceneGame extends SceneBase {
 			this._escapeKeyPressed = true;
 			this._exitBool = !this._exitBool;
 			this._exitMenu.visible = this._exitBool;
-		}
-
-		if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Escape'].includes(e.code)) {
-			apiService
-				.sendKeyPress(this._gameId, this.root.userId ?? 0, e.code)
-				.then((response) => console.log(response))
-				.catch((error) => console.error('Error sending key press', error));
 		}
 	}
 
@@ -173,40 +168,6 @@ export class SceneGame extends SceneBase {
 	//=======================================
 
 	// //TODO move logic to backend
-	// private _addVelocity() {
-	// 	if (this._player1_turn) this._ball.y -= this._data.ballVelocity.y;
-	// 	else this._ball.y += this._data.ballVelocity.y;
-	// 	this._ball.x += this._data.ballVelocity.x;
-	// }
-
-	// //TODO move logic to backend
-	// private _checkCollisions() {
-	// 	// Wall colision
-	// 	if (this._ball.x <= 1 || this._ball.x + this._ball.width / 2 >= this.root.width - 1)
-	// 		this._data.ballVelocity.x = -this._data.ballVelocity.x;
-
-	// 	// Pad colision
-	// 	if (
-	// 		this._ball.x > this._pad2.x - this._pad2.width / 2 &&
-	// 		this._ball.x < this._pad2.x + this._pad2.width / 2
-	// 	) {
-	// 		if (this._ball.y <= this._pad2.y + this._pad2.height / 2 + 1) {
-	// 			this._data.ballVelocity.y = -this._data.ballVelocity.y;
-	// 			this._data.ballVelocity.x = ((this._ball.x - this._pad2.x) / (this._pad2.width / 2)) * 5;
-	// 		}
-	// 	}
-	// 	if (
-	// 		this._ball.x > this._pad1.x - this._pad1.width / 2 &&
-	// 		this._ball.x < this._pad1.x + this._pad1.width / 2
-	// 	) {
-	// 		if (this._ball.y >= this._pad1.y - this._pad1.height - 1) {
-	// 			this._data.ballVelocity.x = ((this._ball.x - this._pad1.x) / (this._pad1.width / 2)) * 5;
-	// 			this._data.ballVelocity.y = -this._data.ballVelocity.y;
-	// 		}
-	// 	}
-	// }
-
-	// //TODO move logic to backend
 	// private _checkTurn() {
 	// 	// turn player or computer
 
@@ -232,7 +193,6 @@ export class SceneGame extends SceneBase {
 	// 	}
 	// }
 
-	//TODO move logic to backend
 	private async _handleExit() {
 		if (this._exitBool) {
 			if (this._keysPressed['ArrowRight']) {
@@ -262,67 +222,12 @@ export class SceneGame extends SceneBase {
 			}
 		}
 	}
-
-	// //TODO move logic to backend
-	// private _checkifBallIsOut() {
-	// 	if (this._ball.y < 10 || this._ball.y < this._pad2.y) {
-	// 		console.log('Player 1 scores !');
-	// 		this._data.ballVelocity.x = 0;
-	// 		this._data.ballVelocity.y = 5;
-	// 		this._pad1.x = this.root.width / 2;
-	// 		this._pad2.x = this.root.width / 2;
-	// 		this._ball.x = this._pad1.x;
-	// 		this._gameStarted = false;
-	// 		this._player1_turn = false;
-	// 		this._data.player1_score++;
-	// 		this._updateScoreText();
-	// 	}
-	// 	if (this._ball.y > this.root.height - 10 || this._ball.y > this._pad1.y) {
-	// 		console.log('Player 2 scores !');
-	// 		this._data.ballVelocity.x = 0;
-	// 		this._data.ballVelocity.y = 5;
-	// 		this._pad1.x = this.root.width / 2;
-	// 		this._pad2.x = this.root.width / 2;
-	// 		this._ball.x = this._pad1.x;
-	// 		// this._gameStarted = false;
-	// 		// this._player1_turn = true;
-	// 		this._data.player2_score++;
-	// 		this._updateScoreText();
-	// 	}
-	// 	// console.log('X in GO = ' + this._data.ballVelocity.x);
-	// 	// console.log('Y in GO = ' + this._data.ballVelocity.y);
-	// }
-
 	private _updateScoreText() {
 		this._scoreText.text = this._data.player1_score + ' - ' + this._data.player2_score;
 		this._scoreText.x = this.root.width / 2 - this._scoreText.width / 2;
 		this._scoreText.y = this.root.height / 2 - this._scoreText.height / 2;
 		this._scoreText.alpha = 0.2;
 	}
-
-	// //TODO bot logic to remove
-	// private _player2Start() {
-	// 	if (this._player2_turn) return;
-
-	// 	this._player2_turn = true;
-	// 	let targetX = Math.random() * this.root.width;
-	// 	// let targetX = this.root.width;
-	// 	if (targetX < this._pad2.width / 2) targetX = this._pad2.width / 2;
-	// 	else if (targetX > this.root.width - this._pad2.width / 2)
-	// 		targetX = this.root.width - this._pad2.width / 2;
-	// 	const duration = 1;
-	// 	const ease = 'expo.Out';
-
-	// 	gsap.to(this._pad2, {
-	// 		x: targetX,
-	// 		duration: duration,
-	// 		ease: ease,
-	// 		onComplete: () => {
-	// 			this._gameStarted = true;
-	// 			this._player2_turn = false;
-	// 		},
-	// 	});
-	// }
 
 	private _initExitMenu(): PIXI.Container {
 		const menu = new PIXI.Container();
