@@ -7,6 +7,7 @@ from channels.db import database_sync_to_async
 from .utils import handle_leave_game
 from django.contrib.auth import get_user_model
 from websockets.exceptions import ConnectionClosedOK
+from django.utils import timezone
 
 User = get_user_model()
 
@@ -54,6 +55,10 @@ class GameConsumer(AsyncWebsocketConsumer):
             print("Attempted to send a message to a closed WebSocket connection.")
 
     async def start_game(self):
+        game = await sync_to_async(Game.objects.get)(id=self.game_id)
+        game.start_time = timezone.now()
+        await sync_to_async(game.save)()
+
         message = {
             "action": "start_game",
             "data": {
@@ -217,6 +222,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         game.status = "completed"
         game.winner = await sync_to_async(self.determine_winner)(game)
         game.loser = await sync_to_async(self.determine_loser)(game)
+        game.end_time = timezone.now()
         await sync_to_async(game.save)()
 
         message = {

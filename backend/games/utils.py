@@ -1,6 +1,7 @@
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from .models import Game
+from django.utils import timezone
 
 
 def handle_leave_game(game_id, user):
@@ -26,6 +27,7 @@ def handle_leave_game(game_id, user):
     game.status = "completed"
     game.winner = winner
     game.loser = loser
+    game.end_time = timezone.now()
     game.save()
 
     # Send a WebSocket message to notify players the game has ended
