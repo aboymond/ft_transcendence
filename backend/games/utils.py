@@ -8,10 +8,9 @@ def handle_leave_game(game_id, user):
     if user not in [game.player1, game.player2]:
         return {"error": "You are not a player in this game"}, 403
 
-    print("Game status:", game.status)
-
     if game.status == "empty":
         return
+        # TODO delete game ?
         # game.delete()
         # return {"message": "Game deleted successfully"}, 200
 
@@ -36,13 +35,13 @@ def handle_leave_game(game_id, user):
         {
             "type": "leave_game",
             "message": "A player has left the game. The game has ended.",
-            "winner": winner.id if winner else None,
-            "loser": loser.id if loser else None,
+            "winner_id": winner.id if winner else None,
+            "loser_id": loser.id if loser else None,
         },
     )
-
+    # TODOD remove this ?
     return {
         "message": "Game ended successfully",
-        "winner": winner.id if winner else None,
-        "loser": loser.id if loser else None,
+        "winner_id": winner.id if winner else None,
+        "loser_id": loser.id if loser else None,
     }, 200

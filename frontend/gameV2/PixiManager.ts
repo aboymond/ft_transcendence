@@ -152,11 +152,12 @@ export class PixiManager {
 					};
 					break;
 				case 'leave_game':
-					console.log('winning data:', message, data.winner, data.loser, this.userId);
-					if (data.winner === this.userId) {
+					if (data.winner_id === this.userId) {
 						console.log('The other player has left the game. You won!');
+						this.playerAWin = true;
 						this.loadScene(new SceneWinOrLoose(this)); //TODO pass true
-					} else if (data.loser === this.userId) {
+					} else if (data.loser_id === this.userId) {
+						this.playerAWin = false;
 						console.log('You left the game. You lost!');
 						this.loadScene(new SceneWinOrLoose(this)); //TODO pass false
 					} else {

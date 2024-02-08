@@ -173,10 +173,15 @@ class GameConsumer(AsyncWebsocketConsumer):
         await self.start_periodic_update()
 
     async def leave_game(self, event):
+        winner_id = event["winner_id"]
+        loser_id = event["loser_id"]
+
         message = {
             "action": "leave_game",
             "data": {
                 "message": "A player has left the game. The game has ended.",
+                "winner_id": winner_id,
+                "loser_id": loser_id,
             },
         }
         await self.channel_layer.group_send(

@@ -1,7 +1,6 @@
 import * as PIXI from 'pixi.js';
 import { defaultColor, glowFilter } from '..';
 import { SceneBase } from './SceneBase';
-import { SceneMenu } from './SceneMenu';
 import { SceneWinOrLoose } from './SceneWinOrLoose';
 import { PixiManager } from '../PixiManager';
 import { apiService } from '../../src/services/apiService';
@@ -127,7 +126,6 @@ export class SceneGame extends SceneBase {
 			this._escapeKeyPressed = true;
 			this._exitBool = !this._exitBool;
 			this._exitMenu.visible = this._exitBool;
-			console.log('Escape ' + (this._exitBool ? 'true' : 'false'));
 		}
 
 		if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Escape'].includes(e.code)) {
@@ -253,12 +251,11 @@ export class SceneGame extends SceneBase {
 					// Call the API to end the game
 					try {
 						await apiService.leaveGame(this._gameId);
-						console.log('Game left successfully');
 					} catch (error) {
 						console.error('Error leaving game:', error);
 					}
 					// Navigate back to the menu
-					this.root.loadScene(new SceneMenu(this.root));
+					// this.root.loadScene(new SceneMenu(this.root));
 				} else {
 					this._exitBool = false;
 					this._exitMenu.visible = false;
@@ -366,8 +363,7 @@ export class SceneGame extends SceneBase {
 
 	private async notifyPlayerReady() {
 		try {
-			const response = await apiService.sendPlayerReady(this._gameId);
-			console.log('Player ready response:', response);
+			await apiService.sendPlayerReady(this._gameId);
 		} catch (error) {
 			console.error('Error notifying player ready:', error);
 		}
