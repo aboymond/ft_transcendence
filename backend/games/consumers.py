@@ -9,37 +9,38 @@ class GameConsumer(AsyncWebsocketConsumer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.game_active = False
+        self.update_task = None
 
     async def connect(self):
         print("Connecting... (Game)")  # Log message before connection
         self.game_id = self.scope["url_route"]["kwargs"]["game_id"]
         self.game_group_name = f"game_{self.game_id}"
-
         await self.channel_layer.group_add(self.game_group_name, self.channel_name)
-
         await self.accept()
+        print(f"WebSocket game {self.game_id} and group {self.game_group_name} opened")
 
-        print(
-            f"WebSocket for game {self.game_id} and group {self.game_group_name} opened"
-        )  # Log when WebSocket is opened
+        await self.start_periodic_update()
 
         if await self.ready_to_start_game():
             await self.start_game()
 
     async def disconnect(self, close_code):
-        self.game_active = False
         print("Disconnecting... (Game)")  # Log message before disconnection
+        self.game_active = False
+        if self.update_task:
+            self.update_task.cancel()  # Cancel the periodic update task
+            try:
+                await self.update_task
+            except asyncio.CancelledError:
+                pass  # Task cancellation is expected, so we can safely ignore this exception
         await self.channel_layer.group_discard(self.game_group_name, self.channel_name)
-        print(
-            f"WebSocket for game {self.game_id} and group {self.game_group_name} closed"
-        )  # Log when WebSocket is closed
+        print(f"WebSocket game {self.game_id} and group {self.game_group_name} closed")
 
     async def receive(self, text_data):
         data = json.loads(text_data)
         print("Game data", data)
 
     async def game_message(self, event):
-        # Extract the message from the event and send it to the WebSocket
         message = event["message"]
         await self.send(text_data=json.dumps(message))
 
@@ -120,11 +121,13 @@ class GameConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps(message))
 
     async def start_periodic_update(self):
+        self.game_active = True
+        self.update_task = asyncio.create_task(self._periodic_update())
+
+    async def _periodic_update(self):
         while self.game_active:
-            if not self.game_active:
-                break
             await self.update_game_state()
-            await asyncio.sleep(1 / 60)
+            await asyncio.sleep(1 / 60)  # Adjust the sleep time as needed
 
     async def check_collisions(self, game):
         # Wall collision
@@ -156,6 +159,21 @@ class GameConsumer(AsyncWebsocketConsumer):
                 game.ball_velocity_y = -game.ball_velocity_y
 
     async def start_game_updates(self, event):
-        # Here, you can set a flag or directly start sending game updates
+        print("Starting game updates")
         self.game_active = True
         await self.start_periodic_update()
+
+    async def leave_game(self, event):
+        message = {
+            "action": "leave_game",
+            "data": {
+                "message": "A player has left the game. The game has ended.",
+            },
+        }
+        await self.channel_layer.group_send(
+            self.game_group_name,
+            {
+                "type": "game_message",  # This should match a method in your consumer that handles this message
+                "message": message,
+            },
+        )

@@ -5,6 +5,8 @@ import '../src/styles/GameWindow.module.css';
 import $ from 'jquery';
 import { GameState } from '../src/types';
 import { SceneGame } from './scenes/SceneGame';
+import { SceneMenu } from './scenes/SceneMenu';
+import { SceneWinOrLoose } from './scenes/SceneWinOrLoose';
 
 interface IPixiManagerOptions {
 	backgroundAlpha: number;
@@ -148,6 +150,21 @@ export class PixiManager {
 						winWidth: this.width, //TODO: check if needed
 						winHeight: this.height, //TODO: check if needed
 					};
+					break;
+				case 'leave_game':
+					console.log('winning data:', message, data.winner, data.loser, this.userId);
+					if (data.winner === this.userId) {
+						console.log('The other player has left the game. You won!');
+						this.loadScene(new SceneWinOrLoose(this)); //TODO pass true
+					} else if (data.loser === this.userId) {
+						console.log('You left the game. You lost!');
+						this.loadScene(new SceneWinOrLoose(this)); //TODO pass false
+					} else {
+						this.loadScene(new SceneMenu(this));
+					}
+					if (this.gameSocket) {
+						this.gameSocket.close();
+					}
 					break;
 			}
 		});

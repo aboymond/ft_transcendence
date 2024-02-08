@@ -3,7 +3,6 @@ import { defaultColor, glowFilter } from '..';
 import { SceneBase } from './SceneBase';
 import { SceneMenu } from './SceneMenu';
 import { SceneWinOrLoose } from './SceneWinOrLoose';
-import { gsap } from 'gsap';
 import { PixiManager } from '../PixiManager';
 import { apiService } from '../../src/services/apiService';
 
@@ -17,9 +16,9 @@ export class SceneGame extends SceneBase {
 	};
 
 	// private _botLvl = this.root.botLvl;
-	private _gameStarted = false;
-	private _player1_turn = true;
-	private _player2_turn = false;
+	// private _gameStarted = false;
+	// private _player1_turn = true;
+	// private _player2_turn = false;
 	private _exitBool = false;
 	private _exitYesNO = true;
 	//==========================================================
@@ -176,68 +175,68 @@ export class SceneGame extends SceneBase {
 	// UTILS
 	//=======================================
 
-	//TODO move logic to backend
-	private _addVelocity() {
-		if (this._player1_turn) this._ball.y -= this._data.ballVelocity.y;
-		else this._ball.y += this._data.ballVelocity.y;
-		this._ball.x += this._data.ballVelocity.x;
-	}
+	// //TODO move logic to backend
+	// private _addVelocity() {
+	// 	if (this._player1_turn) this._ball.y -= this._data.ballVelocity.y;
+	// 	else this._ball.y += this._data.ballVelocity.y;
+	// 	this._ball.x += this._data.ballVelocity.x;
+	// }
+
+	// //TODO move logic to backend
+	// private _checkCollisions() {
+	// 	// Wall colision
+	// 	if (this._ball.x <= 1 || this._ball.x + this._ball.width / 2 >= this.root.width - 1)
+	// 		this._data.ballVelocity.x = -this._data.ballVelocity.x;
+
+	// 	// Pad colision
+	// 	if (
+	// 		this._ball.x > this._pad2.x - this._pad2.width / 2 &&
+	// 		this._ball.x < this._pad2.x + this._pad2.width / 2
+	// 	) {
+	// 		if (this._ball.y <= this._pad2.y + this._pad2.height / 2 + 1) {
+	// 			this._data.ballVelocity.y = -this._data.ballVelocity.y;
+	// 			this._data.ballVelocity.x = ((this._ball.x - this._pad2.x) / (this._pad2.width / 2)) * 5;
+	// 		}
+	// 	}
+	// 	if (
+	// 		this._ball.x > this._pad1.x - this._pad1.width / 2 &&
+	// 		this._ball.x < this._pad1.x + this._pad1.width / 2
+	// 	) {
+	// 		if (this._ball.y >= this._pad1.y - this._pad1.height - 1) {
+	// 			this._data.ballVelocity.x = ((this._ball.x - this._pad1.x) / (this._pad1.width / 2)) * 5;
+	// 			this._data.ballVelocity.y = -this._data.ballVelocity.y;
+	// 		}
+	// 	}
+	// }
+
+	// //TODO move logic to backend
+	// private _checkTurn() {
+	// 	// turn player or computer
+
+	// 	if (this._player1_turn) {
+	// 		// ball position
+	// 		if (this._ball.x - this._ball.width / 2 < this._pad1.x - this._pad1.width / 2) {
+	// 			this._ball.x = this._pad1.x - this._pad1.width / 2 - this._ball.width / 2;
+	// 		} else if (this._ball.x + this._ball.width / 2 > this._pad1.x + this._pad1.width / 2) {
+	// 			this._ball.x = this._pad1.x + this._pad1.width / 2 - this._ball.width / 2;
+	// 		}
+	// 		this._data.ballVelocity.x = ((this._ball.x - this._pad1.x) / (this._pad1.width / 2)) * 5;
+	// 		this._ball.y = this._pad1.y - this._pad1.height / 2 - this._ball.height * 2;
+	// 	} else {
+	// 		// ball position
+	// 		this._player2Start();
+	// 		if (this._ball.x - this._ball.width / 2 < this._pad2.x - this._pad2.width / 2) {
+	// 			this._ball.x = this._pad2.x - this._pad2.width / 2 - this._ball.width / 2;
+	// 		} else if (this._ball.x + this._ball.width / 2 > this._pad2.x + this._pad2.width / 2) {
+	// 			this._ball.x = this._pad2.x + this._pad2.width / 2 - this._ball.width / 2;
+	// 		}
+	// 		this._data.ballVelocity.x = ((this._ball.x - this._pad2.x) / (this._pad2.width / 2)) * 5;
+	// 		this._ball.y = this._pad2.y - this._pad2.height / 2 + this._ball.height * 2;
+	// 	}
+	// }
 
 	//TODO move logic to backend
-	private _checkCollisions() {
-		// Wall colision
-		if (this._ball.x <= 1 || this._ball.x + this._ball.width / 2 >= this.root.width - 1)
-			this._data.ballVelocity.x = -this._data.ballVelocity.x;
-
-		// Pad colision
-		if (
-			this._ball.x > this._pad2.x - this._pad2.width / 2 &&
-			this._ball.x < this._pad2.x + this._pad2.width / 2
-		) {
-			if (this._ball.y <= this._pad2.y + this._pad2.height / 2 + 1) {
-				this._data.ballVelocity.y = -this._data.ballVelocity.y;
-				this._data.ballVelocity.x = ((this._ball.x - this._pad2.x) / (this._pad2.width / 2)) * 5;
-			}
-		}
-		if (
-			this._ball.x > this._pad1.x - this._pad1.width / 2 &&
-			this._ball.x < this._pad1.x + this._pad1.width / 2
-		) {
-			if (this._ball.y >= this._pad1.y - this._pad1.height - 1) {
-				this._data.ballVelocity.x = ((this._ball.x - this._pad1.x) / (this._pad1.width / 2)) * 5;
-				this._data.ballVelocity.y = -this._data.ballVelocity.y;
-			}
-		}
-	}
-
-	//TODO move logic to backend
-	private _checkTurn() {
-		// turn player or computer
-
-		if (this._player1_turn) {
-			// ball position
-			if (this._ball.x - this._ball.width / 2 < this._pad1.x - this._pad1.width / 2) {
-				this._ball.x = this._pad1.x - this._pad1.width / 2 - this._ball.width / 2;
-			} else if (this._ball.x + this._ball.width / 2 > this._pad1.x + this._pad1.width / 2) {
-				this._ball.x = this._pad1.x + this._pad1.width / 2 - this._ball.width / 2;
-			}
-			this._data.ballVelocity.x = ((this._ball.x - this._pad1.x) / (this._pad1.width / 2)) * 5;
-			this._ball.y = this._pad1.y - this._pad1.height / 2 - this._ball.height * 2;
-		} else {
-			// ball position
-			this._player2Start();
-			if (this._ball.x - this._ball.width / 2 < this._pad2.x - this._pad2.width / 2) {
-				this._ball.x = this._pad2.x - this._pad2.width / 2 - this._ball.width / 2;
-			} else if (this._ball.x + this._ball.width / 2 > this._pad2.x + this._pad2.width / 2) {
-				this._ball.x = this._pad2.x + this._pad2.width / 2 - this._ball.width / 2;
-			}
-			this._data.ballVelocity.x = ((this._ball.x - this._pad2.x) / (this._pad2.width / 2)) * 5;
-			this._ball.y = this._pad2.y - this._pad2.height / 2 + this._ball.height * 2;
-		}
-	}
-
-	//TODO move logic to backend
-	private _handleExit() {
+	private async _handleExit() {
 		if (this._exitBool) {
 			if (this._keysPressed['ArrowRight']) {
 				this._exitYesNO = false;
@@ -251,7 +250,14 @@ export class SceneGame extends SceneBase {
 			}
 			if (this._keysPressed['Enter']) {
 				if (this._exitYesNO) {
-					//TODO send exit to backend
+					// Call the API to end the game
+					try {
+						await apiService.leaveGame(this._gameId);
+						console.log('Game left successfully');
+					} catch (error) {
+						console.error('Error leaving game:', error);
+					}
+					// Navigate back to the menu
 					this.root.loadScene(new SceneMenu(this.root));
 				} else {
 					this._exitBool = false;
@@ -261,35 +267,35 @@ export class SceneGame extends SceneBase {
 		}
 	}
 
-	//TODO move logic to backend
-	private _checkifBallIsOut() {
-		if (this._ball.y < 10 || this._ball.y < this._pad2.y) {
-			console.log('Player 1 scores !');
-			this._data.ballVelocity.x = 0;
-			this._data.ballVelocity.y = 5;
-			this._pad1.x = this.root.width / 2;
-			this._pad2.x = this.root.width / 2;
-			this._ball.x = this._pad1.x;
-			this._gameStarted = false;
-			this._player1_turn = false;
-			this._data.player1_score++;
-			this._updateScoreText();
-		}
-		if (this._ball.y > this.root.height - 10 || this._ball.y > this._pad1.y) {
-			console.log('Player 2 scores !');
-			this._data.ballVelocity.x = 0;
-			this._data.ballVelocity.y = 5;
-			this._pad1.x = this.root.width / 2;
-			this._pad2.x = this.root.width / 2;
-			this._ball.x = this._pad1.x;
-			this._gameStarted = false;
-			this._player1_turn = true;
-			this._data.player2_score++;
-			this._updateScoreText();
-		}
-		// console.log('X in GO = ' + this._data.ballVelocity.x);
-		// console.log('Y in GO = ' + this._data.ballVelocity.y);
-	}
+	// //TODO move logic to backend
+	// private _checkifBallIsOut() {
+	// 	if (this._ball.y < 10 || this._ball.y < this._pad2.y) {
+	// 		console.log('Player 1 scores !');
+	// 		this._data.ballVelocity.x = 0;
+	// 		this._data.ballVelocity.y = 5;
+	// 		this._pad1.x = this.root.width / 2;
+	// 		this._pad2.x = this.root.width / 2;
+	// 		this._ball.x = this._pad1.x;
+	// 		this._gameStarted = false;
+	// 		this._player1_turn = false;
+	// 		this._data.player1_score++;
+	// 		this._updateScoreText();
+	// 	}
+	// 	if (this._ball.y > this.root.height - 10 || this._ball.y > this._pad1.y) {
+	// 		console.log('Player 2 scores !');
+	// 		this._data.ballVelocity.x = 0;
+	// 		this._data.ballVelocity.y = 5;
+	// 		this._pad1.x = this.root.width / 2;
+	// 		this._pad2.x = this.root.width / 2;
+	// 		this._ball.x = this._pad1.x;
+	// 		// this._gameStarted = false;
+	// 		// this._player1_turn = true;
+	// 		this._data.player2_score++;
+	// 		this._updateScoreText();
+	// 	}
+	// 	// console.log('X in GO = ' + this._data.ballVelocity.x);
+	// 	// console.log('Y in GO = ' + this._data.ballVelocity.y);
+	// }
 
 	private _updateScoreText() {
 		this._scoreText.text = this._data.player1_score + ' - ' + this._data.player2_score;
@@ -298,29 +304,29 @@ export class SceneGame extends SceneBase {
 		this._scoreText.alpha = 0.2;
 	}
 
-	//TODO bot logic to remove
-	private _player2Start() {
-		if (this._player2_turn) return;
+	// //TODO bot logic to remove
+	// private _player2Start() {
+	// 	if (this._player2_turn) return;
 
-		this._player2_turn = true;
-		let targetX = Math.random() * this.root.width;
-		// let targetX = this.root.width;
-		if (targetX < this._pad2.width / 2) targetX = this._pad2.width / 2;
-		else if (targetX > this.root.width - this._pad2.width / 2)
-			targetX = this.root.width - this._pad2.width / 2;
-		const duration = 1;
-		const ease = 'expo.Out';
+	// 	this._player2_turn = true;
+	// 	let targetX = Math.random() * this.root.width;
+	// 	// let targetX = this.root.width;
+	// 	if (targetX < this._pad2.width / 2) targetX = this._pad2.width / 2;
+	// 	else if (targetX > this.root.width - this._pad2.width / 2)
+	// 		targetX = this.root.width - this._pad2.width / 2;
+	// 	const duration = 1;
+	// 	const ease = 'expo.Out';
 
-		gsap.to(this._pad2, {
-			x: targetX,
-			duration: duration,
-			ease: ease,
-			onComplete: () => {
-				this._gameStarted = true;
-				this._player2_turn = false;
-			},
-		});
-	}
+	// 	gsap.to(this._pad2, {
+	// 		x: targetX,
+	// 		duration: duration,
+	// 		ease: ease,
+	// 		onComplete: () => {
+	// 			this._gameStarted = true;
+	// 			this._player2_turn = false;
+	// 		},
+	// 	});
+	// }
 
 	private _initExitMenu(): PIXI.Container {
 		const menu = new PIXI.Container();
