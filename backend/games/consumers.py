@@ -3,6 +3,12 @@ import json
 from .models import Game
 from asgiref.sync import sync_to_async
 import asyncio
+from channels.db import database_sync_to_async
+from .utils import handle_leave_game
+from django.contrib.auth import get_user_model
+from websockets.exceptions import ConnectionClosedOK
+
+User = get_user_model()
 
 
 class GameConsumer(AsyncWebsocketConsumer):
@@ -42,7 +48,10 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def game_message(self, event):
         message = event["message"]
-        await self.send(text_data=json.dumps(message))
+        try:
+            await self.send(text_data=json.dumps(message))
+        except ConnectionClosedOK:
+            print("Attempted to send a message to a closed WebSocket connection.")
 
     async def start_game(self):
         message = {
@@ -177,3 +186,12 @@ class GameConsumer(AsyncWebsocketConsumer):
                 "message": message,
             },
         )
+
+    async def user_disconnected(self, event):
+        user_id = event["user_id"]
+        user = await self.get_user(user_id)
+        await database_sync_to_async(handle_leave_game)(self.game_id, user)
+
+    @database_sync_to_async
+    def get_user(self, user_id):
+        return User.objects.get(id=user_id)

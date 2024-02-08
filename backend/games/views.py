@@ -14,6 +14,7 @@ from asgiref.sync import async_to_sync
 
 from .models import Game
 from .serializers import GameSerializer  # GameStateSerializer
+from .utils import handle_leave_game
 
 User = get_user_model()
 
@@ -142,36 +143,5 @@ def player_ready(request, game_id):
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def leave_game(request, game_id):
-    game = get_object_or_404(Game, id=game_id)
-    if request.user not in [game.player1, game.player2]:
-        return Response({"error": "You are not a player in this game"}, status=403)
-
-    # Determine the winner and loser
-    if request.user == game.player1:
-        winner = game.player2
-        loser = game.player1
-    else:
-        winner = game.player1
-        loser = game.player2
-
-    # Update the game status, winner, and loser
-    game.status = "completed"
-    game.winner = winner
-    game.loser = loser
-    game.save()
-
-    # Send a WebSocket message to notify players the game has ended
-    channel_layer = get_channel_layer()
-    async_to_sync(channel_layer.group_send)(
-        f"game_{game_id}",
-        {
-            "type": "leave_game",
-            "message": "A player has left the game. The game has ended.",
-            "winner": winner.id if winner else None,
-            "loser": loser.id if loser else None,
-        },
-    )
-
-    return Response(
-        {"message": "Game ended successfully", "winner": winner.id, "loser": loser.id}
-    )
+    response, status_code = handle_leave_game(game_id, request.user)
+    return Response(response, status=status_code)

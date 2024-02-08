@@ -3,6 +3,8 @@ import json
 import logging
 from django.contrib.auth import get_user_model
 from asgiref.sync import sync_to_async
+from django.db.models import Q
+from games.models import Game
 
 logger = logging.getLogger(__name__)
 User = get_user_model()
@@ -36,7 +38,19 @@ class GeneralRequestConsumer(AsyncWebsocketConsumer):
         print("Connected! (General)")  # Log message after connection
 
     async def disconnect(self, close_code):
-        print("Disconnecting... (General)")  # Log message before connection
+        print("Disconnecting... (General)")
+
+        user_id = self.scope["url_route"]["kwargs"]["user_id"]
+        games = await self.get_active_games(user_id)
+        for game_id in games:
+            await self.channel_layer.group_send(
+                f"game_{game_id}",
+                {
+                    "type": "user_disconnected",
+                    "user_id": user_id,
+                },
+            )
+
         if self.scope["user"].is_authenticated:
             self.scope["user"].status = "offline"
             await sync_to_async(self.scope["user"].save)()
@@ -103,3 +117,12 @@ class GeneralRequestConsumer(AsyncWebsocketConsumer):
                 }
             )
         )
+
+    @sync_to_async
+    def get_active_games(self, user_id):
+        # Query your Game model for active games involving the user
+        games = Game.objects.filter(
+            (Q(player1_id=user_id) | Q(player2_id=user_id)),
+            status__in=["waiting", "in_progress"],  # Adjust based on your game statuses
+        ).values_list("id", flat=True)
+        return list(games)
