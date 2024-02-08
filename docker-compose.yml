@@ -98,12 +98,18 @@ services:
     #            - '--web.console.templates=/etc/prometheus/consoles'
 
     grafana:
-        image: grafana/grafana:latest
+        image: awesome-grafana:latest
         container_name: grafana
+        build:
+            context: ./grafana
         ports:
             - "3000:3000"
+        environment:
+            GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: "/var/lib/grafana/dashboards/exported_dashboard.json"
         volumes:
             - grafana_data:/var/lib/grafana
+            - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+            - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
         networks:
             - my-network
 
@@ -114,6 +120,7 @@ volumes:
     pgadmin_data:
     media_volume:
     grafana_data:
+
 
 networks:
     my-network:
