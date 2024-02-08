@@ -174,6 +174,11 @@ export const apiService = {
 			body: JSON.stringify({ game_id: gameId, player_id: playerId, key }),
 		});
 	},
+	sendPlayerReady: async (gameId: number) => {
+		return fetchAPI(`games/${gameId}/player_ready/`, {
+			method: 'POST',
+		});
+	},
 };
 
 export default apiService;

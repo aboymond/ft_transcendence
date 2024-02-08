@@ -7,6 +7,10 @@ from django.http import JsonResponse
 from django.views import View
 from rest_framework import generics, status
 from rest_framework.response import Response
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 
 from .models import Game
 from .serializers import GameSerializer  # GameStateSerializer
@@ -99,3 +103,38 @@ class KeyPressView(View):
         game.save()
 
         return JsonResponse({"status": "success"})
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def player_ready(request, game_id):
+    game = get_object_or_404(Game, id=game_id)
+    user = request.user
+
+    # Mark the player as ready
+    if game.player1 == user:
+        game.player1_ready = True
+    elif game.player2 == user:
+        game.player2_ready = True
+    else:
+        return Response(
+            {"error": "User is not a player in this game"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    game.save()
+
+    # If both players are ready, signal the GameConsumer to start game updates
+    if game.player1_ready and game.player2_ready:
+        game.status = "in_progress"
+        game.save()
+
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f"game_{game_id}",
+            {
+                "type": "start_game_updates",
+            },
+        )
+
+    return Response({"status": "Player marked as ready"})

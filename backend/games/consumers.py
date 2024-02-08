@@ -8,7 +8,7 @@ import asyncio
 class GameConsumer(AsyncWebsocketConsumer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.game_active = True
+        self.game_active = False
 
     async def connect(self):
         print("Connecting... (Game)")  # Log message before connection
@@ -26,12 +26,8 @@ class GameConsumer(AsyncWebsocketConsumer):
         if await self.ready_to_start_game():
             await self.start_game()
 
-        self.periodic_update_task = asyncio.create_task(self.start_periodic_update())
-
     async def disconnect(self, close_code):
         self.game_active = False
-        if hasattr(self, "periodic_update_task"):
-            await self.periodic_update_task  # Wait for the task to finish
         print("Disconnecting... (Game)")  # Log message before disconnection
         await self.channel_layer.group_discard(self.game_group_name, self.channel_name)
         print(
@@ -158,3 +154,8 @@ class GameConsumer(AsyncWebsocketConsumer):
                     (game.ball_x - game.pad1_x) / (game.pad_width / 2)
                 ) * 5
                 game.ball_velocity_y = -game.ball_velocity_y
+
+    async def start_game_updates(self, event):
+        # Here, you can set a flag or directly start sending game updates
+        self.game_active = True
+        await self.start_periodic_update()

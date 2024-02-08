@@ -72,6 +72,9 @@ class Game(models.Model):
     pad_width = models.FloatField(default=100)
     pad_height = models.FloatField(default=10)
 
+    player1_ready = models.BooleanField(default=False)
+    player2_ready = models.BooleanField(default=False)
+
     def update_ball_position(self):
         self.ball_x += self.ball_velocity_x
         self.ball_y += self.ball_velocity_y
