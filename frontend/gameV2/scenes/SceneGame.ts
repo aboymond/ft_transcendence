@@ -1,7 +1,6 @@
 import * as PIXI from 'pixi.js';
 import { defaultColor, glowFilter } from '..';
 import { SceneBase } from './SceneBase';
-import { SceneWinOrLoose } from './SceneWinOrLoose';
 import { PixiManager } from '../PixiManager';
 import { apiService } from '../../src/services/apiService';
 
@@ -102,14 +101,14 @@ export class SceneGame extends SceneBase {
 		// }
 		this._handleExit();
 
-		//TODO end game in backend and set winner
-		if (this._data.player1_score === this.root.amountVictory) {
-			this.root.playerAWin = true;
-			this.root.loadScene(new SceneWinOrLoose(this.root));
-		} else if (this._data.player2_score === this.root.amountVictory) {
-			this.root.playerAWin = false;
-			this.root.loadScene(new SceneWinOrLoose(this.root));
-		}
+		// //TODO end game in backend and set winner
+		// if (this._data.player1_score === this.root.amountVictory) {
+		// 	this.root.playerAWin = true;
+		// 	this.root.loadScene(new SceneWinOrLoose(this.root));
+		// } else if (this._data.player2_score === this.root.amountVictory) {
+		// 	this.root.playerAWin = false;
+		// 	this.root.loadScene(new SceneWinOrLoose(this.root));
+		// }
 	}
 
 	public onFinish() {

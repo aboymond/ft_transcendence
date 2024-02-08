@@ -76,6 +76,11 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def update_game_state(self):
         game = await sync_to_async(Game.objects.get)(id=self.game_id)
+        if game is not None:
+            player1_id = game.player1_id
+            player2_id = game.player2_id
+            if player1_id is None or player2_id is None:
+                return
 
         if game.ball_moving and not game.paused:
             game.ball_x += game.ball_velocity_x
@@ -88,7 +93,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             game.ball_velocity_x = 0
             if game.ball_y < 10:
                 game.player1_score += 1
-                game.player_turn = 2  # TODO
+                game.player_turn = player2_id
                 game.pad1_x = game.win_width / 2
                 game.pad1_y = game.win_height - 10
                 game.pad2_x = game.win_width / 2
@@ -98,7 +103,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                 game.ball_velocity_y *= -1
             else:
                 game.player2_score += 1
-                game.player_turn = 1  # TODO
+                game.player_turn = player1_id
                 game.pad1_x = game.win_width / 2
                 game.pad1_y = game.win_height - 10
                 game.pad2_x = game.win_width / 2
@@ -106,6 +111,12 @@ class GameConsumer(AsyncWebsocketConsumer):
                 game.ball_x = game.win_width / 2
                 game.ball_y = game.win_height - 25
                 game.ball_velocity_y *= -1
+            if (
+                game.player1_score >= game.max_score
+                or game.player2_score >= game.max_score
+            ):
+                await self.game_ended(game)
+
         await sync_to_async(game.save)()
         await self.send_game_state()
 
@@ -200,3 +211,32 @@ class GameConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def get_user(self, user_id):
         return User.objects.get(id=user_id)
+
+    async def game_ended(self, game):
+        # Wrap the synchronous operations with sync_to_async
+        game.status = "completed"
+        game.winner = await sync_to_async(self.determine_winner)(game)
+        game.loser = await sync_to_async(self.determine_loser)(game)
+        await sync_to_async(game.save)()
+
+        message = {
+            "action": "game_ended",
+            "data": {
+                "message": "The game has ended.",
+                "winner_id": game.winner.id if game.winner else None,
+                "loser_id": game.loser.id if game.loser else None,
+            },
+        }
+        await self.channel_layer.group_send(
+            self.game_group_name,
+            {
+                "type": "game_message",
+                "message": message,
+            },
+        )
+
+    def determine_winner(self, game):
+        return game.player1 if game.player1_score >= game.max_score else game.player2
+
+    def determine_loser(self, game):
+        return game.player2 if game.player1_score >= game.max_score else game.player1

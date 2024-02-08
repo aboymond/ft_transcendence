@@ -155,13 +155,27 @@ export class PixiManager {
 					if (data.winner_id === this.userId) {
 						console.log('The other player has left the game. You won!');
 						this.playerAWin = true;
-						this.loadScene(new SceneWinOrLoose(this)); //TODO pass true
+						this.loadScene(new SceneWinOrLoose(this));
 					} else if (data.loser_id === this.userId) {
 						this.playerAWin = false;
 						console.log('You left the game. You lost!');
-						this.loadScene(new SceneWinOrLoose(this)); //TODO pass false
+						this.loadScene(new SceneWinOrLoose(this));
 					} else {
 						this.loadScene(new SceneMenu(this));
+					}
+					if (this.gameSocket) {
+						this.gameSocket.close();
+					}
+					break;
+				case 'game_ended':
+					if (data.winner_id === this.userId) {
+						console.log('You won!');
+						this.playerAWin = true;
+						this.loadScene(new SceneWinOrLoose(this));
+					} else {
+						this.playerAWin = false;
+						console.log('You lost!');
+						this.loadScene(new SceneWinOrLoose(this));
 					}
 					if (this.gameSocket) {
 						this.gameSocket.close();
