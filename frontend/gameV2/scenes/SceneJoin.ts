@@ -377,6 +377,6 @@ export class SceneJoin extends SceneBase {
 				this.root.openGameSocket(response.id);
 			})
 			.catch((error) => console.error('Error joining game', error));
-		this.root.loadScene(new SceneLoadingPage(this.root));
+		this.root.loadScene(new SceneLoadingPage(this.root, gameId));
 	}
 }

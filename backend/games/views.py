@@ -145,3 +145,25 @@ def player_ready(request, game_id):
 def leave_game(request, game_id):
     response, status_code = handle_leave_game(game_id, request.user)
     return Response(response, status=status_code)
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def leave_loading(request, game_id):
+    game = get_object_or_404(Game, id=game_id)
+    if request.user == game.player1 or request.user == game.player2:
+        game.status = "empty"
+        game.player1 = None
+        game.player2 = None
+        game.save()
+        return Response(
+            {
+                "message": "You have left the loading scene, and the game status is now empty.",
+            },
+            status=status.HTTP_200_OK,
+        )
+    else:
+        return Response(
+            {"error": "You are not a player in this game"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )

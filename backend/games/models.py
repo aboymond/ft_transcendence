@@ -9,6 +9,7 @@ import operator
 
 class Game(models.Model):
     STATUS_CHOICES = [
+        ("empty", "Empty"),
         ("waiting", "Waiting for Player"),
         ("in_progress", "In Progress"),
         ("completed", "Completed"),
@@ -30,7 +31,7 @@ class Game(models.Model):
     )
 
     max_score = models.IntegerField(default=5)
-    status = models.CharField(max_length=15, choices=STATUS_CHOICES, default="waiting")
+    status = models.CharField(max_length=15, choices=STATUS_CHOICES, default="empty")
     start_time = models.DateTimeField(null=True, blank=True)
     end_time = models.DateTimeField(null=True, blank=True)
     group_name = models.CharField(max_length=255, null=True, blank=True)

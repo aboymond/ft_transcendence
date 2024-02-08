@@ -184,6 +184,11 @@ export const apiService = {
 			method: 'POST',
 		});
 	},
+	leaveLoading: async (gameId: number) => {
+		return fetchAPI(`games/${gameId}/leave_loading/`, {
+			method: 'POST',
+		});
+	},
 };
 
 export default apiService;

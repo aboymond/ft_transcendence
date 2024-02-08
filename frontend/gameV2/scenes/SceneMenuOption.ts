@@ -226,10 +226,10 @@ export class SceneMenuOption extends SceneBase {
 				.createGame(this.root.userId ?? 0) //TODO
 				.then((response) => {
 					console.log('Game created successfully', response);
-					this.root.openGameSocket(response.id); // Assuming response contains game_id
+					this.root.openGameSocket(response.id);
+					this.root.loadScene(new SceneLoadingPage(this.root, response.id));
 				})
 				.catch((error) => console.error('Error creating game', error));
-			this.root.loadScene(new SceneLoadingPage(this.root));
 		} else if (this._currentPad === 0) {
 			this.root.loadScene(new SceneGameVsBot(this.root));
 		} else {

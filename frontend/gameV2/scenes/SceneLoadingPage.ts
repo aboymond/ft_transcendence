@@ -3,6 +3,8 @@ import { SceneBase } from './SceneBase';
 import { SceneMenu } from './SceneMenu';
 import * as PIXI from 'pixi.js';
 import { PixiManager } from '../PixiManager';
+import { ErrorResponse } from 'react-router-dom';
+import { apiService } from '../../src/services/apiService';
 
 const keyExplanation = PIXI.Texture.from('./img/keyExplanation.png');
 
@@ -74,7 +76,10 @@ export class SceneLoadingPage extends SceneBase {
 	private _interval = 0;
 	private _index = 0;
 
-	constructor(root: PixiManager) {
+	constructor(
+		root: PixiManager,
+		private _gameId: number,
+	) {
 		super(root);
 	}
 
@@ -140,10 +145,14 @@ export class SceneLoadingPage extends SceneBase {
 		}
 
 		if (e.code === 'Escape') {
-			if (this.root.gameSocket) {
-				this.root.gameSocket.close();
-				this.root.gameSocket = null;
-			}
+			apiService
+				.leaveLoading(this._gameId)
+				.then(() => console.log('Left loading scene'))
+				.catch((error: ErrorResponse) => console.error('Error leaving loading', error));
+			// if (this.root.gameSocket) {
+			// 	this.root.gameSocket.close();
+			// 	this.root.gameSocket = null;
+			// }
 			this.root.loadScene(new SceneMenu(this.root));
 		}
 	}

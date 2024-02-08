@@ -5,6 +5,7 @@ from .views import (
     CreateGameView,
     JoinGameView,
     KeyPressView,
+    leave_loading,
     player_ready,
     leave_game,
 )
@@ -21,4 +22,5 @@ urlpatterns = [
     path("keypress/", KeyPressView.as_view(), name="keypress"),
     path("<int:game_id>/player_ready/", player_ready, name="player_ready"),
     path("<int:game_id>/leave_game/", leave_game, name="leave_game"),
+    path("<int:game_id>/leave_loading/", leave_loading, name="leave_loading"),
 ]
