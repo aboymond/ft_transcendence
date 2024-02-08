@@ -2,28 +2,35 @@ import React, { useState, useEffect } from 'react';
 import { apiService } from '../services/apiService';
 
 const TwoFA: React.FC = () => {
-    const [isTwoFAToggled, setIsTwoFAToggled] = useState<boolean>(() => {
-        console.log(localStorage);
-        const savedState = localStorage.getItem('isTwoFAToggled');
-        console.log("Test:", savedState)
-        return savedState !== null ? JSON.parse(savedState) : false;
-    });
-    console.log("BEGIN ", isTwoFAToggled);
+    const [userProfile, setUserProfile] = useState<any | null>(null); 
+    const [isTwoFAToggled, setIsTwoFAToggled] = useState<boolean>(false); 
 
-    // Effect hook to save state to localStorage when it changes
+    useEffect(() => {
+        const fetchUserProfile = async () => {
+            try {
+                const profile = await apiService.getUserProfile(); 
+                setUserProfile(profile);
+                setIsTwoFAToggled(profile?.twofa || false);
+            } catch (error) {
+                console.error("Failed to fetch user profile:", error);
+            }
+        };
+
+        fetchUserProfile();
+    }, []);
+
     useEffect(() => {
         localStorage.setItem('isTwoFAToggled', JSON.stringify(isTwoFAToggled));
     }, [isTwoFAToggled]);
 
-    // Function to handle toggle
     const handleTwoFAToggle = () => {
-        setIsTwoFAToggled(!isTwoFAToggled);
-        apiService.twoFAEnabling(!isTwoFAToggled);
+        const newToggleState = !isTwoFAToggled;
+        setIsTwoFAToggled(newToggleState);
+        apiService.twoFAEnabling(newToggleState);
     };
 
     return (
         <div>
-            {/* Toggle button */}
             <button onClick={handleTwoFAToggle} style={{
                                     backgroundColor: isTwoFAToggled ? 'green' : 'grey',
                                     display: 'inline-block',

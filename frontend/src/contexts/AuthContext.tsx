@@ -57,6 +57,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
 	const logout = () => {
 		localStorage.removeItem('token');
+		localStorage.removeItem('isTwoFAToggled');
 		setToken(null);
 		setIsAuthenticated(false);
 		setUser(null);
