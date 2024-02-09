@@ -131,6 +131,21 @@ services:
         networks:
             - my-network
 
+    nginx-prometheus-exporter:
+        image: nginx/nginx-prometheus-exporter:1.0
+        container_name: prometheus-nginx-exporter
+        restart: always
+        env_file:
+            .env
+        command:
+            - "-nginx.scrape-uri=http://nginx:80/basic_status"
+        ports:
+            - "9113:9113"
+        networks:
+            - my-network
+        depends_on:
+            - nginx
+
 volumes:
     backend_static:
     frontend_node_modules:
