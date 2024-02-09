@@ -152,7 +152,7 @@ class GameConsumer(AsyncWebsocketConsumer):
     async def _periodic_update(self):
         while self.game_active:
             await self.update_game_state()
-            await asyncio.sleep(1 / 60)  # Adjust the sleep time as needed
+            await asyncio.sleep(1 / 60)
 
     async def check_collisions(self, game):
         # Wall collision

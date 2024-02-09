@@ -152,13 +152,10 @@ def leave_game(request, game_id):
 def leave_loading(request, game_id):
     game = get_object_or_404(Game, id=game_id)
     if request.user == game.player1 or request.user == game.player2:
-        game.status = "empty"
-        game.player1 = None
-        game.player2 = None
-        game.save()
+        game.delete()  # This line deletes the game from the database.
         return Response(
             {
-                "message": "You have left the loading scene, and the game status is now empty.",
+                "message": "You have left the loading scene, and the game has been deleted.",
             },
             status=status.HTTP_200_OK,
         )
