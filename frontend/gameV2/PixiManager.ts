@@ -46,7 +46,7 @@ export class PixiManager {
 		});
 		this._app.ticker.add((delta) => {
 			if (this._currentScene === undefined) return;
-			this._currentScene.onUpdate(delta); //? TODO
+			this._currentScene.onUpdate(delta);
 		});
 		window.addEventListener('keydown', this._onKeyDownBind);
 		window.addEventListener('keyup', this._onKeyUpBind);
@@ -100,25 +100,13 @@ export class PixiManager {
 		return gameWindow ? gameWindow.clientHeight : winHeight;
 	}
 
-	// //TODO: check if needed
-	// public adjustGameView(gameWidth: number, gameHeight: number) {
-	// 	// Adjust the PIXI.Application size to fit the standardized game dimensions
-	// 	// while maintaining aspect ratio
-	// 	const scaleX = window.innerWidth / gameWidth;
-	// 	const scaleY = window.innerHeight / gameHeight;
-	// 	const scaleToFit = Math.min(scaleX, scaleY);
+	public getCurrentScene(): SceneBase | undefined {
+		return this._currentScene;
+	}
 
-	// 	this._app.renderer.resize(gameWidth * scaleToFit, gameHeight * scaleToFit);
-	// 	// Additional adjustments as needed to center the game view, etc.
-	// }
-
-	// //TODO: check if needed
-	// private handleResize() {
-	// 	console.log('Resizing game window');
-	// 	if (this.gameState) {
-	// 		this.adjustGameView(this.gameState.winWidth, this.gameState.winHeight);
-	// 	}
-	// }
+	public setCurrentScene(scene: SceneBase | undefined): void {
+		this._currentScene = scene;
+	}
 
 	public openGameSocket(gameId: number) {
 		const gameSocketUrl = `ws://localhost:8000/ws/game/${gameId}/`;

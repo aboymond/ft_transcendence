@@ -13,10 +13,6 @@ export class SceneGame extends SceneBase {
 		playerTurnA: Math.random() < 0.5,
 	};
 
-	// private _botLvl = this.root.botLvl;
-	// private _gameStarted = false;
-	// private _player1_turn = true;
-	// private _player2_turn = false;
 	private _exitBool = false;
 	private _exitYesNO = true;
 	//==========================================================
@@ -33,7 +29,8 @@ export class SceneGame extends SceneBase {
 	private _noOption!: PIXI.Text;
 	private _exitText!: PIXI.Text;
 
-	// private messageHandler: (this: WebSocket, ev: MessageEvent) => void;
+	private _accumulator = 0;
+	private _sendInterval = 1 / 60;
 
 	constructor(
 		public root: PixiManager,
@@ -74,20 +71,26 @@ export class SceneGame extends SceneBase {
 		await this.notifyPlayerReady();
 	}
 
-	public onUpdate() {
-		const keysOfInterest = ['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Escape'];
-		const pressedKeys = keysOfInterest.filter((key) => this._keysPressed[key]);
+	public onUpdate(delta: number) {
+		this._accumulator += delta * (1000 / 60);
 
-		if (pressedKeys.length > 0) {
-			pressedKeys.forEach((key) => {
-				apiService
-					.sendKeyPress(this._gameId, this.root.userId ?? 0, key)
-					.then((response) => console.log(`${key} press response:`, response))
-					.catch((error) => console.error(`Error sending ${key} press`, error));
-			});
+		if (this._accumulator >= this._sendInterval) {
+			this._accumulator -= this._sendInterval;
+
+			const keysOfInterest = ['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Escape'];
+			const pressedKeys = keysOfInterest.filter((key) => this._keysPressed[key]);
+
+			if (pressedKeys.length > 0) {
+				pressedKeys.forEach((key) => {
+					apiService
+						.sendKeyPress(this._gameId, this.root.userId ?? 0, key)
+						.then((response) => console.log(`${key} press response:`, response))
+						.catch((error) => console.error(`Error sending ${key} press`, error));
+				});
+			}
 		}
+
 		const gameState = this.root.gameState;
-		// TODO Use backend gameState to update the game state
 		if (gameState) {
 			this._ball.x = gameState.ballPosition.x;
 			this._ball.y = gameState.ballPosition.y;
@@ -99,17 +102,7 @@ export class SceneGame extends SceneBase {
 			this._pad2.y = gameState.pad2.y;
 		}
 
-		//TODO call this after backend update
 		this._updateScoreText();
-		// if (!this._exitBool) {
-		// 	if (!this._gameStarted) this._checkTurn();
-		// 	else {
-		// 		//TODO move logic to backend
-		// 		this._addVelocity();
-		// 		this._checkCollisions();
-		// 		this._checkifBallIsOut();
-		// 	}
-		// }
 		this._handleExit();
 	}
 
