@@ -12,13 +12,15 @@ User = get_user_model()
 
 class GeneralRequestConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        print("Connecting... (General)")  # Log message before connection
-        self.room_group_name = "general_requests_%s" % self.scope["user"].pk
-        if self.scope["user"].is_authenticated:
-            self.scope["user"].status = "online"
-            await sync_to_async(self.scope["user"].save)()
+        print("Connecting... (General)")
+        user_id = self.scope["url_route"]["kwargs"]["user_id"]
+        self.room_group_name = "general_requests_%s" % user_id
+        user = await sync_to_async(User.objects.get)(pk=user_id)
+        if user:
+            user.status = "online"
+            await sync_to_async(user.save)()
         else:
-            print("Error: self.scope['user'] is not authenticated")
+            print("Error: User not found")
 
         if self.channel_layer is not None:
             await self.channel_layer.group_add(self.room_group_name, self.channel_name)
@@ -28,7 +30,7 @@ class GeneralRequestConsumer(AsyncWebsocketConsumer):
                 "online_status",
                 {
                     "type": "user_status",
-                    "user_id": self.scope["user"].id,
+                    "user_id": user_id,
                     "status": "online",
                 },
             )
@@ -41,6 +43,13 @@ class GeneralRequestConsumer(AsyncWebsocketConsumer):
         print("Disconnecting... (General)")
 
         user_id = self.scope["url_route"]["kwargs"]["user_id"]
+        user = await sync_to_async(User.objects.get)(pk=user_id)
+        if user:
+            user.status = "offline"
+            await sync_to_async(user.save)()
+        else:
+            print("Error: User not found")
+
         games = await self.get_active_games(user_id)
         for game_id in games:
             await self.channel_layer.group_send(
@@ -51,12 +60,6 @@ class GeneralRequestConsumer(AsyncWebsocketConsumer):
                 },
             )
 
-        if self.scope["user"].is_authenticated:
-            self.scope["user"].status = "offline"
-            await sync_to_async(self.scope["user"].save)()
-        else:
-            print("Error: self.scope['user'] is not authenticated")
-
         if self.channel_layer is not None:
             await self.channel_layer.group_discard(
                 self.room_group_name, self.channel_name
@@ -66,7 +69,7 @@ class GeneralRequestConsumer(AsyncWebsocketConsumer):
                 "online_status",
                 {
                     "type": "user_status",
-                    "user_id": self.scope["user"].id,
+                    "user_id": user_id,
                     "status": "offline",
                 },
             )
