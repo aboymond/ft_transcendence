@@ -39,12 +39,22 @@ class GameConsumer(AsyncWebsocketConsumer):
                 pass
         await self.channel_layer.group_discard(self.game_group_name, self.channel_name)
 
+    async def ready_to_start_game(self):
+        game = await sync_to_async(Game.objects.get)(id=self.game_id)
+        player1 = await sync_to_async(getattr)(game, "player1", None)
+        player2 = await sync_to_async(getattr)(game, "player2", None)
+        return player1 is not None and player2 is not None
+
     async def start_game(self):
-        print("Starting periodic update...")
-        self.update_task = asyncio.create_task(self._periodic_update())
         game = await sync_to_async(Game.objects.get)(id=self.game_id)
         game.start_time = timezone.now()
         game.status = "in_progress"
+        game.pad1_x = game.win_width / 2
+        game.pad1_y = game.win_height - 10
+        game.pad2_x = game.win_width / 2
+        game.pad2_y = 10
+        game.ball_x = game.win_width / 2
+        game.ball_y = game.pad1_y - 20
         await sync_to_async(game.save)()
 
         message = {
@@ -60,6 +70,8 @@ class GameConsumer(AsyncWebsocketConsumer):
                 "message": message,
             },
         )
+        print("Starting periodic update...")
+        self.update_task = asyncio.create_task(self._periodic_update())
 
     async def _periodic_update(self):
         while True:
@@ -74,12 +86,6 @@ class GameConsumer(AsyncWebsocketConsumer):
             await asyncio.sleep(
                 sleep_time / 1000
             )  # Convert milliseconds to seconds for sleep
-
-    async def ready_to_start_game(self):
-        game = await sync_to_async(Game.objects.get)(id=self.game_id)
-        player1 = await sync_to_async(getattr)(game, "player1", None)
-        player2 = await sync_to_async(getattr)(game, "player2", None)
-        return player1 is not None and player2 is not None
 
     async def update_game_state(self):
         game = await sync_to_async(Game.objects.get)(id=self.game_id)
@@ -135,7 +141,6 @@ class GameConsumer(AsyncWebsocketConsumer):
             return
 
         PAD_WIDTH = game.pad_width
-        PAD_HEIGHT = game.pad_height
         BALL_SIZE = game.ball_width
 
         if game.player_turn == game.player1_id:
@@ -147,7 +152,6 @@ class GameConsumer(AsyncWebsocketConsumer):
 
             # Calculate ball velocity based on position relative to pad
             game.ball_velocity_x = ((game.ball_x - game.pad1_x) / (PAD_WIDTH / 2)) * 5
-            game.ball_y = game.pad1_y - PAD_HEIGHT / 2 - BALL_SIZE * 2
         elif game.player_turn == game.player2_id:
             # Adjust ball position relative to pad2
             if game.ball_x - BALL_SIZE / 2 < game.pad2_x - PAD_WIDTH / 2:
@@ -157,7 +161,6 @@ class GameConsumer(AsyncWebsocketConsumer):
 
             # Calculate ball velocity based on position relative to pad
             game.ball_velocity_x = ((game.ball_x - game.pad2_x) / (PAD_WIDTH / 2)) * 5
-            game.ball_y = game.pad2_y + PAD_HEIGHT / 2 + BALL_SIZE * 2
 
         # Save the updated game state
         await database_sync_to_async(game.save)()
@@ -207,7 +210,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                 game.pad2_x = game.win_width / 2
                 game.pad2_y = 10
                 game.ball_x = game.win_width / 2
-                game.ball_y = 20
+                game.ball_y = game.pad2_y + 20
                 game.ball_velocity_y *= -1
             else:
                 game.player2_score += 1
@@ -217,7 +220,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                 game.pad2_x = game.win_width / 2
                 game.pad2_y = 10
                 game.ball_x = game.win_width / 2
-                game.ball_y = game.win_height - 25
+                game.ball_y = game.pad1_y - 20
                 game.ball_velocity_y *= -1
             if (
                 game.player1_score >= game.max_score

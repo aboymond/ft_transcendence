@@ -51,14 +51,14 @@ export class SceneGame extends SceneBase {
 		this._ball.y = this.root.height / 2;
 
 		//Init Pad 1
-		container.addChild(this._initPad(this._pad2, 100, 10, defaultColor));
+		container.addChild(this._initPad(this._pad1, 100, 10, defaultColor));
 		this._pad1.x = this.root.width / 2;
-		this._pad1.y = this.root.height - 50;
+		this._pad1.y = this.root.height - 10;
 
 		//Init Pad 2
-		container.addChild(this._initPad(this._pad1, 100, 10, defaultColor));
+		container.addChild(this._initPad(this._pad2, 100, 10, defaultColor));
 		this._pad2.x = this.root.width / 2;
-		this._pad2.y = 50;
+		this._pad2.y = 10;
 
 		//Init Score Text
 		container.addChild(this._initScoreText());

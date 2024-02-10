@@ -6,6 +6,8 @@ from channels.layers import get_channel_layer
 from asgiref.sync import sync_to_async
 import operator
 
+BALL_SPEED = 5
+
 
 class Game(models.Model):
     STATUS_CHOICES = [
@@ -51,21 +53,22 @@ class Game(models.Model):
     )
 
     # GameState
-    ball_x = models.FloatField(default=213)
-    ball_y = models.FloatField(default=281.5)
+    ball_x = models.FloatField(default=0)
+    ball_y = models.FloatField(default=0)
     ball_velocity_x = models.FloatField(default=0)
-    ball_velocity_y = models.FloatField(default=-5)
+    ball_velocity_y = models.FloatField(default=-BALL_SPEED)
     player1_score = models.IntegerField(default=0)
     player2_score = models.IntegerField(default=0)
-    pad1_x = models.FloatField(default=213)
-    pad1_y = models.FloatField(default=513)
-    pad2_x = models.FloatField(default=213)
-    pad2_y = models.FloatField(default=50)
+    pad1_x = models.FloatField(default=0)
+    pad1_y = models.FloatField(default=0)
+    pad2_x = models.FloatField(default=0)
+    pad2_y = models.FloatField(default=0)
     player_turn = models.PositiveIntegerField(null=True, blank=True)
 
     ball_moving = models.BooleanField(default=False)
     paused = models.BooleanField(default=False)
 
+    # TODO: Remove these hardcoded values ?
     win_width = models.FloatField(default=426)
     win_height = models.FloatField(default=563)
     ball_width = models.FloatField(default=10)
