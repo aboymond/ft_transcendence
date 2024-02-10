@@ -23,11 +23,14 @@ export class PixiManager {
 	public gameSocket: WebSocket | null = null;
 	public gameState: GameState | null = null;
 	public userId: number | null = null;
+	public fpsText: PIXI.Text;
+	public pingText: PIXI.Text;
 
 	//--------------------------
 
 	private _currentScene?: SceneBase = undefined;
 	private _app: PIXI.Application;
+	private lastTime: number = 0;
 
 	constructor(
 		readonly options: Partial<IPixiManagerOptions> = {},
@@ -44,9 +47,25 @@ export class PixiManager {
 			backgroundAlpha: options.backgroundAlpha ?? 0,
 			antialias: options.antialias ?? true,
 		});
+
+		// Initialize the FPS text object
+		this.fpsText = new PIXI.Text('FPS: 0', { fontFamily: 'Arial', fontSize: 24, fill: 0xffffff });
+		this.fpsText.x = 10; // Position the text object
+		this.fpsText.y = 10;
+		this._app.stage.addChild(this.fpsText);
+		this.pingText = new PIXI.Text('Ping: 0ms', { fontFamily: 'Arial', fontSize: 24, fill: 0xffffff });
+		this.pingText.x = 10;
+		this.pingText.y = 40;
+		this._app.stage.addChild(this.pingText);
+
 		this._app.ticker.add((delta) => {
 			if (this._currentScene === undefined) return;
 			this._currentScene.onUpdate(delta);
+
+			const currentTime = performance.now();
+			const fps = 1000 / (currentTime - this.lastTime);
+			this.lastTime = currentTime;
+			this.fpsText.text = 'FPS: ' + fps.toFixed(0);
 		});
 		window.addEventListener('keydown', this._onKeyDownBind);
 		window.addEventListener('keyup', this._onKeyUpBind);
@@ -80,6 +99,9 @@ export class PixiManager {
 		this._currentScene = scene;
 		this._app.stage.addChild(container);
 		this._currentScene.onStart(container);
+
+		this._app.stage.addChild(this.fpsText);
+		this._app.stage.addChild(this.pingText);
 	}
 
 	private _unmountedScene() {
@@ -111,6 +133,7 @@ export class PixiManager {
 	public openGameSocket(gameId: number) {
 		const gameSocketUrl = `ws://localhost:8000/ws/game/${gameId}/`;
 		this.gameSocket = new WebSocket(gameSocketUrl);
+		let lastUpdateTime = 0;
 
 		this.gameSocket.onopen = () => {
 			console.log('Game WebSocket opened:', gameId);
@@ -126,7 +149,14 @@ export class PixiManager {
 					this.loadScene(new SceneGame(this, gameId));
 					break;
 				case 'game_state_update':
-					console.log('Received game state update:', data);
+					{
+						const currentTime = performance.now();
+						if (lastUpdateTime !== 0) {
+							const timeDiff = currentTime - lastUpdateTime;
+							this.pingText.text = `Ping: ${timeDiff.toFixed(0)} ms`;
+						}
+						lastUpdateTime = currentTime;
+					}
 					this.gameState = {
 						ballPosition: { x: data.ball_x, y: data.ball_y },
 						pad1: { x: data.pad1_x, y: data.pad1_y },
