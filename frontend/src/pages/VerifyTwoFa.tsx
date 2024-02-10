@@ -23,8 +23,8 @@ const VerifyTwoFa: React.FC = () => {
         try {
             console.log(otp);
 			const data = await apiService.verifyOtp(otp);
-			setError('');
-			navigate('/profile');
+            setError('');
+            navigate('/profile');
 		} catch (error) {
 			setError('2FA failed. Please check your code.');
 		}

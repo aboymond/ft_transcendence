@@ -120,9 +120,9 @@ class VerifyTwoFAView(generics.UpdateAPIView):
                 user.otp_expiry_time = None
                 user.save()
 
-            return Response(status=status.HTTP_200_OK)
-
-        return Response({'detail': 'Invalid verification code or credentials.'}, status=status.HTTP_401_UNAUTHORIZED)
+                return Response(status=status.HTTP_200_OK)
+            else:
+                raise AuthenticationFailed("Invalid Credentials")
     
 
 class AuthView(generics.GenericAPIView):
