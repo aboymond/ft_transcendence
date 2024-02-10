@@ -30,7 +30,9 @@ export class PixiManager {
 
 	private _currentScene?: SceneBase = undefined;
 	private _app: PIXI.Application;
-	private lastTime: number = 0;
+	private UpdateInterval: number = 500;
+	private lastFpsUpdateTime: number = 0;
+	private lastPingUpdateTime: number = 0;
 
 	constructor(
 		readonly options: Partial<IPixiManagerOptions> = {},
@@ -48,7 +50,6 @@ export class PixiManager {
 			antialias: options.antialias ?? true,
 		});
 
-		// Initialize the FPS text object
 		this.fpsText = new PIXI.Text('FPS: 0', { fontFamily: 'Arial', fontSize: 24, fill: 0xffffff });
 		this.fpsText.x = 10; // Position the text object
 		this.fpsText.y = 10;
@@ -63,9 +64,11 @@ export class PixiManager {
 			this._currentScene.onUpdate(delta);
 
 			const currentTime = performance.now();
-			const fps = 1000 / (currentTime - this.lastTime);
-			this.lastTime = currentTime;
-			this.fpsText.text = 'FPS: ' + fps.toFixed(0);
+			if (currentTime - this.lastFpsUpdateTime > this.UpdateInterval) {
+				const fps = this._app.ticker.FPS;
+				this.fpsText.text = 'FPS: ' + fps.toFixed(0);
+				this.lastFpsUpdateTime = currentTime;
+			}
 		});
 		window.addEventListener('keydown', this._onKeyDownBind);
 		window.addEventListener('keyup', this._onKeyUpBind);
@@ -134,6 +137,8 @@ export class PixiManager {
 		const gameSocketUrl = `ws://localhost:8000/ws/game/${gameId}/`;
 		this.gameSocket = new WebSocket(gameSocketUrl);
 		let lastUpdateTime = 0;
+		let pingSum = 0;
+		let pingCount = 0;
 
 		this.gameSocket.onopen = () => {
 			console.log('Game WebSocket opened:', gameId);
@@ -153,9 +158,18 @@ export class PixiManager {
 						const currentTime = performance.now();
 						if (lastUpdateTime !== 0) {
 							const timeDiff = currentTime - lastUpdateTime;
-							this.pingText.text = `Ping: ${timeDiff.toFixed(0)} ms`;
+							pingSum += timeDiff;
+							pingCount++;
 						}
 						lastUpdateTime = currentTime;
+
+						if (currentTime - this.lastPingUpdateTime > this.UpdateInterval) {
+							const averagePing = pingSum / pingCount;
+							this.pingText.text = `Ping: ${averagePing.toFixed(0)} ms`;
+							this.lastPingUpdateTime = currentTime;
+							pingSum = 0;
+							pingCount = 0;
+						}
 					}
 					this.gameState = {
 						ballPosition: { x: data.ball_x, y: data.ball_y },
