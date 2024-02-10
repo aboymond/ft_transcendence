@@ -42,8 +42,10 @@ export class SceneWinOrLoose extends SceneBase {
 		clearInterval(this._interval);
 	}
 
+	//TODO load tournament
 	public onKeyDown(e: KeyboardEvent) {
-		if (e.code === 'Enter') this.root.loadScene(new SceneMenu2(this.root));
+		if (e.code === 'Enter' || e.code === 'Space' || e.code === 'Escape')
+			this.root.loadScene(new SceneMenu2(this.root));
 	}
 
 	public onKeyUp() {}
