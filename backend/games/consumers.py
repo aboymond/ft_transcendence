@@ -8,6 +8,7 @@ from .utils import handle_leave_game
 from django.contrib.auth import get_user_model
 from websockets.exceptions import ConnectionClosedOK
 from django.utils import timezone
+import time
 
 User = get_user_model()
 
@@ -62,8 +63,17 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def _periodic_update(self):
         while True:
+            start_time = time.time()
             await self.update_game_state()
-            await asyncio.sleep(1 / 60)
+            await self.send_game_state()
+            end_time = time.time()
+            elapsed_time = (end_time - start_time) * 1000  # Convert to milliseconds
+            sleep_time = max(
+                16 - elapsed_time, 0
+            )  # Ensure at least 16ms between updates
+            await asyncio.sleep(
+                sleep_time / 1000
+            )  # Convert milliseconds to seconds for sleep
 
     async def ready_to_start_game(self):
         game = await sync_to_async(Game.objects.get)(id=self.game_id)
@@ -91,7 +101,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             await self.check_score(game)
 
         await sync_to_async(game.save)()
-        await self.send_game_state()
+        # await self.send_game_state()
 
     async def send_game_state(self):
         game = await sync_to_async(Game.objects.get)(id=self.game_id)
