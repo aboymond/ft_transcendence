@@ -142,6 +142,7 @@ export class PixiManager {
 
 		this.gameSocket.onopen = () => {
 			console.log('Game WebSocket opened:', gameId);
+			lastUpdateTime = performance.now();
 		};
 
 		this.gameSocket.addEventListener('message', (event) => {
@@ -156,11 +157,9 @@ export class PixiManager {
 				case 'game_state_update':
 					{
 						const currentTime = performance.now();
-						if (lastUpdateTime !== 0) {
-							const timeDiff = currentTime - lastUpdateTime;
-							pingSum += timeDiff;
-							pingCount++;
-						}
+						const timeDiff = currentTime - lastUpdateTime;
+						pingSum += timeDiff;
+						pingCount++;
 						lastUpdateTime = currentTime;
 
 						if (currentTime - this.lastPingUpdateTime > this.UpdateInterval) {
