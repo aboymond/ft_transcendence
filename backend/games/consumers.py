@@ -198,11 +198,11 @@ class GameConsumer(AsyncWebsocketConsumer):
         player1_id = game.player1_id
         player2_id = game.player2_id
 
-        if game.ball_y < 10 or game.ball_y > game.win_height - 10:
+        if game.ball_y < 1 or game.ball_y > game.win_height - 1:
             game.ball_moving = False
             game.ball_velocity_x = 0
 
-            if game.ball_y < 10:
+            if game.ball_y < 1:
                 game.player1_score += 1
                 game.player_turn = player2_id
                 game.pad1_x = game.win_width / 2
