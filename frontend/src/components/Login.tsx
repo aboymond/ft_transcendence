@@ -20,9 +20,14 @@ const Login: React.FC<LoginProps> = ({ onClose }) => {
 		event.preventDefault();
 		try {
 			const data = await apiService.login(username, password);
-			auth.login(data.access, data.user);
+			if (data.user.twofa == true) {
+				navigate('/verify-2fa');
+				auth.login(data.access, data.user, data.user.twofa);
+			} else {
+				auth.login(data.access, data.user, data.user.twofa);
+				navigate('/home');
+			}
 			setError('');
-			navigate('/home');
 		} catch (error) {
 			setError('Login failed. Please check your credentials.');
 		}

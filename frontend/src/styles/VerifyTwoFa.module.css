@@ -1,0 +1,37 @@
+.inputField {
+    background-color: var(--background-color) !important;
+    border-color: var(--accent-color) !important;
+    margin: 10px;
+    width: auto;
+}
+
+.inputField::placeholder {
+    color: black;
+}
+
+.verifyButton {
+    background-color: var(--primary-color) !important;
+    color: black;
+    border-style: solid;
+    border-width: 3px;
+    box-shadow: 0 0 5px var(--primary-color);
+    border-color: var(--accent-color);
+    margin: 10px;
+    width: auto;
+}
+
+.VerifyForm {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 70vh;
+    text-align: center;
+    background-color: var(--background-color) !important;
+    margin: 10px;
+}
+
+.title {
+    font-size: 20px;
+    margin: 10px;
+}

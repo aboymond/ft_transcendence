@@ -19,8 +19,8 @@ const LogApi: React.FC<LoginProps> = ({ onClose }) => {
 	const handleApiLogin = async (event: React.FormEvent) => {
 		event.preventDefault();
 		try {
-			const data = await apiService.login(username, password);
-			auth.login(data.access, data.user);
+			const data = await apiService.login(username, password, data.user.twofa);
+			auth.login(data.access, data.user, data.user.twofa);
 			setError('');
 			navigate('/profile');
 		} catch (error) {

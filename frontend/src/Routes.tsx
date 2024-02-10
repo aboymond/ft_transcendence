@@ -2,6 +2,7 @@ import React from 'react';
 import { useAuth } from './hooks/useAuth';
 import { Route, Routes, Navigate } from 'react-router-dom';
 import Home from './pages/Home';
+import VerifyTwoFa from './pages/VerifyTwoFa';
 import LoadingScreen from './components/LoadingScreen';
 import LogPage from './pages/LogPage';
 import Credits from './pages/CreditsPage';
@@ -10,6 +11,7 @@ const AuthenticatedRoutes: React.FC = () => (
 	<>
 		<Routes>
 			<Route path="/home" element={<Home />} />
+			<Route path="/verify-2fa" element={<VerifyTwoFa />} />
 			<Route path="/credits" element={<Credits />} />
 			<Route path="*" element={<Navigate to="/home" replace />} />
 		</Routes>

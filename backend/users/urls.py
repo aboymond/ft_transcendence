@@ -26,6 +26,7 @@ from .views import (
     AvatarUploadView,
     UserDetailView,
     TwoFAEnablingView,
+    VerifyTwoFAView,
 )
 
 urlpatterns = [
@@ -44,6 +45,7 @@ urlpatterns = [
     path('<int:id>/', UserDetailView.as_view(), name='user-detail'),
     path("profile/", CurrentUserProfileView.as_view(), name="current-user-profile"),
     path("twofa/", TwoFAEnablingView.as_view(), name="twofa"),
+    path("/verify-2fa/", VerifyTwoFAView.as_view(), name="verify_2fa"),
     path("game_histories/", GameHistoryListCreateView.as_view(), name="game_histories"),
     path(
         "game_histories/<int:pk>/",

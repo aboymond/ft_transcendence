@@ -91,12 +91,39 @@ class TwoFAEnablingView(generics.UpdateAPIView):
 
     def post(self, request, *args, **kwargs):
         user = request.user
-        print(f'2FA BEFORE: {user.twofa}')
         user.twofa = request.data.get("twofa")
-        print(f'2FA AFTER: {user.twofa}')
         user.save()
 
         return Response(status=status.HTTP_200_OK)
+
+class VerifyTwoFAView(generics.UpdateAPIView):
+    serializer_class = UserSerializer
+    def post(self, request, *args, **kwargs):
+        otp = request.data.get('otp')
+
+        user = request.user
+        print(f'User : {user}')
+        print(f'OTP received : {otp}')
+        if user is not None:
+            # user = UserProfile.objects.get(user=user)
+            if (
+                user.otp == otp and
+                user.otp_expiry_time is not None and
+                user.otp_expiry_time > timezone.now()
+            ):
+                # django_login(request, user)
+
+                # refresh = RefreshToken.for_user(user)
+                # access_token = str(refresh.access_token)
+
+                user.otp = ''
+                user.otp_expiry_time = None
+                user.save()
+
+            return Response(status=status.HTTP_200_OK)
+
+        return Response({'detail': 'Invalid verification code or credentials.'}, status=status.HTTP_401_UNAUTHORIZED)
+    
 
 class AuthView(generics.GenericAPIView):
     def get(self, request, *args, **kwargs):
