@@ -26,15 +26,3 @@ class GameListCreateView(generics.ListCreateAPIView):
 class GameRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Game.objects.all()
     serializer_class = GameSerializer
-
-
-# class GameStateSerializer(serializers.Serializer):
-#     ballPosition = serializers.DictField(child=serializers.IntegerField())
-#     ballVelocity = serializers.DictField(child=serializers.IntegerField())
-#     pad1 = serializers.DictField(child=serializers.IntegerField())
-#     pad2 = serializers.DictField(child=serializers.IntegerField())
-#     player1_score = serializers.IntegerField()
-#     player2_score = serializers.IntegerField()
-#     playerTurn = serializers.IntegerField()
-#     winWidth = serializers.IntegerField()
-#     winHeight = serializers.IntegerField()

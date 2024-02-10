@@ -34,7 +34,6 @@ class Game(models.Model):
     status = models.CharField(max_length=15, choices=STATUS_CHOICES, default="empty")
     start_time = models.DateTimeField(null=True, blank=True)
     end_time = models.DateTimeField(null=True, blank=True)
-    group_name = models.CharField(max_length=255, null=True, blank=True)
 
     winner = models.ForeignKey(
         settings.AUTH_USER_MODEL,

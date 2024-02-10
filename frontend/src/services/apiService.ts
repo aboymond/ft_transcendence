@@ -163,7 +163,7 @@ export const apiService = {
 		});
 	},
 	joinGame: async (gameId: number, userId: number) => {
-		return fetchAPI(`games/join/${gameId}/`, {
+		return fetchAPI(`games/${gameId}/join/`, {
 			method: 'PATCH',
 			body: JSON.stringify({ user_id: userId }),
 		});
