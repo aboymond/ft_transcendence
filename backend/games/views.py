@@ -125,18 +125,6 @@ def player_ready(request, game_id):
 
     game.save()
 
-    # If both players are ready, signal the GameConsumer to start game updates
-    if game.player1_ready and game.player2_ready:
-        game.status = "in_progress"
-        game.save()
-        channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)(
-            f"game_{game_id}",
-            {
-                "type": "start_game_updates",
-            },
-        )
-
     return Response({"status": "Player marked as ready"})
 
 

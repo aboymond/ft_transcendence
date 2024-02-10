@@ -155,7 +155,7 @@ export class PixiManager {
 						this.gameSocket.close();
 					}
 					break;
-				case 'game_ended':
+				case 'end_game':
 					if (data.winner_id === this.userId) {
 						console.log('You won!');
 						this.playerAWin = true;
