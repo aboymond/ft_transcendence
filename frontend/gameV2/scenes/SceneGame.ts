@@ -77,14 +77,13 @@ export class SceneGame extends SceneBase {
 		if (this._accumulator >= this._sendInterval) {
 			this._accumulator -= this._sendInterval;
 
-			const keysOfInterest = ['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Escape'];
-			const pressedKeys = keysOfInterest.filter((key) => this._keysPressed[key]);
+			const keys = ['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Escape'];
+			const pressedKeys = keys.filter((key) => this._keysPressed[key]);
 
 			if (pressedKeys.length > 0) {
 				pressedKeys.forEach((key) => {
 					apiService
 						.sendKeyPress(this._gameId, this.root.userId ?? 0, key)
-						.then((response) => console.log(`${key} press response:`, response))
 						.catch((error) => console.error(`Error sending ${key} press`, error));
 				});
 			}
@@ -159,32 +158,6 @@ export class SceneGame extends SceneBase {
 	//=======================================
 	// UTILS
 	//=======================================
-
-	// //TODO move logic to backend
-	// private _checkTurn() {
-	// 	// turn player or computer
-
-	// 	if (this._player1_turn) {
-	// 		// ball position
-	// 		if (this._ball.x - this._ball.width / 2 < this._pad1.x - this._pad1.width / 2) {
-	// 			this._ball.x = this._pad1.x - this._pad1.width / 2 - this._ball.width / 2;
-	// 		} else if (this._ball.x + this._ball.width / 2 > this._pad1.x + this._pad1.width / 2) {
-	// 			this._ball.x = this._pad1.x + this._pad1.width / 2 - this._ball.width / 2;
-	// 		}
-	// 		this._data.ballVelocity.x = ((this._ball.x - this._pad1.x) / (this._pad1.width / 2)) * 5;
-	// 		this._ball.y = this._pad1.y - this._pad1.height / 2 - this._ball.height * 2;
-	// 	} else {
-	// 		// ball position
-	// 		this._player2Start();
-	// 		if (this._ball.x - this._ball.width / 2 < this._pad2.x - this._pad2.width / 2) {
-	// 			this._ball.x = this._pad2.x - this._pad2.width / 2 - this._ball.width / 2;
-	// 		} else if (this._ball.x + this._ball.width / 2 > this._pad2.x + this._pad2.width / 2) {
-	// 			this._ball.x = this._pad2.x + this._pad2.width / 2 - this._ball.width / 2;
-	// 		}
-	// 		this._data.ballVelocity.x = ((this._ball.x - this._pad2.x) / (this._pad2.width / 2)) * 5;
-	// 		this._ball.y = this._pad2.y - this._pad2.height / 2 + this._ball.height * 2;
-	// 	}
-	// }
 
 	private async _handleExit() {
 		if (this._exitBool) {
