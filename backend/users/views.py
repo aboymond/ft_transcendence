@@ -1,6 +1,7 @@
 import os
 import requests
-import random
+import secrets
+import string
 from datetime import timedelta
 from django.utils import timezone
 from django.contrib.auth import authenticate, logout, login as django_login
@@ -35,7 +36,7 @@ load_dotenv()
 logger = logging.getLogger(__name__)
 
 def generate_random_digits(n=6):
-    return "".join(map(str, random.sample(range(0, 10), n)))
+    return "".join(map(str, (secrets.choice(string.digits) for i in range(n))))
 
 class CreateUserView(generics.CreateAPIView):
     serializer_class = UserSerializer
@@ -60,25 +61,26 @@ class LoginView(generics.GenericAPIView):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             user.status = "online"  # type: ignore
-            verification_code = generate_random_digits()
-            user.otp = verification_code
-            user.otp_expiry_time = timezone.now() + timedelta(hours=1)
+            if user.twofa is True:
+                verification_code = generate_random_digits()
+                user.otp = verification_code
+                user.otp_expiry_time = timezone.now() + timedelta(hours=1)
+                send_mail(
+                'Verification Code',
+                f'Your verification code is: {user.otp}',
+                os.getenv('EMAIL_H_U'),
+                [user.email],
+                fail_silently=True,
+                )
             user.save()
             refresh = RefreshToken.for_user(user)
-            send_mail(
-            'Verification Code',
-            f'Your verification code is: {user.otp}',
-            os.getenv('EMAIL_H_U'),
-            [user.email],
-            fail_silently=True,
-            )
             return Response(
-                {
-                    "refresh": str(refresh),
-                    "access": str(refresh.access_token),  # type: ignore
-                    "user": UserSerializer(user).data,
-                },
-                status=status.HTTP_200_OK,
+            {
+                "refresh": str(refresh),
+                "access": str(refresh.access_token),  # type: ignore
+                "user": UserSerializer(user).data,
+            },
+            status=status.HTTP_200_OK,
             )
         else:
             raise AuthenticationFailed("Invalid Credentials")
