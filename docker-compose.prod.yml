@@ -94,6 +94,7 @@ services:
             - my-network
         volumes:
             - ./nginx:/etc/nginx/conf.d
+            - nginx_log:/var/log/nginx/
             - backend_static:/app/static
             - media_volume:/app/media
 
@@ -122,8 +123,8 @@ services:
             context: ./grafana
         ports:
             - "3000:3000"
-        environment:
-            GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: "/var/lib/grafana/dashboards/exported_dashboard.json"
+        #environment:
+         #   GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: "/var/lib/grafana/dashboards/exported_dashboard_backend.json"
         volumes:
             - grafana_data:/var/lib/grafana
             - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
@@ -146,6 +147,18 @@ services:
         depends_on:
             - nginx
 
+    telegraf:
+        image: telegraf:latest
+        volumes:
+            - ./telegraf/telegraf.conf:/etc/telegraf/telegraf.conf
+            #- /var/run/docker.sock:/var/run/docker.sock
+            #- /var/log/nginx:/var/log/nginx
+            - nginx_log:/var/log/nginx/
+        depends_on:
+            - nginx
+        networks:
+            - my-network
+
 volumes:
     backend_static:
     frontend_node_modules:
@@ -153,6 +166,7 @@ volumes:
     pgadmin_data:
     media_volume:
     grafana_data:
+    nginx_log:
 
 networks:
     my-network:
