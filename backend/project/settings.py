@@ -62,6 +62,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "users.middleware.PrometheusMonitoringMiddleware",
+    "users.middleware.PageViewMiddleware",
     "django_prometheus.middleware.PrometheusAfterMiddleware",
 ]
 
