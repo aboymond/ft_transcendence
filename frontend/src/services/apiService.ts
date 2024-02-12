@@ -168,6 +168,18 @@ export const apiService = {
 			body: JSON.stringify({ user_id: userId }),
 		});
 	},
+	pauseGame: async (gameId: number) => {
+		return fetchAPI(`games/${gameId}/pause/`, {
+			method: 'PATCH',
+			body: JSON.stringify({ game_id: gameId }),
+		});
+	},
+	resumeGame: async (gameId: number) => {
+		return fetchAPI(`games/${gameId}/resume/`, {
+			method: 'PATCH',
+			body: JSON.stringify({ game_id: gameId }),
+		});
+	},
 	sendKeyPress: async (gameId: number, playerId: number, key: string) => {
 		return fetchAPI('games/keypress/', {
 			method: 'POST',

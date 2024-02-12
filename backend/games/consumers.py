@@ -111,7 +111,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def send_game_state(self):
         game = await sync_to_async(Game.objects.get)(id=self.game_id)
-        if game.status != "in_progress":
+        if game is None or game.paused or game.status != "in_progress":
             return
         message = {
             "action": "game_state_update",

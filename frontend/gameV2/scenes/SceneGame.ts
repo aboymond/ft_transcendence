@@ -22,7 +22,6 @@ export class SceneGame extends SceneBase {
 	private _pad2 = new PIXI.Graphics();
 	private _scoreText = new PIXI.Text('0 - 0', { fill: defaultColor });
 	private _keysPressed: { [key: string]: boolean } = {};
-	private _escapeKeyPressed = false;
 
 	private _exitMenu = new PIXI.Container();
 	private _yesOption!: PIXI.Text;
@@ -77,10 +76,10 @@ export class SceneGame extends SceneBase {
 		if (this._accumulator >= this._sendInterval) {
 			this._accumulator -= this._sendInterval;
 
-			const keys = ['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Escape'];
+			const keys = ['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
 			const pressedKeys = keys.filter((key) => this._keysPressed[key]);
 
-			if (pressedKeys.length > 0) {
+			if (pressedKeys.length > 0 && !this._exitBool) {
 				pressedKeys.forEach((key) => {
 					apiService
 						.sendKeyPress(this._gameId, this.root.userId ?? 0, key)
@@ -101,8 +100,9 @@ export class SceneGame extends SceneBase {
 			this._pad2.y = gameState.pad2.y;
 		}
 
+		//TODO call this function from backend
 		this._updateScoreText();
-		this._handleExit();
+		// this._handleExit();
 	}
 
 	public onFinish() {
@@ -115,19 +115,22 @@ export class SceneGame extends SceneBase {
 	public onKeyDown(e: KeyboardEvent) {
 		this._keysPressed[e.code] = true;
 
-		if (e.code === 'Escape' && !this._escapeKeyPressed) {
-			this._escapeKeyPressed = true;
+		if (e.code === 'Escape') {
 			this._exitBool = !this._exitBool;
 			this._exitMenu.visible = this._exitBool;
+			if (!this._exitBool) {
+				try {
+					apiService.resumeGame(this._gameId);
+				} catch (error) {
+					console.error('Error resuming game:', error);
+				}
+			}
 		}
+		this._handleExit();
 	}
 
 	public onKeyUp(e: KeyboardEvent) {
 		delete this._keysPressed[e.code];
-
-		if (e.code === 'Escape') {
-			this._escapeKeyPressed = false;
-		}
 	}
 
 	//=======================================
@@ -160,7 +163,15 @@ export class SceneGame extends SceneBase {
 	//=======================================
 
 	private async _handleExit() {
+		console.log('exitBool:', this._exitBool);
 		if (this._exitBool) {
+			if (this._keysPressed['Escape']) {
+				try {
+					await apiService.pauseGame(this._gameId);
+				} catch (error) {
+					console.error('Error pausing game:', error);
+				}
+			}
 			if (this._keysPressed['ArrowRight']) {
 				this._exitYesNO = false;
 				this._noOption.style.fill = defaultColor;
@@ -173,15 +184,17 @@ export class SceneGame extends SceneBase {
 			}
 			if (this._keysPressed['Enter']) {
 				if (this._exitYesNO) {
-					// Call the API to end the game
 					try {
 						await apiService.leaveGame(this._gameId);
 					} catch (error) {
 						console.error('Error leaving game:', error);
 					}
-					// Navigate back to the menu
-					// this.root.loadScene(new SceneMenu(this.root));
 				} else {
+					try {
+						await apiService.resumeGame(this._gameId);
+					} catch (error) {
+						console.error('Error resuming game:', error);
+					}
 					this._exitBool = false;
 					this._exitMenu.visible = false;
 				}

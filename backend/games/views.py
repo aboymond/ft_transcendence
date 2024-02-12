@@ -80,7 +80,7 @@ class KeyPressView(View):
         else:
             return JsonResponse({"error": "Invalid player ID"}, status=400)
 
-        if key == "Space" and game.player_turn == player_id:
+        if key == "Space" and game.player_turn == player_id and not game.paused:
             game.ball_moving = True
         elif key in ["ArrowRight", "ArrowLeft"]:
             move_x = 10 if key == "ArrowRight" else -10
@@ -96,8 +96,8 @@ class KeyPressView(View):
                 or (getattr(game, pad_y) + move_y - game.pad_height / 2 < 0)
             ):
                 game.move_pad(player_id, 0, move_y)
-        elif key == "Escape":
-            game.paused = not game.paused
+        # elif key == "Escape":
+        #     game.paused = not game.paused
 
         game.save()
 
@@ -149,4 +149,32 @@ def leave_loading(request, game_id):
         return Response(
             {"error": "You are not a player in this game"},
             status=status.HTTP_400_BAD_REQUEST,
+        )
+
+
+@api_view(["PATCH"])
+@permission_classes([IsAuthenticated])
+def pause_game(request, game_id):
+    game = get_object_or_404(Game, id=game_id)
+    if request.user.id in [game.player1_id, game.player2_id]:
+        game.paused = True
+        game.save()
+        return Response({"status": "Game paused"}, status=status.HTTP_200_OK)
+    else:
+        return Response(
+            {"error": "User not part of this game"}, status=status.HTTP_403_FORBIDDEN
+        )
+
+
+@api_view(["PATCH"])
+@permission_classes([IsAuthenticated])
+def resume_game(request, game_id):
+    game = get_object_or_404(Game, id=game_id)
+    if request.user.id in [game.player1_id, game.player2_id]:
+        game.paused = False
+        game.save()
+        return Response({"status": "Game resumed"}, status=status.HTTP_200_OK)
+    else:
+        return Response(
+            {"error": "User not part of this game"}, status=status.HTTP_403_FORBIDDEN
         )

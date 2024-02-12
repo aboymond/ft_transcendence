@@ -8,6 +8,8 @@ from .views import (
     leave_loading,
     player_ready,
     leave_game,
+    pause_game,
+    resume_game,
 )
 
 urlpatterns = [
@@ -23,4 +25,6 @@ urlpatterns = [
     path("<int:game_id>/player_ready/", player_ready, name="player_ready"),
     path("<int:game_id>/leave_game/", leave_game, name="leave_game"),
     path("<int:game_id>/leave_loading/", leave_loading, name="leave_loading"),
+    path("<int:game_id>/pause/", pause_game, name="pause_game"),
+    path("<int:game_id>/resume/", resume_game, name="resume_game"),
 ]
