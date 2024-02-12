@@ -159,6 +159,18 @@ services:
         networks:
             - my-network
 
+    alertmanager:
+        image: prom/alertmanager:v0.22.2
+        volumes:
+            - ./prometheus/alertmanager.yml:/etc/alertmanager/alertmanager.yml
+        command:
+            - "--config.file=/etc/alertmanager/alertmanager.yml"
+            - "--storage.path=/alertmanager"
+        ports:
+            - "9093:9093"
+        networks:
+            - my-network
+
 volumes:
     backend_static:
     frontend_node_modules:
