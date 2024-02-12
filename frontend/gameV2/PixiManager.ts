@@ -24,7 +24,7 @@ export class PixiManager {
 	public gameState: GameState | null = null;
 	public userId: number | null = null;
 	public fpsText: PIXI.Text;
-	public pingText: PIXI.Text;
+	public rpsText: PIXI.Text;
 
 	//--------------------------
 
@@ -54,10 +54,10 @@ export class PixiManager {
 		this.fpsText.x = 10; // Position the text object
 		this.fpsText.y = 10;
 		this._app.stage.addChild(this.fpsText);
-		this.pingText = new PIXI.Text('Ping: 0ms', { fontFamily: 'Arial', fontSize: 24, fill: 0xffffff });
-		this.pingText.x = 10;
-		this.pingText.y = 40;
-		this._app.stage.addChild(this.pingText);
+		this.rpsText = new PIXI.Text('RPS: 0', { fontFamily: 'Arial', fontSize: 24, fill: 0xffffff });
+		this.rpsText.x = 10;
+		this.rpsText.y = 40;
+		this._app.stage.addChild(this.rpsText);
 
 		this._app.ticker.add((delta) => {
 			if (this._currentScene === undefined) return;
@@ -104,7 +104,7 @@ export class PixiManager {
 		this._currentScene.onStart(container);
 
 		this._app.stage.addChild(this.fpsText);
-		this._app.stage.addChild(this.pingText);
+		this._app.stage.addChild(this.rpsText);
 	}
 
 	private _unmountedScene() {
@@ -163,8 +163,8 @@ export class PixiManager {
 						lastUpdateTime = currentTime;
 
 						if (currentTime - this.lastPingUpdateTime > this.UpdateInterval) {
-							const averagePing = pingSum / pingCount;
-							this.pingText.text = `Ping: ${averagePing.toFixed(0)} ms`;
+							const rps = 1000 / (pingSum / pingCount);
+							this.rpsText.text = `RPS: ${rps.toFixed(0)}`;
 							this.lastPingUpdateTime = currentTime;
 							pingSum = 0;
 							pingCount = 0;
