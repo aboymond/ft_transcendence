@@ -1,5 +1,8 @@
 import { User, FriendRequest, GameHistory } from '../types';
 
+interface ErrorResponse {
+	detail?: string;
+}
 const API_BASE_URL = 'http://localhost:8000/api'; // Update with your actual backend URL
 
 function getHeaders(includeToken = true): HeadersInit {
@@ -28,10 +31,27 @@ async function fetchAPI(endpoint: string, options: RequestInit = {}, includeToke
 		throw new Error('Unauthorized');
 	}
 	if (!response.ok) {
-		throw new Error(`API call failed: ${response.statusText}`);
+		let errorDetail: ErrorResponse = {};
+		const contentType = response.headers.get('Content-Type');
+		if (contentType && contentType.includes('application/json')) {
+			const text = await response.text();
+			try {
+				errorDetail = JSON.parse(text);
+			} catch (e) {
+				console.error('Error parsing JSON response:', e);
+			}
+		}
+		const errorMessage = errorDetail.detail || `API call failed: ${response.statusText}`;
+		throw new Error(errorMessage);
 	}
+
 	const text = await response.text();
-	return text ? JSON.parse(text) : {};
+	try {
+		return text ? JSON.parse(text) : {};
+	} catch (e) {
+		console.error('Error parsing JSON response:', e);
+		return {};
+	}
 }
 
 interface UserData {

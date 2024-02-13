@@ -252,6 +252,12 @@ class FriendRequestCreateView(generics.CreateAPIView):
             raise serializers.ValidationError(
                 "This user has already sent you a friend request."
             )
+        if Friendship.objects.filter(
+            requester=self.request.user, receiver=receiver
+        ).exists():
+            raise serializers.ValidationError(
+                "You have already sent a friend request to this user."
+            )
 
         friendship = serializer.save(
             requester=self.request.user, receiver=receiver, status="sent"
