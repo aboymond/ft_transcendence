@@ -31,7 +31,7 @@
 .credits {
     position: absolute;
     margin-top: 15px;
-    /* bottom: 2; */
+    /* bottom: 50px; */
     left: 50%;
     transform: translateX(-50%);
 }

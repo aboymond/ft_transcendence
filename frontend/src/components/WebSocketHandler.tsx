@@ -27,14 +27,23 @@ const WebSocketHandler: React.FC<Props> = ({ children }) => {
 	const [gameState, setGameState] = useState<GameState | null>(null);
 	const [userStatus, setUserStatus] = useState<{ [userId: string]: string }>({});
 
+	
 	const messageHandler = (e: MessageEvent) => {
 		const { type, payload } = JSON.parse(e.data);
 		const { action, data } = payload;
 		console.log('WebSocketHandler:', { type, action, data });
 		setMessage({ type, payload: { action, data } });
 
+		console.log('Received WebSocket message:', { type, action, data }); // Debug
+
 		if (type === 'user_event' && action === 'user_status') {
 			setUserStatus((prevStatus) => ({ ...prevStatus, [data.user_id]: data.status }));
+		}
+
+		if (type === 'friend_request') {
+			const pendingRequests = data.pending_requests;
+			console.log('Updating pending requests:', pendingRequests); // Debug
+			setUserStatus((prevStatus) => ({ ...prevStatus, pending_request: pendingRequests}));
 		}
 	};
 
