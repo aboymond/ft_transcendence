@@ -221,6 +221,23 @@ export const apiService = {
 			method: 'POST',
 		});
 	},
+	createTournament: async (creator_id: number, name: string, max_participants: number, max_score: number) => {
+		return fetchAPI('tournaments/create/', {
+			method: 'POST',
+			body: JSON.stringify({
+				creator_id: creator_id,
+				name: name,
+				max_participants: max_participants,
+				max_score: max_score,
+			}),
+		});
+	},
+	joinTournament: async (tournamentId: number, userId: number) => {
+		return fetchAPI(`tournaments/${tournamentId}/join/`, {
+			method: 'PATCH',
+			body: JSON.stringify({ user_id: userId }),
+		});
+	},
 };
 
 export default apiService;

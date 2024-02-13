@@ -1,11 +1,19 @@
 from rest_framework import generics, status
 from rest_framework.response import Response
+from django.contrib.auth import get_user_model
 from .models import Tournament, Match
 from .serializers import (
     TournamentSerializer,
     TournamentUpdateSerializer,
     MatchSerializer,
 )
+
+User = get_user_model()
+
+
+class TournamentCreateView(generics.CreateAPIView):
+    queryset = Tournament.objects.all()
+    serializer_class = TournamentSerializer
 
 
 # List all tournaments or create a new one

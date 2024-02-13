@@ -18,14 +18,13 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from django_prometheus import exports
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/users/", include("users.urls")),
-    path('api/games/', include('games.urls')),
+    path("api/games/", include("games.urls")),
     path("api/tournaments/", include("tournaments.urls")),
-    path("", include('django_prometheus.urls')),
+    path("", include("django_prometheus.urls")),
 ]
 
 if settings.DEBUG:

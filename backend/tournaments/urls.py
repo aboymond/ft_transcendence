@@ -1,5 +1,6 @@
 from django.urls import path
 from .views import (
+    TournamentCreateView,
     TournamentListCreateView,
     TournamentRetrieveUpdateDestroyView,
     TournamentAddParticipantView,
@@ -8,14 +9,15 @@ from .views import (
 )
 
 urlpatterns = [
-    path("tournaments/", TournamentListCreateView.as_view(), name="tournament-list"),
+    path("create/", TournamentCreateView.as_view(), name="tournament-create"),
+    path("list/", TournamentListCreateView.as_view(), name="tournament-list"),
     path(
-        "tournaments/<int:pk>/",
+        "<int:pk>/",
         TournamentRetrieveUpdateDestroyView.as_view(),
         name="tournament-detail",
     ),
     path(
-        "tournaments/<int:pk>/add_participant/",
+        "<int:pk>/add_participant/",
         TournamentAddParticipantView.as_view(),
         name="tournament-add-participant",
     ),

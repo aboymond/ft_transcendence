@@ -52,6 +52,16 @@ class Tournament(ExportModelOperationsMixin("Tournament"), models.Model):
         blank=True,
     )
 
+    # def initialize_tournament(self):
+    #     if self.participants.count() == self.max_participants:
+    #         # Determine the number of rounds based on max_participants
+    #         num_rounds = 2 if self.max_participants == 4 else 3
+    #         # Create rounds and matches here
+    #         # For simplicity, assuming a method create_rounds exists
+    #         self.create_rounds(num_rounds)
+    #         self.status = self.IN_PROGRESS
+    #         self.save()
+
     @classmethod
     def create_tournament(cls, name, tournament_type, max_participants):
         tournament = cls.objects.create(
