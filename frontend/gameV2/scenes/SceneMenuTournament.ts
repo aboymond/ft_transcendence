@@ -12,8 +12,9 @@ import {
 	textStyleMenuOptionPlay,
 } from '..';
 import { SceneMenu2 } from './SceneMenu2';
-import { SceneLoadingPage } from './SceneLoadingPage';
 import { sound } from '@pixi/sound';
+import { SceneTournamentLoadingVs } from './SceneTournamentLoadingVs';
+import { apiService } from '../../src/services/apiService';
 
 const selectMaxCreate = 3;
 
@@ -114,8 +115,8 @@ export class SceneMenuTournament extends SceneBase {
 		if (e.code === 'Enter') {
 			if (this._currentSelectCreate === menu.PLAY) {
 				sound.play('enter');
-
-				this.root.loadScene(new SceneLoadingPage(this.root));
+				this._createTournament();
+				this.root.loadScene(new SceneTournamentLoadingVs(this.root));
 			}
 		}
 
@@ -323,5 +324,21 @@ export class SceneMenuTournament extends SceneBase {
 		this._score_max_tab.text = '< ' + this._scoreMax[this._currentMaxScore] + ' >';
 
 		this._nb_scoreForBack = this._scoreMax[this._currentMaxScore];
+	}
+
+	private _createTournament() {
+		console.log('Create tournament');
+		console.log('creator_id:', this.root.userId);
+		console.log('name:', this._inputText);
+		console.log('max_participants:', this._nb_playerForBack);
+		console.log('max_score:', this._nb_scoreForBack);
+		apiService
+			.createTournament(this.root.userId ?? 0, this._inputText, this._nb_playerForBack, this._nb_scoreForBack)
+			.then((response) => {
+				console.log('Tournament created successfully', response);
+				// this.root.openGameSocket(response.id);
+				// this.root.loadScene(new SceneTournamentLoadingVs(this.root, response.id));
+			})
+			.catch((error) => console.error('Error creating game', error));
 	}
 }

@@ -44,7 +44,7 @@ export class SceneGameVsBot extends SceneBase {
 		if (!sound.exists('touchBall')) sound.add('touchBall', './sound/touchBall.mp3');
 
 		//Init Ball
-		container.addChild(this._initBall(10, 0x1aff00));
+		container.addChild(this._initBall(0x1aff00));
 		this._ball.x = this.root.width / 2;
 		this._ball.y = this.root.height / 2;
 
@@ -112,7 +112,7 @@ export class SceneGameVsBot extends SceneBase {
 	// UTILS INIT
 	//=======================================
 
-	private _initBall(size: number, color: number) {
+	private _initBall(color: number) {
 		const pourcentage = 3;
 		const newWidth = Math.floor((this.root.width * pourcentage) / 100);
 		const ratio = 1;

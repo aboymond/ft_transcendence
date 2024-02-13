@@ -64,8 +64,8 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "middleware.middleware.PrometheusMonitoringMiddleware",
     "middleware.middleware.PageViewMiddleware",
-    #"users.middleware.PrometheusMonitoringMiddleware",
-    #"users.middleware.PageViewMiddleware",
+    # "users.middleware.PrometheusMonitoringMiddleware",
+    # "users.middleware.PageViewMiddleware",
     "django_prometheus.middleware.PrometheusAfterMiddleware",
 ]
 
@@ -207,11 +207,19 @@ LOGGING = {
     "handlers": {
         "console": {
             "class": "logging.StreamHandler",
+            "level": "DEBUG",
         },
     },
     "root": {
         "handlers": ["console"],
         "level": "INFO",
+    },
+    "loggers": {
+        "": {  # This configures the root logger to capture all logs of DEBUG level and above
+            "handlers": ["console"],
+            "level": "DEBUG",
+            "propagate": True,
+        },
     },
 }
 
