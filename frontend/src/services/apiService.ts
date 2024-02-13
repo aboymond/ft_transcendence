@@ -171,7 +171,7 @@ export const apiService = {
 		return fetchAPI('users/game_histories/');
 	},
 	getTournaments: async () => {
-		return fetchAPI('tournaments/tournaments/');
+		return fetchAPI('tournaments/list/');
 	},
 	getGames: async () => {
 		return fetchAPI('games/list-create/');
