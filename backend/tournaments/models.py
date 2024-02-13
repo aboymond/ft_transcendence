@@ -1,26 +1,24 @@
 from django.db import models
 from django.conf import settings
 from games.models import Game
-from itertools import combinations
+
+# from itertools import combinations
 from django_prometheus.models import ExportModelOperationsMixin
 
+
 class Tournament(ExportModelOperationsMixin("Tournament"), models.Model):
-    SINGLE_ELIMINATION = "SE"
-    ROUND_ROBIN = "RR"
+    # SINGLE_ELIMINATION = "SE"
+    # ROUND_ROBIN = "RR"
 
-    TOURNAMENT_TYPES = [
-        (SINGLE_ELIMINATION, "Single Elimination"),
-        (ROUND_ROBIN, "Round Robin"),
-    ]
-
-    CREATED = "CR"
-    IN_PROGRESS = "IP"
-    COMPLETED = "CO"
+    # TOURNAMENT_TYPES = [
+    #     (SINGLE_ELIMINATION, "Single Elimination"),
+    #     (ROUND_ROBIN, "Round Robin"),
+    # ]
 
     STATUS_CHOICES = [
-        (CREATED, "Created"),
-        (IN_PROGRESS, "In Progress"),
-        (COMPLETED, "Completed"),
+        ("waiting", "Waiting for Player"),
+        ("in_progress", "In Progress"),
+        ("completed", "Completed"),
     ]
 
     name = models.CharField(max_length=255)
@@ -38,13 +36,13 @@ class Tournament(ExportModelOperationsMixin("Tournament"), models.Model):
     games = models.ManyToManyField(Game, related_name="tournaments", blank=True)
     start_date = models.DateTimeField(null=True, blank=True)
     end_date = models.DateTimeField(null=True, blank=True)
-    tournament_type = models.CharField(
-        max_length=2, choices=TOURNAMENT_TYPES, default=SINGLE_ELIMINATION
-    )
+    # tournament_type = models.CharField(
+    #     max_length=2, choices=TOURNAMENT_TYPES, default=SINGLE_ELIMINATION
+    # )
     status = models.CharField(
         max_length=2,
         choices=STATUS_CHOICES,
-        default=CREATED,
+        default="waiting",
     )
     winner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -103,25 +101,25 @@ class Tournament(ExportModelOperationsMixin("Tournament"), models.Model):
             tournament.status = cls.COMPLETED
             tournament.save()
 
-    @classmethod
-    def start_round_robin(cls, tournament):
-        players = list(tournament.participants.all())
-        order = 1
-        for player1, player2 in combinations(players, 2):
-            Match.objects.create(
-                tournament=tournament, player1=player1, player2=player2, order=order
-            )
-            order += 1
-        winners = [
-            game.winner for game in tournament.games.all() if game.winner is not None
-        ]
-        winner = max(winners, key=winners.count)
-        tournament.winner = winner
-        tournament.winner.tournament_wins += 1
-        tournament.winner.save()
+    # @classmethod
+    # def start_round_robin(cls, tournament):
+    #     players = list(tournament.participants.all())
+    #     order = 1
+    #     for player1, player2 in combinations(players, 2):
+    #         Match.objects.create(
+    #             tournament=tournament, player1=player1, player2=player2, order=order
+    #         )
+    #         order += 1
+    #     winners = [
+    #         game.winner for game in tournament.games.all() if game.winner is not None
+    #     ]
+    #     winner = max(winners, key=winners.count)
+    #     tournament.winner = winner
+    #     tournament.winner.tournament_wins += 1
+    #     tournament.winner.save()
 
-        tournament.status = cls.COMPLETED
-        tournament.save()
+    #     tournament.status = cls.COMPLETED
+    #     tournament.save()
 
 
 class Match(ExportModelOperationsMixin("Match"), models.Model):
