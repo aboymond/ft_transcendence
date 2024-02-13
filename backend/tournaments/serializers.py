@@ -13,7 +13,7 @@ class TournamentSerializer(serializers.ModelSerializer):
     participants = serializers.SlugRelatedField(
         many=True, slug_field="username", queryset=User.objects.all(), required=False
     )
-    max_participants = serializers.IntegerField(required=False)
+    max_participants = serializers.IntegerField(required = False)
 
     def create(self, validated_data):
         creator_id = validated_data.pop("creator_id")

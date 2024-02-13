@@ -4,10 +4,17 @@ import { SceneMenu } from './SceneMenu';
 import { SceneMenuOption } from './SceneMenuOption';
 import { SceneMenuTournament } from './SceneMenuTournament';
 import { SceneJoin } from './SceneJoin';
+import { sound } from '@pixi/sound';
 // import { glowFilter, defaultColor, textStylePVPMenu2, textStylePVBMenu2, textStyleTournamentMenu, textStyleJoinMenu2 } from '..';
 
 const selectMax = 2;
 const selectMax_LR = 1;
+
+enum menu {
+	TOURNAMENT = 0,
+	PVP_PVB = 1,
+	JOIN = 2,
+}
 
 enum allSprite {
 	TOURNAMENT_S = 0,
@@ -18,12 +25,6 @@ enum allSprite {
 	PVB_U = 5,
 	JOIN_S = 6,
 	JOIN_U = 7,
-}
-
-enum menu {
-	TOURNAMENT = 0,
-	PVP_PVB = 1,
-	JOIN = 2,
 }
 
 const textures = [
@@ -37,12 +38,24 @@ const textures = [
 	PIXI.Texture.from('./img/JoinPartyUnselect.png'),
 ];
 
-export class SceneMenu2 extends SceneBase {
-	private _currentSelect = menu.TOURNAMENT;
-	private _currentSelect_LR = 0;
-	private _sprites: PIXI.Sprite[] = [];
+// enum enumSound {
+// 	SELECT_SOUND = 0,
+// 	ENTER_SOUND = 1,
+// }
 
+// const sounds = [
+	// ];
+	
+	export class SceneMenu2 extends SceneBase {
+		private _currentSelect = menu.TOURNAMENT;
+		private _currentSelect_LR = 0;
+		private _sprites: PIXI.Sprite[] = [];
+		
 	public async onStart(container: PIXI.Container) {
+		sound.add('select', './sound/Select.mp3');
+		sound.add('enter', './sound/game-start.mp3');
+
+		
 		for (let i = 0; i < textures.length; i++) {
 			this._sprites.push(new PIXI.Sprite(textures[i]));
 		}
@@ -92,6 +105,7 @@ export class SceneMenu2 extends SceneBase {
 			}
 		}
 		if (e.code === 'Enter') {
+			sound.play('enter');
 			if (this._currentSelect === menu.TOURNAMENT) {
 				this.root.loadScene(new SceneMenuTournament(this.root));
 			} else if (this._currentSelect === menu.PVP_PVB) {
@@ -145,24 +159,28 @@ export class SceneMenu2 extends SceneBase {
 
 	private _pressUp() {
 		this._currentSelect--;
+		sound.play('select');
 		if (this._currentSelect < 0) this._currentSelect = selectMax;
 		this._updateMenuColor();
 	}
 
 	private _pressDown() {
 		this._currentSelect++;
+		sound.play('select');
 		if (this._currentSelect > selectMax) this._currentSelect = 0;
 		this._updateMenuColor();
 	}
 
 	private _pressRight() {
 		this._currentSelect_LR++;
+		sound.play('select');
 		if (this._currentSelect_LR > selectMax_LR) this._currentSelect_LR = 0;
 		this._updateMenuColor();
 	}
 
 	private _pressLeft() {
 		this._currentSelect_LR--;
+		sound.play('select');
 		if (this._currentSelect_LR < 0) this._currentSelect_LR = selectMax_LR;
 		this._updateMenuColor;
 	}

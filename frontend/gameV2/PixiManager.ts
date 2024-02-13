@@ -13,6 +13,15 @@ interface IPixiManagerOptions {
 	antialias: boolean;
 }
 
+interface Tournament {
+	name: string;
+	id: number;
+	max_score: number;
+	max_participants: number;
+	status: string;
+	participants: string[];
+}
+
 export class PixiManager {
 	//For the back -------------
 	public vsPlayer = false;
@@ -25,6 +34,7 @@ export class PixiManager {
 	public userId: number | null = null;
 	public fpsText: PIXI.Text;
 	public rpsText: PIXI.Text;
+	public currentTournament: Tournament | null = null;
 
 	//--------------------------
 

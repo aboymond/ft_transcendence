@@ -164,9 +164,13 @@ export class SceneLoadingPage extends SceneBase {
 	//=======================================
 
 	private _initKeyExplanation(texture: PIXI.Sprite) {
-		texture.width = this.root.width - 100;
-		texture.height = this.root.height / 2;
-		// texture.y = texture.height / 2;
+		const pourcentage = 60;
+		const newWidth = (this.root.width * pourcentage) / 100;
+		const ratio = this._sprite.width / this._sprite.height;
+		const newHigth = newWidth / ratio;
+		texture.width = newWidth;
+		texture.height = newHigth;
+		texture.y = 20;
 		texture.x = this.root.width / 2 - texture.width / 2;
 		texture.visible = true;
 	}
@@ -209,11 +213,7 @@ export class SceneLoadingPage extends SceneBase {
 		this._textEnter.filters = [glowFilter];
 
 		// this._textMoreTips.y = this._textPress.y;
-		// this._textMoreTips.x = (((this.root.width - this._textMoreTips.width) * 30) / 100) + this._textEnter.width + 100;
-		// this._textMoreTips.style.fill = defaultColor;
-		// this._textMoreTips.style.fontSize = ((this.root.width - this._textPress.width) * 4) / 100;
-		// this._textMoreTips.filters = [glowFilter];
-
+		// this._textMoreTips.x =
 		moreTips.addChild(this._textPress, this._textEnter);
 		return moreTips;
 	}
