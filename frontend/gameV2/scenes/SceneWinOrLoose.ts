@@ -21,14 +21,14 @@ export class SceneWinOrLoose extends SceneBase {
 
 		if (this.root.playerAWin) {
 			this._textWin.visible = true;
-			this._interval = setInterval(() => {
+			this._interval = window.setInterval(() => {
 				if (this._textWin) {
 					this._textWin.visible = !this._textWin.visible;
 				}
 			}, 800);
 		} else {
 			this._textLoose.visible = true;
-			this._interval = setInterval(() => {
+			this._interval = window.setInterval(() => {
 				if (this._textLoose) {
 					this._textLoose.visible = !this._textLoose.visible;
 				}
@@ -42,8 +42,10 @@ export class SceneWinOrLoose extends SceneBase {
 		clearInterval(this._interval);
 	}
 
+	//TODO load tournament
 	public onKeyDown(e: KeyboardEvent) {
-		if (e.code === 'Enter') this.root.loadScene(new SceneMenu2(this.root));
+		if (e.code === 'Enter' || e.code === 'Space' || e.code === 'Escape')
+			this.root.loadScene(new SceneMenu2(this.root));
 	}
 
 	public onKeyUp() {}

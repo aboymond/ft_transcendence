@@ -11,9 +11,9 @@ import {
 	textStyleMenuOptionError,
 	textStyleMenuOptionVictory,
 } from '../index';
-import { SceneGame } from './SceneGame';
 import { SceneGameVsBot } from './SceneGameVsBot';
 import { SceneLoadingPage } from './SceneLoadingPage';
+import { apiService } from '../../src/services/apiService';
 
 const selectMax = 4;
 let errorLock: boolean = false;
@@ -141,7 +141,7 @@ export class SceneMenuOption extends SceneBase {
 				this._popError.visible = false;
 				this._textErrorOK.visible = false;
 				this._textErrorPad.visible = false;
-			} else this._pressSpace();
+			} else this._createGame();
 		}
 		if (e.code === 'Escape') {
 			this.root.loadScene(new SceneMenu2(this.root));
@@ -219,34 +219,18 @@ export class SceneMenuOption extends SceneBase {
 	// UTILS NAVIGATOR
 	//=======================================
 
-	private _pressSpace() {
+	private _createGame() {
 		if (this.root.vsPlayer) {
 			// Send a request to the backend to create a game
-			if (this.root.ws) {
-				console.log('Sending request to create_game');
-				this.root.ws.send(
-					JSON.stringify({
-						type: 'game_event',
-						payload: {
-							action: 'create_game',
-							data: {
-								user_id: Number(this.root.userId),
-							},
-						},
-					}),
-				);
-				this.root.loadScene(new SceneLoadingPage(this.root));
-				this.root.ws.onmessage = (e) => {
-					const data = JSON.parse(e.data);
-					if (data.action === 'start_game') {
-						console.log('Loading SceneGame');
-						this.root.loadScene(new SceneGame(this.root));
-					}
-				};
-			}
+			apiService
+				.createGame(this.root.userId ?? 0) //TODO
+				.then((response) => {
+					console.log('Game created successfully', response);
+					this.root.openGameSocket(response.id);
+					this.root.loadScene(new SceneLoadingPage(this.root, response.id));
+				})
+				.catch((error) => console.error('Error creating game', error));
 		} else if (this._currentPad === 0) {
-			//TODO: enable other pads ?
-			console.log('Loading SceneGameVsBot');
 			this.root.loadScene(new SceneGameVsBot(this.root));
 		} else {
 			errorLock = true;
@@ -260,14 +244,14 @@ export class SceneMenuOption extends SceneBase {
 		this._currentSelect--;
 		if (this._currentSelect === 1 && this.root.vsPlayer) this._currentSelect--;
 		if (this._currentSelect < 0) this._currentSelect = selectMax;
-		console.log('up: ' + this._currentSelect);
+		// console.log('up: ' + this._currentSelect);
 	}
 
 	private _pressDown() {
 		this._currentSelect++;
 		if (this._currentSelect === 1 && this.root.vsPlayer) this._currentSelect++;
 		if (this._currentSelect > selectMax) this._currentSelect = 0;
-		console.log('down: ' + this._currentSelect);
+		// console.log('down: ' + this._currentSelect);
 	}
 
 	private _pressLeft() {
