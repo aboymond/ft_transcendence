@@ -24,7 +24,6 @@ class GeneralRequestConsumer(AsyncWebsocketConsumer):
 
         if self.channel_layer is not None:
             await self.channel_layer.group_add(self.room_group_name, self.channel_name)
-            # await self.channel_layer.group_add("common_group", self.channel_name)
             await self.channel_layer.group_add("online_status", self.channel_name)
             await self.channel_layer.group_send(
                 "online_status",
@@ -77,10 +76,6 @@ class GeneralRequestConsumer(AsyncWebsocketConsumer):
             print("Error: self.channel_layer is None")
         print("Disconnected! (General)")  # Log message after connection
 
-    async def receive(self, text_data):
-        data = json.loads(text_data)
-        print("General data:\n", data)
-
     async def user_status(self, event):
         await self.send(
             text_data=json.dumps(
@@ -109,18 +104,6 @@ class GeneralRequestConsumer(AsyncWebsocketConsumer):
             )
         )
 
-    async def friend_request(self, event):
-        message = event["message"]
-        print("Friend request message:\n", message)
-        await self.send(
-            text_data=json.dumps(
-                {
-                    "type": "user_event",
-                    "payload": {"action": "friend_request", "data": message},
-                }
-            )
-        )
-
     @sync_to_async
     def get_active_games(self, user_id):
         # Query your Game model for active games involving the user
@@ -129,3 +112,10 @@ class GeneralRequestConsumer(AsyncWebsocketConsumer):
             status__in=["waiting", "in_progress"],  # Adjust based on your game statuses
         ).values_list("id", flat=True)
         return list(games)
+
+    async def friend_request(self, event):
+        await self.send(
+            text_data=json.dumps(
+                {"type": "friend_request", "payload": event["payload"]}
+            )
+        )
