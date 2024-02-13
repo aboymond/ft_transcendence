@@ -9,24 +9,27 @@ import { Link } from 'react-router-dom';
 
 const Home: React.FC = () => {
 	return (
-	<>
-		<div id="homepage" >
-		<BarNav />
-			<Container className={styles.container}>
-				<Row className={styles.homerow}>
-					<Col xs={7} md={7} lg={7} xl={7} xxl={7} className={styles.gamecol}>
-						<GameWindow />
-					</Col>
-					<Col xs={5} md={5} lg={5} xl={5} xxl={5} className={styles.friendscol}>
-						<Window />
-					</Col>
-				</Row>
-			</Container>
-			<div className={styles.credits}>
-				<Link to="/credits" style={{ color: 'rgb(74, 246, 38)'}}>Credits</Link>
+		<>
+			<div id="homepage">
+				<BarNav />
+				<Container className={styles.container}>
+					<Row className={styles.homerow}>
+						<Col xs={6} md={6} lg={6} xl={6} xxl={6} className={styles.gamecol}>
+							<GameWindow />
+						</Col>
+						<Col xs={6} md={6} lg={6} xl={6} xxl={6} className={styles.friendscol}>
+							<Window />
+						</Col>
+					</Row>
+				</Container>
+				<div className={styles.credits}>
+					<Link to="/credits" style={{ color: 'rgb(74, 246, 38)' }}>
+						Credits
+					</Link>
+				</div>
 			</div>
-		</div>
-	</>);
+		</>
+	);
 };
 
 export default Home;

@@ -6,32 +6,38 @@ import AddFriend from './AddFriend';
 import FriendRequests from './FriendRequests';
 import { User, FriendRequest } from '../types';
 import { WebSocketContext } from './WebSocketHandler';
+import { useNavigate } from 'react-router-dom';
 
 const Friends: React.FC = () => {
 	const [friends, setFriends] = useState<User[]>([]);
 	const [friendRequests, setFriendRequests] = useState<FriendRequest[]>([]);
-	const auth = useAuth();
+	const { isAuthenticated, token, logout } = useAuth();
 	const ws = useContext(WebSocketContext);
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		const fetchFriends = async () => {
-			if (auth.isAuthenticated && auth.token) {
+			if (isAuthenticated && token) {
 				try {
 					const friendsList = await apiService.getFriends();
 					setFriends(friendsList);
 					const requestsList = await apiService.getFriendRequests();
 					setFriendRequests(requestsList);
 				} catch (error) {
-					console.error('Failed to fetch friends:', error);
+					if ((error as Error).message === 'Unauthorized') {
+						logout();
+						navigate('/');
+					} else {
+						console.error('Failed to fetch friends:', error);
+					}
 				}
 			}
 		};
 		fetchFriends();
-	}, [auth.isAuthenticated, auth.token]);
+	}, [isAuthenticated, token, logout, navigate]);
 
 	useEffect(() => {
-		if (ws?.message) {
-			console.log('friends ws.message:', ws.message);
+		if (ws?.message?.type === 'user_event') {
 			// Fetch the updated list of friends from the server
 			const fetchFriends = async () => {
 				try {
@@ -89,5 +95,3 @@ const Friends: React.FC = () => {
 };
 
 export default Friends;
-
-

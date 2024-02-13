@@ -1,12 +1,18 @@
+import operator
 from django.db import models
 from django.conf import settings
 from users.models import GameHistory
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
+from asgiref.sync import sync_to_async
 from django_prometheus.models import ExportModelOperationsMixin
 
-class Game(ExportModelOperationsMixin('game'), models.Model):
+BALL_SPEED = 5
+
+
+class Game(ExportModelOperationsMixin("game"), models.Model):
     STATUS_CHOICES = [
+        ("empty", "Empty"),
         ("waiting", "Waiting for Player"),
         ("in_progress", "In Progress"),
         ("completed", "Completed"),
@@ -26,9 +32,12 @@ class Game(ExportModelOperationsMixin('game'), models.Model):
         null=True,
         blank=True,
     )
-    status = models.CharField(max_length=15, choices=STATUS_CHOICES, default="waiting")
+
+    max_score = models.IntegerField(default=5)
+    status = models.CharField(max_length=15, choices=STATUS_CHOICES, default="empty")
     start_time = models.DateTimeField(null=True, blank=True)
     end_time = models.DateTimeField(null=True, blank=True)
+
     winner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         related_name="games_won",
@@ -43,17 +52,32 @@ class Game(ExportModelOperationsMixin('game'), models.Model):
         null=True,
         blank=True,
     )
-    player1_score = models.IntegerField(default=0)
-    player2_score = models.IntegerField(default=0)
 
-    max_score = models.IntegerField(default=5)
-
+    # GameState
     ball_x = models.FloatField(default=0)
     ball_y = models.FloatField(default=0)
     ball_velocity_x = models.FloatField(default=0)
-    ball_velocity_y = models.FloatField(default=0)
+    ball_velocity_y = models.FloatField(default=-BALL_SPEED)
+    player1_score = models.IntegerField(default=0)
+    player2_score = models.IntegerField(default=0)
     pad1_x = models.FloatField(default=0)
+    pad1_y = models.FloatField(default=0)
     pad2_x = models.FloatField(default=0)
+    pad2_y = models.FloatField(default=0)
+    player_turn = models.PositiveIntegerField(null=True, blank=True)
+
+    ball_moving = models.BooleanField(default=False)
+    paused = models.BooleanField(default=False)
+
+    # TODO: Remove these hardcoded values ?
+    win_width = models.FloatField(default=426)
+    win_height = models.FloatField(default=563)
+    ball_width = models.FloatField(default=10)
+    pad_width = models.FloatField(default=100)
+    pad_height = models.FloatField(default=10)
+
+    player1_ready = models.BooleanField(default=False)
+    player2_ready = models.BooleanField(default=False)
 
     def update_ball_position(self):
         self.ball_x += self.ball_velocity_x
@@ -61,21 +85,13 @@ class Game(ExportModelOperationsMixin('game'), models.Model):
         self.check_collisions()
         self.save()
 
-    def move_pad(self, pad_number, new_x):
-        if pad_number == 1:
-            if new_x < self.pad_width / 2:
-                self.pad1_x = self.pad_width / 2
-            elif new_x > self.width - self.pad_width / 2:
-                self.pad1_x = self.width - self.pad_width / 2
-            else:
-                self.pad1_x = new_x
-        elif pad_number == 2:
-            if new_x < self.pad_width / 2:
-                self.pad2_x = self.pad_width / 2
-            elif new_x > self.width - self.pad_width / 2:
-                self.pad2_x = self.width - self.pad_width / 2
-            else:
-                self.pad2_x = new_x
+    def move_pad(self, player_id, x, y):
+        if self.player1.id == player_id:
+            self.pad1_x += x
+            self.pad1_y += y
+        elif self.player2.id == player_id:
+            self.pad2_x += x
+            self.pad2_y += y
         self.save()
 
     def check_collisions(self):
@@ -112,13 +128,14 @@ class Game(ExportModelOperationsMixin('game'), models.Model):
             ) * 5
         self.save()
 
-    @property
-    def is_full(self):
-        return self.player1 is not None and self.player2 is not None
+    async def is_full(self):
+        player1 = await sync_to_async(operator.attrgetter("player1"))(self)
+        player2 = await sync_to_async(operator.attrgetter("player2"))(self)
+        return player1 is not None and player2 is not None
 
     @classmethod
     def create_game(cls, user):
-        game = cls.objects.create(player1=user, status="waiting")
+        game = cls.objects.create(player1=user, status="waiting", player_turn=user.id)
         return game
 
     @classmethod
@@ -193,6 +210,6 @@ class Game(ExportModelOperationsMixin('game'), models.Model):
         return game
 
 
-class MatchmakingQueue(ExportModelOperationsMixin('MatchmakingQueue'), models.Model):
+class MatchmakingQueue(ExportModelOperationsMixin("MatchmakingQueue"), models.Model):
     player = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now_add=True)

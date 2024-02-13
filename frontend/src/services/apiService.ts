@@ -1,6 +1,8 @@
-import { User, FriendRequest } from '../types';
-import { GameHistory } from '../types';
+import { User, FriendRequest, GameHistory } from '../types';
 
+interface ErrorResponse {
+	detail?: string;
+}
 const API_BASE_URL = 'http://localhost:8000/api'; // Update with your actual backend URL
 
 function getHeaders(includeToken = true): HeadersInit {
@@ -18,15 +20,38 @@ async function fetchAPI(endpoint: string, options: RequestInit = {}, includeToke
 	if (options.body instanceof FormData && headers instanceof Headers) {
 		headers.delete('Content-Type');
 	}
+
 	const response = await fetch(`${API_BASE_URL}/${endpoint}`, {
 		...options,
 		headers: headers,
 	});
-	if (!response.ok) {
-		throw new Error(`API call failed: ${response.statusText}`);
+
+	if (response.status === 401) {
+		localStorage.removeItem('token');
+		throw new Error('Unauthorized');
 	}
+	if (!response.ok) {
+		let errorDetail: ErrorResponse = {};
+		const contentType = response.headers.get('Content-Type');
+		if (contentType && contentType.includes('application/json')) {
+			const text = await response.text();
+			try {
+				errorDetail = JSON.parse(text);
+			} catch (e) {
+				console.error('Error parsing JSON response:', e);
+			}
+		}
+		const errorMessage = errorDetail.detail || `API call failed: ${response.statusText}`;
+		throw new Error(errorMessage);
+	}
+
 	const text = await response.text();
-	return text ? JSON.parse(text) : {};
+	try {
+		return text ? JSON.parse(text) : {};
+	} catch (e) {
+		console.error('Error parsing JSON response:', e);
+		return {};
+	}
 }
 
 interface UserData {
@@ -150,6 +175,51 @@ export const apiService = {
 	},
 	getGames: async () => {
 		return fetchAPI('games/list-create/');
+	},
+	createGame: async (userId: number) => {
+		return fetchAPI('games/create/', {
+			method: 'POST',
+			body: JSON.stringify({ user_id: userId }),
+		});
+	},
+	joinGame: async (gameId: number, userId: number) => {
+		return fetchAPI(`games/${gameId}/join/`, {
+			method: 'PATCH',
+			body: JSON.stringify({ user_id: userId }),
+		});
+	},
+	pauseGame: async (gameId: number) => {
+		return fetchAPI(`games/${gameId}/pause/`, {
+			method: 'PATCH',
+			body: JSON.stringify({ game_id: gameId }),
+		});
+	},
+	resumeGame: async (gameId: number) => {
+		return fetchAPI(`games/${gameId}/resume/`, {
+			method: 'PATCH',
+			body: JSON.stringify({ game_id: gameId }),
+		});
+	},
+	sendKeyPress: async (gameId: number, playerId: number, key: string) => {
+		return fetchAPI('games/keypress/', {
+			method: 'POST',
+			body: JSON.stringify({ game_id: gameId, player_id: playerId, key }),
+		});
+	},
+	sendPlayerReady: async (gameId: number) => {
+		return fetchAPI(`games/${gameId}/player_ready/`, {
+			method: 'POST',
+		});
+	},
+	leaveGame: async (gameId: number) => {
+		return fetchAPI(`games/${gameId}/leave_game/`, {
+			method: 'POST',
+		});
+	},
+	leaveLoading: async (gameId: number) => {
+		return fetchAPI(`games/${gameId}/leave_loading/`, {
+			method: 'POST',
+		});
 	},
 };
 

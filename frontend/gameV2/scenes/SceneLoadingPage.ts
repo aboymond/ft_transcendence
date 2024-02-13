@@ -1,10 +1,10 @@
 import { defaultColor, glowFilter } from '..';
 import { SceneBase } from './SceneBase';
 import { SceneMenu } from './SceneMenu';
-import { SceneWinOrLoose } from './SceneWinOrLoose';
 import * as PIXI from 'pixi.js';
-import { gsap } from 'gsap';
 import { PixiManager } from '../PixiManager';
+import { ErrorResponse } from 'react-router-dom';
+import { apiService } from '../../src/services/apiService';
 
 const keyExplanation = PIXI.Texture.from('./img/keyExplanation.png');
 
@@ -76,12 +76,18 @@ export class SceneLoadingPage extends SceneBase {
 	private _interval = 0;
 	private _index = 0;
 
+	constructor(
+		root: PixiManager,
+		private _gameId: number,
+	) {
+		super(root);
+	}
+
 	//=======================================
 	// HOOK
 	//=======================================
 
 	public async onStart(container: PIXI.Container) {
-		console.log('sprite: ' + this._sprite);
 		this._initKeyExplanation(this._sprite);
 		container.addChild(this._sprite);
 		// this._containerTips = this._initTipsTab();
@@ -100,9 +106,9 @@ export class SceneLoadingPage extends SceneBase {
 			text.x = ((this.root.width - text.width) * 88) / 100 + index * 10; // Ajuster la position X
 		});
 
-		console.log('textPoint' + this._textPoints.length);
+		// console.log('textPoint' + this._textPoints.length);
 
-		this._interval = setInterval(() => {
+		this._interval = window.setInterval(() => {
 			if (this._textEnter) {
 				this._textEnter.visible = !this._textEnter.visible;
 			}
@@ -117,7 +123,7 @@ export class SceneLoadingPage extends SceneBase {
 			} else {
 				this._textPoints[this._index - 1].visible = true;
 			}
-			console.log(this._index);
+			// console.log(this._index);
 			this._textPoints[this._index].visible = false;
 			this._index++;
 		}, 800);
@@ -139,6 +145,14 @@ export class SceneLoadingPage extends SceneBase {
 		}
 
 		if (e.code === 'Escape') {
+			apiService
+				.leaveLoading(this._gameId)
+				.then(() => console.log('Left loading scene'))
+				.catch((error: ErrorResponse) => console.error('Error leaving loading', error));
+			if (this.root.gameSocket) {
+				this.root.gameSocket.close();
+				this.root.gameSocket = null;
+			}
 			this.root.loadScene(new SceneMenu(this.root));
 		}
 	}
@@ -174,7 +188,7 @@ export class SceneLoadingPage extends SceneBase {
 			tipsBox.endFill();
 			tipsBox.addChild(this._tabTips[i]);
 			tips.addChild(tipsBox);
-			console.log(this._tabTips[i]);
+			// console.log(this._tabTips[i]);
 		}
 		return tips;
 	}
@@ -228,6 +242,6 @@ export class SceneLoadingPage extends SceneBase {
 	//=======================================
 
 	private _randomizer() {
-		return Math.floor(Math.random() * this._tabTips.length - 1);
+		return Math.floor(Math.random() * this._tabTips.length);
 	}
 }
