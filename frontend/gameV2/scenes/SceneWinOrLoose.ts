@@ -17,8 +17,8 @@ export class SceneWinOrLoose extends SceneBase {
 	//=======================================
 
 	public async onStart(container: PIXI.Container) {
-		sound.add('win', './sound/Winner.mp3');
-		sound.add('loose', './sound/Looser.mp3');
+		if (!sound.exists('win')) sound.add('win', './sound/Winner.mp3');
+		if (!sound.exists('loose')) sound.add('loose', './sound/Looser.mp3');
 
 		container.addChild(this._initTextWin(this._textWin));
 		container.addChild(this._initTextLoose(this._textLoose));

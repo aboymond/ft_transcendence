@@ -40,8 +40,8 @@ export class SceneGameVsBot extends SceneBase {
 	//=======================================
 
 	public async onStart(container: PIXI.Container) {
-		sound.add('touchPad', './sound/touchPad.mp3');
-		sound.add('touchBall', './sound/touchBall.mp3');
+		if (!sound.exists('touchPad')) sound.add('touchPad', './sound/touchPad.mp3');
+		if (!sound.exists('touchBall')) sound.add('touchBall', './sound/touchBall.mp3');
 
 		//Init Ball
 		container.addChild(this._initBall(10, 0x1aff00));

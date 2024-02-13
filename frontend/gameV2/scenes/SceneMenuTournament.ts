@@ -1,10 +1,19 @@
 import * as PIXI from 'pixi.js';
 import { SceneBase } from './SceneBase';
 
-import { glowFilter, defaultColor, textStyleMenuTournamentCreate, textStyleMenuTournamentName, textStyleMenuTournamentMaxScore, textStyleMenuTournamentMode, textStyleMenuTournamentPlayer, textStyleMenuOptionPlay } from '..';
+import {
+	glowFilter,
+	defaultColor,
+	textStyleMenuTournamentCreate,
+	textStyleMenuTournamentName,
+	textStyleMenuTournamentMaxScore,
+	textStyleMenuTournamentMode,
+	textStyleMenuTournamentPlayer,
+	textStyleMenuOptionPlay,
+} from '..';
 import { SceneMenu2 } from './SceneMenu2';
 import { SceneLoadingPage } from './SceneLoadingPage';
-import {sound} from '@pixi/sound';
+import { sound } from '@pixi/sound';
 
 const selectMaxCreate = 3;
 
@@ -15,16 +24,11 @@ enum menu {
 	PLAY = 3,
 }
 
-
 export class SceneMenuTournament extends SceneBase {
-	
-	
 	// FOR THE BACK ================
 	private _nb_playerForBack: number = 0;
-	private _nb_scoreForBack: number = 0; 
+	private _nb_scoreForBack: number = 0;
 	// ====================================================
-
-
 
 	// private state: menuState = menuState.SELECT_MENU;
 	private _currentSelectCreate = -1;
@@ -34,7 +38,6 @@ export class SceneMenuTournament extends SceneBase {
 	private _textCreate = new PIXI.Text('CREATE', textStyleMenuTournamentCreate);
 	private _name = new PIXI.Text('NAME:', textStyleMenuTournamentName);
 	private _nameInputBox = new PIXI.Graphics();
-
 
 	private _nb_player_text = new PIXI.Text('PLAYER: ', textStyleMenuTournamentPlayer);
 
@@ -52,9 +55,7 @@ export class SceneMenuTournament extends SceneBase {
 	private _textPlay = new PIXI.Text('PLAY', textStyleMenuOptionPlay);
 
 	private _inputText = '';
-	private _textInputField = new PIXI.Text(this._inputText, { fill: defaultColor, fontSize: 20, });
-
-
+	private _textInputField = new PIXI.Text(this._inputText, { fill: defaultColor, fontSize: 20 });
 
 	//=======================================
 	// Effects
@@ -65,13 +66,12 @@ export class SceneMenuTournament extends SceneBase {
 	//=======================================
 
 	public async onStart(container: PIXI.Container) {
-		sound.add('select', './sound/Select.mp3');
-		sound.add('enter', './sound/game-start.mp3');
+		if (!sound.exists('select')) sound.add('select', './sound/Select.mp3');
+		if (!sound.exists('enter')) sound.add('enter', './sound/game-start.mp3');
 
 		container.addChild(this._initTextCreate(this._textCreate));
 		this._create = this._initMenuCreate();
 		container.addChild(this._create);
-
 	}
 
 	public onUpdate() {}
@@ -79,8 +79,6 @@ export class SceneMenuTournament extends SceneBase {
 	public onFinish() {}
 
 	public onKeyDown(e: KeyboardEvent) {
-
-
 		if (e.code === 'ArrowUp') {
 			sound.play('select');
 
@@ -119,9 +117,8 @@ export class SceneMenuTournament extends SceneBase {
 
 				this.root.loadScene(new SceneLoadingPage(this.root));
 			}
-
 		}
-		
+
 		if (e.code === 'Escape') {
 			this.root.loadScene(new SceneMenu2(this.root));
 		}
@@ -130,21 +127,16 @@ export class SceneMenuTournament extends SceneBase {
 			if (e.key === 'Backspace') {
 				this._inputText = this._inputText.slice(0, -1);
 			} else if (e.key.length === 1 && this._inputText.length < 15) {
-				this._inputText += (e.key);
+				this._inputText += e.key;
 			}
-			if (this._inputText.length > 15)
-				return;
+			if (this._inputText.length > 15) return;
 			this._textInputField.text = this._inputText;
 		}
-
-		
 	}
 
 	public onKeyUp() {}
 
-
 	private _pressUp() {
-
 		if (this._currentSelectCreate === menu.NAME) return this._nameCreate();
 		if (this._currentSelectCreate === menu.PLAYER) return this._playerCreate();
 		if (this._currentSelectCreate === menu.MAXSCORE) return this._maxScoreCreate();
@@ -152,7 +144,6 @@ export class SceneMenuTournament extends SceneBase {
 	}
 
 	private _pressDown() {
-
 		if (this._currentSelectCreate === menu.NAME) return this._nameCreate();
 		if (this._currentSelectCreate === menu.PLAYER) return this._playerCreate();
 		if (this._currentSelectCreate === menu.MAXSCORE) return this._maxScoreCreate();
@@ -178,10 +169,8 @@ export class SceneMenuTournament extends SceneBase {
 		return text;
 	}
 
-
 	private _initMenuCreate(): PIXI.Container {
 		const menu = new PIXI.Container();
-
 
 		this._name.style.fill = 'green';
 		this._name.x = this.root.width / 5;
@@ -199,13 +188,14 @@ export class SceneMenuTournament extends SceneBase {
 		menu.addChild(this._nameInputBox);
 
 		this._textInputField.x = this.root.width - this._nameInputBox.width - 20;
-		this._textInputField.y = this._name.y ;
+		this._textInputField.y = this._name.y;
 		this._textInputField.filters = [glowFilter];
 		menu.addChild(this._textInputField);
 
 		this._nb_player_text.style.fill = 'green';
 		this._nb_player_text.x = this.root.width / 5;
-		this._nb_player_text.y = (this.root.height * 17) / 100 + this._nameInputBox.y - this._nb_player_text.height / 2;
+		this._nb_player_text.y =
+			(this.root.height * 17) / 100 + this._nameInputBox.y - this._nb_player_text.height / 2;
 		this._nb_player_text.filters = [glowFilter];
 		menu.addChild(this._nb_player_text);
 
@@ -214,22 +204,22 @@ export class SceneMenuTournament extends SceneBase {
 		this._nb_player_tab.y = this._nb_player_text.y;
 		this._nb_player_tab.filters = [glowFilter];
 		menu.addChild(this._nb_player_tab);
-	
 
 		this._score_max_text.style.fill = 'green';
 		this._score_max_text.x = this.root.width / 5;
-		this._score_max_text.y = (this.root.height * 17) / 100 + this._nb_player_text.y - this._score_max_text.height / 2;
+		this._score_max_text.y =
+			(this.root.height * 17) / 100 + this._nb_player_text.y - this._score_max_text.height / 2;
 		this._score_max_text.filters = [glowFilter];
 		menu.addChild(this._score_max_text);
 
 		this._score_max_tab.style.fill = 'green';
-		this._score_max_tab.x = this.root.width -  100;
+		this._score_max_tab.x = this.root.width - 100;
 		this._score_max_tab.y = this._score_max_text.y;
 		this._score_max_tab.filters = [glowFilter];
 		menu.addChild(this._score_max_tab);
 
 		this._textPlay.style.fill = 'green';
-		this._textPlay.x = this.root.width / 2 - this._textPlay.width / 2; 
+		this._textPlay.x = this.root.width / 2 - this._textPlay.width / 2;
 		this._textPlay.y = this.root.height - 100;
 		this._textPlay.filters = [glowFilter];
 		menu.addChild(this._textPlay);
@@ -239,13 +229,11 @@ export class SceneMenuTournament extends SceneBase {
 		return menu;
 	}
 
-
 	private _nameCreate() {
 		this._nameColorCreate();
 	}
 
-
-	private _playerCreate(){
+	private _playerCreate() {
 		this._playerColorCreate();
 	}
 
@@ -267,7 +255,6 @@ export class SceneMenuTournament extends SceneBase {
 		this._textPlay.style.fill = 'green';
 	}
 
-
 	private _playerColorCreate() {
 		this._name.style.fill = 'green';
 		this._mode.style.fill = 'green';
@@ -288,7 +275,7 @@ export class SceneMenuTournament extends SceneBase {
 		this._textPlay.style.fill = 'green';
 	}
 
-	private _textPlayColorCreate(){
+	private _textPlayColorCreate() {
 		this._name.style.fill = 'green';
 		this._mode.style.fill = 'green';
 		this._nb_player_text.style.fill = 'green';
@@ -303,19 +290,18 @@ export class SceneMenuTournament extends SceneBase {
 		if (this._currentNbPlayer < 0) {
 			this._currentNbPlayer = 1;
 		}
-		this._nb_player_tab.text = '< ' + this._nbPlayer[this._currentNbPlayer] + ' >'; 
+		this._nb_player_tab.text = '< ' + this._nbPlayer[this._currentNbPlayer] + ' >';
 
 		this._nb_playerForBack = this._nbPlayer[this._currentNbPlayer];
-
 	}
 
 	private _playerNext() {
 		this._currentNbPlayer++;
-		if (this._currentNbPlayer > 1                                ) {
+		if (this._currentNbPlayer > 1) {
 			this._currentNbPlayer = 0;
 		}
 		this._nb_player_tab.text = '< ' + this._nbPlayer[this._currentNbPlayer] + ' >';
-		
+
 		this._nb_playerForBack = this._nbPlayer[this._currentNbPlayer];
 	}
 
@@ -338,5 +324,4 @@ export class SceneMenuTournament extends SceneBase {
 
 		this._nb_scoreForBack = this._scoreMax[this._currentMaxScore];
 	}
-
 }

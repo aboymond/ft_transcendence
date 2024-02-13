@@ -44,18 +44,17 @@ const textures = [
 // }
 
 // const sounds = [
-	// ];
-	
-	export class SceneMenu2 extends SceneBase {
-		private _currentSelect = menu.TOURNAMENT;
-		private _currentSelect_LR = 0;
-		private _sprites: PIXI.Sprite[] = [];
-		
-	public async onStart(container: PIXI.Container) {
-		sound.add('select', './sound/Select.mp3');
-		sound.add('enter', './sound/game-start.mp3');
+// ];
 
-		
+export class SceneMenu2 extends SceneBase {
+	private _currentSelect = menu.TOURNAMENT;
+	private _currentSelect_LR = 0;
+	private _sprites: PIXI.Sprite[] = [];
+
+	public async onStart(container: PIXI.Container) {
+		if (!sound.exists('select')) sound.add('select', './sound/Select.mp3');
+		if (!sound.exists('enter')) sound.add('enter', './sound/game-start.mp3');
+
 		for (let i = 0; i < textures.length; i++) {
 			this._sprites.push(new PIXI.Sprite(textures[i]));
 		}

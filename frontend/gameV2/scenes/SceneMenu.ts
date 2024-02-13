@@ -10,8 +10,7 @@ export class SceneMenu extends SceneBase {
 	private _interval = 0;
 
 	public async onStart(container: PIXI.Container) {
-
-		sound.add('enter', './sound/game-start.mp3');
+		if (!sound.exists('enter')) sound.add('enter', './sound/game-start.mp3');
 		//Init Title text
 		container.addChild(this._initTextTitle());
 		this._textTitle.x = this.root.width / 2 - this._textTitle.width / 2;
@@ -40,7 +39,6 @@ export class SceneMenu extends SceneBase {
 			sound.play('enter');
 			this.root.loadScene(new SceneMenu2(this.root));
 		}
-			
 	}
 
 	public onKeyUp() {}

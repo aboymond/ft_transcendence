@@ -41,8 +41,8 @@ export class SceneJoin extends SceneBase {
 	//=======================================
 
 	public async onStart(container: PIXI.Container) {
-		sound.add('select', './sound/Select.mp3');
-		sound.add('enter', './sound/game-start.mp3');
+		if (!sound.exists('select')) sound.add('select', './sound/Select.mp3');
+		if (!sound.exists('enter')) sound.add('enter', './sound/game-start.mp3');
 
 		container.addChild(this._initTextJoin(this._textTournament));
 		container.addChild(this._initTextPvP(this._textPVP));

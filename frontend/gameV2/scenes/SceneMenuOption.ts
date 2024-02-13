@@ -87,8 +87,8 @@ export class SceneMenuOption extends SceneBase {
 	private _textErrorOK = new PIXI.Text('[ ENTER ]', textStyleMenuOptionError);
 
 	public async onStart(container: PIXI.Container) {
-		sound.add('select', './sound/Select.mp3');
-		sound.add('enter', './sound/game-start.mp3');
+		if (!sound.exists('select')) sound.add('select', './sound/Select.mp3');
+		if (!sound.exists('enter')) sound.add('enter', './sound/game-start.mp3');
 
 		// Init text
 		container.addChild(this._createTextColorAvatar(this._textColorAvatar));
