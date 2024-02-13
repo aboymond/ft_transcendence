@@ -1,15 +1,16 @@
+import operator
 from django.db import models
 from django.conf import settings
 from users.models import GameHistory
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from asgiref.sync import sync_to_async
-import operator
+from django_prometheus.models import ExportModelOperationsMixin
 
 BALL_SPEED = 5
 
 
-class Game(models.Model):
+class Game(ExportModelOperationsMixin("game"), models.Model):
     STATUS_CHOICES = [
         ("empty", "Empty"),
         ("waiting", "Waiting for Player"),
@@ -209,6 +210,6 @@ class Game(models.Model):
         return game
 
 
-class MatchmakingQueue(models.Model):
+class MatchmakingQueue(ExportModelOperationsMixin("MatchmakingQueue"), models.Model):
     player = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now_add=True)
