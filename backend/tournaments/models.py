@@ -40,7 +40,7 @@ class Tournament(ExportModelOperationsMixin("Tournament"), models.Model):
     #     max_length=2, choices=TOURNAMENT_TYPES, default=SINGLE_ELIMINATION
     # )
     status = models.CharField(
-        max_length=2,
+        max_length=11,
         choices=STATUS_CHOICES,
         default="waiting",
     )
