@@ -89,8 +89,7 @@ export class SceneJoin extends SceneBase {
 				}
 				if (e.code === 'Enter') {
 					sound.play('enter');
-					// this._initCurrentTournament();
-					this.root.loadScene(new SceneTournamentLoadingVs(this.root));
+					this._joinTournament(this._tournamentObjects[this._currentSelectTournament].data.id);
 				}
 				if (e.code === 'Escape') {
 					this.root.loadScene(new SceneMenu2(this.root));
@@ -116,19 +115,11 @@ export class SceneJoin extends SceneBase {
 				}
 				if (e.code === 'Enter') {
 					sound.play('enter');
-
-					console.log(this._gameObjects[this._currentSelectPvP].data.id);
 					this._joinGame(this._gameObjects[this._currentSelectPvP].data.id);
 				}
 				if (e.code === 'Escape') {
 					this.root.loadScene(new SceneMenu2(this.root));
 				}
-				if (e.code === 'Enter') {
-					if (this._gameObjects[this._currentSelectPvP]) {
-						this._joinGame(this._gameObjects[this._currentSelectPvP].data.id);
-					}
-				}
-
 				break;
 		}
 	}
@@ -387,12 +378,6 @@ export class SceneJoin extends SceneBase {
 		return menu;
 	}
 
-	// private _initCurrentTournament() {
-	// 	if (this._currentSelectTournament < 0) return;
-	// 	this.root.currentTournament = this._tournamentObjects[this._currentSelectTournament].data;
-	// 	console.log(this.root.currentTournament?.max_participants);
-	// }
-
 	private _joinGame(gameId: number) {
 		apiService
 			.joinGame(gameId, this.root.userId ?? 0)
@@ -402,5 +387,15 @@ export class SceneJoin extends SceneBase {
 			})
 			.catch((error) => console.error('Error joining game', error));
 		this.root.loadScene(new SceneLoadingPage(this.root, gameId));
+	}
+	private _joinTournament(tournamentId: number) {
+		apiService
+			.joinTournament(tournamentId, this.root.userId ?? 0)
+			.then((response) => {
+				console.log('Joined tournament successfully', response);
+				//TODO this.root.openGameSocket(response.id);
+			})
+			.catch((error) => console.error('Error joining tournament', error));
+		this.root.loadScene(new SceneTournamentLoadingVs(this.root, tournamentId));
 	}
 }

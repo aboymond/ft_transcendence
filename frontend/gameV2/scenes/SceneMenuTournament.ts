@@ -115,12 +115,8 @@ export class SceneMenuTournament extends SceneBase {
 		if (e.code === 'Enter') {
 			if (this._currentSelectCreate === menu.PLAY) {
 				sound.play('enter');
-				if (this._inputText === '') {
-					alert('Please enter a name for the tournament');
-					return;
-				}
-				this._createTournament();
-				this.root.loadScene(new SceneTournamentLoadingVs(this.root));
+				if (this._inputText === '') alert('Please enter a name for the tournament');
+				else this._createTournament();
 			}
 		}
 
@@ -340,8 +336,8 @@ export class SceneMenuTournament extends SceneBase {
 			.createTournament(this.root.userId ?? 0, this._inputText, this._nb_playerForBack, this._nb_scoreForBack)
 			.then((response) => {
 				console.log('Tournament created successfully', response);
-				// this.root.openGameSocket(response.id);
-				// this.root.loadScene(new SceneTournamentLoadingVs(this.root, response.id));
+				//TODO this.root.openGameSocket(response.id);
+				this.root.loadScene(new SceneTournamentLoadingVs(this.root, response.id));
 			})
 			.catch((error) => console.error('Error creating game', error));
 	}

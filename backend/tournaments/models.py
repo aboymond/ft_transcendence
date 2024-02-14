@@ -45,11 +45,6 @@ class Tournament(ExportModelOperationsMixin("Tournament"), models.Model):
         if self.participants.count() < self.max_participants:
             self.participants.add(user)
             self.save()
-            if self.participants.count() == self.max_participants:
-                if self.tournament_type == self.SINGLE_ELIMINATION:
-                    self.start_single_elimination(self)
-                elif self.tournament_type == self.ROUND_ROBIN:
-                    self.start_round_robin(self)
         else:
             raise Exception("Tournament is full")
 
