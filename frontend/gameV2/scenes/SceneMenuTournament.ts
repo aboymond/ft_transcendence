@@ -27,8 +27,8 @@ enum menu {
 
 export class SceneMenuTournament extends SceneBase {
 	// FOR THE BACK ================
-	private _nb_playerForBack: number = 0;
-	private _nb_scoreForBack: number = 0;
+	private _nb_playerForBack: number = 4;
+	private _nb_scoreForBack: number = 3;
 	// ====================================================
 
 	// private state: menuState = menuState.SELECT_MENU;
@@ -115,6 +115,10 @@ export class SceneMenuTournament extends SceneBase {
 		if (e.code === 'Enter') {
 			if (this._currentSelectCreate === menu.PLAY) {
 				sound.play('enter');
+				if (this._inputText === '') {
+					alert('Please enter a name for the tournament');
+					return;
+				}
 				this._createTournament();
 				this.root.loadScene(new SceneTournamentLoadingVs(this.root));
 			}
