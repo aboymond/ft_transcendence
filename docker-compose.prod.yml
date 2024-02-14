@@ -3,7 +3,6 @@ services:
     backend:
         build:
             context: ./backend
-            dockerfile: Dockerfile
         image: backend:latest
         container_name: backend-container
         ports:
@@ -82,8 +81,6 @@ services:
     nginx:
         build:
             context: ./nginx
-            dockerfile: Dockerfile
-        image: nginx:1.24
         container_name: nginx-container
         ports:
         - "80:80"
