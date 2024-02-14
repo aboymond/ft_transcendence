@@ -23,7 +23,7 @@ class Tournament(ExportModelOperationsMixin("Tournament"), models.Model):
     max_score = models.IntegerField(default=5)
 
     participants = models.ManyToManyField(
-        settings.AUTH_USER_MODEL, related_name="tournaments", blank=True
+        settings.AUTH_USER_MODEL, related_name="tournaments"
     )
     games = models.ManyToManyField(Game, related_name="tournaments", blank=True)
     start_date = models.DateTimeField(null=True, blank=True)
@@ -40,16 +40,6 @@ class Tournament(ExportModelOperationsMixin("Tournament"), models.Model):
         null=True,
         blank=True,
     )
-
-    @classmethod
-    def create_tournament(cls, name, tournament_type, max_participants):
-        tournament = cls.objects.create(
-            name=name,
-            tournament_type=tournament_type,
-            max_participants=max_participants,
-            status=cls.CREATED,
-        )
-        return tournament
 
     def add_participant(self, user):
         if self.participants.count() < self.max_participants:

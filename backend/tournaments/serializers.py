@@ -12,6 +12,12 @@ logger = logging.getLogger(__name__)
 
 
 class TournamentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tournament
+        fields = "__all__"
+
+
+class TournamentCreateSerializer(serializers.ModelSerializer):
     creator_id = serializers.IntegerField(write_only=True)
 
     class Meta:
@@ -32,6 +38,7 @@ class TournamentSerializer(serializers.ModelSerializer):
 
         # Creating the Tournament instance
         tournament = Tournament.objects.create(creator=creator, **validated_data)
+        tournament.participants.add(creator)
         return tournament
 
 

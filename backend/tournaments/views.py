@@ -2,10 +2,10 @@ import logging
 from rest_framework import generics, status
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
-from django.shortcuts import get_object_or_404
 from .models import Tournament, Match
 from .serializers import (
     TournamentSerializer,
+    TournamentCreateSerializer,
     TournamentUpdateSerializer,
     MatchSerializer,
 )
@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 class TournamentCreateView(generics.CreateAPIView):
     queryset = Tournament.objects.all()
-    serializer_class = TournamentSerializer
+    serializer_class = TournamentCreateSerializer
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
