@@ -1,0 +1,29 @@
+global:
+  resolve_timeout: 5m
+  #smtp_smarthost: 'smtp.gmail.com:465'  # Remplacer par votre serveur SMTP et port
+  #smtp_from: 'bonvin.quentin@gmail.com'  # Remplacer par l'adresse e-mail de l'expéditeur
+  #smtp_auth_username: 'bonvin.quentin'  # Remplacer par votre nom d'utilisateur SMTP
+  #smtp_auth_password: 'Qu3ntiiinbo1025@'  # Remplacer par votre mot de passe SMTP
+  smtp_require_tls: false  # Définir à false si votre serveur SMTP n'utilise pas TLS
+
+route:
+  group_by: ['instance', 'severity']
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 12h
+  receiver: 'email-me'
+  routes:
+  - match:
+      alertname: server_down
+
+
+receivers:
+- name: 'email-me'
+  email_configs:
+  - to: 'bonvin.quentin@gmail.com'
+    from: 'bonvin.quentin@gmail.com'
+    smarthost: 'smtp.gmail.com:465'
+    auth_username: "bonvin.quentin@gmail.com"
+    auth_identity: "bonvin.quentin@gmail.com"
+    auth_password: "" #password
+    #send_resolved: true
