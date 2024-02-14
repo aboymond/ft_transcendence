@@ -52,3 +52,23 @@ class MatchSerializer(serializers.ModelSerializer):
     class Meta:
         model = Match
         fields = "__all__"
+
+
+class TournamentDetailSerializer(serializers.ModelSerializer):
+    participants_usernames = serializers.SerializerMethodField()
+    creator_username = serializers.CharField(source="creator.username", read_only=True)
+
+    class Meta:
+        model = Tournament
+        fields = [
+            "id",
+            "name",
+            "max_participants",
+            "max_score",
+            "status",
+            "creator_username",
+            "participants_usernames",
+        ]
+
+    def get_participants_usernames(self, obj):
+        return [user.username for user in obj.participants.all()]

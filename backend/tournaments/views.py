@@ -1,12 +1,14 @@
 import logging
 from rest_framework import generics, status
 from rest_framework.response import Response
+from rest_framework.generics import RetrieveAPIView
 from django.contrib.auth import get_user_model
 from .models import Tournament
 from .serializers import (
     TournamentSerializer,
     TournamentCreateSerializer,
     TournamentUpdateSerializer,
+    TournamentDetailSerializer,
 )
 
 User = get_user_model()
@@ -52,3 +54,9 @@ class TournamentListView(generics.ListCreateAPIView):
         if self.request.method in ["POST", "PUT"]:
             return TournamentUpdateSerializer
         return TournamentSerializer
+
+
+class TournamentDetailView(RetrieveAPIView):
+    queryset = Tournament.objects.all()
+    serializer_class = TournamentDetailSerializer
+    lookup_field = "id"

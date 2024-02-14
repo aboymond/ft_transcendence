@@ -2,9 +2,8 @@ import { defaultColor, glowFilter } from '..';
 import { SceneBase } from './SceneBase';
 import * as PIXI from 'pixi.js';
 import { PixiManager } from '../PixiManager';
-// import apiService from '../../src/services/apiService';
-// import { SceneLoadingPage } from './SceneLoadingPage';
-// import { SceneGame } from './SceneGame';
+import apiService from '../../src/services/apiService';
+import { Tournament } from '../../src/types';
 
 const tournamentLine = PIXI.Texture.from('./img/tournamentLine.png');
 
@@ -21,6 +20,8 @@ export class SceneTournamentLoadingVs extends SceneBase {
 	private _nameVs: PIXI.Text[] = [];
 	private _containerNames = new PIXI.Container();
 
+	private _currentTournament: Tournament | null = null;
+
 	constructor(
 		root: PixiManager,
 		private _tournamentId: number,
@@ -36,15 +37,28 @@ export class SceneTournamentLoadingVs extends SceneBase {
 		this._initTextStandings(this._standings);
 		container.addChild(this._standings);
 
-		if (this.root.currentTournament?.max_participants === 4) {
-			this._initLineTournament4(this._containerSprite);
-			container.addChild(this._containerSprite);
-			container.addChild(this._initNameVs4(this._containerNames));
-		} else if (this.root.currentTournament?.max_participants === 8) {
-			this._initLineTournament8(this._containerSprite);
-			container.addChild(this._containerSprite);
-			container.addChild(this._initNameVs8(this._containerNames));
+		// Fetch the current tournament state
+		const currentTournament = await apiService.getTournament(this._tournamentId);
+		if (currentTournament) {
+			this._currentTournament = currentTournament;
+			this._setupTournamentDisplay(container); // Setup initial display based on current tournament state
 		}
+
+		// Periodic check to update the display
+		const checkInterval = setInterval(async () => {
+			const updatedTournament = await apiService.getTournament(this._tournamentId);
+			if (
+				updatedTournament &&
+				this._currentTournament?.participants_usernames.length !==
+					updatedTournament.participants_usernames.length
+			) {
+				this._currentTournament = updatedTournament;
+				this._setupTournamentDisplay(container); // Update display based on new tournament state
+			}
+			if (updatedTournament?.participants_usernames.length === updatedTournament?.max_participants) {
+				clearInterval(checkInterval);
+			}
+		}, 1000);
 	}
 
 	public onUpdate() {}
@@ -166,37 +180,26 @@ export class SceneTournamentLoadingVs extends SceneBase {
 	}
 
 	private _initNameVs4(names: PIXI.Container) {
-		const playerName = this.root.currentTournament?.participants;
-		console.log(this.root.currentTournament);
-
-		if (playerName) {
-			for (let i = 0; i < playerName.length; i++) {
-				while (i < 2) {
-					console.log(playerName[i]);
-					const newName = new PIXI.Text(playerName[i]);
-					newName.style.fontSize = (this.root.width * 2) / 100;
-					newName.y = (this.root.height * 65) / 100;
-					newName.x = (this.root.width * 10) / 100 + i * ((this.root.width * 20) / 100);
-					newName.style.fill = defaultColor;
-					newName.filters = [glowFilter];
-					this._nameVs[i] = newName;
-					i++;
+		let playerNames = this._currentTournament?.participants_usernames;
+		console.log(playerNames);
+		if (playerNames && playerNames.length) {
+			playerNames = playerNames.sort();
+			for (let i = 0; i < playerNames.length; i++) {
+				const newName = new PIXI.Text(playerNames[i], {
+					fontSize: (this.root.width * 2) / 100,
+					fill: defaultColor,
+					// Any additional styling you want to apply
+				});
+				newName.filters = [glowFilter];
+				newName.y = (this.root.height * 65) / 100;
+				// Adjust the x position based on the player index to space out the names
+				newName.x = (this.root.width * 10) / 100 + i * ((this.root.width * 20) / 100);
+				if (i >= 2) {
+					// Adjust positions for the 3rd and 4th names if necessary
+					newName.y += 30; // Example adjustment, you might need to calculate this
+					newName.x = (this.root.width * 10) / 100 + (i - 2) * ((this.root.width * 20) / 100);
 				}
-
-				let j = 0;
-				while (i < 4) {
-					console.log(playerName[i]);
-					const newName = new PIXI.Text(playerName[i]);
-
-					newName.style.fontSize = (this.root.width * 2) / 100;
-					newName.y = (this.root.height * 65) / 100;
-					newName.x = (this.root.width * 60) / 100 + j * ((this.root.width * 20) / 100);
-					newName.style.fill = defaultColor;
-					newName.filters = [glowFilter];
-					this._nameVs[i] = newName;
-					j++;
-					i++;
-				}
+				this._nameVs.push(newName); // Add the new text element to the _nameVs array
 			}
 		}
 		for (let i = 0; i < this._nameVs.length; i++) {
@@ -206,14 +209,14 @@ export class SceneTournamentLoadingVs extends SceneBase {
 	}
 
 	private _initNameVs8(names: PIXI.Container) {
-		const playerName = this.root.currentTournament?.participants;
-		console.log(this.root.currentTournament);
+		const playerNames = this._currentTournament?.participants;
+		console.log(this._currentTournament);
 
-		if (playerName) {
-			for (let i = 0; i < playerName.length; i++) {
+		if (playerNames) {
+			for (let i = 0; i < playerNames.length; i++) {
 				while (i < 8) {
-					console.log(playerName[i]);
-					const newName = new PIXI.Text(playerName[i]);
+					console.log(playerNames[i]);
+					const newName = new PIXI.Text(playerNames[i]);
 					const adjustment = (this.root.height * 70 * 0.03) / 100;
 					newName.style.fontSize = (this.root.width * 2) / 100;
 					newName.y = (this.root.height * 70) / 100 + (i % 2 === 1 ? adjustment : 0);
@@ -234,4 +237,29 @@ export class SceneTournamentLoadingVs extends SceneBase {
 	//=======================================
 	// UTILS
 	//=======================================
+
+	private _setupTournamentDisplay(container: PIXI.Container) {
+		// Clear existing sprites and names to prepare for update
+		this._containerSprite.removeChildren();
+		this._containerNames.removeChildren();
+		this._nameVs = [];
+
+		// Setup tournament lines based on the number of participants
+		if (this._currentTournament?.max_participants === 4) {
+			this._initLineTournament4(this._containerSprite);
+		} else if (this._currentTournament?.max_participants === 8) {
+			this._initLineTournament8(this._containerSprite);
+		}
+		container.addChild(this._containerSprite);
+
+		// Setup player names
+		if (this._currentTournament?.participants_usernames.length > 0) {
+			if (this._currentTournament.max_participants === 4) {
+				this._initNameVs4(this._containerNames);
+			} else if (this._currentTournament.max_participants === 8) {
+				this._initNameVs8(this._containerNames);
+			}
+		}
+		container.addChild(this._containerNames);
+	}
 }

@@ -74,6 +74,7 @@ export interface Tournament {
 	max_participants: number;
 	max_score: number;
 	participants: User[];
+	participants_usernames: string[];
 	games: Game[]; // Assuming GameHistory can represent the games in a tournament
 	start_date?: string; // Optional to handle null values
 	end_date?: string; // Optional to handle null values
