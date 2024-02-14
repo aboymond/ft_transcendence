@@ -241,6 +241,12 @@ export const apiService = {
 			body: JSON.stringify({ user_id: userId }),
 		});
 	},
+	leaveTournament: async (tournamentId: number, userId: number) => {
+		return fetchAPI(`tournaments/${tournamentId}/leave/`, {
+			method: 'PATCH',
+			body: JSON.stringify({ user_id: userId }),
+		});
+	},
 };
 
 export default apiService;

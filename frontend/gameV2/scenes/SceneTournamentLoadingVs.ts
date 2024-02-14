@@ -1,5 +1,6 @@
 import { defaultColor, glowFilter } from '..';
 import { SceneBase } from './SceneBase';
+import { SceneMenu2 } from './SceneMenu2';
 import * as PIXI from 'pixi.js';
 import { PixiManager } from '../PixiManager';
 import apiService from '../../src/services/apiService';
@@ -21,6 +22,8 @@ export class SceneTournamentLoadingVs extends SceneBase {
 	private _containerNames = new PIXI.Container();
 
 	private _currentTournament: Tournament | null = null;
+
+	private _checkInterval: number | null = null;
 
 	constructor(
 		root: PixiManager,
@@ -45,7 +48,7 @@ export class SceneTournamentLoadingVs extends SceneBase {
 		}
 
 		// Periodic check to update the display
-		const checkInterval = setInterval(async () => {
+		this._checkInterval = window.setInterval(async () => {
 			const updatedTournament = await apiService.getTournament(this._tournamentId);
 			if (
 				updatedTournament &&
@@ -56,16 +59,29 @@ export class SceneTournamentLoadingVs extends SceneBase {
 				this._setupTournamentDisplay(container); // Update display based on new tournament state
 			}
 			if (updatedTournament?.participants_usernames.length === updatedTournament?.max_participants) {
-				clearInterval(checkInterval);
+				clearInterval(this._checkInterval!);
 			}
 		}, 1000);
 	}
 
 	public onUpdate() {}
 
-	public onFinish() {}
+	public onFinish() {
+		if (this._checkInterval) {
+			clearInterval(this._checkInterval);
+		}
+	}
 
-	public onKeyDown() {}
+	public onKeyDown(e: KeyboardEvent) {
+		if (e.code === 'Escape') {
+			try {
+				apiService.leaveTournament(this._tournamentId, this.root.userId!);
+				this.root.loadScene(new SceneMenu2(this.root));
+			} catch (error) {
+				console.error('Error leaving tournament:', error);
+			}
+		}
+	}
 
 	public onKeyUp() {}
 
@@ -183,12 +199,12 @@ export class SceneTournamentLoadingVs extends SceneBase {
 		let playerNames = this._currentTournament?.participants_usernames;
 		console.log(playerNames);
 		if (playerNames && playerNames.length) {
+			//TODO use player number instead of sort
 			playerNames = playerNames.sort();
 			for (let i = 0; i < playerNames.length; i++) {
 				const newName = new PIXI.Text(playerNames[i], {
 					fontSize: (this.root.width * 2) / 100,
 					fill: defaultColor,
-					// Any additional styling you want to apply
 				});
 				newName.filters = [glowFilter];
 				newName.y = (this.root.height * 65) / 100;
@@ -209,7 +225,7 @@ export class SceneTournamentLoadingVs extends SceneBase {
 	}
 
 	private _initNameVs8(names: PIXI.Container) {
-		const playerNames = this._currentTournament?.participants;
+		const playerNames = this._currentTournament?.participants_usernames;
 		console.log(this._currentTournament);
 
 		if (playerNames) {
@@ -232,6 +248,32 @@ export class SceneTournamentLoadingVs extends SceneBase {
 			names.addChild(this._nameVs[i]);
 		}
 		return names;
+
+		// let playerNames = this._currentTournament?.participants_usernames;
+		// if (playerNames && playerNames.length) {
+		// 	playerNames = playerNames.sort();
+		// 	for (let i = 0; i < playerNames.length && i < 8; i++) {
+		// 		const newName = new PIXI.Text(playerNames[i], {
+		// 			fontSize: (this.root.width * 2) / 100,
+		// 			fill: defaultColor,
+		// 		});
+		// 		newName.filters = [glowFilter];
+		// 		const adjustment = (this.root.height * 70 * 0.03) / 100;
+		// 		newName.y = (this.root.height * 70) / 100 + (i % 4 >= 2 ? adjustment : 0); // Adjust for the second row
+		// 		// Calculate x position based on index, adjusting for more players
+		// 		newName.x = (this.root.width * 2) / 100 + (i % 4) * ((this.root.width * 12.2) / 100);
+		// 		if (i >= 4) {
+		// 			// Adjust positions for the 5th to 8th names
+		// 			newName.y += 30; // Example adjustment, you might need to calculate this
+		// 			newName.x = (this.root.width * 2) / 100 + (i - 4) * ((this.root.width * 12.2) / 100);
+		// 		}
+		// 		this._nameVs.push(newName); // Add the new text element to the _nameVs array
+		// 	}
+		// }
+		// for (let i = 0; i < this._nameVs.length; i++) {
+		// 	names.addChild(this._nameVs[i]);
+		// }
+		// return names;
 	}
 
 	//=======================================
@@ -253,10 +295,10 @@ export class SceneTournamentLoadingVs extends SceneBase {
 		container.addChild(this._containerSprite);
 
 		// Setup player names
-		if (this._currentTournament?.participants_usernames.length > 0) {
-			if (this._currentTournament.max_participants === 4) {
+		if (this._currentTournament!.participants_usernames.length > 0) {
+			if (this._currentTournament!.max_participants === 4) {
 				this._initNameVs4(this._containerNames);
-			} else if (this._currentTournament.max_participants === 8) {
+			} else if (this._currentTournament!.max_participants === 8) {
 				this._initNameVs8(this._containerNames);
 			}
 		}
