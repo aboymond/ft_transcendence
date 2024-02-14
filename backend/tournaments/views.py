@@ -17,28 +17,17 @@ logger = logging.getLogger(__name__)
 class TournamentCreateView(generics.CreateAPIView):
     queryset = Tournament.objects.all()
     serializer_class = TournamentSerializer
-    logger.info("TournamentCreateView")
 
-    def perform_create(self, serializer):
-        logger.info("perform_create")
-        logger.info(f"Received request data: {self.request.data}")
-        creator_id = self.request.data.get("creator_id")
-        creator = get_object_or_404(User, pk=creator_id)
-        # Extract additional fields from the request
-        name = self.request.data.get("name")
-        max_participants = self.request.data.get("max_participants")
-        max_score = self.request.data.get("max_score")
-        # Save the tournament with all fields
-        serializer.save(
-            creator=creator,
-            name=name,
-            max_participants=max_participants,
-            max_score=max_score,
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if not serializer.is_valid():
+            logger.error(f"Validation errors: {serializer.errors}")
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(
+            serializer.data, status=status.HTTP_201_CREATED, headers=headers
         )
-
-    # def post(self, request, *args, **kwargs):
-    #     logger.info(f"Received request data: {request.data}")
-    #     return super().post(request, *args, **kwargs)
 
 
 # List all tournaments or create a new one

@@ -12,28 +12,27 @@ logger = logging.getLogger(__name__)
 
 
 class TournamentSerializer(serializers.ModelSerializer):
-    logger.info("TournamentSerializer")
     creator_id = serializers.IntegerField(write_only=True)
-    participants = serializers.SlugRelatedField(
-        many=True, slug_field="username", queryset=User.objects.all(), required=False
-    )
-    max_participants = serializers.IntegerField(required=False)
-
-    # def create(self, validated_data):
-    #     logger.info(f"Validated data for tournament creation: {validated_data}")
-    #     creator_id = validated_data.pop("creator_id")
-    #     print(creator_id)
-    #     creator = get_object_or_404(User, pk=creator_id)
-    #     tournament = Tournament.objects.create(creator=creator, **validated_data)
-    #     return tournament
-
-    # def update(self, instance, validated_data):
-    #     logger.info(f"Validated data for tournament update: {validated_data}")
-    #     # Your existing code for updating the tournament instance
 
     class Meta:
         model = Tournament
-        fields = "__all__"
+        fields = ["id", "name", "max_participants", "max_score", "creator_id"]
+
+    def create(self, validated_data):
+        creator_id = validated_data.pop("creator_id")
+        creator = get_object_or_404(User, pk=creator_id)
+        name = validated_data.get("name")
+        max_participants = validated_data.get("max_participants")
+        max_score = validated_data.get("max_score")
+
+        # Logging the request data
+        logger.info(
+            f"Creating tournament: {name}, Max Participants: {max_participants}, Max Score: {max_score}"
+        )
+
+        # Creating the Tournament instance
+        tournament = Tournament.objects.create(creator=creator, **validated_data)
+        return tournament
 
 
 class TournamentUpdateSerializer(serializers.ModelSerializer):

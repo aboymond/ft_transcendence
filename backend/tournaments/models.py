@@ -7,38 +7,27 @@ from django_prometheus.models import ExportModelOperationsMixin
 
 
 class Tournament(ExportModelOperationsMixin("Tournament"), models.Model):
-    # SINGLE_ELIMINATION = "SE"
-    # ROUND_ROBIN = "RR"
-
-    # TOURNAMENT_TYPES = [
-    #     (SINGLE_ELIMINATION, "Single Elimination"),
-    #     (ROUND_ROBIN, "Round Robin"),
-    # ]
-
     STATUS_CHOICES = [
         ("waiting", "Waiting for Player"),
         ("in_progress", "In Progress"),
         ("completed", "Completed"),
     ]
 
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, default="Tournament")
     creator = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         related_name="tournaments_created",
         on_delete=models.CASCADE,
     )
-    max_participants = models.IntegerField()
+    max_participants = models.IntegerField(default=4)
     max_score = models.IntegerField(default=5)
 
     participants = models.ManyToManyField(
-        settings.AUTH_USER_MODEL, related_name="tournaments"
+        settings.AUTH_USER_MODEL, related_name="tournaments", blank=True
     )
     games = models.ManyToManyField(Game, related_name="tournaments", blank=True)
     start_date = models.DateTimeField(null=True, blank=True)
     end_date = models.DateTimeField(null=True, blank=True)
-    # tournament_type = models.CharField(
-    #     max_length=2, choices=TOURNAMENT_TYPES, default=SINGLE_ELIMINATION
-    # )
     status = models.CharField(
         max_length=11,
         choices=STATUS_CHOICES,
@@ -51,16 +40,6 @@ class Tournament(ExportModelOperationsMixin("Tournament"), models.Model):
         null=True,
         blank=True,
     )
-
-    # def initialize_tournament(self):
-    #     if self.participants.count() == self.max_participants:
-    #         # Determine the number of rounds based on max_participants
-    #         num_rounds = 2 if self.max_participants == 4 else 3
-    #         # Create rounds and matches here
-    #         # For simplicity, assuming a method create_rounds exists
-    #         self.create_rounds(num_rounds)
-    #         self.status = self.IN_PROGRESS
-    #         self.save()
 
     @classmethod
     def create_tournament(cls, name, tournament_type, max_participants):
@@ -110,26 +89,6 @@ class Tournament(ExportModelOperationsMixin("Tournament"), models.Model):
 
             tournament.status = cls.COMPLETED
             tournament.save()
-
-    # @classmethod
-    # def start_round_robin(cls, tournament):
-    #     players = list(tournament.participants.all())
-    #     order = 1
-    #     for player1, player2 in combinations(players, 2):
-    #         Match.objects.create(
-    #             tournament=tournament, player1=player1, player2=player2, order=order
-    #         )
-    #         order += 1
-    #     winners = [
-    #         game.winner for game in tournament.games.all() if game.winner is not None
-    #     ]
-    #     winner = max(winners, key=winners.count)
-    #     tournament.winner = winner
-    #     tournament.winner.tournament_wins += 1
-    #     tournament.winner.save()
-
-    #     tournament.status = cls.COMPLETED
-    #     tournament.save()
 
 
 class Match(ExportModelOperationsMixin("Match"), models.Model):
