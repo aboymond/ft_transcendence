@@ -96,11 +96,9 @@ services:
             - media_volume:/app/media
 
     prometheus:
-        image: prometheus:latest
         container_name: prometheus
         build:
             context: ./prometheus
-            dockerfile: Dockerfile
         volumes:
             - ./prometheus:/etc/prometheus
         ports:
@@ -114,7 +112,6 @@ services:
     #            - '--web.console.templates=/etc/prometheus/consoles'
 
     grafana:
-        image: awesome-grafana:latest
         container_name: grafana
         build:
             context: ./grafana
@@ -127,8 +124,10 @@ services:
             - grafana_data:/var/lib/grafana
             - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
             - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
-            - ./grafana/init-grafana.sh:/etc/grafana/init-grafana.sh
-        command: /bin/bash -c "/etc/grafana/init-grafana.sh && /run.sh"
+            - ./grafana/init-grafana.sh:/etc/grafana/init-grafana/init-grafana.sh
+        env_file:
+            - ./.env
+        entrypoint: /etc/grafana/init-grafana/init-grafana.sh
         networks:
             - my-network
 
@@ -146,18 +145,6 @@ services:
             - my-network
         depends_on:
             - nginx
-
-    telegraf:
-        image: telegraf:latest
-        volumes:
-            - ./telegraf/telegraf.conf:/etc/telegraf/telegraf.conf
-            #- /var/run/docker.sock:/var/run/docker.sock
-            #- /var/log/nginx:/var/log/nginx
-            - nginx_log:/var/log/nginx/
-        depends_on:
-            - nginx
-        networks:
-            - my-network
 
     alertmanager:
         image: prom/alertmanager:v0.22.2
