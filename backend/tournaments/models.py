@@ -53,26 +53,31 @@ class Tournament(ExportModelOperationsMixin("Tournament"), models.Model):
         players = list(tournament.participants.all())
         order = 1
         while len(players) > 1:
+            new_round_players = []
             for i in range(0, len(players), 2):
-                Match.objects.create(
+                match = Match.objects.create(
                     tournament=tournament,
                     player1=players[i],
                     player2=players[i + 1],
                     order=order,
                 )
+                game = Game.objects.create(
+                    player1=players[i],
+                    player2=players[i + 1],
+                    max_score=tournament.max_score,
+                    status="waiting",
+                )
+                match.game = game
+                match.save()
+
                 order += 1
-            winners = [
-                game.winner
-                for game in tournament.games.all()
-                if game.winner is not None
-            ]
-            players = winners
+                if game.winner:
+                    new_round_players.append(game.winner)
+
+            players = new_round_players
         if players:
             tournament.winner = players[0]
-            tournament.winner.tournament_wins += 1
-            tournament.winner.save()
-
-            tournament.status = cls.COMPLETED
+            tournament.status = "completed"
             tournament.save()
 
 
@@ -94,11 +99,3 @@ class Match(ExportModelOperationsMixin("Match"), models.Model):
     game = models.OneToOneField(
         Game, related_name="match", on_delete=models.CASCADE, null=True, blank=True
     )
-
-    def start_game(self):
-        if self.player1.status == "online" and self.player2.status == "online":
-            game = Game.objects.create(
-                player1=self.player1, player2=self.player2, status="in_progress"
-            )
-            self.game = game
-            self.save()

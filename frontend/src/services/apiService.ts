@@ -179,6 +179,9 @@ export const apiService = {
 	getGames: async () => {
 		return fetchAPI('games/list-create/');
 	},
+	getMatches: async (tournamentId: number) => {
+		return fetchAPI(`tournaments/${tournamentId}/matches/`);
+	},
 	createGame: async (userId: number) => {
 		return fetchAPI('games/create/', {
 			method: 'POST',
