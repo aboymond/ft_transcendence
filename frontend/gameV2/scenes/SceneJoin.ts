@@ -9,7 +9,6 @@ import { SceneLoadingPage } from './SceneLoadingPage';
 import { Tournament, Game } from '../../src/types';
 // import { SceneGame } from './SceneGame';
 import { SceneTournamentLoadingVs } from './SceneTournamentLoadingVs';
-import { sound } from '@pixi/sound';
 
 enum menuState {
 	TOURN_MENU,
@@ -37,9 +36,6 @@ export class SceneJoin extends SceneBase {
 	//=======================================
 
 	public async onStart(container: PIXI.Container) {
-		if (!sound.exists('select')) sound.add('select', './sound/Select.mp3');
-		if (!sound.exists('enter')) sound.add('enter', './sound/game-start.mp3');
-
 		container.addChild(this._initTextJoin(this._textTournament));
 		container.addChild(this._initTextPvP(this._textPVP));
 		container.addChild(this._initTextTabName(this._textTabName));
@@ -67,7 +63,7 @@ export class SceneJoin extends SceneBase {
 		switch (this.state) {
 			case menuState.TOURN_MENU:
 				if (e.key === 'ArrowRight') {
-					sound.play('select');
+					this.root.playSound('select');
 
 					this._tourn_container.visible = false;
 					this._pvp_container.visible = true;
@@ -76,15 +72,15 @@ export class SceneJoin extends SceneBase {
 					this.state = menuState.PVP_MENU;
 				}
 				if (e.key === 'ArrowDown') {
-					sound.play('select');
+					this.root.playSound('select');
 					this._pressDownTournament();
 				}
 				if (e.key === 'ArrowUp') {
-					sound.play('select');
+					this.root.playSound('select');
 					this._pressUpTournament();
 				}
 				if (e.code === 'Enter') {
-					sound.play('enter');
+					this.root.playSound('enter');
 					this._joinTournament(this._tournamentObjects[this._currentSelectTournament].data.id);
 				}
 				if (e.code === 'Escape') {
@@ -93,7 +89,7 @@ export class SceneJoin extends SceneBase {
 				break;
 			case menuState.PVP_MENU:
 				if (e.key === 'ArrowLeft') {
-					sound.play('select');
+					this.root.playSound('select');
 
 					this._tourn_container.visible = true;
 					this._pvp_container.visible = false;
@@ -102,15 +98,15 @@ export class SceneJoin extends SceneBase {
 					this.state = menuState.TOURN_MENU;
 				}
 				if (e.key === 'ArrowDown') {
-					sound.play('select');
+					this.root.playSound('select');
 					this._pressDownPvP();
 				}
 				if (e.key === 'ArrowUp') {
-					sound.play('select');
+					this.root.playSound('select');
 					this._pressUpPvP();
 				}
 				if (e.code === 'Enter') {
-					sound.play('enter');
+					this.root.playSound('enter');
 					this._joinGame(this._gameObjects[this._currentSelectPvP].data.id);
 				}
 				if (e.code === 'Escape') {

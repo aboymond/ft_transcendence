@@ -2,7 +2,6 @@ import * as PIXI from 'pixi.js';
 import { SceneBase } from './SceneBase';
 import { SceneMenu2 } from './SceneMenu2';
 import { glowFilter, textStyleDefaultMenu1, textStyleTitleMenu1 } from '../index';
-import { sound } from '@pixi/sound';
 
 export class SceneMenu extends SceneBase {
 	private _textTitle = new PIXI.Text('PONG', textStyleTitleMenu1);
@@ -10,7 +9,6 @@ export class SceneMenu extends SceneBase {
 	private _interval = 0;
 
 	public async onStart(container: PIXI.Container) {
-		if (!sound.exists('enter')) sound.add('enter', './sound/game-start.mp3');
 		//Init Title text
 		container.addChild(this._initTextTitle());
 		this._textTitle.x = this.root.width / 2 - this._textTitle.width / 2;
@@ -36,7 +34,7 @@ export class SceneMenu extends SceneBase {
 
 	public onKeyDown(e: KeyboardEvent) {
 		if (e.code === 'Enter') {
-			sound.play('enter');
+			this.root.playSound('enter');
 			this.root.loadScene(new SceneMenu2(this.root));
 		}
 	}

@@ -14,7 +14,6 @@ import {
 import { SceneGameVsBot } from './SceneGameVsBot';
 import { SceneLoadingPage } from './SceneLoadingPage';
 import { apiService } from '../../src/services/apiService';
-import { sound } from '@pixi/sound';
 
 const selectMax = 4;
 let errorLock: boolean = false;
@@ -87,9 +86,6 @@ export class SceneMenuOption extends SceneBase {
 	private _textErrorOK = new PIXI.Text('[ ENTER ]', textStyleMenuOptionError);
 
 	public async onStart(container: PIXI.Container) {
-		if (!sound.exists('select')) sound.add('select', './sound/Select.mp3');
-		if (!sound.exists('enter')) sound.add('enter', './sound/game-start.mp3');
-
 		// Init text
 		container.addChild(this._createTextColorAvatar(this._textColorAvatar));
 		container.addChild(this._createTextPad(this._textPad));
@@ -136,19 +132,19 @@ export class SceneMenuOption extends SceneBase {
 
 	public onKeyDown(e: KeyboardEvent) {
 		if (e.code === 'ArrowUp') {
-			sound.play('select');
+			this.root.playSound('select');
 			if (!errorLock) this._pressUp();
 		}
 		if (e.code === 'ArrowDown') {
-			sound.play('select');
+			this.root.playSound('select');
 			if (!errorLock) this._pressDown();
 		}
 		if (e.code === 'ArrowLeft') {
-			sound.play('select');
+			this.root.playSound('select');
 			if (!errorLock) this._pressLeft();
 		}
 		if (e.code === 'ArrowRight') {
-			sound.play('select');
+			this.root.playSound('select');
 			if (!errorLock) this._pressRight();
 		}
 		if (e.code === 'Enter') {

@@ -4,7 +4,6 @@ import { SceneMenu } from './SceneMenu';
 import { SceneWinOrLoose } from './SceneWinOrLoose';
 import * as PIXI from 'pixi.js';
 import { gsap } from 'gsap';
-import { sound } from '@pixi/sound';
 
 export class SceneGameVsBot extends SceneBase {
 	// FOR THE BACK ======================================
@@ -40,9 +39,6 @@ export class SceneGameVsBot extends SceneBase {
 	//=======================================
 
 	public async onStart(container: PIXI.Container) {
-		if (!sound.exists('touchPad')) sound.add('touchPad', './sound/touchPad.mp3');
-		if (!sound.exists('touchBall')) sound.add('touchBall', './sound/touchBall.mp3');
-
 		//Init Ball
 		container.addChild(this._initBall(0x1aff00));
 		this._ball.x = this.root.width / 2;
@@ -157,7 +153,7 @@ export class SceneGameVsBot extends SceneBase {
 		// Wall colision
 		if (this._ball.x <= 1 || this._ball.x + this._ball.width / 2 >= this.root.width - 1) {
 			this._data.ballVelocity.x = -this._data.ballVelocity.x;
-			sound.play('touchBall');
+			this.root.playSound('touchBall');
 		}
 
 		// Pad colision
@@ -166,7 +162,7 @@ export class SceneGameVsBot extends SceneBase {
 			this._ball.x < this._padBot.x + this._padBot.width / 2
 		) {
 			if (this._ball.y <= this._padBot.y + this._padBot.height / 2 + 1) {
-				sound.play('touchPad');
+				this.root.playSound('touchPad');
 				this._data.ballVelocity.y = -this._data.ballVelocity.y;
 				this._data.ballVelocity.x = ((this._ball.x - this._padBot.x) / (this._padBot.width / 2)) * 5;
 			}
@@ -176,7 +172,7 @@ export class SceneGameVsBot extends SceneBase {
 			this._ball.x < this._padPlayer.x + this._padPlayer.width / 2
 		) {
 			if (this._ball.y + this._ball.height / 2 >= this._padPlayer.y - this._padPlayer.height - 1) {
-				sound.play('touchPad');
+				this.root.playSound('touchPad');
 				this._data.ballVelocity.x = ((this._ball.x - this._padPlayer.x) / (this._padPlayer.width / 2)) * 5;
 				this._data.ballVelocity.y = -this._data.ballVelocity.y;
 			}

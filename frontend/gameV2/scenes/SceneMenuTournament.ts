@@ -12,7 +12,7 @@ import {
 	textStyleMenuOptionPlay,
 } from '..';
 import { SceneMenu2 } from './SceneMenu2';
-import { sound } from '@pixi/sound';
+
 import { SceneTournamentLoadingVs } from './SceneTournamentLoadingVs';
 import { apiService } from '../../src/services/apiService';
 
@@ -67,9 +67,6 @@ export class SceneMenuTournament extends SceneBase {
 	//=======================================
 
 	public async onStart(container: PIXI.Container) {
-		if (!sound.exists('select')) sound.add('select', './sound/Select.mp3');
-		if (!sound.exists('enter')) sound.add('enter', './sound/game-start.mp3');
-
 		container.addChild(this._initTextCreate(this._textCreate));
 		this._create = this._initMenuCreate();
 		container.addChild(this._create);
@@ -81,7 +78,7 @@ export class SceneMenuTournament extends SceneBase {
 
 	public onKeyDown(e: KeyboardEvent) {
 		if (e.code === 'ArrowUp') {
-			sound.play('select');
+			this.root.playSound('select');
 
 			this._currentSelectCreate--;
 			if (this._currentSelectCreate < menu.NAME) {
@@ -91,7 +88,7 @@ export class SceneMenuTournament extends SceneBase {
 		}
 
 		if (e.code === 'ArrowDown') {
-			sound.play('select');
+			this.root.playSound('select');
 
 			this._currentSelectCreate++;
 			if (this._currentSelectCreate > selectMaxCreate) {
@@ -101,20 +98,20 @@ export class SceneMenuTournament extends SceneBase {
 		}
 
 		if (e.code === 'ArrowLeft') {
-			sound.play('select');
+			this.root.playSound('select');
 
 			this._pressLeft();
 		}
 
 		if (e.code === 'ArrowRight') {
-			sound.play('select');
+			this.root.playSound('select');
 
 			this._pressRight();
 		}
 
 		if (e.code === 'Enter') {
 			if (this._currentSelectCreate === menu.PLAY) {
-				sound.play('enter');
+				this.root.playSound('enter');
 				if (this._inputText === '') alert('Please enter a name for the tournament');
 				else this._createTournament();
 			}
