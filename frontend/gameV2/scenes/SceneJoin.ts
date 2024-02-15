@@ -7,6 +7,8 @@ import { glowFilter } from '..';
 import apiService from '../../src/services/apiService';
 import { SceneLoadingPage } from './SceneLoadingPage';
 import { Tournament, Game } from '../../src/types';
+// import { SceneGame } from './SceneGame';
+import { SceneTournamentLoadingVs } from './SceneTournamentLoadingVs';
 
 enum menuState {
 	TOURN_MENU,
@@ -28,9 +30,6 @@ export class SceneJoin extends SceneBase {
 	private _gameObjects: Array<{ container: PIXI.Container; data: Game }> = [];
 	private _currentSelectTournament = -1;
 	private _currentSelectPvP = -1;
-	// private _menuBoxTournament: any;
-	// private _menuBoxPvP: any;
-	// private _allLength = 0;
 
 	//=======================================
 	// HOOK
@@ -64,7 +63,8 @@ export class SceneJoin extends SceneBase {
 		switch (this.state) {
 			case menuState.TOURN_MENU:
 				if (e.key === 'ArrowRight') {
-					console.log('right');
+					this.root.playSound('select');
+
 					this._tourn_container.visible = false;
 					this._pvp_container.visible = true;
 					this._textTournament.style.fill = 'green';
@@ -72,10 +72,16 @@ export class SceneJoin extends SceneBase {
 					this.state = menuState.PVP_MENU;
 				}
 				if (e.key === 'ArrowDown') {
+					this.root.playSound('select');
 					this._pressDownTournament();
 				}
 				if (e.key === 'ArrowUp') {
+					this.root.playSound('select');
 					this._pressUpTournament();
+				}
+				if (e.code === 'Enter') {
+					this.root.playSound('enter');
+					this._joinTournament(this._tournamentObjects[this._currentSelectTournament].data.id);
 				}
 				if (e.code === 'Escape') {
 					this.root.loadScene(new SceneMenu2(this.root));
@@ -83,7 +89,8 @@ export class SceneJoin extends SceneBase {
 				break;
 			case menuState.PVP_MENU:
 				if (e.key === 'ArrowLeft') {
-					console.log('left');
+					this.root.playSound('select');
+
 					this._tourn_container.visible = true;
 					this._pvp_container.visible = false;
 					this._textTournament.style.fill = defaultColor;
@@ -91,20 +98,20 @@ export class SceneJoin extends SceneBase {
 					this.state = menuState.TOURN_MENU;
 				}
 				if (e.key === 'ArrowDown') {
+					this.root.playSound('select');
 					this._pressDownPvP();
 				}
 				if (e.key === 'ArrowUp') {
+					this.root.playSound('select');
 					this._pressUpPvP();
+				}
+				if (e.code === 'Enter') {
+					this.root.playSound('enter');
+					this._joinGame(this._gameObjects[this._currentSelectPvP].data.id);
 				}
 				if (e.code === 'Escape') {
 					this.root.loadScene(new SceneMenu2(this.root));
 				}
-				if (e.code === 'Enter') {
-					if (this._gameObjects[this._currentSelectPvP]) {
-						this._joinGame(this._gameObjects[this._currentSelectPvP].data.id);
-					}
-				}
-
 				break;
 		}
 	}
@@ -163,15 +170,10 @@ export class SceneJoin extends SceneBase {
 	}
 
 	private _pressDownPvP() {
-		console.log('curr pvp ' + this._currentSelectPvP);
-		console.log('game objects ' + this._gameObjects.length);
 		if (this._currentSelectPvP > this._gameObjects.length - 2) {
 			return;
 		} else this._currentSelectPvP++;
-
-		console.log('curr pvp after ' + this._currentSelectPvP);
 		let selectedPvP = this._gameObjects[this._currentSelectPvP];
-		console.log('select pvp ' + selectedPvP);
 		if (!selectedPvP) {
 			return;
 		}
@@ -191,7 +193,6 @@ export class SceneJoin extends SceneBase {
 	}
 
 	private _pressUpPvP() {
-		console.log('UP: ' + this._currentSelectPvP);
 		if (this._currentSelectPvP < 1) {
 			return;
 		} else this._currentSelectPvP--;
@@ -319,50 +320,41 @@ export class SceneJoin extends SceneBase {
 		const menu = new PIXI.Container();
 		this._gameObjects = [];
 		const games = await apiService.getGames();
-		let j = 0;
+		// Filter games to only include those with status "waiting"
+		const waitingGames = games.filter((game: Game) => game.status === 'waiting');
 
-		for (let i = 0; i < games.length; i++) {
+		for (let i = 0; i < waitingGames.length; i++) {
 			const menuBoxPvP = new PIXI.Graphics();
-			const game = games[i];
+			const game = waitingGames[i];
 
-			// console.log(game);
-			if (game.status === 'completed') {
-				i++;
-			} else {
-				//TODO: use game.player1.username
-				// const textName_PvP = new PIXI.Text(game.player1 ? game.player1.username : 'Waiting for Player');
-				const textName_PvP = new PIXI.Text(game.player1);
-				//TODO: use this
-				// const textMode_PvP = new PIXI.Text(game.max_score.toString());
-				const textMode_PvP = new PIXI.Text(game.max_score);
-				let player2 = 0;
+			const textName_PvP = new PIXI.Text(game.player1);
+			const textMode_PvP = new PIXI.Text(game.max_score);
+			let player2 = 0;
 
-				if (game.player2 != null) player2 = 1;
-				const textInfo_PvP = new PIXI.Text(player2 + 1 + '/2');
+			if (game.player2 != null) player2 = 1;
+			const textInfo_PvP = new PIXI.Text(player2 + 1 + '/2');
 
-				textName_PvP.x = (this.root.width * 2) / 100;
-				textName_PvP.style.fontSize = (this.root.width * 4) / 100;
-				textName_PvP.style.fill = 'green';
-				textName_PvP.filters = [glowFilter];
+			textName_PvP.x = (this.root.width * 2) / 100;
+			textName_PvP.style.fontSize = (this.root.width * 4) / 100;
+			textName_PvP.style.fill = 'green';
+			textName_PvP.filters = [glowFilter];
 
-				textMode_PvP.x = (this.root.width * 35) / 100 + 5;
-				textMode_PvP.style.fontSize = (this.root.width * 4) / 100;
-				textMode_PvP.style.fill = 'green';
-				textMode_PvP.filters = [glowFilter];
+			textMode_PvP.x = (this.root.width * 35) / 100 + 5;
+			textMode_PvP.style.fontSize = (this.root.width * 4) / 100;
+			textMode_PvP.style.fill = 'green';
+			textMode_PvP.filters = [glowFilter];
 
-				textInfo_PvP.x = (this.root.width * 75) / 100 + 5;
-				textInfo_PvP.style.fontSize = (this.root.width * 4) / 100;
-				textInfo_PvP.style.fill = 'green';
-				textInfo_PvP.filters = [glowFilter];
+			textInfo_PvP.x = (this.root.width * 75) / 100 + 5;
+			textInfo_PvP.style.fontSize = (this.root.width * 4) / 100;
+			textInfo_PvP.style.fill = 'green';
+			textInfo_PvP.filters = [glowFilter];
 
-				menuBoxPvP.y = (this.root.height * 20) / 100 + j * 25;
-				menuBoxPvP.endFill();
-				menuBoxPvP.addChild(textName_PvP, textMode_PvP, textInfo_PvP);
+			menuBoxPvP.y = (this.root.height * 20) / 100 + i * 25;
+			menuBoxPvP.endFill();
+			menuBoxPvP.addChild(textName_PvP, textMode_PvP, textInfo_PvP);
 
-				this._gameObjects.push({ container: menuBoxPvP, data: game });
-				menu.addChild(menuBoxPvP);
-				j++;
-			}
+			this._gameObjects.push({ container: menuBoxPvP, data: game });
+			menu.addChild(menuBoxPvP);
 		}
 		menu.visible = false;
 
@@ -374,9 +366,17 @@ export class SceneJoin extends SceneBase {
 			.joinGame(gameId, this.root.userId ?? 0)
 			.then((response) => {
 				console.log('Joined game successfully', response);
-				this.root.openGameSocket(response.id);
+				this.root.loadScene(new SceneLoadingPage(this.root, gameId));
 			})
 			.catch((error) => console.error('Error joining game', error));
-		this.root.loadScene(new SceneLoadingPage(this.root, gameId));
+	}
+	private _joinTournament(tournamentId: number) {
+		apiService
+			.joinTournament(tournamentId, this.root.userId ?? 0)
+			.then((response) => {
+				console.log('Joined tournament successfully', response);
+			})
+			.catch((error) => console.error('Error joining tournament', error));
+		this.root.loadScene(new SceneTournamentLoadingVs(this.root, tournamentId));
 	}
 }

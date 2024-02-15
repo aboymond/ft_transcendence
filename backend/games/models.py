@@ -1,10 +1,12 @@
-import operator
+# import operator
 from django.db import models
 from django.conf import settings
-from users.models import GameHistory
+
+# from users.models import GameHistory
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
-from asgiref.sync import sync_to_async
+
+# from asgiref.sync import sync_to_async
 from django_prometheus.models import ExportModelOperationsMixin
 
 BALL_SPEED = 5
@@ -79,11 +81,11 @@ class Game(ExportModelOperationsMixin("game"), models.Model):
     player1_ready = models.BooleanField(default=False)
     player2_ready = models.BooleanField(default=False)
 
-    def update_ball_position(self):
-        self.ball_x += self.ball_velocity_x
-        self.ball_y += self.ball_velocity_y
-        self.check_collisions()
-        self.save()
+    # def update_ball_position(self):
+    #     self.ball_x += self.ball_velocity_x
+    #     self.ball_y += self.ball_velocity_y
+    #     self.check_collisions()
+    #     self.save()
 
     def move_pad(self, player_id, x, y):
         if self.player1.id == player_id:
@@ -94,98 +96,98 @@ class Game(ExportModelOperationsMixin("game"), models.Model):
             self.pad2_y += y
         self.save()
 
-    def check_collisions(self):
-        # If the ball hits the left or right wall, reverse the x velocity
-        if self.ball_x <= 0 or self.ball_x >= self.width:
-            self.ball_velocity_x *= -1
+    # def check_collisions(self):
+    #     # If the ball hits the left or right wall, reverse the x velocity
+    #     if self.ball_x <= 0 or self.ball_x >= self.width:
+    #         self.ball_velocity_x *= -1
 
-        # If the ball hits the top or bottom wall, reverse the y velocity
-        if self.ball_y <= 0 or self.ball_y >= self.height:
-            self.ball_velocity_y *= -1
+    #     # If the ball hits the top or bottom wall, reverse the y velocity
+    #     if self.ball_y <= 0 or self.ball_y >= self.height:
+    #         self.ball_velocity_y *= -1
 
-        # If the ball hits player1's pad, reverse the y velocity and adjust the x velocity
-        if (
-            self.ball_y <= self.pad1_y + self.pad_height
-            and self.pad1_x - self.pad_width / 2
-            <= self.ball_x
-            <= self.pad1_x + self.pad_width / 2
-        ):
-            self.ball_velocity_y *= -1
-            self.ball_velocity_x = (
-                (self.ball_x - self.pad1_x) / (self.pad_width / 2)
-            ) * 5
+    #     # If the ball hits player1's pad, reverse the y velocity and adjust the x velocity
+    #     if (
+    #         self.ball_y <= self.pad1_y + self.pad_height
+    #         and self.pad1_x - self.pad_width / 2
+    #         <= self.ball_x
+    #         <= self.pad1_x + self.pad_width / 2
+    #     ):
+    #         self.ball_velocity_y *= -1
+    #         self.ball_velocity_x = (
+    #             (self.ball_x - self.pad1_x) / (self.pad_width / 2)
+    #         ) * 5
 
-        # If the ball hits player2's pad, reverse the y velocity and adjust the x velocity
-        if (
-            self.ball_y >= self.pad2_y - self.pad_height
-            and self.pad2_x - self.pad_width / 2
-            <= self.ball_x
-            <= self.pad2_x + self.pad_width / 2
-        ):
-            self.ball_velocity_y *= -1
-            self.ball_velocity_x = (
-                (self.ball_x - self.pad2_x) / (self.pad_width / 2)
-            ) * 5
-        self.save()
+    #     # If the ball hits player2's pad, reverse the y velocity and adjust the x velocity
+    #     if (
+    #         self.ball_y >= self.pad2_y - self.pad_height
+    #         and self.pad2_x - self.pad_width / 2
+    #         <= self.ball_x
+    #         <= self.pad2_x + self.pad_width / 2
+    #     ):
+    #         self.ball_velocity_y *= -1
+    #         self.ball_velocity_x = (
+    #             (self.ball_x - self.pad2_x) / (self.pad_width / 2)
+    #         ) * 5
+    #     self.save()
 
-    async def is_full(self):
-        player1 = await sync_to_async(operator.attrgetter("player1"))(self)
-        player2 = await sync_to_async(operator.attrgetter("player2"))(self)
-        return player1 is not None and player2 is not None
+    # async def is_full(self):
+    #     player1 = await sync_to_async(operator.attrgetter("player1"))(self)
+    #     player2 = await sync_to_async(operator.attrgetter("player2"))(self)
+    #     return player1 is not None and player2 is not None
 
-    @classmethod
-    def create_game(cls, user):
-        game = cls.objects.create(player1=user, status="waiting", player_turn=user.id)
-        return game
+    # @classmethod
+    # def create_game(cls, user):
+    #     game = cls.objects.create(player1=user, status="waiting", player_turn=user.id)
+    #     return game
 
-    @classmethod
-    def join_game(cls, user, game_id):
-        game = cls.objects.filter(id=game_id, status="waiting").first()
-        if game:
-            game.player2 = user
-            game.status = "in_progress"
-            game.save()
+    # @classmethod
+    # def join_game(cls, user, game_id):
+    #     game = cls.objects.filter(id=game_id, status="waiting").first()
+    #     if game:
+    #         game.player2 = user
+    #         game.status = "in_progress"
+    #         game.save()
 
-            channel_layer = get_channel_layer()
-            async_to_sync(channel_layer.group_send)(
-                "general_requests_%s" % game.player1.pk,
-                {
-                    "type": "game.joined",
-                    "game_id": game.id,
-                },
-            )
-            async_to_sync(channel_layer.group_send)(
-                "general_requests_%s" % user.pk,
-                {
-                    "type": "game.joined",
-                    "game_id": game.id,
-                },
-            )
-            return game
-        else:
-            return None
+    #         channel_layer = get_channel_layer()
+    #         async_to_sync(channel_layer.group_send)(
+    #             "general_requests_%s" % game.player1.pk,
+    #             {
+    #                 "type": "game.joined",
+    #                 "game_id": game.id,
+    #             },
+    #         )
+    #         async_to_sync(channel_layer.group_send)(
+    #             "general_requests_%s" % user.pk,
+    #             {
+    #                 "type": "game.joined",
+    #                 "game_id": game.id,
+    #             },
+    #         )
+    #         return game
+    #     else:
+    #         return None
 
-    def start_game(self):
-        if self.status == "in_progress":
-            self.status = "started"
-            self.save()
+    # def start_game(self):
+    #     if self.status == "in_progress":
+    #         self.status = "started"
+    #         self.save()
 
-    def end_game(self, winner, player1_score, player2_score):
-        self.winner = winner
-        self.loser = self.player1 if self.player2 == winner else self.player2
-        self.status = "completed"
-        self.save()
+    # def end_game(self, winner, player1_score, player2_score):
+    #     self.winner = winner
+    #     self.loser = self.player1 if self.player2 == winner else self.player2
+    #     self.status = "completed"
+    #     self.save()
 
-        winner.wins += 1
-        winner.save()
+    #     winner.wins += 1
+    #     winner.save()
 
-        self.loser.losses += 1
-        self.loser.save()
+    #     self.loser.losses += 1
+    #     self.loser.save()
 
-        game_history = GameHistory.objects.create(
-            winner=winner, player1_score=player1_score, player2_score=player2_score
-        )
-        game_history.players.add(self.player1, self.player2)
+    #     game_history = GameHistory.objects.create(
+    #         winner=winner, player1_score=player1_score, player2_score=player2_score
+    #     )
+    #     game_history.players.add(self.player1, self.player2)
 
     @classmethod
     def join_queue(cls, user):

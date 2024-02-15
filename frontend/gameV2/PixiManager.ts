@@ -7,10 +7,20 @@ import { GameState } from '../src/types';
 import { SceneGame } from './scenes/SceneGame';
 import { SceneMenu } from './scenes/SceneMenu';
 import { SceneWinOrLoose } from './scenes/SceneWinOrLoose';
+import { sound } from '@pixi/sound';
 
 interface IPixiManagerOptions {
 	backgroundAlpha: number;
 	antialias: boolean;
+}
+
+interface Tournament {
+	name: string;
+	id: number;
+	max_score: number;
+	max_participants: number;
+	status: string;
+	participants: string[];
 }
 
 export class PixiManager {
@@ -25,6 +35,7 @@ export class PixiManager {
 	public userId: number | null = null;
 	public fpsText: PIXI.Text;
 	public rpsText: PIXI.Text;
+	public currentTournament: Tournament | null = null;
 
 	//--------------------------
 
@@ -74,6 +85,13 @@ export class PixiManager {
 		window.addEventListener('keyup', this._onKeyUpBind);
 		// window.addEventListener('resize', this.handleResize.bind(this));
 		$('#game_window').append(this._app.view as unknown as HTMLElement);
+
+		if (!sound.exists('select')) sound.add('select', './sound/Select.mp3');
+		if (!sound.exists('enter')) sound.add('enter', './sound/game-start.mp3');
+		if (!sound.exists('win')) sound.add('win', './sound/Winner.mp3');
+		if (!sound.exists('loose')) sound.add('loose', './sound/Looser.mp3');
+		if (!sound.exists('touchPad')) sound.add('touchPad', './sound/touchPad.mp3');
+		if (!sound.exists('touchBall')) sound.add('touchBall', './sound/touchBall.mp3');
 	}
 
 	public destroy() {
@@ -214,5 +232,13 @@ export class PixiManager {
 					break;
 			}
 		});
+	}
+
+	public playSound(soundKey: string): void {
+		if (sound.exists(soundKey)) {
+			sound.play(soundKey);
+		} else {
+			console.warn(`Sound key "${soundKey}" does not exist.`);
+		}
 	}
 }

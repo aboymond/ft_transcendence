@@ -41,9 +41,9 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def ready_to_start_game(self):
         game = await sync_to_async(Game.objects.get)(id=self.game_id)
-        player1 = await sync_to_async(getattr)(game, "player1", None)
-        player2 = await sync_to_async(getattr)(game, "player2", None)
-        return player1 is not None and player2 is not None
+        player1 = await sync_to_async(getattr)(game, "player1_ready", False)
+        player2 = await sync_to_async(getattr)(game, "player2_ready", False)
+        return player1 and player2
 
     async def start_game(self):
         game = await sync_to_async(Game.objects.get)(id=self.game_id)

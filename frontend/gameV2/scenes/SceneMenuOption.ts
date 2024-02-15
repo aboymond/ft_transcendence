@@ -18,6 +18,14 @@ import { apiService } from '../../src/services/apiService';
 const selectMax = 4;
 let errorLock: boolean = false;
 
+enum menu {
+	COLOR = 0,
+	BOT_LVL = 1,
+	VICTORY_AMOUNT = 2,
+	PAD = 3,
+	PLAY = 4,
+}
+
 const chooseColor: string[] = [
 	'GREEN',
 	'IMPERIAL GREEN',
@@ -124,15 +132,19 @@ export class SceneMenuOption extends SceneBase {
 
 	public onKeyDown(e: KeyboardEvent) {
 		if (e.code === 'ArrowUp') {
+			this.root.playSound('select');
 			if (!errorLock) this._pressUp();
 		}
 		if (e.code === 'ArrowDown') {
+			this.root.playSound('select');
 			if (!errorLock) this._pressDown();
 		}
 		if (e.code === 'ArrowLeft') {
+			this.root.playSound('select');
 			if (!errorLock) this._pressLeft();
 		}
 		if (e.code === 'ArrowRight') {
+			this.root.playSound('select');
 			if (!errorLock) this._pressRight();
 		}
 		if (e.code === 'Enter') {
@@ -226,7 +238,6 @@ export class SceneMenuOption extends SceneBase {
 				.createGame(this.root.userId ?? 0) //TODO
 				.then((response) => {
 					console.log('Game created successfully', response);
-					this.root.openGameSocket(response.id);
 					this.root.loadScene(new SceneLoadingPage(this.root, response.id));
 				})
 				.catch((error) => console.error('Error creating game', error));
@@ -242,34 +253,34 @@ export class SceneMenuOption extends SceneBase {
 
 	private _pressUp() {
 		this._currentSelect--;
-		if (this._currentSelect === 1 && this.root.vsPlayer) this._currentSelect--;
+		if (this._currentSelect === menu.BOT_LVL && this.root.vsPlayer) this._currentSelect--;
 		if (this._currentSelect < 0) this._currentSelect = selectMax;
 		// console.log('up: ' + this._currentSelect);
 	}
 
 	private _pressDown() {
 		this._currentSelect++;
-		if (this._currentSelect === 1 && this.root.vsPlayer) this._currentSelect++;
+		if (this._currentSelect === menu.BOT_LVL && this.root.vsPlayer) this._currentSelect++;
 		if (this._currentSelect > selectMax) this._currentSelect = 0;
 		// console.log('down: ' + this._currentSelect);
 	}
 
 	private _pressLeft() {
-		if (this._currentSelect === 0) return this._colorPrev();
+		if (this._currentSelect === menu.COLOR) return this._colorPrev();
 		if (!this.root.vsPlayer) {
-			if (this._currentSelect === 1) return this._botLvlPrev();
+			if (this._currentSelect === menu.BOT_LVL) return this._botLvlPrev();
 		}
-		if (this._currentSelect === 2) return this._VictoryAmountPrev();
-		if (this._currentSelect === 3) return this._padPrev();
+		if (this._currentSelect === menu.VICTORY_AMOUNT) return this._VictoryAmountPrev();
+		if (this._currentSelect === menu.PAD) return this._padPrev();
 	}
 
 	private _pressRight() {
-		if (this._currentSelect === 0) return this._colorNext();
+		if (this._currentSelect === menu.COLOR) return this._colorNext();
 		if (!this.root.vsPlayer) {
-			if (this._currentSelect === 1) return this._botLvlNext();
+			if (this._currentSelect === menu.BOT_LVL) return this._botLvlNext();
 		}
-		if (this._currentSelect === 2) return this._VictoryAmountNext();
-		if (this._currentSelect === 3) return this._padNext();
+		if (this._currentSelect === menu.VICTORY_AMOUNT) return this._VictoryAmountNext();
+		if (this._currentSelect === menu.PAD) return this._padNext();
 	}
 
 	private _colorPrev() {

@@ -1,28 +1,22 @@
 from django.urls import path
 from .views import (
-    TournamentListCreateView,
-    TournamentRetrieveUpdateDestroyView,
-    TournamentAddParticipantView,
-    MatchListCreateView,
-    MatchRetrieveUpdateDestroyView,
+    TournamentCreateView,
+    TournamentListView,
+    TournamentJoinView,
+    TournamentLeaveView,
+    TournamentDetailView,
+    TournamentMatchesListView,
 )
 
 urlpatterns = [
-    path("tournaments/", TournamentListCreateView.as_view(), name="tournament-list"),
+    path("create/", TournamentCreateView.as_view(), name="tournament-create"),
+    path("list/", TournamentListView.as_view(), name="tournament-list"),
+    path("<int:pk>/join/", TournamentJoinView.as_view(), name="tournament-join"),
+    path("<int:pk>/leave/", TournamentLeaveView.as_view(), name="tournament-leave"),
+    path("<int:id>/detail/", TournamentDetailView.as_view(), name="tournament-detail"),
     path(
-        "tournaments/<int:pk>/",
-        TournamentRetrieveUpdateDestroyView.as_view(),
-        name="tournament-detail",
-    ),
-    path(
-        "tournaments/<int:pk>/add_participant/",
-        TournamentAddParticipantView.as_view(),
-        name="tournament-add-participant",
-    ),
-    path("matches/", MatchListCreateView.as_view(), name="match-list"),
-    path(
-        "matches/<int:pk>/",
-        MatchRetrieveUpdateDestroyView.as_view(),
-        name="match-detail",
+        "<int:tournament_id>/matches/",
+        TournamentMatchesListView.as_view(),
+        name="tournament-matches",
     ),
 ]

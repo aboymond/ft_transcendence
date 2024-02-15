@@ -21,6 +21,7 @@ export class SceneWinOrLoose extends SceneBase {
 
 		if (this.root.playerAWin) {
 			this._textWin.visible = true;
+			this.root.playSound('win');
 			this._interval = window.setInterval(() => {
 				if (this._textWin) {
 					this._textWin.visible = !this._textWin.visible;
@@ -28,6 +29,7 @@ export class SceneWinOrLoose extends SceneBase {
 			}, 800);
 		} else {
 			this._textLoose.visible = true;
+			this.root.playSound('loose');
 			this._interval = window.setInterval(() => {
 				if (this._textLoose) {
 					this._textLoose.visible = !this._textLoose.visible;

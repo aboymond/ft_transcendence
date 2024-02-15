@@ -1,6 +1,7 @@
 import { User, FriendRequest, GameHistory } from '../types';
 
 interface ErrorResponse {
+	error?: string;
 	detail?: string;
 }
 const API_BASE_URL = 'http://localhost:8000/api'; // Update with your actual backend URL
@@ -25,7 +26,6 @@ async function fetchAPI(endpoint: string, options: RequestInit = {}, includeToke
 		...options,
 		headers: headers,
 	});
-
 	if (response.status === 401) {
 		localStorage.removeItem('token');
 		throw new Error('Unauthorized');
@@ -40,9 +40,10 @@ async function fetchAPI(endpoint: string, options: RequestInit = {}, includeToke
 			} catch (e) {
 				console.error('Error parsing JSON response:', e);
 			}
+			const detailedErrorMessage =
+				errorDetail.error || errorDetail.detail || `API call failed: ${response.statusText}`;
+			throw new Error(detailedErrorMessage + ' - More details: ' + text);
 		}
-		const errorMessage = errorDetail.detail || `API call failed: ${response.statusText}`;
-		throw new Error(errorMessage);
 	}
 
 	const text = await response.text();
@@ -171,7 +172,13 @@ export const apiService = {
 		return fetchAPI('users/game_histories/');
 	},
 	getTournaments: async () => {
-		return fetchAPI('tournaments/tournaments/');
+		return fetchAPI('tournaments/list/');
+	},
+	getTournament: async (tournamentId: number) => {
+		return fetchAPI(`tournaments/${tournamentId}/detail/`);
+	},
+	getMatches: async (tournamentId: number) => {
+		return fetchAPI(`tournaments/${tournamentId}/matches/`);
 	},
 	getGames: async () => {
 		return fetchAPI('games/list-create/');
@@ -219,6 +226,29 @@ export const apiService = {
 	leaveLoading: async (gameId: number) => {
 		return fetchAPI(`games/${gameId}/leave_loading/`, {
 			method: 'POST',
+		});
+	},
+	createTournament: async (creator_id: number, name: string, max_participants: number, max_score: number) => {
+		return fetchAPI('tournaments/create/', {
+			method: 'POST',
+			body: JSON.stringify({
+				creator_id: creator_id,
+				name: name,
+				max_participants: max_participants,
+				max_score: max_score,
+			}),
+		});
+	},
+	joinTournament: async (tournamentId: number, userId: number) => {
+		return fetchAPI(`tournaments/${tournamentId}/join/`, {
+			method: 'PATCH',
+			body: JSON.stringify({ user_id: userId }),
+		});
+	},
+	leaveTournament: async (tournamentId: number, userId: number) => {
+		return fetchAPI(`tournaments/${tournamentId}/leave/`, {
+			method: 'PATCH',
+			body: JSON.stringify({ user_id: userId }),
 		});
 	},
 };

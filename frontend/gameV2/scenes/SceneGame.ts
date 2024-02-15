@@ -66,8 +66,6 @@ export class SceneGame extends SceneBase {
 
 		this._exitMenu = this._initExitMenu();
 		container.addChild(this._exitMenu);
-
-		await this.notifyPlayerReady();
 	}
 
 	public onUpdate(delta: number) {
@@ -242,13 +240,5 @@ export class SceneGame extends SceneBase {
 		menu.visible = false;
 
 		return menu;
-	}
-
-	private async notifyPlayerReady() {
-		try {
-			await apiService.sendPlayerReady(this._gameId);
-		} catch (error) {
-			console.error('Error notifying player ready:', error);
-		}
 	}
 }

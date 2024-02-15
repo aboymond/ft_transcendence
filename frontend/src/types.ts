@@ -74,11 +74,11 @@ export interface Tournament {
 	max_participants: number;
 	max_score: number;
 	participants: User[];
+	participants_usernames: string[];
 	games: Game[]; // Assuming GameHistory can represent the games in a tournament
 	start_date?: string; // Optional to handle null values
 	end_date?: string; // Optional to handle null values
-	tournament_type: 'SE' | 'RR'; // 'SE' for Single Elimination, 'RR' for Round Robin
-	status: 'CR' | 'IP' | 'CO'; // 'CR' for Created, 'IP' for In Progress, 'CO' for Completed
+	status: 'waiting' | 'in_progress' | 'completed';
 	winner?: User; // Optional to handle null values
 }
 
@@ -110,4 +110,12 @@ export interface WebSocketMessage {
 		action: string;
 		data: MessageData;
 	};
+}
+
+export interface Match {
+	id: number;
+	player1: number;
+	player2: number;
+	order: number;
+	game: number;
 }
