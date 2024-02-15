@@ -62,6 +62,10 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "middleware.middleware.PrometheusMonitoringMiddleware",
+    "middleware.middleware.PageViewMiddleware",
+    # "users.middleware.PrometheusMonitoringMiddleware",
+    # "users.middleware.PageViewMiddleware",
     "django_prometheus.middleware.PrometheusAfterMiddleware",
 ]
 
@@ -101,7 +105,7 @@ CHANNEL_LAYERS = {
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
+        "ENGINE": "django_prometheus.db.backends.postgresql",
         "NAME": "dbname",
         "USER": "user",
         "PASSWORD": "password",
@@ -135,7 +139,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = "Europe/Zurich"
 
 USE_I18N = True
 
@@ -203,10 +207,20 @@ LOGGING = {
     "handlers": {
         "console": {
             "class": "logging.StreamHandler",
+            "level": "DEBUG",
         },
     },
     "root": {
         "handlers": ["console"],
         "level": "INFO",
     },
+    "loggers": {
+        "": {  # This configures the root logger to capture all logs of DEBUG level and above
+            "handlers": ["console"],
+            "level": "DEBUG",
+            "propagate": True,
+        },
+    },
 }
+
+PROMETHEUS_METRIC_NAMESPACE = "transcendence"

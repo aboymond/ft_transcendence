@@ -23,6 +23,9 @@ RUN	pip install python-dotenv
 # Copy the rest of the code
 COPY . /app/
 
+# Copy the default avatar into the container
+COPY media/avatars/default_avatar.png /app/media/avatars/default_avatar.png
+
 # Copy entrypoint script into the container
 COPY entrypoint.sh /app/entrypoint.sh
 

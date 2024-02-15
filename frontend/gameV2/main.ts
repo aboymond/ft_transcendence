@@ -1,23 +1,17 @@
 import { PixiManager } from './PixiManager';
 import { SceneMenu } from './scenes/SceneMenu';
-import { SceneJoin } from './scenes/SceneJoin';
-// import { SceneTournamentLoadingVs } from './scenes/SceneTournamentLoadingVs';
-import { GameState } from '../src/types';
 import WebFont from 'webfontloader';
-import { SceneMenu2 } from './scenes/SceneMenu2';
-import { SceneMenuOption } from './scenes/SceneMenuOption';
-import { SceneLoadingPage } from './scenes/SceneLoadingPage';
-import { SceneGameVsBot } from './scenes/SceneGameVsBot';
+import { SceneJoin } from './scenes/SceneJoin';
 
-export function launchGame(ws: WebSocket | null, gameState: GameState | null, userId: number | null) {
+export function launchGame(ws: WebSocket | null, userId: number | null) {
 	WebFont.load({
 		custom: {
 			families: ['Pixelmania'],
 			urls: ['/font/font.css'],
 		},
 		active: function () {
-			const pixiMan = new PixiManager(ws, gameState, {}, userId);
-			pixiMan.loadScene(new SceneGameVsBot(pixiMan));
+			const pixiMan = new PixiManager({}, ws, userId);
+			pixiMan.loadScene(new SceneJoin(pixiMan));
 		},
 	});
 }

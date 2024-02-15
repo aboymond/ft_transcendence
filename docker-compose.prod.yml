@@ -3,7 +3,6 @@ services:
     backend:
         build:
             context: ./backend
-            dockerfile: Dockerfile
         image: backend:latest
         container_name: backend-container
         ports:
@@ -82,8 +81,6 @@ services:
     nginx:
         build:
             context: ./nginx
-            dockerfile: Dockerfile
-        image: nginx:1.24
         container_name: nginx-container
         ports:
         - "80:80"
@@ -94,8 +91,72 @@ services:
             - my-network
         volumes:
             - ./nginx:/etc/nginx/conf.d
+            - nginx_log:/var/log/nginx/
             - backend_static:/app/static
             - media_volume:/app/media
+
+    prometheus:
+        container_name: prometheus
+        build:
+            context: ./prometheus
+        volumes:
+            - ./prometheus:/etc/prometheus
+        ports:
+            - "9090:9090"
+        networks:
+            - my-network
+    #        command:
+    #            - '--config.file=/etc/prometheus/prometheus.yml'
+    #            - '--storage.tsdb.path=/prometheus'
+    #            - '--web.console.libraries=/etc/prometheus/console_libraries'
+    #            - '--web.console.templates=/etc/prometheus/consoles'
+
+    grafana:
+        container_name: grafana
+        build:
+            context: ./grafana
+        ports:
+            - "3000:3000"
+        environment:
+            - GF_SECURITY_ADMIN_USER=${GF_SECURITY_ADMIN_USER}
+            - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD}
+        volumes:
+            - grafana_data:/var/lib/grafana
+            - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+            - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+            - ./grafana/init-grafana.sh:/etc/grafana/init-grafana/init-grafana.sh
+        env_file:
+            - ./.env
+        entrypoint: /etc/grafana/init-grafana/init-grafana.sh
+        networks:
+            - my-network
+
+    nginx-prometheus-exporter:
+        image: nginx/nginx-prometheus-exporter:1.0
+        container_name: prometheus-nginx-exporter
+        restart: always
+        env_file:
+            .env
+        command:
+            - "-nginx.scrape-uri=http://nginx:80/basic_status"
+        ports:
+            - "9113:9113"
+        networks:
+            - my-network
+        depends_on:
+            - nginx
+
+    alertmanager:
+        image: prom/alertmanager:v0.22.2
+        volumes:
+            - ./prometheus/alertmanager.yml:/etc/alertmanager/alertmanager.yml
+        command:
+            - "--config.file=/etc/alertmanager/alertmanager.yml"
+            - "--storage.path=/alertmanager"
+        ports:
+            - "9093:9093"
+        networks:
+            - my-network
 
 volumes:
     backend_static:
@@ -103,6 +164,8 @@ volumes:
     db-data:
     pgadmin_data:
     media_volume:
+    grafana_data:
+    nginx_log:
 
 networks:
     my-network:

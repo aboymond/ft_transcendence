@@ -3,8 +3,8 @@ import { SceneBase } from './SceneBase';
 import { SceneMenu } from './SceneMenu';
 import { SceneMenuOption } from './SceneMenuOption';
 import { SceneMenuTournament } from './SceneMenuTournament';
-import { SceneJoin } from './SceneJoin'
-import { playEnterSound, playSelectSound } from '..';
+import { SceneJoin } from './SceneJoin';
+
 // import { glowFilter, defaultColor, textStylePVPMenu2, textStylePVBMenu2, textStyleTournamentMenu, textStyleJoinMenu2 } from '..';
 
 const selectMax = 2;
@@ -44,18 +44,14 @@ const textures = [
 // }
 
 // const sounds = [
-	// ];
-	
-	export class SceneMenu2 extends SceneBase {
-		private _currentSelect = menu.TOURNAMENT;
-		private _currentSelect_LR = 0;
-		private _sprites: PIXI.Sprite[] = [];
-		
-	public async onStart(container: PIXI.Container) {
-		// sound.add('select', './sound/Select.mp3');
-		// sound.add('enter', './sound/game-start.mp3');
+// ];
 
-		
+export class SceneMenu2 extends SceneBase {
+	private _currentSelect = menu.TOURNAMENT;
+	private _currentSelect_LR = 0;
+	private _sprites: PIXI.Sprite[] = [];
+
+	public async onStart(container: PIXI.Container) {
 		for (let i = 0; i < textures.length; i++) {
 			this._sprites.push(new PIXI.Sprite(textures[i]));
 		}
@@ -69,6 +65,12 @@ const textures = [
 		this._initSpriteJoin(this._sprites[allSprite.JOIN_U]);
 		this._initSpritePvB(this._sprites[allSprite.PVB_S]);
 		this._initSpritePvB(this._sprites[allSprite.PVB_U]);
+
+		this._sprites.forEach((sprite, index) => {
+			sprite.eventMode = 'dynamic';
+			sprite.cursor = 'pointer';
+			sprite.on('pointerdown', () => this.onSpriteClick(index));
+		});
 
 		this._sprites[allSprite.TOURNAMENT_U].visible = false;
 		this._sprites[allSprite.PVP_S].visible = false;
@@ -105,7 +107,7 @@ const textures = [
 			}
 		}
 		if (e.code === 'Enter') {
-			playEnterSound();
+			this.root.playSound('enter');
 			if (this._currentSelect === menu.TOURNAMENT) {
 				this.root.loadScene(new SceneMenuTournament(this.root));
 			} else if (this._currentSelect === menu.PVP_PVB) {
@@ -159,32 +161,29 @@ const textures = [
 
 	private _pressUp() {
 		this._currentSelect--;
-		playSelectSound();
+		this.root.playSound('select');
 		if (this._currentSelect < 0) this._currentSelect = selectMax;
 		this._updateMenuColor();
 	}
 
 	private _pressDown() {
 		this._currentSelect++;
-		playSelectSound();
+		this.root.playSound('select');
 		if (this._currentSelect > selectMax) this._currentSelect = 0;
 		this._updateMenuColor();
 	}
 
 	private _pressRight() {
 		this._currentSelect_LR++;
-		playSelectSound();
+		this.root.playSound('select');
 		if (this._currentSelect_LR > selectMax_LR) this._currentSelect_LR = 0;
 		this._updateMenuColor();
 	}
 
 	private _pressLeft() {
 		this._currentSelect_LR--;
-		playSelectSound();
-		if (this._currentSelect_LR < 0) this._currentSelect_LR = selectMax_LR;
-		this._updateMenuColor;
+		this.root.playSound('select');
 	}
-
 	private _updateMenuColor() {
 		if (this._currentSelect === menu.TOURNAMENT) {
 			this._sprites[allSprite.TOURNAMENT_S].visible = true;
@@ -246,5 +245,30 @@ const textures = [
 			this._sprites[allSprite.JOIN_U].visible = false;
 			this._sprites[allSprite.PVB_U].visible = true;
 		}
+	}
+
+	// Add a method to handle sprite clicks
+	private onSpriteClick(index: number) {
+		switch (index) {
+			case allSprite.TOURNAMENT_S:
+			case allSprite.TOURNAMENT_U:
+				this._currentSelect = menu.TOURNAMENT;
+				break;
+			case allSprite.PVP_S:
+			case allSprite.PVP_U:
+			case allSprite.PVB_S:
+			case allSprite.PVB_U:
+				this._currentSelect = menu.PVP_PVB;
+				break;
+			case allSprite.JOIN_S:
+			case allSprite.JOIN_U:
+				this._currentSelect = menu.JOIN;
+				break;
+			default:
+				return; // Do nothing if the index doesn't match
+		}
+
+		// Simulate pressing Enter to load the selected scene
+		this.onKeyDown(new KeyboardEvent('keydown', { code: 'Enter' }));
 	}
 }

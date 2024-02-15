@@ -1,21 +1,18 @@
 // import { Container } from 'react-bootstrap';
-import { defaultColor, playEnterSound, playSelectSound } from '..';
+import { defaultColor} from '..';
 import { SceneBase } from './SceneBase';
 import { SceneMenu2 } from './SceneMenu2';
 import * as PIXI from 'pixi.js';
 import { glowFilter } from '..';
 import apiService from '../../src/services/apiService';
 import { SceneLoadingPage } from './SceneLoadingPage';
-import { SceneGame } from './SceneGame';
+import { Tournament, Game } from '../../src/types';
+// import { SceneGame } from './SceneGame';
 import { SceneTournamentLoadingVs } from './SceneTournamentLoadingVs';
 
 enum menuState {
 	TOURN_MENU,
 	PVP_MENU,
-}
-
-interface objectData {
-	max_participents: number;
 }
 
 export class SceneJoin extends SceneBase {
@@ -29,21 +26,16 @@ export class SceneJoin extends SceneBase {
 	private _textTabPlayers = new PIXI.Text('| PLAYERS');
 	private _line = '';
 	private _lineUnder = new PIXI.Text('');
-	private _tournamentObjects: Array<{ container: PIXI.Container; data: objectData }> = [];
-	private _gameObjects: Array<{ container: PIXI.Container; data: objectData }> = [];
+	private _tournamentObjects: Array<{ container: PIXI.Container; data: Tournament }> = [];
+	private _gameObjects: Array<{ container: PIXI.Container; data: Game }> = [];
 	private _currentSelectTournament = -1;
 	private _currentSelectPvP = -1;
 
-	
 	//=======================================
 	// HOOK
 	//=======================================
 
 	public async onStart(container: PIXI.Container) {
-
-		// sound.add('select', './sound/Select.mp3');
-		// sound.add('enter', './sound/game-start.mp3');
-
 		container.addChild(this._initTextJoin(this._textTournament));
 		container.addChild(this._initTextPvP(this._textPVP));
 		container.addChild(this._initTextTabName(this._textTabName));
@@ -71,7 +63,7 @@ export class SceneJoin extends SceneBase {
 		switch (this.state) {
 			case menuState.TOURN_MENU:
 				if (e.key === 'ArrowRight') {
-					playSelectSound();
+					this.root.playSound('select');
 
 					this._tourn_container.visible = false;
 					this._pvp_container.visible = true;
@@ -80,17 +72,16 @@ export class SceneJoin extends SceneBase {
 					this.state = menuState.PVP_MENU;
 				}
 				if (e.key === 'ArrowDown') {
-					playSelectSound();
+					this.root.playSound('select');
 					this._pressDownTournament();
 				}
 				if (e.key === 'ArrowUp') {
-					playSelectSound();
+					this.root.playSound('select');
 					this._pressUpTournament();
 				}
 				if (e.code === 'Enter') {
-					playEnterSound();
-					this._initCurrentTournament();
-					this.root.loadScene(new SceneTournamentLoadingVs(this.root));
+					this.root.playSound('enter');
+					this._joinTournament(this._tournamentObjects[this._currentSelectTournament].data.id);
 				}
 				if (e.code === 'Escape') {
 					this.root.loadScene(new SceneMenu2(this.root));
@@ -98,7 +89,7 @@ export class SceneJoin extends SceneBase {
 				break;
 			case menuState.PVP_MENU:
 				if (e.key === 'ArrowLeft') {
-					playSelectSound();
+					this.root.playSound('select');
 
 					this._tourn_container.visible = true;
 					this._pvp_container.visible = false;
@@ -107,23 +98,20 @@ export class SceneJoin extends SceneBase {
 					this.state = menuState.TOURN_MENU;
 				}
 				if (e.key === 'ArrowDown') {
-					playSelectSound();
+					this.root.playSound('select');
 					this._pressDownPvP();
 				}
 				if (e.key === 'ArrowUp') {
-					playSelectSound();
+					this.root.playSound('select');
 					this._pressUpPvP();
 				}
 				if (e.code === 'Enter') {
-					playEnterSound();
-
-					console.log(this._gameObjects[this._currentSelectPvP].data.id);
+					this.root.playSound('enter');
 					this._joinGame(this._gameObjects[this._currentSelectPvP].data.id);
 				}
 				if (e.code === 'Escape') {
 					this.root.loadScene(new SceneMenu2(this.root));
 				}
-
 				break;
 		}
 	}
@@ -184,9 +172,7 @@ export class SceneJoin extends SceneBase {
 	private _pressDownPvP() {
 		if (this._currentSelectPvP > this._gameObjects.length - 2) {
 			return;
-		}
-		else
-		this._currentSelectPvP++;
+		} else this._currentSelectPvP++;
 		let selectedPvP = this._gameObjects[this._currentSelectPvP];
 		if (!selectedPvP) {
 			return;
@@ -297,6 +283,7 @@ export class SceneJoin extends SceneBase {
 		for (let i = 0; i < tournaments.length; i++) {
 			const menuBoxTournament = new PIXI.Graphics();
 			const tournament = tournaments[i];
+			// console.log(tournament);
 			const textName_tour = new PIXI.Text(tournament.name);
 			const textMode_tour = new PIXI.Text(tournament.max_score);
 			const textInfo_tour = new PIXI.Text(tournament.participants.length + '/' + tournament.max_participants);
@@ -333,100 +320,63 @@ export class SceneJoin extends SceneBase {
 		const menu = new PIXI.Container();
 		this._gameObjects = [];
 		const games = await apiService.getGames();
-		let j = 0;
+		// Filter games to only include those with status "waiting"
+		const waitingGames = games.filter((game: Game) => game.status === 'waiting');
 
-		for (let i = 0; i < games.length; i++) {
+		for (let i = 0; i < waitingGames.length; i++) {
 			const menuBoxPvP = new PIXI.Graphics();
-			const game = games[i];
+			const game = waitingGames[i];
 
-			if (game.status === 'completed') {
-				i++;
-			} else {
-				const textName_PvP = new PIXI.Text(game.player1);
-				const textMode_PvP = new PIXI.Text(game.max_gascore);
-				let player2 = 0;
+			const textName_PvP = new PIXI.Text(game.player1);
+			const textMode_PvP = new PIXI.Text(game.max_score);
+			let player2 = 0;
 
-				if (game.player2 != null) player2 = 1;
-				const textInfo_PvP = new PIXI.Text(player2 + 1 + '/2');
+			if (game.player2 != null) player2 = 1;
+			const textInfo_PvP = new PIXI.Text(player2 + 1 + '/2');
 
-				textName_PvP.x = (this.root.width * 2) / 100;
-				textName_PvP.style.fontSize = (this.root.width * 4) / 100;
-				textName_PvP.style.fill = 'green';
-				textName_PvP.filters = [glowFilter];
+			textName_PvP.x = (this.root.width * 2) / 100;
+			textName_PvP.style.fontSize = (this.root.width * 4) / 100;
+			textName_PvP.style.fill = 'green';
+			textName_PvP.filters = [glowFilter];
 
-				textMode_PvP.x = (this.root.width * 35) / 100 + 5;
-				textMode_PvP.style.fontSize = (this.root.width * 4) / 100;
-				textMode_PvP.style.fill = 'green';
-				textMode_PvP.filters = [glowFilter];
+			textMode_PvP.x = (this.root.width * 35) / 100 + 5;
+			textMode_PvP.style.fontSize = (this.root.width * 4) / 100;
+			textMode_PvP.style.fill = 'green';
+			textMode_PvP.filters = [glowFilter];
 
-				textInfo_PvP.x = (this.root.width * 75) / 100 + 5;
-				textInfo_PvP.style.fontSize = (this.root.width * 4) / 100;
-				textInfo_PvP.style.fill = 'green';
-				textInfo_PvP.filters = [glowFilter];
+			textInfo_PvP.x = (this.root.width * 75) / 100 + 5;
+			textInfo_PvP.style.fontSize = (this.root.width * 4) / 100;
+			textInfo_PvP.style.fill = 'green';
+			textInfo_PvP.filters = [glowFilter];
 
-				menuBoxPvP.y = (this.root.height * 20) / 100 + j * 25;
-				menuBoxPvP.endFill();
-				menuBoxPvP.addChild(textName_PvP, textMode_PvP, textInfo_PvP);
+			menuBoxPvP.y = (this.root.height * 20) / 100 + i * 25;
+			menuBoxPvP.endFill();
+			menuBoxPvP.addChild(textName_PvP, textMode_PvP, textInfo_PvP);
 
-				this._gameObjects.push({ container: menuBoxPvP, data: game });
-				menu.addChild(menuBoxPvP);
-				j++;
-			}
+			this._gameObjects.push({ container: menuBoxPvP, data: game });
+			menu.addChild(menuBoxPvP);
 		}
 		menu.visible = false;
 
 		return menu;
 	}
 
-	private _initCurrentTournament() {
-		if (this._currentSelectTournament < 0)
-			return;
-		this.root.currentTournament = this._tournamentObjects[this._currentSelectTournament].data;
-		console.log(this.root.currentTournament?.max_participants);
-	}
-
 	private _joinGame(gameId: number) {
-		if (this.root.ws) {
-			console.log('Sending request to join_game');
-			this.root.ws.send(
-				JSON.stringify({
-					type: 'game_event',
-					payload: {
-						action: 'join_game',
-						data: {
-							game_id: gameId,
-							user_id: Number(this.root.userId),
-						},
-					},
-				}),
-			);
-			// // Open game socket connection here
-			// const gameSocketUrl = 'ws://localhost:8000/ws/game/' + gameId + '/';
-			// this.root.gameSocket = new WebSocket(gameSocketUrl);
-			// this.root.gameSocket.onopen = () => {
-			// 	console.log('Game WebSocket opened');
-			// };
-			// this.root.gameSocket.onmessage = (e) => {
-			// 	const { type, payload } = JSON.parse(e.data);
-			// 	const { action, data } = payload;
-			// 	console.log('game data:', { type, action, data });
-			// 	// Update game state based on received data
-			// 	if (type === 'game_event' && action === 'game_state') {
-			// 		this.root.setGameState(data);
-			// 	}
-			// 	if (action === 'start_game') {
-			// 		console.log('Loading SceneGame');
-			// 		this.root.loadScene(new SceneGame(this.root));
-			// 	}
-			// };
-			this.root.loadScene(new SceneLoadingPage(this.root));
-			this.root.ws.onmessage = (e) => {
-				const data = JSON.parse(e.data);
-				if (data.action === 'start_game') {
-					console.log('Loading SceneGame');
-					this.root.loadScene(new SceneGame(this.root));
-				}
-			};
-		}
+		apiService
+			.joinGame(gameId, this.root.userId ?? 0)
+			.then((response) => {
+				console.log('Joined game successfully', response);
+				this.root.loadScene(new SceneLoadingPage(this.root, gameId));
+			})
+			.catch((error) => console.error('Error joining game', error));
+	}
+	private _joinTournament(tournamentId: number) {
+		apiService
+			.joinTournament(tournamentId, this.root.userId ?? 0)
+			.then((response) => {
+				console.log('Joined tournament successfully', response);
+			})
+			.catch((error) => console.error('Error joining tournament', error));
+		this.root.loadScene(new SceneTournamentLoadingVs(this.root, tournamentId));
 	}
 }
