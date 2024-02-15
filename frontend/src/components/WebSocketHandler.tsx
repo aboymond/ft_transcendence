@@ -103,6 +103,7 @@ interface Props {
 interface FriendRequestReceived {
   senderName: string;
   requestId: string;
+  status: 'sent' | 'accepted'; 
 }
 
 interface WebSocketContextType {
@@ -133,9 +134,13 @@ const WebSocketHandler: React.FC<Props> = ({ children }) => {
 
   const acceptFriendRequest = async (requestId: string) => {
     console.log(`Accepting friend request with ID: ${requestId}`);
+    setFriendRequestReceived(prevState => ({
+      ...(prevState || { senderName: '', requestId: '', status: 'sent' }),
+      status: 'accepted'
+    }));
     toast.success(`Friend request accepted from user with ID: ${requestId}`);
     setNewFriendRequests(false);
-  }
+  };
 
   const messageHandler = (e: MessageEvent) => {
     const { type, payload } = JSON.parse(e.data);
@@ -150,9 +155,13 @@ const WebSocketHandler: React.FC<Props> = ({ children }) => {
     if (type === 'friend_request' && payload.action === 'send_friend_request') {
       console.log('New friend request received:', payload);
       setNewFriendRequests(true);
-      setFriendRequestReceived({ senderName: data.sender_name, requestId: data.request_id });
+      setFriendRequestReceived({
+        senderName: data.sender_name,
+        requestId: data.request_id,
+        status: 'sent'
+      });
     }
-  }
+  };
 
   useEffect(() => {
     if (!user?.id) {
@@ -187,7 +196,7 @@ const WebSocketHandler: React.FC<Props> = ({ children }) => {
         userStatus,
         setUserStatus,
         newFriendRequests,
-		setNewFriendRequests,
+        setNewFriendRequests,
         friendRequestReceived,
         acceptFriendRequest,
       }}
