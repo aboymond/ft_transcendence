@@ -6,6 +6,7 @@ import { apiService } from '../services/apiService';
 import { Navbar, Row, Col, Container } from 'react-bootstrap';
 import styles from '../styles/VerifyTwoFa.module.css';
 import { Button } from 'react-bootstrap';
+import { useParams } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
 
 const VerifyTwoFa: React.FC = () => {
@@ -15,6 +16,7 @@ const VerifyTwoFa: React.FC = () => {
     const navigate = useNavigate();
     const auth = useAuth();
 
+
     const handleClose = () => {
         auth.logout()
 		navigate('/')
@@ -22,12 +24,11 @@ const VerifyTwoFa: React.FC = () => {
 
     const handleVerifyOtp = async (event: React.FormEvent) => {
         event.preventDefault();
-        const username = localStorage.getItem('username_otp') || '';
-        const password = localStorage.getItem('password_otp') || '';
-        console.log("Username : ", username);
-        console.log("Password : ", password);
+        const urlParams = new URLSearchParams(window.location.search);
+		const username = urlParams.get('username') || '';
+        console.log(username);
         try {
-            const data = await apiService.verifyOtp(username, password, otp);
+            const data = await apiService.verifyOtp(username, otp);
             auth.login(data.access, data.user, data.user.twofa);
 			navigate('/home');
 		} catch (error) {

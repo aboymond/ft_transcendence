@@ -31,22 +31,6 @@ const LogPage: React.FC = () => {
 
 	const handleApiLogin = async () => {
 		window.location.href = 'http://localhost:8000/api/users/auth';
-		const [username, setUsername] = useState('');
-		const [password, setPassword] = useState('');
-		try {
-			const data = await apiService.login(username, password);
-			if (data.missing_otp == true) {
-				localStorage.setItem('username_otp', username);
-				localStorage.setItem('password_otp', password);
-				navigate('/verify-2fa');
-			} else {
-				auth.login(data.access, data.user, data.user.twofa);
-				navigate('/home');
-			}
-			setError('');
-		} catch (error) {
-			setError('Login failed. Please check your credentials.');
-		}
 	};
 
 	return (

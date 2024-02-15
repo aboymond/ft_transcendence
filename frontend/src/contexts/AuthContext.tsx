@@ -11,7 +11,7 @@ interface AuthContextType {
 	loading: boolean;
 	login: (token: string, user: User, TwoFa: boolean) => void;
 	logout: () => void;
-	verifyOtp: (username: string, password: string, otp:string) => void;
+	verifyOtp: (username: string, otp:string) => void;
 	updateUser: (user: User) => void;
 }
 
@@ -66,16 +66,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 		localStorage.removeItem('token');
 		localStorage.removeItem('isTwoFAToggled');
 		localStorage.removeItem('username_otp');
-		localStorage.removeItem('password_otp');
-		localStorage.removeItem('isTwoFAToggled');
-		localStorage.removeItem('isTwoFAToggled');
 		setToken(null);
 		setIsAuthenticated(false);
 		setUser(null);
 	};
 
-	const verifyOtp = (username: string, password: string, otp: string) => {
-		apiService.verifyOtp(username, password, otp).then((isValid) => {
+	const verifyOtp = (username: string,  otp: string) => {
+		apiService.verifyOtp(username, otp).then((isValid) => {
 			if (isValid) 
 				return (true);
 			else 

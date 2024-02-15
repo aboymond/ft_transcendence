@@ -116,8 +116,7 @@ class VerifyTwoFAView(generics.UpdateAPIView):
     serializer_class = UserSerializer
     def post(self, request, *args, **kwargs):
         username = request.data.get("username")
-        password = request.data.get("password")
-        user = authenticate(request, username=username, password=password)
+        user = User.objects.get(username=username)
         otp = request.data.get('otp')
         if user is not None:
             if (
@@ -177,7 +176,7 @@ class CallBackView(APIView):
         response = requests.get(avatar_url)
 
         User = get_user_model()
-        username = f"{user['login']}#{user['id']}"
+        username = f"{user['login']}{user['id']}"
 
         try:
             existing_user = User.objects.get(username=username, email=user["email"])
@@ -190,16 +189,22 @@ class CallBackView(APIView):
         # Save the new avatar
         existing_user.avatar.save(f"{username}.jpg", ContentFile(response.content))
         existing_user.save()
-
-        # temp JWT
-        refresh = RefreshToken.for_user(existing_user)
-
-        redirect_url = (
-            os.environ.get("FRONTEND_URL", "http://localhost:3001")
-            + "?access_token="
-            + str(refresh.access_token)
-        )
-        return redirect(redirect_url)
+        if existing_user.twofa is True:
+            send_otp(existing_user);
+            redirect_url = (
+                os.environ.get("FRONTEND_URL", "http://localhost:3001")
+                + "/verify-2fa?username="
+                + username
+            )
+            return redirect(redirect_url)
+        else:
+            refresh = RefreshToken.for_user(existing_user)
+            redirect_url = (
+                os.environ.get("FRONTEND_URL", "http://localhost:3001")
+                + "?access_token="
+                + str(refresh.access_token)
+            )
+            return redirect(redirect_url)
 
 
 class CallBackCodeView(APIView):
