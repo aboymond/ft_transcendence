@@ -1,5 +1,5 @@
 // import { Container } from 'react-bootstrap';
-import { defaultColor } from '..';
+import { defaultColor, playEnterSound, playSelectSound } from '..';
 import { SceneBase } from './SceneBase';
 import { SceneMenu2 } from './SceneMenu2';
 import * as PIXI from 'pixi.js';
@@ -8,7 +8,6 @@ import apiService from '../../src/services/apiService';
 import { SceneLoadingPage } from './SceneLoadingPage';
 import { SceneGame } from './SceneGame';
 import { SceneTournamentLoadingVs } from './SceneTournamentLoadingVs';
-import { sound } from '@pixi/sound';
 
 enum menuState {
 	TOURN_MENU,
@@ -42,8 +41,8 @@ export class SceneJoin extends SceneBase {
 
 	public async onStart(container: PIXI.Container) {
 
-		sound.add('select', './sound/Select.mp3');
-		sound.add('enter', './sound/game-start.mp3');
+		// sound.add('select', './sound/Select.mp3');
+		// sound.add('enter', './sound/game-start.mp3');
 
 		container.addChild(this._initTextJoin(this._textTournament));
 		container.addChild(this._initTextPvP(this._textPVP));
@@ -72,7 +71,7 @@ export class SceneJoin extends SceneBase {
 		switch (this.state) {
 			case menuState.TOURN_MENU:
 				if (e.key === 'ArrowRight') {
-					sound.play('select');
+					playSelectSound();
 
 					this._tourn_container.visible = false;
 					this._pvp_container.visible = true;
@@ -81,15 +80,15 @@ export class SceneJoin extends SceneBase {
 					this.state = menuState.PVP_MENU;
 				}
 				if (e.key === 'ArrowDown') {
-					sound.play('select');
+					playSelectSound();
 					this._pressDownTournament();
 				}
 				if (e.key === 'ArrowUp') {
-					sound.play('select');
+					playSelectSound();
 					this._pressUpTournament();
 				}
 				if (e.code === 'Enter') {
-					sound.play('enter');
+					playEnterSound();
 					this._initCurrentTournament();
 					this.root.loadScene(new SceneTournamentLoadingVs(this.root));
 				}
@@ -99,7 +98,7 @@ export class SceneJoin extends SceneBase {
 				break;
 			case menuState.PVP_MENU:
 				if (e.key === 'ArrowLeft') {
-					sound.play('select');
+					playSelectSound();
 
 					this._tourn_container.visible = true;
 					this._pvp_container.visible = false;
@@ -108,15 +107,15 @@ export class SceneJoin extends SceneBase {
 					this.state = menuState.TOURN_MENU;
 				}
 				if (e.key === 'ArrowDown') {
-					sound.play('select');
+					playSelectSound();
 					this._pressDownPvP();
 				}
 				if (e.key === 'ArrowUp') {
-					sound.play('select');
+					playSelectSound();
 					this._pressUpPvP();
 				}
 				if (e.code === 'Enter') {
-					sound.play('enter');
+					playEnterSound();
 
 					console.log(this._gameObjects[this._currentSelectPvP].data.id);
 					this._joinGame(this._gameObjects[this._currentSelectPvP].data.id);

@@ -1,16 +1,8 @@
-import { defaultColor, glowFilter } from '..';
+import { defaultColor, glowFilter, playLoadingPageSound } from '..';
 import { SceneBase } from './SceneBase';
 import * as PIXI from 'pixi.js';
-// import { PixiManager } from '../PixiManager';
-// import apiService from '../../src/services/apiService';
-// import { SceneLoadingPage } from './SceneLoadingPage';
-// import { SceneGame } from './SceneGame';
-
 
 const tournamentLine = PIXI.Texture.from('./img/tournamentLine.png');
-
-
-
 
 export class SceneTournamentLoadingVs extends SceneBase {
 
@@ -34,6 +26,8 @@ export class SceneTournamentLoadingVs extends SceneBase {
 
 
 	public async onStart(container: PIXI.Container) {
+
+		playLoadingPageSound();
 
 		this._initTextStandings(this._standings);
 		container.addChild(this._standings);

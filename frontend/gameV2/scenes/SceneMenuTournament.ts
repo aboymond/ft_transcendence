@@ -1,10 +1,19 @@
 import * as PIXI from 'pixi.js';
 import { SceneBase } from './SceneBase';
 
-import { glowFilter, defaultColor, textStyleMenuTournamentCreate, textStyleMenuTournamentName, textStyleMenuTournamentMaxScore, textStyleMenuTournamentMode, textStyleMenuTournamentPlayer, textStyleMenuOptionPlay } from '..';
+import { glowFilter,
+	defaultColor,
+	textStyleMenuTournamentCreate,
+	textStyleMenuTournamentName,
+	textStyleMenuTournamentMaxScore,
+	textStyleMenuTournamentMode,
+	textStyleMenuTournamentPlayer,
+	textStyleMenuOptionPlay,
+	playEnterSound,
+	playSelectSound,
+} from '..';
 import { SceneMenu2 } from './SceneMenu2';
 import { SceneLoadingPage } from './SceneLoadingPage';
-import {sound} from '@pixi/sound';
 
 const selectMaxCreate = 3;
 
@@ -65,8 +74,8 @@ export class SceneMenuTournament extends SceneBase {
 	//=======================================
 
 	public async onStart(container: PIXI.Container) {
-		sound.add('select', './sound/Select.mp3');
-		sound.add('enter', './sound/game-start.mp3');
+		// sound.add('select', './sound/Select.mp3');
+		// sound.add('enter', './sound/game-start.mp3');
 
 		container.addChild(this._initTextCreate(this._textCreate));
 		this._create = this._initMenuCreate();
@@ -82,7 +91,7 @@ export class SceneMenuTournament extends SceneBase {
 
 
 		if (e.code === 'ArrowUp') {
-			sound.play('select');
+			playSelectSound();
 
 			this._currentSelectCreate--;
 			if (this._currentSelectCreate < menu.NAME) {
@@ -92,7 +101,7 @@ export class SceneMenuTournament extends SceneBase {
 		}
 
 		if (e.code === 'ArrowDown') {
-			sound.play('select');
+			playSelectSound();
 
 			this._currentSelectCreate++;
 			if (this._currentSelectCreate > selectMaxCreate) {
@@ -102,20 +111,20 @@ export class SceneMenuTournament extends SceneBase {
 		}
 
 		if (e.code === 'ArrowLeft') {
-			sound.play('select');
+			playSelectSound();
 
 			this._pressLeft();
 		}
 
 		if (e.code === 'ArrowRight') {
-			sound.play('select');
+			playSelectSound();
 
 			this._pressRight();
 		}
 
 		if (e.code === 'Enter') {
 			if (this._currentSelectCreate === menu.PLAY) {
-				sound.play('enter');
+				playEnterSound();
 
 				this.root.loadScene(new SceneLoadingPage(this.root));
 			}

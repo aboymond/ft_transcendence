@@ -3,6 +3,7 @@ import { GlowFilter } from '@pixi/filter-glow';
 import { PixelateFilter } from '@pixi/filter-pixelate';
 import $ from 'jquery';
 import '/font/font.css';
+import { sound } from '@pixi/sound';
 
 export const defaultColor = 0x1aff00;
 
@@ -119,3 +120,66 @@ export const glowFilter = new GlowFilter({
 }) as unknown as PIXI.Filter;
 
 export const PixelPad = new PixelateFilter(undefined) as unknown as PIXI.Filter;
+
+export function playSelectSound() {
+	if (!sound.exists('select')) {
+		sound.init();
+		sound.add('select', './sound/Select.mp3');
+	}
+	sound.play('select');
+	
+}
+
+export function playEnterSound() {
+	if (!sound.exists('enter')) {
+		sound.init();
+		sound.add('enter', './sound/game-start.mp3');
+	}
+	sound.play('enter');
+	
+}
+
+export function playTouchBallSound() {
+	if (!sound.exists('touchBall')) {
+		sound.init();
+		sound.add('touchBall', './sound/touchBall.mp3')
+	}
+	sound.play('touchBall');
+	
+}
+
+export function playTouchPadSound() {
+	if (!sound.exists('touchPad')) {
+		sound.init();
+		sound.add('touchPad', './sound/touchPad.mp3')
+	}
+	sound.play('touchPad');
+	
+}
+
+export function playLoadingPageSound() {
+	if (!sound.exists('loading')) {
+		sound.init();
+		sound.add('loading', './sound/loadingPage.mp3')
+	}
+	sound.play('loading');
+	
+}
+
+export function playWinSound() {
+	if (!sound.exists('win')) {
+		sound.init();
+		sound.add('win', './sound/Winner.mp3')
+	}
+	sound.play('win');
+	
+}
+
+export function playLooseSound() {
+	if (!sound.exists('loose')) {
+		sound.init();
+		sound.add('loose', './sound/Looser.mp3')
+	}
+	sound.play('loose');
+	
+}

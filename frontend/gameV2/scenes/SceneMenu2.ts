@@ -3,8 +3,8 @@ import { SceneBase } from './SceneBase';
 import { SceneMenu } from './SceneMenu';
 import { SceneMenuOption } from './SceneMenuOption';
 import { SceneMenuTournament } from './SceneMenuTournament';
-import { SceneJoin } from './SceneJoin';
-import { sound } from '@pixi/sound';
+import { SceneJoin } from './SceneJoin'
+import { playEnterSound, playSelectSound } from '..';
 // import { glowFilter, defaultColor, textStylePVPMenu2, textStylePVBMenu2, textStyleTournamentMenu, textStyleJoinMenu2 } from '..';
 
 const selectMax = 2;
@@ -52,8 +52,8 @@ const textures = [
 		private _sprites: PIXI.Sprite[] = [];
 		
 	public async onStart(container: PIXI.Container) {
-		sound.add('select', './sound/Select.mp3');
-		sound.add('enter', './sound/game-start.mp3');
+		// sound.add('select', './sound/Select.mp3');
+		// sound.add('enter', './sound/game-start.mp3');
 
 		
 		for (let i = 0; i < textures.length; i++) {
@@ -105,7 +105,7 @@ const textures = [
 			}
 		}
 		if (e.code === 'Enter') {
-			sound.play('enter');
+			playEnterSound();
 			if (this._currentSelect === menu.TOURNAMENT) {
 				this.root.loadScene(new SceneMenuTournament(this.root));
 			} else if (this._currentSelect === menu.PVP_PVB) {
@@ -159,28 +159,28 @@ const textures = [
 
 	private _pressUp() {
 		this._currentSelect--;
-		sound.play('select');
+		playSelectSound();
 		if (this._currentSelect < 0) this._currentSelect = selectMax;
 		this._updateMenuColor();
 	}
 
 	private _pressDown() {
 		this._currentSelect++;
-		sound.play('select');
+		playSelectSound();
 		if (this._currentSelect > selectMax) this._currentSelect = 0;
 		this._updateMenuColor();
 	}
 
 	private _pressRight() {
 		this._currentSelect_LR++;
-		sound.play('select');
+		playSelectSound();
 		if (this._currentSelect_LR > selectMax_LR) this._currentSelect_LR = 0;
 		this._updateMenuColor();
 	}
 
 	private _pressLeft() {
 		this._currentSelect_LR--;
-		sound.play('select');
+		playSelectSound();
 		if (this._currentSelect_LR < 0) this._currentSelect_LR = selectMax_LR;
 		this._updateMenuColor;
 	}

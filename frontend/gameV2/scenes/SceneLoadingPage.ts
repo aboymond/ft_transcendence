@@ -1,10 +1,7 @@
-import { defaultColor, glowFilter } from '..';
+import { defaultColor, glowFilter, playLoadingPageSound } from '..';
 import { SceneBase } from './SceneBase';
-// import { SceneMenu } from './SceneMenu';
-// import { SceneWinOrLoose } from './SceneWinOrLoose';
 import * as PIXI from 'pixi.js';
-// import { gsap } from 'gsap';
-// import { PixiManager } from '../PixiManager';
+
 
 const keyExplanation = PIXI.Texture.from('./img/keyExplanation.png');
 
@@ -81,6 +78,8 @@ export class SceneLoadingPage extends SceneBase {
 	//=======================================
 
 	public async onStart(container: PIXI.Container) {
+		playLoadingPageSound();
+
 		console.log('sprite: ' + this._sprite);
 		this._initKeyExplanation(this._sprite);
 		container.addChild(this._sprite);

@@ -5,6 +5,7 @@ import '../src/styles/GameWindow.module.css';
 import $ from 'jquery';
 import { GameState } from '../src/types';
 
+
 interface IPixiManagerOptions {
 	backgroundAlpha: number;
 	antialias: boolean;
@@ -32,7 +33,6 @@ export class PixiManager {
 	public userId: number | null = null;
 	public currentTournament: Tournament | null = null;
 	
-
 	//--------------------------
 
 	private _currentScene?: SceneBase = undefined;

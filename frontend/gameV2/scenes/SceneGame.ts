@@ -1,4 +1,4 @@
-import { defaultColor, glowFilter } from '..';
+import { defaultColor, glowFilter, } from '..';
 import { SceneBase } from './SceneBase';
 import { SceneMenu } from './SceneMenu';
 import { SceneWinOrLoose } from './SceneWinOrLoose';

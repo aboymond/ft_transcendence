@@ -1,8 +1,7 @@
 import * as PIXI from 'pixi.js';
 import { SceneBase } from './SceneBase';
 import { SceneMenu2 } from './SceneMenu2';
-import { glowFilter, defaultColor, textStyleWinOrLoose } from '../index';
-import { sound } from '@pixi/sound';
+import { glowFilter, defaultColor, textStyleWinOrLoose, playWinSound,playLooseSound, } from '../index';
 
 export class SceneWinOrLoose extends SceneBase {
 	private _textWin = new PIXI.Text('YOU WIN', textStyleWinOrLoose);
@@ -17,15 +16,15 @@ export class SceneWinOrLoose extends SceneBase {
 	//=======================================
 
 	public async onStart(container: PIXI.Container) {
-		sound.add('win', './sound/Winner.mp3');
-		sound.add('loose', './sound/Looser.mp3');
+		// sound.add('win', './sound/Winner.mp3');
+		// sound.add('loose', './sound/Looser.mp3');
 
 		container.addChild(this._initTextWin(this._textWin));
 		container.addChild(this._initTextLoose(this._textLoose));
 
 		if (this.root.playerAWin) {
 			this._textWin.visible = true;
-			sound.play('win');
+			playWinSound();
 			this._interval = setInterval(() => {
 				if (this._textWin) {
 					this._textWin.visible = !this._textWin.visible;
@@ -33,7 +32,7 @@ export class SceneWinOrLoose extends SceneBase {
 			}, 800);
 		} else {
 			this._textLoose.visible = true;
-			sound.play('loose');
+			playLooseSound();
 			this._interval = setInterval(() => {
 				if (this._textLoose) {
 					this._textLoose.visible = !this._textLoose.visible;
