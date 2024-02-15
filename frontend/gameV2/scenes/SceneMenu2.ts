@@ -66,6 +66,12 @@ export class SceneMenu2 extends SceneBase {
 		this._initSpritePvB(this._sprites[allSprite.PVB_S]);
 		this._initSpritePvB(this._sprites[allSprite.PVB_U]);
 
+		this._sprites.forEach((sprite, index) => {
+			sprite.eventMode = 'dynamic';
+			sprite.cursor = 'pointer';
+			sprite.on('pointerdown', () => this.onSpriteClick(index));
+		});
+
 		this._sprites[allSprite.TOURNAMENT_U].visible = false;
 		this._sprites[allSprite.PVP_S].visible = false;
 		this._sprites[allSprite.PVP_U].visible = true;
@@ -242,5 +248,30 @@ export class SceneMenu2 extends SceneBase {
 			this._sprites[allSprite.JOIN_U].visible = false;
 			this._sprites[allSprite.PVB_U].visible = true;
 		}
+	}
+
+	// Add a method to handle sprite clicks
+	private onSpriteClick(index: number) {
+		switch (index) {
+			case allSprite.TOURNAMENT_S:
+			case allSprite.TOURNAMENT_U:
+				this._currentSelect = menu.TOURNAMENT;
+				break;
+			case allSprite.PVP_S:
+			case allSprite.PVP_U:
+			case allSprite.PVB_S:
+			case allSprite.PVB_U:
+				this._currentSelect = menu.PVP_PVB;
+				break;
+			case allSprite.JOIN_S:
+			case allSprite.JOIN_U:
+				this._currentSelect = menu.JOIN;
+				break;
+			default:
+				return; // Do nothing if the index doesn't match
+		}
+
+		// Simulate pressing Enter to load the selected scene
+		this.onKeyDown(new KeyboardEvent('keydown', { code: 'Enter' }));
 	}
 }

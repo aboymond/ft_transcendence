@@ -10,11 +10,23 @@ export class SceneMenu extends SceneBase {
 
 	public async onStart(container: PIXI.Container) {
 		//Init Title text
+		this._textTitle.eventMode = 'dynamic';
+		this._textTitle.cursor = 'pointer';
+		this._textTitle.on('pointerdown', () => {
+			this.root.playSound('enter');
+			this.root.loadScene(new SceneMenu2(this.root));
+		});
 		container.addChild(this._initTextTitle());
 		this._textTitle.x = this.root.width / 2 - this._textTitle.width / 2;
 		this._textTitle.y = this.root.height / 2 / 2 - this._textTitle.height / 2;
 
 		//Init Space text
+		this._spaceText.eventMode = 'dynamic';
+		this._spaceText.cursor = 'pointer';
+		this._spaceText.on('pointerdown', () => {
+			this.root.playSound('enter');
+			this.root.loadScene(new SceneMenu2(this.root));
+		});
 		container.addChild(this._initTextSpace());
 		this._spaceText.x = this.root.width / 2 - this._spaceText.width / 2;
 		this._spaceText.y = this.root.height - 100 - this._spaceText.height / 2;
