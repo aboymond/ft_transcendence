@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Button, Card } from 'react-bootstrap';
-import Logo from '../components/Logo';
-import styles from '../styles/LogPage.module.css';
+import { apiService } from '../services/apiService';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import styles from '../styles/LogPage.module.css';
+import { Container, Row, Col, Card, Button} from 'react-bootstrap';
+import Logo from '../components/Logo';
 import Login from '../components/Login';
 import Register from '../components/Register';
 
 const LogPage: React.FC = () => {
 	const [showComponent, setShowComponent] = useState('');
+	const [error, setError] = useState('');
 
 	const navigate = useNavigate();
 	const auth = useAuth();
@@ -29,6 +31,22 @@ const LogPage: React.FC = () => {
 
 	const handleApiLogin = async () => {
 		window.location.href = 'http://localhost:8000/api/users/auth';
+		const [username, setUsername] = useState('');
+		const [password, setPassword] = useState('');
+		try {
+			const data = await apiService.login(username, password);
+			if (data.missing_otp == true) {
+				localStorage.setItem('username_otp', username);
+				localStorage.setItem('password_otp', password);
+				navigate('/verify-2fa');
+			} else {
+				auth.login(data.access, data.user, data.user.twofa);
+				navigate('/home');
+			}
+			setError('');
+		} catch (error) {
+			setError('Login failed. Please check your credentials.');
+		}
 	};
 
 	return (
