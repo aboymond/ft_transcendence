@@ -328,50 +328,41 @@ export class SceneJoin extends SceneBase {
 		const menu = new PIXI.Container();
 		this._gameObjects = [];
 		const games = await apiService.getGames();
-		let j = 0;
+		// Filter games to only include those with status "waiting"
+		const waitingGames = games.filter((game: Game) => game.status === 'waiting');
 
-		for (let i = 0; i < games.length; i++) {
+		for (let i = 0; i < waitingGames.length; i++) {
 			const menuBoxPvP = new PIXI.Graphics();
-			const game = games[i];
+			const game = waitingGames[i];
 
-			// console.log(game);
-			if (game.status === 'completed') {
-				i++;
-			} else {
-				//TODO: use game.player1.username
-				// const textName_PvP = new PIXI.Text(game.player1 ? game.player1.username : 'Waiting for Player');
-				const textName_PvP = new PIXI.Text(game.player1);
-				//TODO: use this
-				// const textMode_PvP = new PIXI.Text(game.max_score.toString());
-				const textMode_PvP = new PIXI.Text(game.max_score);
-				let player2 = 0;
+			const textName_PvP = new PIXI.Text(game.player1);
+			const textMode_PvP = new PIXI.Text(game.max_score);
+			let player2 = 0;
 
-				if (game.player2 != null) player2 = 1;
-				const textInfo_PvP = new PIXI.Text(player2 + 1 + '/2');
+			if (game.player2 != null) player2 = 1;
+			const textInfo_PvP = new PIXI.Text(player2 + 1 + '/2');
 
-				textName_PvP.x = (this.root.width * 2) / 100;
-				textName_PvP.style.fontSize = (this.root.width * 4) / 100;
-				textName_PvP.style.fill = 'green';
-				textName_PvP.filters = [glowFilter];
+			textName_PvP.x = (this.root.width * 2) / 100;
+			textName_PvP.style.fontSize = (this.root.width * 4) / 100;
+			textName_PvP.style.fill = 'green';
+			textName_PvP.filters = [glowFilter];
 
-				textMode_PvP.x = (this.root.width * 35) / 100 + 5;
-				textMode_PvP.style.fontSize = (this.root.width * 4) / 100;
-				textMode_PvP.style.fill = 'green';
-				textMode_PvP.filters = [glowFilter];
+			textMode_PvP.x = (this.root.width * 35) / 100 + 5;
+			textMode_PvP.style.fontSize = (this.root.width * 4) / 100;
+			textMode_PvP.style.fill = 'green';
+			textMode_PvP.filters = [glowFilter];
 
-				textInfo_PvP.x = (this.root.width * 75) / 100 + 5;
-				textInfo_PvP.style.fontSize = (this.root.width * 4) / 100;
-				textInfo_PvP.style.fill = 'green';
-				textInfo_PvP.filters = [glowFilter];
+			textInfo_PvP.x = (this.root.width * 75) / 100 + 5;
+			textInfo_PvP.style.fontSize = (this.root.width * 4) / 100;
+			textInfo_PvP.style.fill = 'green';
+			textInfo_PvP.filters = [glowFilter];
 
-				menuBoxPvP.y = (this.root.height * 20) / 100 + j * 25;
-				menuBoxPvP.endFill();
-				menuBoxPvP.addChild(textName_PvP, textMode_PvP, textInfo_PvP);
+			menuBoxPvP.y = (this.root.height * 20) / 100 + i * 25;
+			menuBoxPvP.endFill();
+			menuBoxPvP.addChild(textName_PvP, textMode_PvP, textInfo_PvP);
 
-				this._gameObjects.push({ container: menuBoxPvP, data: game });
-				menu.addChild(menuBoxPvP);
-				j++;
-			}
+			this._gameObjects.push({ container: menuBoxPvP, data: game });
+			menu.addChild(menuBoxPvP);
 		}
 		menu.visible = false;
 
