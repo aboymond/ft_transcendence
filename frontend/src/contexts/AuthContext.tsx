@@ -11,6 +11,7 @@ interface AuthContextType {
 	loading: boolean;
 	login: (token: string, user: User, TwoFa: boolean) => void;
 	logout: () => void;
+	verifyOtp: (username: string, password: string, otp:string) => void;
 	updateUser: (user: User) => void;
 }
 
@@ -23,7 +24,8 @@ export const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
 	const [token, setToken] = useState<string | null>(null);
-	const [TwoFA, setTwoFa] = useState<boolean>(false);
+	const [TwoFa, setTwoFa] = useState<boolean>(false);
+	const [OtpValidated, setOtpValidated] = useState(false);
 	const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 	const [user, setUser] = useState<User | null>(null);
 	const [loading, setLoading] = useState(true);
@@ -52,18 +54,36 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
 	const login = (newToken: string, newUser: User, newTwoFa:boolean) => {
 		localStorage.setItem('token', newToken);
-		setToken(newToken);
 		setTwoFa(newTwoFa);
+		console.log(isAuthenticated);
+		setToken(newToken);
 		setIsAuthenticated(true);
 		setUser(newUser);
+		console.log("AFTER LOGIN : ", isAuthenticated);
 	};
 
 	const logout = () => {
 		localStorage.removeItem('token');
 		localStorage.removeItem('isTwoFAToggled');
+		localStorage.removeItem('username_otp');
+		localStorage.removeItem('password_otp');
+		localStorage.removeItem('isTwoFAToggled');
+		localStorage.removeItem('isTwoFAToggled');
 		setToken(null);
 		setIsAuthenticated(false);
 		setUser(null);
+	};
+
+	const verifyOtp = (username: string, password: string, otp: string) => {
+		apiService.verifyOtp(username, password, otp).then((isValid) => {
+			if (isValid) 
+				return (true);
+			else 
+			{
+				console.error("OTP verification failed:");
+				return (false);
+			}
+		})
 	};
 
 	const updateUser = (updatedUser: User) => {
@@ -74,6 +94,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 		token,
 		isAuthenticated,
 		user,
+		TwoFa,
+		verifyOtp,
 		loading,
 		login,
 		logout,

@@ -20,9 +20,10 @@ const Login: React.FC<LoginProps> = ({ onClose }) => {
 		event.preventDefault();
 		try {
 			const data = await apiService.login(username, password);
-			if (data.user.twofa == true) {
+			if (data.missing_otp == true) {
+				localStorage.setItem('username_otp', username);
+				localStorage.setItem('password_otp', password);
 				navigate('/verify-2fa');
-				auth.login(data.access, data.user, data.user.twofa);
 			} else {
 				auth.login(data.access, data.user, data.user.twofa);
 				navigate('/home');

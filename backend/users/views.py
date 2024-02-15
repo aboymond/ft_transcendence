@@ -35,6 +35,31 @@ User = get_user_model()
 load_dotenv()
 logger = logging.getLogger(__name__)
 
+def ft_login(user):
+    user.save()
+    refresh = RefreshToken.for_user(user)
+    return Response(
+    {
+        "refresh": str(refresh),
+        "access": str(refresh.access_token),  # type: ignore
+        "user": UserSerializer(user).data,
+    },
+    status=status.HTTP_200_OK,
+    )
+
+def send_otp(user):
+    verification_code = generate_random_digits()
+    user.otp = verification_code
+    user.otp_expiry_time = timezone.now() + timedelta(hours=1)
+    send_mail(
+    'Verification Code',
+    f'Your verification code is: {user.otp}',
+    os.getenv('EMAIL_H_U'),
+    [user.email],
+    fail_silently=True,
+    )
+    user.save()
+
 def generate_random_digits(n=6):
     return "".join(map(str, (secrets.choice(string.digits) for i in range(n))))
 
@@ -62,28 +87,19 @@ class LoginView(generics.GenericAPIView):
         if user is not None:
             user.status = "online"  # type: ignore
             if user.twofa is True:
-                verification_code = generate_random_digits()
-                user.otp = verification_code
-                user.otp_expiry_time = timezone.now() + timedelta(hours=1)
-                send_mail(
-                'Verification Code',
-                f'Your verification code is: {user.otp}',
-                os.getenv('EMAIL_H_U'),
-                [user.email],
-                fail_silently=True,
-                )
-            user.save()
-            refresh = RefreshToken.for_user(user)
-            return Response(
-            {
-                "refresh": str(refresh),
-                "access": str(refresh.access_token),  # type: ignore
-                "user": UserSerializer(user).data,
-            },
-            status=status.HTTP_200_OK,
-            )
+                send_otp(user);
+                # logout(request);
+                # refresh = RefreshToken.for_user(user);
+                return Response(
+                {   "missing_otp": True,
+                    # "user": UserSerializer(user).data,
+                }, 
+                status=status.HTTP_200_OK)
+            else:
+                return ft_login(user);
         else:
             raise AuthenticationFailed("Invalid Credentials")
+
 
 class TwoFAEnablingView(generics.UpdateAPIView):
     serializer_class = UserSerializer
@@ -99,30 +115,22 @@ class TwoFAEnablingView(generics.UpdateAPIView):
 class VerifyTwoFAView(generics.UpdateAPIView):
     serializer_class = UserSerializer
     def post(self, request, *args, **kwargs):
+        username = request.data.get("username")
+        password = request.data.get("password")
+        user = authenticate(request, username=username, password=password)
         otp = request.data.get('otp')
-
-        user = request.user
-        print(f'User : {user}')
-        print(f'OTP received : {otp}')
         if user is not None:
-            # user = UserProfile.objects.get(user=user)
             if (
                 user.otp == otp and
                 user.otp_expiry_time is not None and
                 user.otp_expiry_time > timezone.now()
             ):
-                # django_login(request, user)
-
-                # refresh = RefreshToken.for_user(user)
-                # access_token = str(refresh.access_token)
-
                 user.otp = ''
                 user.otp_expiry_time = None
                 user.save()
 
-                return Response(status=status.HTTP_200_OK)
-            else:
-                raise AuthenticationFailed("Invalid Credentials")
+                return ft_login(user)
+        raise AuthenticationFailed("Invalid Credentials")
     
 
 class AuthView(generics.GenericAPIView):

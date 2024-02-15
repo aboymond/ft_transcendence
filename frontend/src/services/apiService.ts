@@ -66,10 +66,10 @@ export const apiService = {
 			body: JSON.stringify({twofa})});
 	},
 
-	verifyOtp: async (otp:string) => {
-		return fetchAPI('users//verify-2fa/', {
+	verifyOtp: async (username: string, password: string, otp:string) => {
+		return fetchAPI('users/verify-2fa/', {
 			method : 'POST',
-			body: JSON.stringify({otp})});
+			body: JSON.stringify({username, password, otp})});
 	},
 
 	getUserById: async (userId: string): Promise<User> => {

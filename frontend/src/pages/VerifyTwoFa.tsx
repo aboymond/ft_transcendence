@@ -6,9 +6,11 @@ import { apiService } from '../services/apiService';
 import { Navbar, Row, Col, Container } from 'react-bootstrap';
 import styles from '../styles/VerifyTwoFa.module.css';
 import { Button } from 'react-bootstrap';
+import { AuthContext } from '../contexts/AuthContext';
 
 const VerifyTwoFa: React.FC = () => {
     const [otp, setotp] = useState('');
+    const [codeValidated, setcodeValidated] = useState(false);
     const [error, setError] = useState('');
     const navigate = useNavigate();
     const auth = useAuth();
@@ -20,11 +22,14 @@ const VerifyTwoFa: React.FC = () => {
 
     const handleVerifyOtp = async (event: React.FormEvent) => {
         event.preventDefault();
+        const username = localStorage.getItem('username_otp') || '';
+        const password = localStorage.getItem('password_otp') || '';
+        console.log("Username : ", username);
+        console.log("Password : ", password);
         try {
-            console.log(otp);
-			const data = await apiService.verifyOtp(otp);
-            setError('');
-            navigate('/profile');
+            const data = await apiService.verifyOtp(username, password, otp);
+            auth.login(data.access, data.user, data.user.twofa);
+			navigate('/home');
 		} catch (error) {
 			setError('2FA failed. Please check your code.');
 		}

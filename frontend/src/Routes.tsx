@@ -11,7 +11,6 @@ const AuthenticatedRoutes: React.FC = () => (
 	<>
 		<Routes>
 			<Route path="/home" element={<Home />} />
-			<Route path="/verify-2fa" element={<VerifyTwoFa />} />
 			<Route path="/credits" element={<Credits />} />
 			<Route path="*" element={<Navigate to="/home" replace />} />
 		</Routes>
@@ -21,6 +20,7 @@ const AuthenticatedRoutes: React.FC = () => (
 const NonAuthenticatedRoutes: React.FC = () => (
 	<Routes>
 		<Route path="/" element={<LogPage />} />
+		<Route path="/verify-2fa" element={<VerifyTwoFa />} />
 		<Route path="*" element={<Navigate to="/" replace />} />
 	</Routes>
 );
