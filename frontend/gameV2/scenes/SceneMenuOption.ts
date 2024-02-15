@@ -242,7 +242,6 @@ export class SceneMenuOption extends SceneBase {
 				.createGame(this.root.userId ?? 0) //TODO
 				.then((response) => {
 					console.log('Game created successfully', response);
-					this.root.openGameSocket(response.id);
 					this.root.loadScene(new SceneLoadingPage(this.root, response.id));
 				})
 				.catch((error) => console.error('Error creating game', error));
@@ -255,46 +254,6 @@ export class SceneMenuOption extends SceneBase {
 			this._textErrorPad.visible = true;
 		}
 	}
-	// private _pressEnter() {
-	// 	if (this._currentSelect === menu.PLAY) {
-	// 		if (this.root.vsPlayer && this._currentPad === 0) {
-	// 			// Send a request to the backend to create a game
-	// 			if (this.root.ws) {
-	// 				console.log('Sending request to create_game');
-	// 				this.root.ws.send(
-	// 					JSON.stringify({
-	// 						type: 'game_event',
-	// 						payload: {
-	// 							action: 'create_game',
-	// 							data: {
-	// 								user_id: Number(this.root.userId),
-	// 							},
-	// 						},
-	// 					}),
-	// 				);
-	// 				sound.play('enter');
-	// 				this.root.loadScene(new SceneLoadingPage(this.root));
-	// 				this.root.ws.onmessage = (e) => {
-	// 					const data = JSON.parse(e.data);
-	// 					if (data.action === 'start_game') {
-	// 						console.log('Loading SceneGame');
-	// 						this.root.loadScene(new SceneGame(this.root));
-	// 					}
-	// 				};
-	// 			}
-	// 		} else if (this._currentPad === 0) {
-	// 			//TODO: enable other pads ?
-	// 			sound.play('enter');
-	// 			console.log('Loading SceneGameVsBot');
-	// 			this.root.loadScene(new SceneGameVsBot(this.root));
-	// 		} else {
-	// 			errorLock = true;
-	// 			this._popError.visible = true;
-	// 			this._textErrorOK.visible = true;
-	// 			this._textErrorPad.visible = true;
-	// 		}
-	// 	}
-	// }
 
 	private _pressUp() {
 		this._currentSelect--;

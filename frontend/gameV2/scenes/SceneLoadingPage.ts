@@ -250,7 +250,9 @@ export class SceneLoadingPage extends SceneBase {
 	private async notifyPlayerReady() {
 		try {
 			await apiService.sendPlayerReady(this._gameId).then(() => {
-				this.root.openGameSocket(this._gameId);
+				if (!this.root.gameSocket) {
+					this.root.openGameSocket(this._gameId);
+				}
 			});
 		} catch (error) {
 			console.error('Error notifying player ready:', error);

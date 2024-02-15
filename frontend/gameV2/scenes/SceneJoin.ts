@@ -16,10 +16,6 @@ enum menuState {
 	PVP_MENU,
 }
 
-// interface objectData {
-// 	max_participents: number;
-// }
-
 export class SceneJoin extends SceneBase {
 	private state: menuState = menuState.TOURN_MENU;
 	private _tourn_container = new PIXI.Container();
@@ -374,17 +370,15 @@ export class SceneJoin extends SceneBase {
 			.joinGame(gameId, this.root.userId ?? 0)
 			.then((response) => {
 				console.log('Joined game successfully', response);
-				this.root.openGameSocket(response.id);
+				this.root.loadScene(new SceneLoadingPage(this.root, gameId));
 			})
 			.catch((error) => console.error('Error joining game', error));
-		this.root.loadScene(new SceneLoadingPage(this.root, gameId));
 	}
 	private _joinTournament(tournamentId: number) {
 		apiService
 			.joinTournament(tournamentId, this.root.userId ?? 0)
 			.then((response) => {
 				console.log('Joined tournament successfully', response);
-				//TODO this.root.openGameSocket(response.id);
 			})
 			.catch((error) => console.error('Error joining tournament', error));
 		this.root.loadScene(new SceneTournamentLoadingVs(this.root, tournamentId));
