@@ -111,3 +111,11 @@ export interface WebSocketMessage {
 		data: MessageData;
 	};
 }
+
+export interface Match {
+	id: number;
+	player1: number;
+	player2: number;
+	order: number;
+	game: number;
+}

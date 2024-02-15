@@ -45,20 +45,27 @@ class JoinGameView(generics.UpdateAPIView):
 
     def patch(self, request, *args, **kwargs):
         game = self.get_object()
-        user_id = request.data.get("user_id")
-        user = get_object_or_404(User, pk=user_id)
+        user = request.user
 
-        if game.player2 is not None:
+        # Check if the game is empty and add the user as the first player
+        if not game.player1:
+            game.player1 = user
+            game.save()
+            return Response(self.get_serializer(game).data, status=status.HTTP_200_OK)
+
+        # If the game already has a first player, add the user as the second player
+        elif not game.player2 and game.player1 != user:
+            game.player2 = user
+            game.status = "in_progress"  # Optionally, change the game status
+            game.save()
+            return Response(self.get_serializer(game).data, status=status.HTTP_200_OK)
+
+        # If the game is full or the user is already in the game, return an error
+        else:
             return Response(
-                {"error": "The game is already full"},
+                {"detail": "Game is full or user is already in the game"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
-        game.player2 = user
-        game.status = "in_progress"
-        game.save()
-
-        return Response(self.get_serializer(game).data, status=status.HTTP_200_OK)
 
 
 @method_decorator(csrf_exempt, name="dispatch")

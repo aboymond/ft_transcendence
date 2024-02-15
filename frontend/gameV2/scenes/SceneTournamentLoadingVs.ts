@@ -5,6 +5,8 @@ import * as PIXI from 'pixi.js';
 import { PixiManager } from '../PixiManager';
 import apiService from '../../src/services/apiService';
 import { Tournament } from '../../src/types';
+import { Match } from '../../src/types';
+import { SceneLoadingPage } from './SceneLoadingPage';
 
 const tournamentLine = PIXI.Texture.from('./img/tournamentLine.png');
 
@@ -62,6 +64,8 @@ export class SceneTournamentLoadingVs extends SceneBase {
 				clearInterval(this._checkInterval!);
 			}
 		}, 1000);
+
+		this.fetchAndDisplayMatches(container);
 	}
 
 	public onUpdate() {}
@@ -303,5 +307,50 @@ export class SceneTournamentLoadingVs extends SceneBase {
 			}
 		}
 		container.addChild(this._containerNames);
+	}
+
+	private async fetchAndDisplayMatches(container: PIXI.Container) {
+		const matches = await apiService.getMatches(this._tournamentId); // Assume this method exists and fetches matches for the tournament
+		matches.sort((a, b) => a.order - b.order); // Sort matches by order
+		console.log(matches);
+		this._setupMatchDisplay(container, matches); // Setup display based on sorted matches
+	}
+
+	private _setupMatchDisplay(container: PIXI.Container, matches: Match[]) {
+		// Clear existing match display
+		// this._containerNames.removeChildren();
+		// this._nameVs = [];
+
+		matches.forEach((match) => {
+			// Display match details (e.g., player names, order)
+			// For simplicity, let's assume you have a method to create text elements for each match
+			const matchDisplay = this.createMatchDisplayElement(match);
+			this._containerNames.addChild(matchDisplay);
+
+			// Add functionality to join game if the user is part of the match
+			matchDisplay.interactive = true;
+			// matchDisplay.buttonMode = true;
+			matchDisplay.on('pointerdown', () => {
+				if ([match.player1, match.player2].includes(this.root.userId ?? 0)) {
+					this.root.openGameSocket(match.game);
+					this.root.loadScene(new SceneLoadingPage(this.root, match.game));
+				}
+			});
+		});
+
+		container.addChild(this._containerNames);
+	}
+
+	private createMatchDisplayElement(match: Match): PIXI.Text {
+		// Implementation depends on how you want to display each match
+		const text = new PIXI.Text(`Match ${match.order}: ${match.player1} vs ${match.player2}`, {
+			fontSize: 14,
+			fill: defaultColor,
+		});
+		text.filters = [glowFilter];
+		// Set position based on match order or any other logic
+		text.x = 100;
+		text.y = 100 + match.order * 20;
+		return text;
 	}
 }

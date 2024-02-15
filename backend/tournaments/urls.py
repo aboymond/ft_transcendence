@@ -15,7 +15,7 @@ urlpatterns = [
     path("<int:pk>/leave/", TournamentLeaveView.as_view(), name="tournament-leave"),
     path("<int:id>/detail/", TournamentDetailView.as_view(), name="tournament-detail"),
     path(
-        "<int:id>/matches/",
+        "<int:tournament_id>/matches/",
         TournamentMatchesListView.as_view(),
         name="tournament-matches",
     ),
