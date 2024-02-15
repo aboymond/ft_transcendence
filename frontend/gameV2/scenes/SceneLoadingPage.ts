@@ -127,6 +127,8 @@ export class SceneLoadingPage extends SceneBase {
 			this._textPoints[this._index].visible = false;
 			this._index++;
 		}, 800);
+
+		this.notifyPlayerReady();
 	}
 
 	public onUpdate() {}
@@ -243,5 +245,15 @@ export class SceneLoadingPage extends SceneBase {
 
 	private _randomizer() {
 		return Math.floor(Math.random() * this._tabTips.length);
+	}
+
+	private async notifyPlayerReady() {
+		try {
+			await apiService.sendPlayerReady(this._gameId).then(() => {
+				this.root.openGameSocket(this._gameId);
+			});
+		} catch (error) {
+			console.error('Error notifying player ready:', error);
+		}
 	}
 }

@@ -1,6 +1,7 @@
 import { User, FriendRequest, GameHistory } from '../types';
 
 interface ErrorResponse {
+	error?: string;
 	detail?: string;
 }
 const API_BASE_URL = 'http://localhost:8000/api'; // Update with your actual backend URL
@@ -25,7 +26,6 @@ async function fetchAPI(endpoint: string, options: RequestInit = {}, includeToke
 		...options,
 		headers: headers,
 	});
-
 	if (response.status === 401) {
 		localStorage.removeItem('token');
 		throw new Error('Unauthorized');
@@ -40,9 +40,10 @@ async function fetchAPI(endpoint: string, options: RequestInit = {}, includeToke
 			} catch (e) {
 				console.error('Error parsing JSON response:', e);
 			}
+			const detailedErrorMessage =
+				errorDetail.error || errorDetail.detail || `API call failed: ${response.statusText}`;
+			throw new Error(detailedErrorMessage + ' - More details: ' + text);
 		}
-		const errorMessage = errorDetail.detail || `API call failed: ${response.statusText}`;
-		throw new Error(errorMessage);
 	}
 
 	const text = await response.text();
@@ -176,11 +177,11 @@ export const apiService = {
 	getTournament: async (tournamentId: number) => {
 		return fetchAPI(`tournaments/${tournamentId}/detail/`);
 	},
-	getGames: async () => {
-		return fetchAPI('games/list-create/');
-	},
 	getMatches: async (tournamentId: number) => {
 		return fetchAPI(`tournaments/${tournamentId}/matches/`);
+	},
+	getGames: async () => {
+		return fetchAPI('games/list-create/');
 	},
 	createGame: async (userId: number) => {
 		return fetchAPI('games/create/', {
