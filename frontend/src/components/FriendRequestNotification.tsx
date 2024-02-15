@@ -1,19 +1,59 @@
-import React, { useContext } from 'react';
-import { WebSocketContext } from './WebSocketHandler';
-import styles from '../styles/BarNav.module.css';
+// import React, { useContext } from 'react';
+// import { Badge } from 'react-bootstrap';
+// import { WebSocketContext } from '../components/WebSocketHandler';
+
+// const FriendRequestNotification: React.FC = () => {
+//   const webSocketContext = useContext(WebSocketContext);
+
+//   if (!webSocketContext || !webSocketContext.newFriendRequests) {
+//     return null;
+//   }
+
+//   return (
+//     <Badge pill bg="danger">
+//       {webSocketContext.newFriendRequests ? '!' : ''}
+//     </Badge>
+//   );
+// };
+
+// export default FriendRequestNotification;
+
+
+
+import React, { useContext, useEffect } from 'react';
+import { Badge } from 'react-bootstrap';
+import { WebSocketContext } from '../components/WebSocketHandler';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const FriendRequestNotification: React.FC = () => {
   const webSocketContext = useContext(WebSocketContext);
-  const pendingRequests = Number(webSocketContext?.userStatus?.pending_requests) ||  0;
 
-  console.log('Pending Requests:', pendingRequests);
+  useEffect(() => {
+    if (webSocketContext?.friendRequestReceived) {
+      toast(`${webSocketContext.friendRequestReceived.senderName} sent you a friend request.`);
+    }
+  }, [webSocketContext]);
+
+  const handleAcceptRequest = () => {
+    if (webSocketContext?.friendRequestReceived) {
+      webSocketContext.acceptFriendRequest(webSocketContext.friendRequestReceived.requestId).then(() => {
+        webSocketContext.setNewFriendRequests(false);
+      });
+    }
+  };
+
+  if (!webSocketContext || !webSocketContext.newFriendRequests) {
+    return null;
+  }
 
   return (
-    <div className={styles.notification}>
-      {pendingRequests >   0 && (
-        <span className={styles.badge}>{pendingRequests}</span>
-      )}
-    </div>
+    <>
+      <Badge pill bg="danger" onClick={handleAcceptRequest}>
+        {webSocketContext.newFriendRequests ? '!' : ''}
+      </Badge>
+      <ToastContainer />
+    </>
   );
 };
 

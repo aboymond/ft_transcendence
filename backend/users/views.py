@@ -274,6 +274,7 @@ class FriendRequestCreateView(generics.CreateAPIView):
                         "requester_id": friendship.requester.id,
                         "receiver_id": friendship.receiver.id,
                         "status": friendship.status,
+                        "sender_name": friendship.requester.username,
                     },
                 },
             },
