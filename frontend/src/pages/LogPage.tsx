@@ -7,6 +7,7 @@ import { Container, Row, Col, Card, Button} from 'react-bootstrap';
 import Logo from '../components/Logo';
 import Login from '../components/Login';
 import Register from '../components/Register';
+import apiService from '../services/apiService';
 
 const LogPage: React.FC = () => {
 	const [showComponent, setShowComponent] = useState('');
@@ -22,10 +23,14 @@ const LogPage: React.FC = () => {
 	useEffect(() => {
 		const urlParams = new URLSearchParams(window.location.search);
 		const accessToken = urlParams.get('access_token');
+		const userId = urlParams.get('user_id');
 
-		if (accessToken) {
-			auth.login(accessToken);
-			navigate('/home');
+		if (accessToken && userId) {
+			// Fetch the user object from the API
+			apiService.getUserById(userId).then((user) => {
+				auth.login(accessToken, user);
+				navigate('/home');
+			});
 		}
 	}, [auth, navigate]);
 

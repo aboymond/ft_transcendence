@@ -1,5 +1,24 @@
-.img {
-    width: 30%;
-    height: auto;
-    /* box-shadow: 0px 0px 10px var(--primary-color); */
+.size {
+    position: absolute;
+    height: 50%;
+    left: 50%;
+    top: 32%;
+    transform: translate(-50%, -50%);
+}
+
+
+.overlay {
+    display: flex; 
+    justify-content: center;
+    align-items: center;
+    position: absolute; 
+    top:  0;
+    left:  0;
+    right:  0;
+    bottom:  0;
+}
+
+.overlay img {
+    max-width:  100%;
+    max-height:  100%;
 }

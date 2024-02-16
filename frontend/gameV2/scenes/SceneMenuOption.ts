@@ -11,12 +11,20 @@ import {
 	textStyleMenuOptionError,
 	textStyleMenuOptionVictory,
 } from '../index';
-import { SceneGame } from './SceneGame';
 import { SceneGameVsBot } from './SceneGameVsBot';
 import { SceneLoadingPage } from './SceneLoadingPage';
+import { apiService } from '../../src/services/apiService';
 
 const selectMax = 4;
 let errorLock: boolean = false;
+
+enum menu {
+	COLOR = 0,
+	BOT_LVL = 1,
+	VICTORY_AMOUNT = 2,
+	PAD = 3,
+	PLAY = 4,
+}
 
 const chooseColor: string[] = [
 	'GREEN',
@@ -124,15 +132,19 @@ export class SceneMenuOption extends SceneBase {
 
 	public onKeyDown(e: KeyboardEvent) {
 		if (e.code === 'ArrowUp') {
+			this.root.playSound('select');
 			if (!errorLock) this._pressUp();
 		}
 		if (e.code === 'ArrowDown') {
+			this.root.playSound('select');
 			if (!errorLock) this._pressDown();
 		}
 		if (e.code === 'ArrowLeft') {
+			this.root.playSound('select');
 			if (!errorLock) this._pressLeft();
 		}
 		if (e.code === 'ArrowRight') {
+			this.root.playSound('select');
 			if (!errorLock) this._pressRight();
 		}
 		if (e.code === 'Enter') {
@@ -141,7 +153,7 @@ export class SceneMenuOption extends SceneBase {
 				this._popError.visible = false;
 				this._textErrorOK.visible = false;
 				this._textErrorPad.visible = false;
-			} else this._pressSpace();
+			} else this._createGame();
 		}
 		if (e.code === 'Escape') {
 			this.root.loadScene(new SceneMenu2(this.root));
@@ -219,34 +231,17 @@ export class SceneMenuOption extends SceneBase {
 	// UTILS NAVIGATOR
 	//=======================================
 
-	private _pressSpace() {
+	private _createGame() {
 		if (this.root.vsPlayer) {
 			// Send a request to the backend to create a game
-			if (this.root.ws) {
-				console.log('Sending request to create_game');
-				this.root.ws.send(
-					JSON.stringify({
-						type: 'game_event',
-						payload: {
-							action: 'create_game',
-							data: {
-								user_id: Number(this.root.userId),
-							},
-						},
-					}),
-				);
-				this.root.loadScene(new SceneLoadingPage(this.root));
-				this.root.ws.onmessage = (e) => {
-					const data = JSON.parse(e.data);
-					if (data.action === 'start_game') {
-						console.log('Loading SceneGame');
-						this.root.loadScene(new SceneGame(this.root));
-					}
-				};
-			}
+			apiService
+				.createGame(this.root.userId ?? 0) //TODO
+				.then((response) => {
+					console.log('Game created successfully', response);
+					this.root.loadScene(new SceneLoadingPage(this.root, response.id));
+				})
+				.catch((error) => console.error('Error creating game', error));
 		} else if (this._currentPad === 0) {
-			//TODO: enable other pads ?
-			console.log('Loading SceneGameVsBot');
 			this.root.loadScene(new SceneGameVsBot(this.root));
 		} else {
 			errorLock = true;
@@ -258,34 +253,34 @@ export class SceneMenuOption extends SceneBase {
 
 	private _pressUp() {
 		this._currentSelect--;
-		if (this._currentSelect === 1 && this.root.vsPlayer) this._currentSelect--;
+		if (this._currentSelect === menu.BOT_LVL && this.root.vsPlayer) this._currentSelect--;
 		if (this._currentSelect < 0) this._currentSelect = selectMax;
-		console.log('up: ' + this._currentSelect);
+		// console.log('up: ' + this._currentSelect);
 	}
 
 	private _pressDown() {
 		this._currentSelect++;
-		if (this._currentSelect === 1 && this.root.vsPlayer) this._currentSelect++;
+		if (this._currentSelect === menu.BOT_LVL && this.root.vsPlayer) this._currentSelect++;
 		if (this._currentSelect > selectMax) this._currentSelect = 0;
-		console.log('down: ' + this._currentSelect);
+		// console.log('down: ' + this._currentSelect);
 	}
 
 	private _pressLeft() {
-		if (this._currentSelect === 0) return this._colorPrev();
+		if (this._currentSelect === menu.COLOR) return this._colorPrev();
 		if (!this.root.vsPlayer) {
-			if (this._currentSelect === 1) return this._botLvlPrev();
+			if (this._currentSelect === menu.BOT_LVL) return this._botLvlPrev();
 		}
-		if (this._currentSelect === 2) return this._VictoryAmountPrev();
-		if (this._currentSelect === 3) return this._padPrev();
+		if (this._currentSelect === menu.VICTORY_AMOUNT) return this._VictoryAmountPrev();
+		if (this._currentSelect === menu.PAD) return this._padPrev();
 	}
 
 	private _pressRight() {
-		if (this._currentSelect === 0) return this._colorNext();
+		if (this._currentSelect === menu.COLOR) return this._colorNext();
 		if (!this.root.vsPlayer) {
-			if (this._currentSelect === 1) return this._botLvlNext();
+			if (this._currentSelect === menu.BOT_LVL) return this._botLvlNext();
 		}
-		if (this._currentSelect === 2) return this._VictoryAmountNext();
-		if (this._currentSelect === 3) return this._padNext();
+		if (this._currentSelect === menu.VICTORY_AMOUNT) return this._VictoryAmountNext();
+		if (this._currentSelect === menu.PAD) return this._padNext();
 	}
 
 	private _colorPrev() {

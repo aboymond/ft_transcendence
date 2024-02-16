@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useAuth } from './hooks/useAuth';
-import { Route, Routes, Navigate } from 'react-router-dom';
+import { Route, Routes, Navigate, useNavigate } from 'react-router-dom';
 import Home from './pages/Home';
 import VerifyTwoFa from './pages/VerifyTwoFa';
 import LoadingScreen from './components/LoadingScreen';
@@ -27,6 +27,13 @@ const NonAuthenticatedRoutes: React.FC = () => (
 
 const AppRoutes: React.FC = () => {
 	const { isAuthenticated, loading } = useAuth();
+	const navigate = useNavigate();
+
+	useEffect(() => {
+		if (!loading && !isAuthenticated) {
+			navigate('/');
+		}
+	}, [isAuthenticated, loading, navigate]);
 
 	if (loading) {
 		return <LoadingScreen />;

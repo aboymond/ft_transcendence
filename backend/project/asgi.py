@@ -8,14 +8,16 @@ https://docs.djangoproject.com/en/4.2/howto/deployment/asgi/
 """
 
 import os
+import django
 
 from django.core.asgi import get_asgi_application
 from channels.routing import ProtocolTypeRouter
 from channels.auth import AuthMiddlewareStack
-from project import routing
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "project.settings")
+django.setup()
 
+from project import routing  # noqa: E402
 
 application = ProtocolTypeRouter(
     {
