@@ -8,6 +8,7 @@ export interface User {
 	status: 'online' | 'offline' | 'in-game' | 'queueing';
 	avatar?: string;
 	friendship_id?: number;
+	twofa: boolean;
 }
 
 export interface FriendRequest {

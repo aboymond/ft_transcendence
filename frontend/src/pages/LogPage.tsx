@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Button, Card } from 'react-bootstrap';
-import Logo from '../components/Logo';
-import styles from '../styles/LogPage.module.css';
+import { apiService } from '../services/apiService';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import styles from '../styles/LogPage.module.css';
+import { Container, Row, Col, Card, Button} from 'react-bootstrap';
+import Logo from '../components/Logo';
 import Login from '../components/Login';
 import Register from '../components/Register';
 import apiService from '../services/apiService';
 
 const LogPage: React.FC = () => {
 	const [showComponent, setShowComponent] = useState('');
+	const [error, setError] = useState('');
 
 	const navigate = useNavigate();
 	const auth = useAuth();

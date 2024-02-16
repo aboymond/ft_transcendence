@@ -8,11 +8,6 @@ from .models import Friendship, TournamentHistory
 
 User = get_user_model()
 
-class UserProfileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ('otp', 'otp_expiry_time', 'other_fields_from_user_model')
-
 class GameHistorySerializer(serializers.ModelSerializer):
     players = serializers.SerializerMethodField()
     winner = serializers.SerializerMethodField()
@@ -69,9 +64,9 @@ class UserSerializer(serializers.ModelSerializer):
             "match_history",
             "friendship_id",
             "tournament_history_played",
-            # "otp", 
-            # "otp_expiry_time",
-            # "other_fields_from_user_model"
+            "twofa",
+            "otp", 
+            "otp_expiry_time",
         )
         extra_kwargs = {
             "password": {"write_only": True},

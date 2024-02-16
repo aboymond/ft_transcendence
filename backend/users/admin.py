@@ -12,7 +12,10 @@ class CustomUserAdmin(admin.ModelAdmin):
         "losses",
         "tournament_wins",
         "status",
-        "email"
+        "email",
+        "twofa",
+        "otp",
+        "otp_expiry_time",
     )
     search_fields = ("username", "display_name")
     # Add any additional customizations as required
