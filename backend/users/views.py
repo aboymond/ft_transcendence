@@ -175,21 +175,31 @@ class CallBackView(APIView):
 
         User = get_user_model()
 
-        username = f"{user['login']}{user['id']}"
+        username = user["login"]
+        email = user["email"]
+        if email and User.objects.filter(email=email, is_oauth_user=False).exists():
+            # If a non-OAuth user with the same email exists, do nothing and return
+            return Response(
+                {"Error": "A user with this email already exists."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
-        try:
-            existing_user = User.objects.get(username=username, email=user["email"])
-        except User.DoesNotExist:
-            # If the user does not exist, create a new user
-            existing_user = User.objects.create(username=username, email=user["email"])
+        if User.objects.filter(username=username, is_oauth_user=False).exists():
+            # If a non-OAuth user with the same username exists, append the user id to the username
+            username = f"{username}{user['id']}"
+
+        # Create a new user with the (potentially modified) username
+        # only if a user with the new username doesn't already exist
+        if not User.objects.filter(username=username).exists():
+            new_user = User.objects.create(
+                username=username, email=email, is_oauth_user=True
+            )
+            new_user.avatar.save(f"{username}.jpg", ContentFile(response.content))
+            new_user.save()
         else:
-            existing_user.avatar.delete()  # Delete the old avatar
-
-        # Save the new avatar
-        existing_user.avatar.save(f"{username}.jpg", ContentFile(response.content))
-        existing_user.save()
-        if existing_user.twofa is True:
-            send_otp(existing_user);
+            new_user = User.objects.get(username=username)
+        if new_user.twofa is True:
+            send_otp(new_user);
             redirect_url = (
                 os.environ.get("FRONTEND_URL", "http://localhost:3001")
                 + "/verify-2fa?username="
@@ -197,57 +207,15 @@ class CallBackView(APIView):
             )
             return redirect(redirect_url)
         else:
-            refresh = RefreshToken.for_user(existing_user)
+            refresh = RefreshToken.for_user(new_user)
             redirect_url = (
-                os.environ.get("FRONTEND_URL", "http://localhost:3001")
-                + "?access_token="
-                + str(refresh.access_token)
-            )
+              os.environ.get("FRONTEND_URL", "http://localhost:3001")
+              + "?access_token="
+              + str(refresh.access_token)
+              + "&user_id="
+              + str(new_user.id)
+          )
             return redirect(redirect_url)
-
-        # username = user["login"]
-        # email = user["email"]
-
-        # TODO handle this better
-        # if email and User.objects.filter(email=email, is_oauth_user=False).exists():
-        #     # If a non-OAuth user with the same email exists, do nothing and return
-        #     return Response(
-        #         {"Error": "A user with this email already exists."},
-        #         status=status.HTTP_400_BAD_REQUEST,
-        #     )
-
-        # if User.objects.filter(username=username, is_oauth_user=False).exists():
-        #     # If a non-OAuth user with the same username exists, append the user id to the username
-        #     username = f"{username}{user['id']}"
-
-        # # Create a new user with the (potentially modified) username
-        # # only if a user with the new username doesn't already exist
-        # if not User.objects.filter(username=username).exists():
-        #     new_user = User.objects.create(
-        #         username=username, email=email, is_oauth_user=True
-        #     )
-        #     new_user.avatar.save(f"{username}.jpg", ContentFile(response.content))
-        #     new_user.save()
-        # else:
-        #     new_user = User.objects.get(username=username)
-        # if new_user.twofa is True:
-        #     send_otp(new_user);
-        #     redirect_url = (
-        #         os.environ.get("FRONTEND_URL", "http://localhost:3001")
-        #         + "/verify-2fa?username="
-        #         + username
-        #     )
-        #     return redirect(redirect_url)
-        # else:
-        #     refresh = RefreshToken.for_user(new_user)
-        #     redirect_url = (
-        #       os.environ.get("FRONTEND_URL", "http://localhost:3001")
-        #       + "?access_token="
-        #       + str(refresh.access_token)
-        #       + "&user_id="
-        #       + str(new_user.id)
-        #   )
-        #     return redirect(redirect_url)
 
 
 class CallBackCodeView(APIView):

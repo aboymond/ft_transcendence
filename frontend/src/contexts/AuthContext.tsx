@@ -55,11 +55,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 	const login = (newToken: string, newUser: User, newTwoFa:boolean) => {
 		localStorage.setItem('token', newToken);
 		setTwoFa(newTwoFa);
-		console.log(isAuthenticated);
 		setToken(newToken);
 		setIsAuthenticated(true);
 		setUser(newUser);
-		console.log("AFTER LOGIN : ", isAuthenticated);
 	};
 
 	const logout = () => {

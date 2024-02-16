@@ -20,7 +20,6 @@ const Login: React.FC<LoginProps> = ({ onClose }) => {
 		event.preventDefault();
 		try {
 			const data = await apiService.login(username, password);
-			console.log(data.missing_otp);
 			if (data.missing_otp == true) {
 				console.log(username);
 				navigate('/verify-2fa?username=' + username);

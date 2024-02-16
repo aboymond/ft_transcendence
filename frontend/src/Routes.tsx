@@ -20,20 +20,13 @@ const AuthenticatedRoutes: React.FC = () => (
 const NonAuthenticatedRoutes: React.FC = () => (
 	<Routes>
 		<Route path="/" element={<LogPage />} />
-		<Route path="/verify-2fa/*" element={<VerifyTwoFa />} />
+		<Route path="/verify-2fa" element={<VerifyTwoFa />} />
 		<Route path="*" element={<Navigate to="/" replace />} />
 	</Routes>
 );
 
 const AppRoutes: React.FC = () => {
 	const { isAuthenticated, loading } = useAuth();
-	const navigate = useNavigate();
-
-	useEffect(() => {
-		if (!loading && !isAuthenticated) {
-			navigate('/');
-		}
-	}, [isAuthenticated, loading, navigate]);
 
 	if (loading) {
 		return <LoadingScreen />;

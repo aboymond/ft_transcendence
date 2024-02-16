@@ -27,7 +27,7 @@ const LogPage: React.FC = () => {
 		if (accessToken && userId) {
 			// Fetch the user object from the API
 			apiService.getUserById(userId).then((user) => {
-				auth.login(accessToken, user, user.twofa);
+				auth.login(accessToken);
 				navigate('/home');
 			});
 		}
