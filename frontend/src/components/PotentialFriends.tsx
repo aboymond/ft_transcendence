@@ -7,9 +7,10 @@ import FriendProfile from './FriendProfile';
 
 interface PotentialFriendsProps {
     friends: User[];
+	onSelectFriend: (friend: User) => void;
 }
 
-const PotentialFriends: React.FC<PotentialFriendsProps> = ({ friends }) => {
+const PotentialFriends: React.FC<PotentialFriendsProps> = ({ friends, onSelectFriend }) => {
     const [users, setUsers] = useState<User[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
     const auth = useAuth();
@@ -30,15 +31,20 @@ const PotentialFriends: React.FC<PotentialFriendsProps> = ({ friends }) => {
         fetchUsers();
     }, [auth.isAuthenticated, auth.token, auth.user?.username]);
 
-    const handleAddFriend = async (username: string, event: React.MouseEvent) => {
-        event.stopPropagation(); // Prévenir la propagation pour ne pas déclencher la sélection du profil
-        try {
-            await apiService.sendFriendRequest(username);
-            setUsers(prevUsers => prevUsers.filter(user => user.username !== username));
-        } catch (error) {
-            console.error('Failed to send friend request:', error);
-        }
-    };
+
+	const handleAddFriend = async (username: string, event: React.MouseEvent) => {
+		event.stopPropagation();
+		const userToSelect = users.find(user => user.username === username);
+		if (userToSelect) {
+			onSelectFriend(userToSelect);
+		}
+		try {
+			await apiService.sendFriendRequest(username);
+			setUsers(prevUsers => prevUsers.filter(user => user.username !== username));
+		} catch (error) {
+			console.error('Failed to send friend request:', error);
+		}
+	};
 
     const isUserAFriend = (username: string) => {
         return friends.some(friend => friend.username === username);
