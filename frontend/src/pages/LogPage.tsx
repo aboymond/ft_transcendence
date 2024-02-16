@@ -7,7 +7,6 @@ import { Container, Row, Col, Card, Button} from 'react-bootstrap';
 import Logo from '../components/Logo';
 import Login from '../components/Login';
 import Register from '../components/Register';
-import apiService from '../services/apiService';
 
 const LogPage: React.FC = () => {
 	const [showComponent, setShowComponent] = useState('');
@@ -28,7 +27,7 @@ const LogPage: React.FC = () => {
 		if (accessToken && userId) {
 			// Fetch the user object from the API
 			apiService.getUserById(userId).then((user) => {
-				auth.login(accessToken, user);
+				auth.login(accessToken, user, user.twofa);
 				navigate('/home');
 			});
 		}
