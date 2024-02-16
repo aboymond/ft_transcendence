@@ -12,10 +12,10 @@ done
 curl -X POST http://${GF_SECURITY_ADMIN_USER}:${GF_SECURITY_ADMIN_PASSWORD}@localhost:3000/api/admin/users \
   -H "Content-Type: application/json" \
   -d '{
-        "name":"usertest4",
-        "email":"testemail@test4.com",
-        "login":"test4",
-        "password":"test4"
+        "name":"'${USER_GRAFANA_NAME}'",
+        "email":"'${USER_GRAFANA_EMAIL}'",
+        "login":"'${USER_GRAFANA_ LOGIN}'",
+        "password":"'${USER_GRAFANA_PASSWORD}'"
       }'
 
 tail -f /dev/null

@@ -126,7 +126,7 @@ services:
             - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
             - ./grafana/init-grafana.sh:/etc/grafana/init-grafana/init-grafana.sh
         env_file:
-            - ./.env
+            - .env
         entrypoint: /etc/grafana/init-grafana/init-grafana.sh
         networks:
             - my-network
