@@ -152,15 +152,30 @@ const WebSocketHandler: React.FC<Props> = ({ children }) => {
       setUserStatus((prevStatus) => ({ ...prevStatus, [data.user_id]: data.status }));
     }
 
-    if (type === 'friend_request' && payload.action === 'send_friend_request') {
-      console.log('New friend request received:', payload);
-      setNewFriendRequests(true);
-      setFriendRequestReceived({
-        senderName: data.sender_name,
-        requestId: data.request_id,
-        status: 'sent'
-      });
+    if (type === 'friend_request') {
+        if (action === 'send_friend_request') {
+            setNewFriendRequests(true);
+            setFriendRequestReceived({
+                senderName: data.sender_name,
+                requestId: data.request_id,
+                status: 'sent'
+            });
+        } else if (action === 'accept_friend_request') {
+            setFriendRequestReceived(prev => {
+                if (!prev) {
+                    return null;
+                }
+                return {
+                    ...prev,
+                    status: 'accepted',
+                    senderName: data.sender_name || prev.senderName,
+                    requestId: data.request_id || prev.requestId 
+                };
+            });
+            toast.success(`${data.sender_name} accepted your friend request.`);
+        }
     }
+
   };
 
   useEffect(() => {
