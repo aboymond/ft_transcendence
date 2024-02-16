@@ -3,85 +3,72 @@ import { useAuth } from '../hooks/useAuth';
 import apiService from '../services/apiService';
 import { User } from '../types';
 import styles from '../styles/PotentialFriends.module.css';
+import FriendProfile from './FriendProfile';
 
 interface PotentialFriendsProps {
-	friends: User[];
-	onSelectFriend: (friend: User) => void;
+    friends: User[];
 }
 
-const PotentialFriends: React.FC<PotentialFriendsProps> = ({ friends, onSelectFriend }) => {
-	const [users, setUsers] = useState<User[]>([]);
-	const [searchTerm, setSearchTerm] = useState('');
-	const auth = useAuth();
-	const [successMessage, setSuccessMessage] = useState('');
-	const [errorMessage, setErrorMessage] = useState('');
+const PotentialFriends: React.FC<PotentialFriendsProps> = ({ friends }) => {
+    const [users, setUsers] = useState<User[]>([]);
+    const [searchTerm, setSearchTerm] = useState('');
+    const auth = useAuth();
+    const [selectedFriend, setSelectedFriend] = useState<User | null>(null);
 
-	useEffect(() => {
-		const fetchUsers = async () => {
-			if (auth.isAuthenticated && auth.token) {
-				try {
-					const usersList = await apiService.getUsers();
-					const filteredUsers = usersList.filter((user) => user.username !== auth.user?.username);
-					setUsers(filteredUsers);
-				} catch (error) {
-					console.error('Failed to fetch users:', error);
-				}
-			}
-		};
-		fetchUsers();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [auth.isAuthenticated, auth.token]);
+    useEffect(() => {
+        const fetchUsers = async () => {
+            if (auth.isAuthenticated && auth.token) {
+                try {
+                    const allUsers = await apiService.getUsers();
+                    const filteredUsers = allUsers.filter(user => user.username !== auth.user?.username);
+                    setUsers(filteredUsers);
+                } catch (error) {
+                    console.error('Failed to fetch users:', error);
+                }
+            }
+        };
+        fetchUsers();
+    }, [auth.isAuthenticated, auth.token, auth.user?.username]);
 
-	const filteredUsers = users.filter(
-		(user) =>
-			user.username.toLowerCase().includes(searchTerm.toLowerCase()) &&
-			!friends.some((friend) => friend.username === user.username),
-	);
+    const handleAddFriend = async (username: string, event: React.MouseEvent) => {
+        event.stopPropagation(); // Prévenir la propagation pour ne pas déclencher la sélection du profil
+        try {
+            await apiService.sendFriendRequest(username);
+            setUsers(prevUsers => prevUsers.filter(user => user.username !== username));
+        } catch (error) {
+            console.error('Failed to send friend request:', error);
+        }
+    };
 
-	const handleAddFriend = async (username: string) => {
-		try {
-			await apiService.sendFriendRequest(username);
-			setSuccessMessage('Friend request sent!');
-			setUsers(users.filter((user) => user.username !== username));
-		} catch (error) {
-			let errorMessage = 'An unexpected error occurred';
-			if (error instanceof Error) {
-				const match = error.message.match(/string='(.*?)'/);
-				errorMessage = match ? match[1] : error.message;
-			}
-			setErrorMessage(errorMessage);
-		}
-	};
+    const isUserAFriend = (username: string) => {
+        return friends.some(friend => friend.username === username);
+    };
 
-	const handleFriendClick = (friend: User) => {
-		onSelectFriend(friend);
-	};
+    if (selectedFriend) {
+        return <FriendProfile friend={selectedFriend} onClose={() => setSelectedFriend(null)} />;
+    }
 
-	//TODO fix colors
-	return (
-		<div className={styles.potentialFriendsContainer}>
-			{successMessage && <p className={styles.successMessage}>{successMessage}</p>}
-			{errorMessage && <p className={styles.errorMessage}>{errorMessage}</p>}
-			<div className={styles.closeButton}></div>
-			<input
-				className={styles.search}
-				type="text"
-				placeholder="Search friends"
-				value={searchTerm}
-				onChange={(event) => setSearchTerm(event.target.value)}
-			/>
-			{filteredUsers.map((user) => (
-				<div key={user.id}>
-					<p className={styles.p} onClick={() => handleFriendClick(user)}>
-						{user.username}
-					</p>
-					<button className={styles.load} onClick={() => handleAddFriend(user.username)}>
-						+
-					</button>
-				</div>
-			))}
-		</div>
-	);
+    return (
+        <div className={styles.potentialFriendsContainer}>
+            <input
+                className={styles.search}
+                type="text"
+                placeholder="Search friends"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            {users.filter(user => user.username.toLowerCase().includes(searchTerm.toLowerCase())).map(user => (
+                <div key={user.id} className={styles.friendItem}>
+                    <p className={styles.p} onClick={() => setSelectedFriend(user)}>
+                        {user.username}
+                    </p>
+                    {!isUserAFriend(user.username) && (
+                        <button className={styles.load} onClick={(e) => handleAddFriend(user.username, e)}>+</button>
+                    )}
+                </div>
+            ))}
+        </div>
+    );
 };
 
 export default PotentialFriends;
