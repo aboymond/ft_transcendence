@@ -23,6 +23,9 @@ RUN	pip install python-dotenv
 # Copy the rest of the code
 COPY . /app/
 
+# Collect static files
+RUN python manage.py collectstatic --noinput
+
 # Copy the default avatar into the container
 COPY media/avatars/default_avatar.png /app/media/avatars/default_avatar.png
 
@@ -34,5 +37,3 @@ RUN chmod +x /app/entrypoint.sh
 
 # Set the entrypoint
 ENTRYPOINT ["/app/entrypoint.sh"]
-
-# You can add other Dockerfile commands below as needed
