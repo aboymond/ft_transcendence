@@ -5,6 +5,7 @@ import Profile from './Profile';
 import TwoFA from './TwoFA';
 import Friends from './Friends';
 import styles from '../styles/BarNav.module.css';
+import FriendRequestNotification from './FriendRequestNotification';
 
 const BarNav: React.FC = () => {
 	const [show, setShow] = useState(false);
@@ -36,7 +37,10 @@ const BarNav: React.FC = () => {
 								roundedCircle
 								style={{ width: '60px', height: '60px', cursor: 'pointer' }}
 								onClick={handleToggle}
-							></Image>
+							/>
+							<div className={styles.notification}>
+								<FriendRequestNotification />
+							</div>
 						</Nav.Item>
 					</Col>
 				</Row>

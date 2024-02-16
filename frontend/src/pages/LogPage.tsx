@@ -89,7 +89,7 @@ const LogPage: React.FC = () => {
 											className={`mt-3 ${styles.button} w-100`}
 											onClick={() => handleApiLogin()}
 										>
-											Sign Up with 42
+											Sign In with 42
 										</Button>
 									</>
 								)}

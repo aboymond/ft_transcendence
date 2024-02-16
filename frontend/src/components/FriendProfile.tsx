@@ -16,6 +16,7 @@ const FriendProfile: React.FC<FriendProfileProps> = ({ friend, onClose }) => {
         <p>Wins: {friend.wins}</p>
         <p>Losses: {friend.losses}</p>
         <p>Status: {friend.status}</p>
+        <button className={styles.invite}>Invite to a game</button>
       </div>
     );
    };
