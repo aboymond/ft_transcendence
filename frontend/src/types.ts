@@ -118,4 +118,6 @@ export interface Match {
 	player2: number;
 	order: number;
 	game: number;
+	player1_username: string;
+	player2_username: string;
 }
