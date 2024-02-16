@@ -1,6 +1,7 @@
 import json
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
+from django.db.models import Q
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.http import JsonResponse
@@ -18,11 +19,6 @@ User = get_user_model()
 
 
 class GameListCreateView(generics.ListCreateAPIView):
-    queryset = Game.objects.all()
-    serializer_class = GameSerializer
-
-
-class GameRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Game.objects.all()
     serializer_class = GameSerializer
 
@@ -185,3 +181,14 @@ def resume_game(request, game_id):
         return Response(
             {"error": "User not part of this game"}, status=status.HTTP_403_FORBIDDEN
         )
+
+
+class GetCurrentGameView(generics.ListAPIView):
+    serializer_class = GameSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        return Game.objects.filter(
+            Q(status="in_progress") | Q(status="waiting"),
+            Q(player1=user) | Q(player2=user),
+        ).order_by("-start_time")[:1]

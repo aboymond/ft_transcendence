@@ -4,6 +4,7 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.generics import RetrieveAPIView
 from django.contrib.auth import get_user_model
+from django.db.models import Q
 from .models import Tournament, Match
 from .serializers import (
     TournamentSerializer,
@@ -93,3 +94,13 @@ class TournamentMatchesListView(generics.ListAPIView):
     def get_queryset(self):
         tournament_id = self.kwargs["tournament_id"]
         return Match.objects.filter(tournament__id=tournament_id)
+
+
+class GetCurrentTournamentView(generics.ListAPIView):
+    serializer_class = TournamentSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        return Tournament.objects.filter(
+            Q(status="in_progress") | Q(status="waiting"), participants=user
+        ).order_by("-start_date")[:1]

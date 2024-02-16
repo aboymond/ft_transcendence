@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import (
     GameListCreateView,
-    GameRetrieveUpdateDestroyView,
+    GetCurrentGameView,
     CreateGameView,
     JoinGameView,
     KeyPressView,
@@ -13,15 +13,11 @@ from .views import (
 )
 
 urlpatterns = [
-    path("list-create/", GameListCreateView.as_view()),
-    path(
-        "games/retrieve-update-destroy/<int:pk>",
-        GameRetrieveUpdateDestroyView.as_view(),
-        name="games-retrieve-update-destroy",
-    ),
+    path("list/", GameListCreateView.as_view(), name="list_games"),
     path("create/", CreateGameView.as_view(), name="create_game"),
-    path("<int:pk>/join/", JoinGameView.as_view(), name="join_game"),
+    path("current/", GetCurrentGameView.as_view(), name="current_game"),
     path("keypress/", KeyPressView.as_view(), name="keypress"),
+    path("<int:pk>/join/", JoinGameView.as_view(), name="join_game"),
     path("<int:game_id>/player_ready/", player_ready, name="player_ready"),
     path("<int:game_id>/leave_game/", leave_game, name="leave_game"),
     path("<int:game_id>/leave_loading/", leave_loading, name="leave_loading"),
