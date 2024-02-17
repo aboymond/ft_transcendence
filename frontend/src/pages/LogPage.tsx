@@ -1,16 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { apiService } from '../services/apiService';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import styles from '../styles/LogPage.module.css';
-import { Container, Row, Col, Card, Button} from 'react-bootstrap';
+import { Container, Row, Col, Card, Button } from 'react-bootstrap';
 import Logo from '../components/Logo';
 import Login from '../components/Login';
 import Register from '../components/Register';
 
 const LogPage: React.FC = () => {
 	const [showComponent, setShowComponent] = useState('');
-	const [error, setError] = useState('');
 
 	const navigate = useNavigate();
 	const auth = useAuth();
@@ -25,11 +23,8 @@ const LogPage: React.FC = () => {
 		const userId = urlParams.get('user_id');
 
 		if (accessToken && userId) {
-			// Fetch the user object from the API
-			apiService.getUserById(userId).then((user) => {
-				auth.login(accessToken);
-				navigate('/home');
-			});
+			auth.login(accessToken); //TODO
+			navigate('/home');
 		}
 	}, [auth, navigate]);
 
