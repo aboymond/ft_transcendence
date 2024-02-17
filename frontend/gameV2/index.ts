@@ -1,5 +1,7 @@
 import * as PIXI from 'pixi.js';
+// import { GlowFilter } from '@pixi/filter-glow';
 import { GlowFilter } from '@pixi/filter-glow';
+// import { Filter } from 'pixi.js';
 import { PixelateFilter } from '@pixi/filter-pixelate';
 import $ from 'jquery';
 
@@ -114,7 +116,12 @@ export const glowFilter = new GlowFilter({
 	distance: 30,
 	outerStrength: 1.2,
 	innerStrength: 0,
-	color: 0x86ff86,
-}) as unknown as PIXI.Filter;
+	// color: [134, 255, 134],
+});
 
 export const PixelPad = new PixelateFilter(undefined) as unknown as PIXI.Filter;
+
+export function glow(filter: null) {
+	filter;
+	return filter;
+}

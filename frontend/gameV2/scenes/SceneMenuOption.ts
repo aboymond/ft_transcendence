@@ -242,6 +242,7 @@ export class SceneMenuOption extends SceneBase {
 				})
 				.catch((error) => console.error('Error creating game', error));
 		} else if (this._currentPad === 0) {
+			this.root.playSound('enter');
 			this.root.loadScene(new SceneGameVsBot(this.root));
 		} else {
 			errorLock = true;

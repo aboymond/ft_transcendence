@@ -1,4 +1,4 @@
-import { defaultColor, glowFilter } from '..';
+import { defaultColor, glowFilter} from '..';
 import { SceneBase } from './SceneBase';
 import { SceneMenu } from './SceneMenu';
 import * as PIXI from 'pixi.js';
@@ -88,6 +88,8 @@ export class SceneLoadingPage extends SceneBase {
 	//=======================================
 
 	public async onStart(container: PIXI.Container) {
+		this.root.playSound('loading');
+
 		this._initKeyExplanation(this._sprite);
 		container.addChild(this._sprite);
 		// this._containerTips = this._initTipsTab();

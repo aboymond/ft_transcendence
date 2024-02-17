@@ -66,11 +66,11 @@ export class SceneMenu2 extends SceneBase {
 		this._initSpritePvB(this._sprites[allSprite.PVB_S]);
 		this._initSpritePvB(this._sprites[allSprite.PVB_U]);
 
-		this._sprites.forEach((sprite, index) => {
-			sprite.eventMode = 'dynamic';
-			sprite.cursor = 'pointer';
-			sprite.on('pointerdown', () => this.onSpriteClick(index));
-		});
+		// this._sprites.forEach((sprite, index) => {
+		// 	sprite.eventMode = 'dynamic';
+		// 	sprite.cursor = 'pointer';
+		// 	sprite.on('pointerdown', () => this.onSpriteClick(index));
+		// });
 
 		this._sprites[allSprite.TOURNAMENT_U].visible = false;
 		this._sprites[allSprite.PVP_S].visible = false;
@@ -161,32 +161,29 @@ export class SceneMenu2 extends SceneBase {
 
 	private _pressUp() {
 		this._currentSelect--;
-		this.root.playSound('select');
+		this.root.playSound("select");		
 		if (this._currentSelect < 0) this._currentSelect = selectMax;
 		this._updateMenuColor();
 	}
 
 	private _pressDown() {
 		this._currentSelect++;
-		this.root.playSound('select');
+		this.root.playSound("select");
 		if (this._currentSelect > selectMax) this._currentSelect = 0;
 		this._updateMenuColor();
 	}
 
 	private _pressRight() {
 		this._currentSelect_LR++;
-		this.root.playSound('select');
+		this.root.playSound("select");
 		if (this._currentSelect_LR > selectMax_LR) this._currentSelect_LR = 0;
 		this._updateMenuColor();
 	}
 
 	private _pressLeft() {
 		this._currentSelect_LR--;
-		this.root.playSound('select');
-		if (this._currentSelect_LR < 0) this._currentSelect_LR = selectMax_LR;
-		this._updateMenuColor;
+		this.root.playSound("select");
 	}
-
 	private _updateMenuColor() {
 		if (this._currentSelect === menu.TOURNAMENT) {
 			this._sprites[allSprite.TOURNAMENT_S].visible = true;

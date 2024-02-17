@@ -1,4 +1,4 @@
-import { defaultColor, glowFilter } from '..';
+import { defaultColor, glowFilter, playLoadingPageSound } from '..';
 import { SceneBase } from './SceneBase';
 import { SceneMenu2 } from './SceneMenu2';
 import * as PIXI from 'pixi.js';
@@ -29,6 +29,8 @@ export class SceneTournamentLoadingVs extends SceneBase {
 
 	private _checkInterval: number | null = null;
 
+	// private _oldPlaceX = 0;
+
 	constructor(
 		root: PixiManager,
 		private _tournamentId: number,
@@ -43,6 +45,9 @@ export class SceneTournamentLoadingVs extends SceneBase {
 	public async onStart(container: PIXI.Container) {
 		this._initTextStandings(this._standings);
 		container.addChild(this._standings);
+		this._initEnterText(container);
+
+		this.root.playSound('loading');
 
 		// Fetch the current tournament state
 		const currentTournament = await apiService.getTournament(this._tournamentId);
@@ -77,6 +82,8 @@ export class SceneTournamentLoadingVs extends SceneBase {
 		if (this._checkInterval) {
 			clearInterval(this._checkInterval);
 		}
+		this.root.stopLoadingSound();
+		console.log('finish');
 	}
 
 	public onKeyDown(e: KeyboardEvent) {
@@ -87,6 +94,10 @@ export class SceneTournamentLoadingVs extends SceneBase {
 			} catch (error) {
 				console.error('Error leaving tournament:', error);
 			}
+		}
+
+		if (e.code === 'Enter') {
+			this._playMatch(this._currentMatches[0]);
 		}
 	}
 
@@ -203,42 +214,21 @@ export class SceneTournamentLoadingVs extends SceneBase {
 	}
 
 	private _initNameVs4(names: PIXI.Container) {
-		// const playerNames = this._currentMatches
-		// 	.map((match) => [match.player1_username, match.player2_username])
-		// 	.flat();
-		// console.log(playerNames);
-		// if (playerNames && playerNames.length) {
-		// 	playerNames.forEach((name, i) => {
-		// 		const newName = new PIXI.Text(name, {
-		// 			fontSize: (this.root.width * 2) / 100,
-		// 			fill: defaultColor,
-		// 		});
-		// 		newName.filters = [glowFilter];
-		// 		newName.y = (this.root.height * 65) / 100;
-		// 		newName.x = (this.root.width * 10) / 100 + i * ((this.root.width * 20) / 100);
-		// 		if (i >= 2) {
-		// 			newName.y += 30;
-		// 			newName.x = (this.root.width * 10) / 100 + (i - 2) * ((this.root.width * 20) / 100);
-		// 		}
-		// 		this._nameVs.push(newName);
-		// 	});
-		// }
 		const playerNames = this._currentTournament?.participants_usernames;
 		console.log(playerNames);
 		if (playerNames && playerNames.length) {
 			for (let i = 0; i < playerNames.length; i++) {
 				const newName = new PIXI.Text(playerNames[i], {
-					fontSize: (this.root.width * 2) / 100,
+					fontSize: (this.root.width * 3) / 100,
 					fill: defaultColor,
 				});
 				newName.filters = [glowFilter];
+				newName.angle = 90;
 				newName.y = (this.root.height * 65) / 100;
-				// Adjust the x position based on the player index to space out the names
-				newName.x = (this.root.width * 10) / 100 + i * ((this.root.width * 20) / 100);
+				newName.x = (this.root.width * 17) / 100 + i * ((this.root.width * 20) / 100);
+
 				if (i >= 2) {
-					// Adjust positions for the 3rd and 4th names if necessary
-					newName.y += 30; // Example adjustment, you might need to calculate this
-					newName.x = (this.root.width * 10) / 100 + (i - 2) * ((this.root.width * 20) / 100);
+					newName.x = (this.root.width * 28) / 100 + i * ((this.root.width * 20) / 100);
 				}
 				this._nameVs.push(newName); // Add the new text element to the _nameVs array
 			}
@@ -249,31 +239,32 @@ export class SceneTournamentLoadingVs extends SceneBase {
 		return names;
 	}
 
-	private _initNameVs8(names: PIXI.Container) {
-		const playerNames = this._currentTournament?.participants_usernames;
-		console.log(this._currentTournament);
+	// private _initNameVs8(names: PIXI.Container) {
+	// 	const playerNames = this._currentTournament?.participants_usernames;
+	// 	console.log(this._currentTournament);
 
-		if (playerNames) {
-			for (let i = 0; i < playerNames.length; i++) {
-				while (i < 8) {
-					console.log(playerNames[i]);
-					const newName = new PIXI.Text(playerNames[i]);
-					const adjustment = (this.root.height * 70 * 0.03) / 100;
-					newName.style.fontSize = (this.root.width * 2) / 100;
-					newName.y = (this.root.height * 70) / 100 + (i % 2 === 1 ? adjustment : 0);
-					newName.x = (this.root.width * 2) / 100 + i * ((this.root.width * 12.2) / 100);
-					newName.style.fill = defaultColor;
-					newName.filters = [glowFilter];
-					this._nameVs[i] = newName;
-					i++;
-				}
-			}
-		}
-		for (let i = 0; i < this._nameVs.length; i++) {
-			names.addChild(this._nameVs[i]);
-		}
-		return names;
-	}
+	// 	if (playerNames) {
+	// 		for (let i = 0; i < playerNames.length; i++) {
+	// 			while (i < 8) {
+	// 				console.log(playerNames[i]);
+	// 				const newName = new PIXI.Text(playerNames[i]);
+	// 				const adjustment = (this.root.height * 70 * 0.03) / 100;
+	// 				newName.style.fontSize = (this.root.width * 2) / 100;
+	// 				newName.y = (this.root.height * 70) / 100 + (i % 2 === 1 ? adjustment : 0);
+	// 				newName.x = (this.root.width * 2) / 100 + i * ((this.root.width * 12.2) / 100);
+	// 				newName.style.fill = defaultColor;
+	// 				newName.filters = [glowFilter];
+	// 				this._nameVs[i] = newName;
+	// 				i++;
+	// 			}
+	// 		}
+	// 	}
+	// 	for (let i = 0; i < this._nameVs.length; i++) {
+	// 		names.addChild(this._nameVs[i]);
+	// 	}
+	// 	return names;
+
+	// }
 
 	//=======================================
 	// UTILS
@@ -297,11 +288,9 @@ export class SceneTournamentLoadingVs extends SceneBase {
 		if (this._currentTournament!.participants_usernames.length > 0) {
 			if (this._currentTournament!.max_participants === 4) {
 				this._initNameVs4(this._containerNames);
-			} else if (this._currentTournament!.max_participants === 8) {
-				this._initNameVs8(this._containerNames);
 			}
+			container.addChild(this._containerNames);
 		}
-		container.addChild(this._containerNames);
 	}
 
 	private _setupMatchDisplay(container: PIXI.Container, matches: Match[]) {
@@ -312,27 +301,44 @@ export class SceneTournamentLoadingVs extends SceneBase {
 			const matchDisplay = this.createMatchDisplayElement(match);
 			this._containerMatches.addChild(matchDisplay);
 
-			matchDisplay.interactive = true;
+			// matchDisplay.interactive = true;
 			// matchDisplay.buttonMode = true;
-			matchDisplay.on('pointerdown', () => {
-				if ([match.player1, match.player2].includes(this.root.userId ?? 0)) {
-					this.root.loadScene(new SceneLoadingPage(this.root, match.game));
-				}
-			});
+			// matchDisplay.on( 'pointerdown', () => {
+
+			// });
 		});
 
 		container.addChild(this._containerMatches);
 	}
 
+	private _playMatch(match: Match) {
+		console.log('test');
+		if ([match.player1, match.player2].includes(this.root.userId ?? 0)) {
+			console.log('test2222');
+			this.root.loadScene(new SceneLoadingPage(this.root, match.game));
+		}
+	}
+
+	private _initEnterText(container: PIXI.Container) {
+		const text = new PIXI.Text('Press ENTER to join', {
+			fontSize: (this.root.width * 4) / 100,
+			fill: defaultColor,
+		});
+		text.filters = [glowFilter];
+		text.x = (this.root.width * 60) / 100;
+		text.y = (this.root.height * 95) / 100;
+		container.addChild(text);
+	}
+
 	private createMatchDisplayElement(match: Match): PIXI.Text {
 		const text = new PIXI.Text(`Match ${match.order}: ${match.player1} vs ${match.player2}`, {
-			fontSize: 14,
+			fontSize: (this.root.width * 4) / 100,
 			fill: defaultColor,
 		});
 		text.filters = [glowFilter];
 		// Set position based on match order or any other logic
-		text.x = 100;
-		text.y = 100 + match.order * 20;
+		text.x = (this.root.width * 10) / 100;
+		text.y = (this.root.height * 80) / 100 + match.order * 20;
 		return text;
 	}
 }

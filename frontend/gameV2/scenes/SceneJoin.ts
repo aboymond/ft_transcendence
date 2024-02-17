@@ -1,5 +1,5 @@
 // import { Container } from 'react-bootstrap';
-import { defaultColor } from '..';
+import { defaultColor} from '..';
 import { SceneBase } from './SceneBase';
 import { SceneMenu2 } from './SceneMenu2';
 import * as PIXI from 'pixi.js';

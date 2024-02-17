@@ -25,6 +25,7 @@ enum menu {
 	PLAY = 3,
 }
 
+
 export class SceneMenuTournament extends SceneBase {
 	// FOR THE BACK ================
 	private _nb_playerForBack: number = 4;
@@ -105,10 +106,8 @@ export class SceneMenuTournament extends SceneBase {
 
 		if (e.code === 'ArrowRight') {
 			this.root.playSound('select');
-
 			this._pressRight();
 		}
-
 		if (e.code === 'Enter') {
 			if (this._currentSelectCreate === menu.PLAY) {
 				this.root.playSound('enter');

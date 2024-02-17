@@ -7,7 +7,8 @@ import { GameState } from '../src/types';
 import { SceneGame } from './scenes/SceneGame';
 import { SceneMenu } from './scenes/SceneMenu';
 import { SceneWinOrLoose } from './scenes/SceneWinOrLoose';
-import { sound } from '@pixi/sound';
+// import { sound } from '@pixi/sound';
+
 
 interface IPixiManagerOptions {
 	backgroundAlpha: number;
@@ -37,13 +38,22 @@ export class PixiManager {
 	public rpsText: PIXI.Text;
 	public currentTournament: Tournament | null = null;
 
-	//--------------------------
+	public mapSounds = new Map<string, string>([
+		['enter', './sound/game-start.mp3'],
+		['touchBall', './sound/touchBall.mp3'],
+		['touchPad', './sound/touchPad.mp3'],
+		['select', './sound/Select.mp3'],
+		['win', './sound/Winner.mp3'],
+		['loose', './sound/Looser.mp3'],
+		['loading', './sound/loadingPage.mp3'],
+	]);
 
 	private _currentScene?: SceneBase = undefined;
 	private _app: PIXI.Application;
 	private UpdateInterval: number = 500;
 	private lastFpsUpdateTime: number = 0;
 	private lastPingUpdateTime: number = 0;
+	private _loading;
 
 	constructor(
 		readonly options: Partial<IPixiManagerOptions> = {},
@@ -86,12 +96,15 @@ export class PixiManager {
 		// window.addEventListener('resize', this.handleResize.bind(this));
 		$('#game_window').append(this._app.view as unknown as HTMLElement);
 
-		if (!sound.exists('select')) sound.add('select', './sound/Select.mp3');
-		if (!sound.exists('enter')) sound.add('enter', './sound/game-start.mp3');
-		if (!sound.exists('win')) sound.add('win', './sound/Winner.mp3');
-		if (!sound.exists('loose')) sound.add('loose', './sound/Looser.mp3');
-		if (!sound.exists('touchPad')) sound.add('touchPad', './sound/touchPad.mp3');
-		if (!sound.exists('touchBall')) sound.add('touchBall', './sound/touchBall.mp3');
+		// if (!sound.exists('select')) sound.add('select', './sound/Select.mp3');
+		// if (!sound.exists('enter')) sound.add('enter', './sound/game-start.mp3');
+		// if (!sound.exists('win')) sound.add('win', './sound/Winner.mp3');
+		// if (!sound.exists('loose')) sound.add('loose', './sound/Looser.mp3');
+		// if (!sound.exists('touchPad')) sound.add('touchPad', './sound/touchPad.mp3');
+		// if (!sound.exists('touchBall')) sound.add('touchBall', './sound/touchBall.mp3');
+		// if (!sound.exists('loading')) sound.add('loading', './sound/loadingPage.mp3');
+
+
 	}
 
 	public destroy() {
@@ -235,10 +248,19 @@ export class PixiManager {
 	}
 
 	public playSound(soundKey: string): void {
-		if (sound.exists(soundKey)) {
-			sound.play(soundKey);
-		} else {
-			console.warn(`Sound key "${soundKey}" does not exist.`);
+		if (soundKey === 'loading') {
+			this._loading = new Audio(this.mapSounds.get(soundKey));
+			this._loading.play();
+			this._loading.volume = 0.1;
+		}
+		else {
+			new Audio(this.mapSounds.get(soundKey))?.play();
 		}
 	}
+
+	public stopLoadingSound(): void {
+		this._loading?.pause();
+	}
+
+
 }
