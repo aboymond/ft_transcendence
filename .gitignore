@@ -4,3 +4,4 @@
 /backend/users/config.yml
 info.txt
 .env
+node_modules
