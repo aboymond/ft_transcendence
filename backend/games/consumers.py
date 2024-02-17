@@ -239,6 +239,13 @@ class GameConsumer(AsyncWebsocketConsumer):
         winner_id = event["winner_id"]
         loser_id = event["loser_id"]
 
+        winner = await database_sync_to_async(User.objects.get)(id=winner_id)
+        loser = await database_sync_to_async(User.objects.get)(id=loser_id)
+        winner.wins += 1
+        await database_sync_to_async(winner.save)()
+        loser.losses += 1
+        await database_sync_to_async(loser.save)()
+
         message = {
             "action": "leave_game",
             "data": {
@@ -270,6 +277,11 @@ class GameConsumer(AsyncWebsocketConsumer):
         game.loser = await sync_to_async(self.determine_loser)(game)
         game.end_time = timezone.now()
         await sync_to_async(game.save)()
+
+        game.winner.wins += 1
+        await sync_to_async(game.winner.save)()
+        game.loser.losses += 1
+        await sync_to_async(game.loser.save)()
 
         message = {
             "action": "end_game",
