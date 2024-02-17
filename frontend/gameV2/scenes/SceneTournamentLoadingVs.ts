@@ -203,11 +203,29 @@ export class SceneTournamentLoadingVs extends SceneBase {
 	}
 
 	private _initNameVs4(names: PIXI.Container) {
-		let playerNames = this._currentTournament?.participants_usernames;
+		// const playerNames = this._currentMatches
+		// 	.map((match) => [match.player1_username, match.player2_username])
+		// 	.flat();
+		// console.log(playerNames);
+		// if (playerNames && playerNames.length) {
+		// 	playerNames.forEach((name, i) => {
+		// 		const newName = new PIXI.Text(name, {
+		// 			fontSize: (this.root.width * 2) / 100,
+		// 			fill: defaultColor,
+		// 		});
+		// 		newName.filters = [glowFilter];
+		// 		newName.y = (this.root.height * 65) / 100;
+		// 		newName.x = (this.root.width * 10) / 100 + i * ((this.root.width * 20) / 100);
+		// 		if (i >= 2) {
+		// 			newName.y += 30;
+		// 			newName.x = (this.root.width * 10) / 100 + (i - 2) * ((this.root.width * 20) / 100);
+		// 		}
+		// 		this._nameVs.push(newName);
+		// 	});
+		// }
+		const playerNames = this._currentTournament?.participants_usernames;
 		console.log(playerNames);
 		if (playerNames && playerNames.length) {
-			//TODO use player number instead of sort
-			playerNames = playerNames.sort();
 			for (let i = 0; i < playerNames.length; i++) {
 				const newName = new PIXI.Text(playerNames[i], {
 					fontSize: (this.root.width * 2) / 100,
@@ -255,32 +273,6 @@ export class SceneTournamentLoadingVs extends SceneBase {
 			names.addChild(this._nameVs[i]);
 		}
 		return names;
-
-		// let playerNames = this._currentTournament?.participants_usernames;
-		// if (playerNames && playerNames.length) {
-		// 	playerNames = playerNames.sort();
-		// 	for (let i = 0; i < playerNames.length && i < 8; i++) {
-		// 		const newName = new PIXI.Text(playerNames[i], {
-		// 			fontSize: (this.root.width * 2) / 100,
-		// 			fill: defaultColor,
-		// 		});
-		// 		newName.filters = [glowFilter];
-		// 		const adjustment = (this.root.height * 70 * 0.03) / 100;
-		// 		newName.y = (this.root.height * 70) / 100 + (i % 4 >= 2 ? adjustment : 0); // Adjust for the second row
-		// 		// Calculate x position based on index, adjusting for more players
-		// 		newName.x = (this.root.width * 2) / 100 + (i % 4) * ((this.root.width * 12.2) / 100);
-		// 		if (i >= 4) {
-		// 			// Adjust positions for the 5th to 8th names
-		// 			newName.y += 30; // Example adjustment, you might need to calculate this
-		// 			newName.x = (this.root.width * 2) / 100 + (i - 4) * ((this.root.width * 12.2) / 100);
-		// 		}
-		// 		this._nameVs.push(newName); // Add the new text element to the _nameVs array
-		// 	}
-		// }
-		// for (let i = 0; i < this._nameVs.length; i++) {
-		// 	names.addChild(this._nameVs[i]);
-		// }
-		// return names;
 	}
 
 	//=======================================

@@ -194,8 +194,14 @@ export const apiService = {
 	getMatches: async (tournamentId: number) => {
 		return fetchAPI(`tournaments/${tournamentId}/matches/`);
 	},
+	getCurrentTournament: async () => {
+		return fetchAPI('tournaments/current/');
+	},
+	getCurrentGame: async () => {
+		return fetchAPI('games/current/');
+	},
 	getGames: async () => {
-		return fetchAPI('games/list-create/');
+		return fetchAPI('games/list/');
 	},
 	createGame: async (userId: number) => {
 		return fetchAPI('games/create/', {

@@ -1,9 +1,8 @@
 from django.db import models
 from django.conf import settings
-from games.models import Game
-
-# from itertools import combinations
+from django.utils import timezone
 from django_prometheus.models import ExportModelOperationsMixin
+from games.models import Game
 
 
 class Tournament(ExportModelOperationsMixin("Tournament"), models.Model):
@@ -50,6 +49,9 @@ class Tournament(ExportModelOperationsMixin("Tournament"), models.Model):
 
     @classmethod
     def start_single_elimination(cls, tournament):
+        tournament.status = "in_progress"
+        tournament.start_date = timezone.now()
+        tournament.save()
         players = list(tournament.participants.all())
         order = 1
         while len(players) > 1:

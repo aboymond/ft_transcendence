@@ -69,6 +69,29 @@ class TournamentDetailSerializer(serializers.ModelSerializer):
 
 
 class MatchSerializer(serializers.ModelSerializer):
+    player1_username = serializers.SerializerMethodField()
+    player2_username = serializers.SerializerMethodField()
+
     class Meta:
         model = Match
-        fields = ["id", "player1", "player2", "game", "order"]
+        fields = [
+            "id",
+            "player1",
+            "player2",
+            "game",
+            "order",
+            "player1_username",
+            "player2_username",
+        ]
+
+    def get_player1_username(self, obj):
+        return obj.player1.username
+
+    def get_player2_username(self, obj):
+        return obj.player2.username
+
+
+class TournamentIdSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tournament
+        fields = ["id"]
