@@ -10,7 +10,8 @@ export class SceneTournamentWinner extends SceneBase {
 	private _interval = 0;
 
 	public async onStart(container: PIXI.Container) {
-		// AudioManager.loadAll();
+		AudioManager.play('win');
+
 		container.addChild(this._initTextTitle());
 		container.addChild(this._initTextName());
 
@@ -30,8 +31,7 @@ export class SceneTournamentWinner extends SceneBase {
 	}
 
 	public onKeyDown(e: KeyboardEvent) {
-		if (e.code === 'Enter') {
-			AudioManager.play('enter');
+		if (e.code === 'enter') {
 			this.root.loadScene(new SceneMenu(this.root));
 		}
 	}
