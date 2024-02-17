@@ -5,6 +5,7 @@ from django.contrib.auth import get_user_model
 from asgiref.sync import sync_to_async
 from django.db.models import Q
 from games.models import Game
+from websockets.exceptions import ConnectionClosedOK
 
 logger = logging.getLogger(__name__)
 User = get_user_model()
@@ -117,5 +118,23 @@ class GeneralRequestConsumer(AsyncWebsocketConsumer):
         await self.send(
             text_data=json.dumps(
                 {"type": "friend_request", "payload": event["payload"]}
+            )
+        )
+
+    async def tournament_message(self, event):
+        await self.send(
+            text_data=json.dumps(
+                {
+                    "type": "tournament_message",
+                    "payload": {
+                        "action": "tournament_end",
+                        "data": {
+                            "tournament_id": event["tournament_id"],
+                            "tournament_name": event["tournament_name"],
+                            "winner_id": event["winner_id"],
+                            "winner_username": event["winner_username"],
+                        },
+                    },
+                }
             )
         )
