@@ -1,4 +1,4 @@
-import { defaultColor, glowFilter, playLoadingPageSound } from '..';
+import { defaultColor, glowFilter } from '..';
 import { SceneBase } from './SceneBase';
 import { SceneMenu2 } from './SceneMenu2';
 import * as PIXI from 'pixi.js';

@@ -9,7 +9,6 @@ import { SceneMenu } from './scenes/SceneMenu';
 import { SceneWinOrLoose } from './scenes/SceneWinOrLoose';
 // import { sound } from '@pixi/sound';
 
-
 interface IPixiManagerOptions {
 	backgroundAlpha: number;
 	antialias: boolean;
@@ -53,7 +52,7 @@ export class PixiManager {
 	private UpdateInterval: number = 500;
 	private lastFpsUpdateTime: number = 0;
 	private lastPingUpdateTime: number = 0;
-	private _loading;
+	private _loading: HTMLAudioElement | null = null;
 
 	constructor(
 		readonly options: Partial<IPixiManagerOptions> = {},
@@ -103,8 +102,6 @@ export class PixiManager {
 		// if (!sound.exists('touchPad')) sound.add('touchPad', './sound/touchPad.mp3');
 		// if (!sound.exists('touchBall')) sound.add('touchBall', './sound/touchBall.mp3');
 		// if (!sound.exists('loading')) sound.add('loading', './sound/loadingPage.mp3');
-
-
 	}
 
 	public destroy() {
@@ -252,8 +249,7 @@ export class PixiManager {
 			this._loading = new Audio(this.mapSounds.get(soundKey));
 			this._loading.play();
 			this._loading.volume = 0.1;
-		}
-		else {
+		} else {
 			new Audio(this.mapSounds.get(soundKey))?.play();
 		}
 	}
@@ -261,6 +257,4 @@ export class PixiManager {
 	public stopLoadingSound(): void {
 		this._loading?.pause();
 	}
-
-
 }

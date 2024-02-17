@@ -1,13 +1,9 @@
-
 import { SceneBase } from './SceneBase';
 import { SceneMenu } from './SceneMenu';
 import { SceneWinOrLoose } from './SceneWinOrLoose';
 import * as PIXI from 'pixi.js';
 import { gsap } from 'gsap';
-import {
-	defaultColor,
-	glowFilter,
-} from '../index';
+import { defaultColor, glowFilter } from '../index';
 
 export class SceneGameVsBot extends SceneBase {
 	// FOR THE BACK ======================================
@@ -44,7 +40,7 @@ export class SceneGameVsBot extends SceneBase {
 
 	public async onStart(container: PIXI.Container) {
 		//Init Ball
-		container.addChild(this._initBall(0x1aff00));
+		container.addChild(this._initBall(10, 0x1aff00));
 		this._ball.x = this.root.width / 2;
 		this._ball.y = this.root.height / 2;
 
@@ -65,7 +61,6 @@ export class SceneGameVsBot extends SceneBase {
 
 		this._exitMenu = this._initExitMenu();
 		container.addChild(this._exitMenu);
-
 	}
 
 	public onUpdate() {
@@ -113,7 +108,7 @@ export class SceneGameVsBot extends SceneBase {
 	// UTILS INIT
 	//=======================================
 
-	private _initBall(color: number) {
+	private _initBall(size: number, color: number) {
 		const pourcentage = 3;
 		const newWidth = Math.floor((this.root.width * pourcentage) / 100);
 		const ratio = size / size;
@@ -228,7 +223,6 @@ export class SceneGameVsBot extends SceneBase {
 			// start with space
 			if (this._keysPressed['Space']) {
 				if (this._gameStarted == false) this._gameStarted = true;
-
 			}
 		} else {
 			if (this._keysPressed['ArrowRight']) {

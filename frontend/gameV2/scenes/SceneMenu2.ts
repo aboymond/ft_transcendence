@@ -161,28 +161,28 @@ export class SceneMenu2 extends SceneBase {
 
 	private _pressUp() {
 		this._currentSelect--;
-		this.root.playSound("select");		
+		this.root.playSound('select');
 		if (this._currentSelect < 0) this._currentSelect = selectMax;
 		this._updateMenuColor();
 	}
 
 	private _pressDown() {
 		this._currentSelect++;
-		this.root.playSound("select");
+		this.root.playSound('select');
 		if (this._currentSelect > selectMax) this._currentSelect = 0;
 		this._updateMenuColor();
 	}
 
 	private _pressRight() {
 		this._currentSelect_LR++;
-		this.root.playSound("select");
+		this.root.playSound('select');
 		if (this._currentSelect_LR > selectMax_LR) this._currentSelect_LR = 0;
 		this._updateMenuColor();
 	}
 
 	private _pressLeft() {
 		this._currentSelect_LR--;
-		this.root.playSound("select");
+		this.root.playSound('select');
 	}
 	private _updateMenuColor() {
 		if (this._currentSelect === menu.TOURNAMENT) {
@@ -247,28 +247,28 @@ export class SceneMenu2 extends SceneBase {
 		}
 	}
 
-	// Add a method to handle sprite clicks
-	private onSpriteClick(index: number) {
-		switch (index) {
-			case allSprite.TOURNAMENT_S:
-			case allSprite.TOURNAMENT_U:
-				this._currentSelect = menu.TOURNAMENT;
-				break;
-			case allSprite.PVP_S:
-			case allSprite.PVP_U:
-			case allSprite.PVB_S:
-			case allSprite.PVB_U:
-				this._currentSelect = menu.PVP_PVB;
-				break;
-			case allSprite.JOIN_S:
-			case allSprite.JOIN_U:
-				this._currentSelect = menu.JOIN;
-				break;
-			default:
-				return; // Do nothing if the index doesn't match
-		}
+	// // Add a method to handle sprite clicks
+	// private onSpriteClick(index: number) {
+	// 	switch (index) {
+	// 		case allSprite.TOURNAMENT_S:
+	// 		case allSprite.TOURNAMENT_U:
+	// 			this._currentSelect = menu.TOURNAMENT;
+	// 			break;
+	// 		case allSprite.PVP_S:
+	// 		case allSprite.PVP_U:
+	// 		case allSprite.PVB_S:
+	// 		case allSprite.PVB_U:
+	// 			this._currentSelect = menu.PVP_PVB;
+	// 			break;
+	// 		case allSprite.JOIN_S:
+	// 		case allSprite.JOIN_U:
+	// 			this._currentSelect = menu.JOIN;
+	// 			break;
+	// 		default:
+	// 			return; // Do nothing if the index doesn't match
+	// 	}
 
-		// Simulate pressing Enter to load the selected scene
-		this.onKeyDown(new KeyboardEvent('keydown', { code: 'Enter' }));
-	}
+	// 	// Simulate pressing Enter to load the selected scene
+	// 	this.onKeyDown(new KeyboardEvent('keydown', { code: 'Enter' }));
+	// }
 }
