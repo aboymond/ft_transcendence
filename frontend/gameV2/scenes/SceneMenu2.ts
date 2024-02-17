@@ -4,8 +4,7 @@ import { SceneMenu } from './SceneMenu';
 import { SceneMenuOption } from './SceneMenuOption';
 import { SceneMenuTournament } from './SceneMenuTournament';
 import { SceneJoin } from './SceneJoin';
-
-// import { glowFilter, defaultColor, textStylePVPMenu2, textStylePVBMenu2, textStyleTournamentMenu, textStyleJoinMenu2 } from '..';
+import {AudioManager} from '../AudioManager';
 
 const selectMax = 2;
 const selectMax_LR = 1;
@@ -38,13 +37,6 @@ const textures = [
 	PIXI.Texture.from('./img/JoinPartyUnselect.png'),
 ];
 
-// enum enumSound {
-// 	SELECT_SOUND = 0,
-// 	ENTER_SOUND = 1,
-// }
-
-// const sounds = [
-// ];
 
 export class SceneMenu2 extends SceneBase {
 	private _currentSelect = menu.TOURNAMENT;
@@ -52,6 +44,7 @@ export class SceneMenu2 extends SceneBase {
 	private _sprites: PIXI.Sprite[] = [];
 
 	public async onStart(container: PIXI.Container) {
+		// AudioManager.loadAll();
 		for (let i = 0; i < textures.length; i++) {
 			this._sprites.push(new PIXI.Sprite(textures[i]));
 		}
@@ -66,12 +59,6 @@ export class SceneMenu2 extends SceneBase {
 		this._initSpritePvB(this._sprites[allSprite.PVB_S]);
 		this._initSpritePvB(this._sprites[allSprite.PVB_U]);
 
-		// this._sprites.forEach((sprite, index) => {
-		// 	sprite.eventMode = 'dynamic';
-		// 	sprite.cursor = 'pointer';
-		// 	sprite.on('pointerdown', () => this.onSpriteClick(index));
-		// });
-
 		this._sprites[allSprite.TOURNAMENT_U].visible = false;
 		this._sprites[allSprite.PVP_S].visible = false;
 		this._sprites[allSprite.PVP_U].visible = true;
@@ -83,7 +70,9 @@ export class SceneMenu2 extends SceneBase {
 
 	public onUpdate() {}
 
-	public onFinish() {}
+	public onFinish() {
+		AudioManager.reset();
+	}
 
 	public onKeyDown(e: KeyboardEvent) {
 		if (e.code === 'ArrowUp') {
@@ -107,7 +96,7 @@ export class SceneMenu2 extends SceneBase {
 			}
 		}
 		if (e.code === 'Enter') {
-			this.root.playSound('enter');
+			AudioManager.play('enter');
 			if (this._currentSelect === menu.TOURNAMENT) {
 				this.root.loadScene(new SceneMenuTournament(this.root));
 			} else if (this._currentSelect === menu.PVP_PVB) {
@@ -161,28 +150,28 @@ export class SceneMenu2 extends SceneBase {
 
 	private _pressUp() {
 		this._currentSelect--;
-		this.root.playSound("select");		
+		AudioManager.play('select');
 		if (this._currentSelect < 0) this._currentSelect = selectMax;
 		this._updateMenuColor();
 	}
 
 	private _pressDown() {
 		this._currentSelect++;
-		this.root.playSound("select");
+		AudioManager.play('select');
 		if (this._currentSelect > selectMax) this._currentSelect = 0;
 		this._updateMenuColor();
 	}
 
 	private _pressRight() {
 		this._currentSelect_LR++;
-		this.root.playSound("select");
+		AudioManager.play('select');
 		if (this._currentSelect_LR > selectMax_LR) this._currentSelect_LR = 0;
 		this._updateMenuColor();
 	}
 
 	private _pressLeft() {
 		this._currentSelect_LR--;
-		this.root.playSound("select");
+		AudioManager.play('select');
 	}
 	private _updateMenuColor() {
 		if (this._currentSelect === menu.TOURNAMENT) {

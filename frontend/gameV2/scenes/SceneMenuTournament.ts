@@ -1,8 +1,6 @@
 import * as PIXI from 'pixi.js';
 import { SceneBase } from './SceneBase';
-
 import {
-	glowFilter,
 	defaultColor,
 	textStyleMenuTournamentCreate,
 	textStyleMenuTournamentName,
@@ -12,9 +10,10 @@ import {
 	textStyleMenuOptionPlay,
 } from '..';
 import { SceneMenu2 } from './SceneMenu2';
-
 import { SceneTournamentLoadingVs } from './SceneTournamentLoadingVs';
 import { apiService } from '../../src/services/apiService';
+import {AudioManager} from '../AudioManager';
+
 
 const selectMaxCreate = 3;
 
@@ -46,7 +45,7 @@ export class SceneMenuTournament extends SceneBase {
 	private _score_max_text = new PIXI.Text('MAX SCORE:', textStyleMenuTournamentMaxScore);
 	private _mode = new PIXI.Text('MODE:', textStyleMenuTournamentMode);
 	private _nb_player_tab = new PIXI.Text('< 4 >', textStyleMenuTournamentPlayer);
-	private _nbPlayer: number[] = [4, 8];
+	private _nbPlayer: number = 4;
 
 	private _score_max_tab = new PIXI.Text('< 3 >', textStyleMenuTournamentMaxScore);
 	private _scoreMax: number[] = [3, 5, 10];
@@ -79,7 +78,7 @@ export class SceneMenuTournament extends SceneBase {
 
 	public onKeyDown(e: KeyboardEvent) {
 		if (e.code === 'ArrowUp') {
-			this.root.playSound('select');
+			AudioManager.play('select');
 
 			this._currentSelectCreate--;
 			if (this._currentSelectCreate < menu.NAME) {
@@ -89,7 +88,7 @@ export class SceneMenuTournament extends SceneBase {
 		}
 
 		if (e.code === 'ArrowDown') {
-			this.root.playSound('select');
+			AudioManager.play('select');
 
 			this._currentSelectCreate++;
 			if (this._currentSelectCreate > selectMaxCreate) {
@@ -99,18 +98,18 @@ export class SceneMenuTournament extends SceneBase {
 		}
 
 		if (e.code === 'ArrowLeft') {
-			this.root.playSound('select');
+			AudioManager.play('select');
 
 			this._pressLeft();
 		}
 
 		if (e.code === 'ArrowRight') {
-			this.root.playSound('select');
+			AudioManager.play('select');
 			this._pressRight();
 		}
 		if (e.code === 'Enter') {
 			if (this._currentSelectCreate === menu.PLAY) {
-				this.root.playSound('enter');
+				AudioManager.play('enter');
 				if (this._inputText === '') alert('Please enter a name for the tournament');
 				else this._createTournament();
 			}
@@ -162,7 +161,6 @@ export class SceneMenuTournament extends SceneBase {
 		text.y = (this.root.height * 5) / 100;
 		text.style.fontSize = (this.root.width * 5) / 100;
 		text.style.fill = defaultColor;
-		text.filters = [glowFilter];
 		return text;
 	}
 
@@ -172,7 +170,6 @@ export class SceneMenuTournament extends SceneBase {
 		this._name.style.fill = 'green';
 		this._name.x = this.root.width / 5;
 		this._name.y = (this.root.height * 30) / 100 - this._name.height / 2;
-		this._name.filters = [glowFilter];
 		menu.addChild(this._name);
 
 		this._nameInputBox.lineStyle(1, 'green', 1);
@@ -181,44 +178,37 @@ export class SceneMenuTournament extends SceneBase {
 		this._nameInputBox.x = this.root.width - this._nameInputBox.width - 20;
 		this._nameInputBox.y = this._name.y;
 		this._nameInputBox.endFill();
-		this._nameInputBox.filters = [glowFilter];
 		menu.addChild(this._nameInputBox);
 
 		this._textInputField.x = this.root.width - this._nameInputBox.width - 20;
 		this._textInputField.y = this._name.y;
-		this._textInputField.filters = [glowFilter];
 		menu.addChild(this._textInputField);
 
 		this._nb_player_text.style.fill = 'green';
 		this._nb_player_text.x = this.root.width / 5;
 		this._nb_player_text.y =
 			(this.root.height * 17) / 100 + this._nameInputBox.y - this._nb_player_text.height / 2;
-		this._nb_player_text.filters = [glowFilter];
 		menu.addChild(this._nb_player_text);
 
 		this._nb_player_tab.style.fill = 'green';
 		this._nb_player_tab.x = this.root.width - 100;
 		this._nb_player_tab.y = this._nb_player_text.y;
-		this._nb_player_tab.filters = [glowFilter];
 		menu.addChild(this._nb_player_tab);
 
 		this._score_max_text.style.fill = 'green';
 		this._score_max_text.x = this.root.width / 5;
 		this._score_max_text.y =
 			(this.root.height * 17) / 100 + this._nb_player_text.y - this._score_max_text.height / 2;
-		this._score_max_text.filters = [glowFilter];
 		menu.addChild(this._score_max_text);
 
 		this._score_max_tab.style.fill = 'green';
 		this._score_max_tab.x = this.root.width - 100;
 		this._score_max_tab.y = this._score_max_text.y;
-		this._score_max_tab.filters = [glowFilter];
 		menu.addChild(this._score_max_tab);
 
 		this._textPlay.style.fill = 'green';
 		this._textPlay.x = this.root.width / 2 - this._textPlay.width / 2;
 		this._textPlay.y = this.root.height - 100;
-		this._textPlay.filters = [glowFilter];
 		menu.addChild(this._textPlay);
 
 		menu.visible = true;
@@ -287,9 +277,9 @@ export class SceneMenuTournament extends SceneBase {
 		if (this._currentNbPlayer < 0) {
 			this._currentNbPlayer = 1;
 		}
-		this._nb_player_tab.text = '< ' + this._nbPlayer[this._currentNbPlayer] + ' >';
+		this._nb_player_tab.text = '< ' + this._nbPlayer + ' >';
 
-		this._nb_playerForBack = this._nbPlayer[this._currentNbPlayer];
+		this._nb_playerForBack = this._nbPlayer;
 	}
 
 	private _playerNext() {
@@ -297,9 +287,9 @@ export class SceneMenuTournament extends SceneBase {
 		if (this._currentNbPlayer > 1) {
 			this._currentNbPlayer = 0;
 		}
-		this._nb_player_tab.text = '< ' + this._nbPlayer[this._currentNbPlayer] + ' >';
+		this._nb_player_tab.text = '< ' + this._nbPlayer + ' >';
 
-		this._nb_playerForBack = this._nbPlayer[this._currentNbPlayer];
+		this._nb_playerForBack = this._nbPlayer;
 	}
 
 	private _maxScorePrev() {

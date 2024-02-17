@@ -6,8 +6,9 @@ import * as PIXI from 'pixi.js';
 import { gsap } from 'gsap';
 import {
 	defaultColor,
-	glowFilter,
 } from '../index';
+import {AudioManager} from '../AudioManager';
+
 
 export class SceneGameVsBot extends SceneBase {
 	// FOR THE BACK ======================================
@@ -44,7 +45,7 @@ export class SceneGameVsBot extends SceneBase {
 
 	public async onStart(container: PIXI.Container) {
 		//Init Ball
-		container.addChild(this._initBall(0x1aff00));
+		container.addChild(this._initBall(0x1aff00, 1));
 		this._ball.x = this.root.width / 2;
 		this._ball.y = this.root.height / 2;
 
@@ -88,7 +89,9 @@ export class SceneGameVsBot extends SceneBase {
 		}
 	}
 
-	public onFinish() {}
+	public onFinish() {
+		AudioManager.reset();
+	}
 
 	public onKeyDown(e: KeyboardEvent) {
 		this._keysPressed[e.code] = true;
@@ -113,7 +116,7 @@ export class SceneGameVsBot extends SceneBase {
 	// UTILS INIT
 	//=======================================
 
-	private _initBall(color: number) {
+	private _initBall(color: number, size: number) {
 		const pourcentage = 3;
 		const newWidth = Math.floor((this.root.width * pourcentage) / 100);
 		const ratio = size / size;
@@ -121,7 +124,6 @@ export class SceneGameVsBot extends SceneBase {
 
 		this._ball.beginFill(color);
 		this._ball.drawRect(0, 0, newWidth, newHigth);
-		this._ball.filters = [glowFilter];
 		this._ball.endFill();
 		return this._ball;
 	}
@@ -134,7 +136,6 @@ export class SceneGameVsBot extends SceneBase {
 
 		pad.beginFill(color);
 		pad.drawRect(-newWidth / 2, -newHigth / 2, newWidth, newHigth);
-		pad.filters = [glowFilter];
 		pad.endFill();
 		return pad;
 	}
@@ -158,7 +159,7 @@ export class SceneGameVsBot extends SceneBase {
 		// Wall colision
 		if (this._ball.x <= 1 || this._ball.x + this._ball.width / 2 >= this.root.width - 1) {
 			this._data.ballVelocity.x = -this._data.ballVelocity.x;
-			this.root.playSound('touchBall');
+			AudioManager.play('touchBall');
 		}
 
 		// Pad colision
@@ -167,7 +168,7 @@ export class SceneGameVsBot extends SceneBase {
 			this._ball.x < this._padBot.x + this._padBot.width / 2
 		) {
 			if (this._ball.y <= this._padBot.y + this._padBot.height / 2 + 1) {
-				this.root.playSound('touchPad');
+				AudioManager.play('touchBall');
 				this._data.ballVelocity.y = -this._data.ballVelocity.y;
 				this._data.ballVelocity.x = ((this._ball.x - this._padBot.x) / (this._padBot.width / 2)) * 5;
 			}
@@ -177,7 +178,7 @@ export class SceneGameVsBot extends SceneBase {
 			this._ball.x < this._padPlayer.x + this._padPlayer.width / 2
 		) {
 			if (this._ball.y + this._ball.height / 2 >= this._padPlayer.y - this._padPlayer.height - 1) {
-				this.root.playSound('touchPad');
+				AudioManager.play('touchPad');
 				this._data.ballVelocity.x = ((this._ball.x - this._padPlayer.x) / (this._padPlayer.width / 2)) * 5;
 				this._data.ballVelocity.y = -this._data.ballVelocity.y;
 			}
@@ -326,7 +327,6 @@ export class SceneGameVsBot extends SceneBase {
 		const menu = new PIXI.Container();
 
 		const background = new PIXI.Graphics();
-		background.filters = [glowFilter];
 		background.beginFill('green');
 		background.drawRect(-280, -150, 280, 150);
 		background.endFill();
@@ -338,19 +338,16 @@ export class SceneGameVsBot extends SceneBase {
 		this._exitText = new PIXI.Text('Exit ?', { fill: defaultColor });
 		this._exitText.x = background.x - background.width / 2 - this._exitText.width / 2;
 		this._exitText.y = background.y - 125;
-		this._exitText.filters = [glowFilter];
 		menu.addChild(this._exitText);
 
 		this._yesOption = new PIXI.Text('Yes', { fill: defaultColor });
 		this._yesOption.x = background.x - (background.width / 2 + this._yesOption.width / 2) - 50;
 		this._yesOption.y = background.y - 50;
-		this._yesOption.filters = [glowFilter];
 		menu.addChild(this._yesOption);
 
 		this._noOption = new PIXI.Text('No', { fill: 0x053100 });
 		this._noOption.x = background.x - (background.width / 2 + this._noOption.width / 2) + 50;
 		this._noOption.y = background.y - 50;
-		this._noOption.filters = [glowFilter];
 		menu.addChild(this._noOption);
 
 		menu.visible = false;

@@ -38,22 +38,13 @@ export class PixiManager {
 	public rpsText: PIXI.Text;
 	public currentTournament: Tournament | null = null;
 
-	public mapSounds = new Map<string, string>([
-		['enter', './sound/game-start.mp3'],
-		['touchBall', './sound/touchBall.mp3'],
-		['touchPad', './sound/touchPad.mp3'],
-		['select', './sound/Select.mp3'],
-		['win', './sound/Winner.mp3'],
-		['loose', './sound/Looser.mp3'],
-		['loading', './sound/loadingPage.mp3'],
-	]);
+
 
 	private _currentScene?: SceneBase = undefined;
 	private _app: PIXI.Application;
 	private UpdateInterval: number = 500;
 	private lastFpsUpdateTime: number = 0;
 	private lastPingUpdateTime: number = 0;
-	private _loading;
 
 	constructor(
 		readonly options: Partial<IPixiManagerOptions> = {},
@@ -245,21 +236,6 @@ export class PixiManager {
 					break;
 			}
 		});
-	}
-
-	public playSound(soundKey: string): void {
-		if (soundKey === 'loading') {
-			this._loading = new Audio(this.mapSounds.get(soundKey));
-			this._loading.play();
-			this._loading.volume = 0.1;
-		}
-		else {
-			new Audio(this.mapSounds.get(soundKey))?.play();
-		}
-	}
-
-	public stopLoadingSound(): void {
-		this._loading?.pause();
 	}
 
 

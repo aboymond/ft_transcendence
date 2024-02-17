@@ -3,12 +3,13 @@ import { defaultColor} from '..';
 import { SceneBase } from './SceneBase';
 import { SceneMenu2 } from './SceneMenu2';
 import * as PIXI from 'pixi.js';
-import { glowFilter } from '..';
 import apiService from '../../src/services/apiService';
 import { SceneLoadingPage } from './SceneLoadingPage';
 import { Tournament, Game } from '../../src/types';
 // import { SceneGame } from './SceneGame';
 import { SceneTournamentLoadingVs } from './SceneTournamentLoadingVs';
+import {AudioManager} from '../AudioManager';
+
 
 enum menuState {
 	TOURN_MENU,
@@ -16,7 +17,7 @@ enum menuState {
 }
 
 export class SceneJoin extends SceneBase {
-	private state: menuState = menuState.TOURN_MENU;
+	private _state: menuState = menuState.TOURN_MENU;
 	private _tourn_container = new PIXI.Container();
 	private _pvp_container = new PIXI.Container();
 	private _textTournament = new PIXI.Text('TOURNAMENT');
@@ -56,31 +57,33 @@ export class SceneJoin extends SceneBase {
 
 	public onUpdate() {}
 
-	public onFinish() {}
+	public onFinish() {
+		AudioManager.reset();
+	}
 
 	public onKeyDown(e: KeyboardEvent) {
 		// console.log(this.state);
-		switch (this.state) {
+		switch (this._state) {
 			case menuState.TOURN_MENU:
 				if (e.key === 'ArrowRight') {
-					this.root.playSound('select');
+					AudioManager.play('select');
 
 					this._tourn_container.visible = false;
 					this._pvp_container.visible = true;
 					this._textTournament.style.fill = 'green';
 					this._textPVP.style.fill = defaultColor;
-					this.state = menuState.PVP_MENU;
+					this._state = menuState.PVP_MENU;
 				}
 				if (e.key === 'ArrowDown') {
-					this.root.playSound('select');
+					AudioManager.play('select');
 					this._pressDownTournament();
 				}
 				if (e.key === 'ArrowUp') {
-					this.root.playSound('select');
+					AudioManager.play('select');
 					this._pressUpTournament();
 				}
 				if (e.code === 'Enter') {
-					this.root.playSound('enter');
+					AudioManager.play('enter');
 					this._joinTournament(this._tournamentObjects[this._currentSelectTournament].data.id);
 				}
 				if (e.code === 'Escape') {
@@ -89,24 +92,24 @@ export class SceneJoin extends SceneBase {
 				break;
 			case menuState.PVP_MENU:
 				if (e.key === 'ArrowLeft') {
-					this.root.playSound('select');
+					AudioManager.play('select');
 
 					this._tourn_container.visible = true;
 					this._pvp_container.visible = false;
 					this._textTournament.style.fill = defaultColor;
 					this._textPVP.style.fill = 'green';
-					this.state = menuState.TOURN_MENU;
+					this._state = menuState.TOURN_MENU;
 				}
 				if (e.key === 'ArrowDown') {
-					this.root.playSound('select');
+					AudioManager.play('select');
 					this._pressDownPvP();
 				}
 				if (e.key === 'ArrowUp') {
-					this.root.playSound('select');
+					AudioManager.play('select');
 					this._pressUpPvP();
 				}
 				if (e.code === 'Enter') {
-					this.root.playSound('enter');
+					AudioManager.play('enter');
 					this._joinGame(this._gameObjects[this._currentSelectPvP].data.id);
 				}
 				if (e.code === 'Escape') {
@@ -226,7 +229,6 @@ export class SceneJoin extends SceneBase {
 		text.y = (this.root.height * 5) / 100;
 		text.style.fontSize = (this.root.width * 5) / 100;
 		text.style.fill = defaultColor;
-		text.filters = [glowFilter];
 		return text;
 	}
 
@@ -235,7 +237,6 @@ export class SceneJoin extends SceneBase {
 		text.y = (this.root.height * 5) / 100;
 		text.style.fontSize = (this.root.width * 5) / 100;
 		text.style.fill = 'green';
-		text.filters = [glowFilter];
 		return text;
 	}
 
@@ -244,7 +245,6 @@ export class SceneJoin extends SceneBase {
 		tab.y = (this.root.height * 15) / 100;
 		tab.style.fontSize = (this.root.width * 4) / 100;
 		tab.style.fill = defaultColor;
-		tab.filters = [glowFilter];
 		return tab;
 	}
 
@@ -253,7 +253,6 @@ export class SceneJoin extends SceneBase {
 		tab.y = (this.root.height * 15) / 100;
 		tab.style.fontSize = (this.root.width * 4) / 100;
 		tab.style.fill = defaultColor;
-		tab.filters = [glowFilter];
 		return tab;
 	}
 
@@ -262,7 +261,6 @@ export class SceneJoin extends SceneBase {
 		tab.y = (this.root.height * 15) / 100;
 		tab.style.fontSize = (this.root.width * 4) / 100;
 		tab.style.fill = defaultColor;
-		tab.filters = [glowFilter];
 		return tab;
 	}
 
@@ -271,7 +269,6 @@ export class SceneJoin extends SceneBase {
 		line.y = (this.root.height * 16) / 100;
 		line.style.fontSize = (this.root.width * 4) / 100;
 		line.style.fill = defaultColor;
-		line.filters = [glowFilter];
 		return line;
 	}
 
@@ -291,17 +288,14 @@ export class SceneJoin extends SceneBase {
 			textName_tour.x = (this.root.width * 2) / 100;
 			textName_tour.style.fontSize = (this.root.width * 4) / 100;
 			textName_tour.style.fill = 'green';
-			textName_tour.filters = [glowFilter];
 
 			textMode_tour.x = (this.root.width * 35) / 100 + 5;
 			textMode_tour.style.fontSize = (this.root.width * 4) / 100;
 			textMode_tour.style.fill = 'green';
-			textMode_tour.filters = [glowFilter];
 
 			textInfo_tour.x = (this.root.width * 75) / 100 + 5;
 			textInfo_tour.style.fontSize = (this.root.width * 4) / 100;
 			textInfo_tour.style.fill = 'green';
-			textInfo_tour.filters = [glowFilter];
 
 			// menuBoxTournament.x = 10;
 			menuBoxTournament.y = (this.root.height * 20) / 100 + i * 25;
@@ -337,17 +331,14 @@ export class SceneJoin extends SceneBase {
 			textName_PvP.x = (this.root.width * 2) / 100;
 			textName_PvP.style.fontSize = (this.root.width * 4) / 100;
 			textName_PvP.style.fill = 'green';
-			textName_PvP.filters = [glowFilter];
 
 			textMode_PvP.x = (this.root.width * 35) / 100 + 5;
 			textMode_PvP.style.fontSize = (this.root.width * 4) / 100;
 			textMode_PvP.style.fill = 'green';
-			textMode_PvP.filters = [glowFilter];
 
 			textInfo_PvP.x = (this.root.width * 75) / 100 + 5;
 			textInfo_PvP.style.fontSize = (this.root.width * 4) / 100;
 			textInfo_PvP.style.fill = 'green';
-			textInfo_PvP.filters = [glowFilter];
 
 			menuBoxPvP.y = (this.root.height * 20) / 100 + i * 25;
 			menuBoxPvP.endFill();

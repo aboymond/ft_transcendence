@@ -3,7 +3,6 @@ import { SceneBase } from './SceneBase';
 import { SceneMenu2 } from './SceneMenu2';
 import {
 	defaultColor,
-	glowFilter,
 	textStyleMenuOptionColor,
 	textStyleMenuOptionPad,
 	textStyleMenuOptionLevel,
@@ -14,6 +13,7 @@ import {
 import { SceneGameVsBot } from './SceneGameVsBot';
 import { SceneLoadingPage } from './SceneLoadingPage';
 import { apiService } from '../../src/services/apiService';
+import {AudioManager} from '../AudioManager';
 
 const selectMax = 4;
 let errorLock: boolean = false;
@@ -112,7 +112,6 @@ export class SceneMenuOption extends SceneBase {
 			this._spritesPad[i].y = this._textPad.y - 20 - 10;
 			this._spritesPad[i].tint = 'green';
 			this._spritesPad[i].visible = false;
-			this._spritesPad[i].filters = [glowFilter];
 		}
 		this._spritesPad[0].visible = true;
 
@@ -128,23 +127,25 @@ export class SceneMenuOption extends SceneBase {
 		this._updateMenuColor();
 	}
 
-	public onFinish() {}
+	public onFinish() {
+		AudioManager.reset();
+	}
 
 	public onKeyDown(e: KeyboardEvent) {
 		if (e.code === 'ArrowUp') {
-			this.root.playSound('select');
+			AudioManager.play('select');
 			if (!errorLock) this._pressUp();
 		}
 		if (e.code === 'ArrowDown') {
-			this.root.playSound('select');
+			AudioManager.play('select');
 			if (!errorLock) this._pressDown();
 		}
 		if (e.code === 'ArrowLeft') {
-			this.root.playSound('select');
+			AudioManager.play('select');
 			if (!errorLock) this._pressLeft();
 		}
 		if (e.code === 'ArrowRight') {
-			this.root.playSound('select');
+			AudioManager.play('select');
 			if (!errorLock) this._pressRight();
 		}
 		if (e.code === 'Enter') {
@@ -167,14 +168,12 @@ export class SceneMenuOption extends SceneBase {
 	//=======================================
 
 	private _createTextColorAvatar(text: PIXI.Text) {
-		text.filters = [glowFilter];
 		text.y = (25 * this.root.height) / 100;
 		text.x = this.root.width / 2 - text.width / 2;
 		return text;
 	}
 
 	private _createTextPad(text: PIXI.Text) {
-		text.filters = [glowFilter];
 		text.y = (75 * this.root.height) / 100;
 		text.x = this.root.width / 2 - text.width / 2;
 
@@ -182,28 +181,24 @@ export class SceneMenuOption extends SceneBase {
 	}
 
 	private _createTextBotLevel(text: PIXI.Text) {
-		text.filters = [glowFilter];
 		text.x = this.root.width / 2 - text.width / 2;
 		text.y = this.root.height / 2 - text.height / 2 - 25;
 		return text;
 	}
 
 	private _createTextVictory(text: PIXI.Text) {
-		text.filters = [glowFilter];
 		text.x = this.root.width / 2 - text.width / 2;
 		text.y = this.root.height / 2 - text.height / 2 + 25;
 		return text;
 	}
 
 	private _createTextPlay(text: PIXI.Text) {
-		text.filters = [glowFilter];
 		text.x = this.root.width / 2 - text.width / 2;
 		text.y = this.root.height - text.height / 2 - 30;
 		return text;
 	}
 
 	private _createPadColor(pad: PIXI.Graphics) {
-		pad.filters = [glowFilter];
 		pad.beginFill(defaultColor);
 		pad.drawRect(-50, -50, 50, 50);
 		pad.endFill();
@@ -211,7 +206,6 @@ export class SceneMenuOption extends SceneBase {
 	}
 
 	private _createPopError(pop: PIXI.Graphics) {
-		pop.filters = [glowFilter];
 		pop.beginFill('green');
 		pop.drawRect(-280, -150, 280, 150);
 		pop.endFill();
@@ -220,7 +214,6 @@ export class SceneMenuOption extends SceneBase {
 	}
 
 	private _createTextError(error: PIXI.Text) {
-		error.filters = [glowFilter];
 		error.y = this._popError.y - this._popError.height + 50;
 		error.x = this.root.width / 2 - error.width / 2;
 		error.visible = false;
@@ -242,7 +235,7 @@ export class SceneMenuOption extends SceneBase {
 				})
 				.catch((error) => console.error('Error creating game', error));
 		} else if (this._currentPad === 0) {
-			this.root.playSound('enter');
+			AudioManager.play('enter');
 			this.root.loadScene(new SceneGameVsBot(this.root));
 		} else {
 			errorLock = true;

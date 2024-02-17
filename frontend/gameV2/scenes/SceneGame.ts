@@ -1,8 +1,8 @@
 import * as PIXI from 'pixi.js';
-import { defaultColor, glowFilter } from '..';
 import { SceneBase } from './SceneBase';
 import { PixiManager } from '../PixiManager';
 import { apiService } from '../../src/services/apiService';
+import { defaultColor } from '..';
 
 export class SceneGame extends SceneBase {
 	// FOR THE BACK ======================================
@@ -138,7 +138,6 @@ export class SceneGame extends SceneBase {
 	private _initBall(size: number, color: number) {
 		this._ball.beginFill(color);
 		this._ball.drawRect(0, 0, size, size);
-		this._ball.filters = [glowFilter];
 		this._ball.endFill();
 		return this._ball;
 	}
@@ -146,7 +145,6 @@ export class SceneGame extends SceneBase {
 	private _initPad(pad: PIXI.Graphics, width: number, height: number, color: number) {
 		pad.beginFill(color);
 		pad.drawRect(-width / 2, -height / 2, width, height);
-		pad.filters = [glowFilter];
 		pad.endFill();
 		return pad;
 	}
@@ -210,7 +208,6 @@ export class SceneGame extends SceneBase {
 		const menu = new PIXI.Container();
 
 		const background = new PIXI.Graphics();
-		background.filters = [glowFilter];
 		background.beginFill('green');
 		background.drawRect(-280, -150, 280, 150);
 		background.endFill();
@@ -222,19 +219,16 @@ export class SceneGame extends SceneBase {
 		this._exitText = new PIXI.Text('Exit ?', { fill: defaultColor });
 		this._exitText.x = background.x - background.width / 2 - this._exitText.width / 2;
 		this._exitText.y = background.y - 125;
-		this._exitText.filters = [glowFilter];
 		menu.addChild(this._exitText);
 
 		this._yesOption = new PIXI.Text('Yes', { fill: defaultColor });
 		this._yesOption.x = background.x - (background.width / 2 + this._yesOption.width / 2) - 50;
 		this._yesOption.y = background.y - 50;
-		this._yesOption.filters = [glowFilter];
 		menu.addChild(this._yesOption);
 
 		this._noOption = new PIXI.Text('No', { fill: 0x053100 });
 		this._noOption.x = background.x - (background.width / 2 + this._noOption.width / 2) + 50;
 		this._noOption.y = background.y - 50;
-		this._noOption.filters = [glowFilter];
 		menu.addChild(this._noOption);
 
 		menu.visible = false;

@@ -1,20 +1,10 @@
 import * as PIXI from 'pixi.js';
-// import { GlowFilter } from '@pixi/filter-glow';
-import { GlowFilter } from '@pixi/filter-glow';
-// import { Filter } from 'pixi.js';
 import { PixelateFilter } from '@pixi/filter-pixelate';
 import $ from 'jquery';
 import '/font/font.css';
-// import { Color } from 'pixi.js';
-// import { sound } from '@pixi/sound';
-
-// Filter.defaultResolution = 1;
 
 export const defaultColor = 0x1aff00;
-// const defaultGlowFillterColor = 0x86ff86;
-// const rgbArray = Color.fromHex(defaultGlowFillterColor).toRgbArray();
 
-// Menu 1
 export const textStyleTitleMenu1 = new PIXI.TextStyle({
 	fontFamily: 'Pixelmania',
 	fill: defaultColor,
@@ -119,19 +109,4 @@ export const textStyleMenuTournamentJoin = new PIXI.TextStyle({
 
 // Effects
 
-
-
-
-export const glowFilter = new GlowFilter({
-	distance: 30,
-	outerStrength: 1.2,
-	innerStrength: 0,
-	// color: [134, 255, 134],
-});
-
 export const PixelPad = new PixelateFilter(undefined) as unknown as PIXI.Filter;
-
-export function glow(filter: null) {
-	filter
-	return filter;
-}

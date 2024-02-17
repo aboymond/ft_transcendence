@@ -1,4 +1,4 @@
-import { defaultColor, glowFilter, playLoadingPageSound } from '..';
+import { defaultColor } from '..';
 import { SceneBase } from './SceneBase';
 import { SceneMenu2 } from './SceneMenu2';
 import * as PIXI from 'pixi.js';
@@ -7,6 +7,8 @@ import apiService from '../../src/services/apiService';
 import { Tournament } from '../../src/types';
 import { Match } from '../../src/types';
 import { SceneLoadingPage } from './SceneLoadingPage';
+import {AudioManager} from '../AudioManager';
+
 
 const tournamentLine = PIXI.Texture.from('./img/tournamentLine.png');
 
@@ -47,7 +49,7 @@ export class SceneTournamentLoadingVs extends SceneBase {
 		container.addChild(this._standings);
 		this._initEnterText(container);
 
-		this.root.playSound('loading');
+		AudioManager.play('loading');
 
 		// Fetch the current tournament state
 		const currentTournament = await apiService.getTournament(this._tournamentId);
@@ -70,9 +72,6 @@ export class SceneTournamentLoadingVs extends SceneBase {
 				this._currentMatches = currentMatches;
 				this._setupMatchDisplay(container, currentMatches); // Update display based on new matches
 			}
-			// if (updatedTournament?.participants_usernames.length === updatedTournament?.max_participants) {
-			// 	clearInterval(this._checkInterval!);
-			// }
 		}, 1000);
 	}
 
@@ -82,8 +81,8 @@ export class SceneTournamentLoadingVs extends SceneBase {
 		if (this._checkInterval) {
 			clearInterval(this._checkInterval);
 		}
-		this.root.stopLoadingSound();
-		console.log('finish');
+		AudioManager.pause('loading');
+		AudioManager.reset();
 	}
 
 	public onKeyDown(e: KeyboardEvent) {
@@ -109,7 +108,6 @@ export class SceneTournamentLoadingVs extends SceneBase {
 
 	private _initTextStandings(text: PIXI.Text) {
 		text.style.fill = defaultColor;
-		text.filters = [glowFilter];
 		text.style.fontSize = (this.root.width * 7) / 100;
 		text.y = (this.root.height * 5) / 100;
 		text.x = (this.root.width * 50) / 100 - text.width / 2;
@@ -221,8 +219,7 @@ export class SceneTournamentLoadingVs extends SceneBase {
 				const newName = new PIXI.Text(playerNames[i], {
 					fontSize: (this.root.width * 3) / 100,
 					fill: defaultColor,
-				});
-				newName.filters = [glowFilter];
+				})
 				newName.angle = 90;
 				newName.y = (this.root.height * 65) / 100;
 				newName.x = (this.root.width * 17) / 100 + i * ((this.root.width * 20) / 100);
@@ -240,33 +237,6 @@ export class SceneTournamentLoadingVs extends SceneBase {
 		return names;
 	}
 
-	// private _initNameVs8(names: PIXI.Container) {
-	// 	const playerNames = this._currentTournament?.participants_usernames;
-	// 	console.log(this._currentTournament);
-
-	// 	if (playerNames) {
-	// 		for (let i = 0; i < playerNames.length; i++) {
-	// 			while (i < 8) {
-	// 				console.log(playerNames[i]);
-	// 				const newName = new PIXI.Text(playerNames[i]);
-	// 				const adjustment = (this.root.height * 70 * 0.03) / 100;
-	// 				newName.style.fontSize = (this.root.width * 2) / 100;
-	// 				newName.y = (this.root.height * 70) / 100 + (i % 2 === 1 ? adjustment : 0);
-	// 				newName.x = (this.root.width * 2) / 100 + i * ((this.root.width * 12.2) / 100);
-	// 				newName.style.fill = defaultColor;
-	// 				newName.filters = [glowFilter];
-	// 				this._nameVs[i] = newName;
-	// 				i++;
-	// 			}
-	// 		}
-	// 	}
-	// 	for (let i = 0; i < this._nameVs.length; i++) {
-	// 		names.addChild(this._nameVs[i]);
-	// 	}
-	// 	return names;
-
-	// }
-
 	//=======================================
 	// UTILS
 	//=======================================
@@ -280,17 +250,13 @@ export class SceneTournamentLoadingVs extends SceneBase {
 		// Setup tournament lines based on the number of participants
 		if (this._currentTournament?.max_participants === 4) {
 			this._initLineTournament4(this._containerSprite);
-		} else if (this._currentTournament?.max_participants === 8) {
-			this._initLineTournament8(this._containerSprite);
-		}
+		} 
 		container.addChild(this._containerSprite);
 
 		// Setup player names
 		if (this._currentTournament!.participants_usernames.length > 0) {
 			if (this._currentTournament!.max_participants === 4) {
 				this._initNameVs4(this._containerNames);
-			} else if (this._currentTournament!.max_participants === 8) {
-				this._initNameVs8(this._containerNames);
 			}
 		}
 		container.addChild(this._containerNames);
@@ -303,12 +269,6 @@ export class SceneTournamentLoadingVs extends SceneBase {
 		matches.forEach((match) => {
 			const matchDisplay = this.createMatchDisplayElement(match);
 			this._containerMatches.addChild(matchDisplay);
-
-			// matchDisplay.interactive = true;
-			// matchDisplay.buttonMode = true;
-			// matchDisplay.on( 'pointerdown', () => {
-
-			// });
 		});
 
 		container.addChild(this._containerMatches);
@@ -328,7 +288,6 @@ export class SceneTournamentLoadingVs extends SceneBase {
 			fontSize: (this.root.width * 4) / 100,
 			fill: defaultColor,
 		});
-		text.filters = [glowFilter];
 		text.x = (this.root.width * 60) / 100;
 		text.y = (this.root.height * 95) / 100;
 		container.addChild(text);
@@ -339,8 +298,7 @@ export class SceneTournamentLoadingVs extends SceneBase {
 			fontSize: (this.root.width * 4) / 100,
 			fill: defaultColor,
 		});
-		text.filters = [glowFilter];
-		// Set position based on match order or any other logic
+
 		text.x = (this.root.width * 10) / 100;
 		text.y = (this.root.height * 80) / 100 + (match.order * 20);
 		return text;

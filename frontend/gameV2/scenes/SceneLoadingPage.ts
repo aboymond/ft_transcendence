@@ -1,10 +1,11 @@
-import { defaultColor, glowFilter} from '..';
+import { defaultColor} from '..';
 import { SceneBase } from './SceneBase';
 import { SceneMenu } from './SceneMenu';
 import * as PIXI from 'pixi.js';
 import { PixiManager } from '../PixiManager';
 import { ErrorResponse } from 'react-router-dom';
 import { apiService } from '../../src/services/apiService';
+import {AudioManager} from '../AudioManager';
 
 const keyExplanation = PIXI.Texture.from('./img/keyExplanation.png');
 
@@ -65,13 +66,11 @@ const tipsTab = [
 
 export class SceneLoadingPage extends SceneBase {
 	private _sprite = new PIXI.Sprite(keyExplanation);
-	// private _containerTips = new PIXI.Container();
 	private _tabTips = tipsTab;
 
 	private _textLoading = new PIXI.Text('LOADING');
 	private _textPress = new PIXI.Text('MORE TIPS');
 	private _textEnter = new PIXI.Text('[ENTER]');
-	// private _textMoreTips = new PIXI.Text('FOR MORE TIPS !');
 	private _textPoints: PIXI.Text[] = [];
 	private _interval = 0;
 	private _index = 0;
@@ -88,7 +87,7 @@ export class SceneLoadingPage extends SceneBase {
 	//=======================================
 
 	public async onStart(container: PIXI.Container) {
-		this.root.playSound('loading');
+		AudioManager.play('loading');
 
 		this._initKeyExplanation(this._sprite);
 		container.addChild(this._sprite);
@@ -107,8 +106,6 @@ export class SceneLoadingPage extends SceneBase {
 			container.addChild(text);
 			text.x = ((this.root.width - text.width) * 88) / 100 + index * 10; // Ajuster la position X
 		});
-
-		// console.log('textPoint' + this._textPoints.length);
 
 		this._interval = window.setInterval(() => {
 			if (this._textEnter) {
@@ -137,6 +134,9 @@ export class SceneLoadingPage extends SceneBase {
 
 	public onFinish() {
 		clearInterval(this._interval);
+		AudioManager.pause('loading');
+		AudioManager.reset();
+		console.log("ICI ON FINISH");
 	}
 
 	public onKeyDown(e: KeyboardEvent) {
@@ -183,20 +183,16 @@ export class SceneLoadingPage extends SceneBase {
 		const tips = new PIXI.Container();
 		for (let i = 0; i < this._tabTips.length - 1; i++) {
 			const tipsBox = new PIXI.Graphics();
-			// this._tabTips[i];
 			this._tabTips[i].x = 25;
 			this._tabTips[i].style.fontSize = this.root.width / 26;
 			this._tabTips[i].style.fill = defaultColor;
 			this._tabTips[i].visible = false;
-			this._tabTips[i].filters = [glowFilter];
-			// this._tabTips[i].y = this.root.height / 2;
 
 			tipsBox.y = this.root.height / 2;
 			tipsBox.width = this.root.width;
 			tipsBox.endFill();
 			tipsBox.addChild(this._tabTips[i]);
 			tips.addChild(tipsBox);
-			// console.log(this._tabTips[i]);
 		}
 		return tips;
 	}
@@ -208,16 +204,12 @@ export class SceneLoadingPage extends SceneBase {
 		this._textPress.x = ((this.root.width - this._textPress.width / 2) * 50) / 100;
 		this._textPress.style.fill = defaultColor;
 		this._textPress.style.fontSize = this.root.width / 28;
-		this._textPress.filters = [glowFilter];
 
 		this._textEnter.y = this._textPress.y + 20;
 		this._textEnter.x = this._textPress.x + 8;
 		this._textEnter.style.fill = defaultColor;
 		this._textEnter.style.fontSize = this.root.width / 25;
-		this._textEnter.filters = [glowFilter];
 
-		// this._textMoreTips.y = this._textPress.y;
-		// this._textMoreTips.x =
 		moreTips.addChild(this._textPress, this._textEnter);
 		return moreTips;
 	}
@@ -227,7 +219,6 @@ export class SceneLoadingPage extends SceneBase {
 		text.style.fontSize = ((this.root.width - text.width) * 8) / 100;
 		text.y = ((this.root.height - text.height) * 95) / 100;
 		text.x = ((this.root.width - text.width) * 80) / 100;
-		text.filters = [glowFilter];
 	}
 
 	private _initTextPoints(textArray: PIXI.Text[]) {
@@ -237,7 +228,6 @@ export class SceneLoadingPage extends SceneBase {
 			text.y = ((this.root.height - text.height) * 95) / 100;
 			text.x = ((this.root.width - text.width) * 87) / 100;
 			text.visible = true;
-			text.filters = [glowFilter];
 		});
 	}
 
