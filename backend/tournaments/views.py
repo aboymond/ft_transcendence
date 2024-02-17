@@ -12,6 +12,7 @@ from .serializers import (
     TournamentUpdateSerializer,
     TournamentDetailSerializer,
     MatchSerializer,
+    TournamentIdSerializer,
 )
 
 User = get_user_model()
@@ -97,7 +98,7 @@ class TournamentMatchesListView(generics.ListAPIView):
 
 
 class GetCurrentTournamentView(generics.ListAPIView):
-    serializer_class = TournamentSerializer
+    serializer_class = TournamentIdSerializer
 
     def get_queryset(self):
         user = self.request.user

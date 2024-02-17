@@ -4,6 +4,19 @@ from .models import Game
 from django.utils import timezone
 
 
+def handle_user_disconnected(game_id, user):
+    game = Game.objects.get(id=game_id)
+    if game is None:
+        return
+    if user not in [game.player1, game.player2]:
+        return {"error": "You are not a player in this game"}, 403
+    if game.status == "completed":
+        return
+    if game.status == "in_progress":
+        game.status = "pending"
+        game.save()
+
+
 def handle_leave_game(game_id, user):
     game = Game.objects.get(id=game_id)
     if game is None:

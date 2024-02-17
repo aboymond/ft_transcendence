@@ -89,3 +89,9 @@ class MatchSerializer(serializers.ModelSerializer):
 
     def get_player2_username(self, obj):
         return obj.player2.username
+
+
+class TournamentIdSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tournament
+        fields = ["id"]

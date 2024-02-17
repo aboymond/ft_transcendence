@@ -16,6 +16,7 @@ class Game(ExportModelOperationsMixin("game"), models.Model):
     STATUS_CHOICES = [
         ("empty", "Empty"),
         ("waiting", "Waiting for Player"),
+        ("pending", "Pending"),
         ("in_progress", "In Progress"),
         ("completed", "Completed"),
     ]

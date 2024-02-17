@@ -189,6 +189,6 @@ class GetCurrentGameView(generics.ListAPIView):
     def get_queryset(self):
         user = self.request.user
         return Game.objects.filter(
-            Q(status="in_progress") | Q(status="waiting"),
+            Q(status="in_progress") | Q(status="waiting") | Q(status="pending"),
             Q(player1=user) | Q(player2=user),
         ).order_by("-start_time")[:1]
