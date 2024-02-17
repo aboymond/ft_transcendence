@@ -79,7 +79,8 @@ class MatchSerializer(serializers.ModelSerializer):
             "player1",
             "player2",
             "game",
-            "order",
+            "round_number",
+            "match_order",
             "player1_username",
             "player2_username",
         ]

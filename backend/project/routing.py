@@ -4,6 +4,8 @@ from django.urls import path
 from django.urls import re_path
 from games.consumers import GameConsumer
 from users.consumers import GeneralRequestConsumer
+from tournaments.consumers import TournamentConsumer
+
 
 websocket_urlpatterns = [
     re_path(
@@ -11,6 +13,7 @@ websocket_urlpatterns = [
         GeneralRequestConsumer.as_asgi(),
     ),
     path("ws/game/<int:game_id>/", GameConsumer.as_asgi()),
+    path("ws/tournament/<int:tournament_id>/", TournamentConsumer.as_asgi()),
 ]
 
 application = ProtocolTypeRouter(

@@ -24,7 +24,14 @@ admin.site.register(Tournament, TournamentAdmin)
 
 
 class MatchAdmin(admin.ModelAdmin):
-    list_display = ("id", "tournament", "player1", "player2", "order")
+    list_display = (
+        "id",
+        "tournament",
+        "player1",
+        "player2",
+        "round_number",
+        "match_order",
+    )
     list_filter = ("tournament",)
     search_fields = ("player1__username", "player2__username", "tournament__name")
 
