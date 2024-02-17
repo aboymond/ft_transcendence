@@ -25,6 +25,7 @@ enum menu {
 	PLAY = 3,
 }
 
+
 export class SceneMenuTournament extends SceneBase {
 	// FOR THE BACK ================
 	private _nb_playerForBack: number = 4;

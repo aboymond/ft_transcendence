@@ -1,11 +1,18 @@
 import * as PIXI from 'pixi.js';
+// import { GlowFilter } from '@pixi/filter-glow';
 import { GlowFilter } from '@pixi/filter-glow';
+// import { Filter } from 'pixi.js';
 import { PixelateFilter } from '@pixi/filter-pixelate';
 import $ from 'jquery';
 import '/font/font.css';
-import { sound } from '@pixi/sound';
+// import { Color } from 'pixi.js';
+// import { sound } from '@pixi/sound';
+
+// Filter.defaultResolution = 1;
 
 export const defaultColor = 0x1aff00;
+// const defaultGlowFillterColor = 0x86ff86;
+// const rgbArray = Color.fromHex(defaultGlowFillterColor).toRgbArray();
 
 // Menu 1
 export const textStyleTitleMenu1 = new PIXI.TextStyle({
@@ -112,74 +119,19 @@ export const textStyleMenuTournamentJoin = new PIXI.TextStyle({
 
 // Effects
 
+
+
+
 export const glowFilter = new GlowFilter({
 	distance: 30,
 	outerStrength: 1.2,
 	innerStrength: 0,
-	color: 0x86ff86,
-}) as unknown as PIXI.Filter;
+	// color: [134, 255, 134],
+});
 
 export const PixelPad = new PixelateFilter(undefined) as unknown as PIXI.Filter;
 
-export function playSelectSound() {
-	if (!sound.exists('select')) {
-		sound.init();
-		sound.add('select', './sound/Select.mp3');
-	}
-	sound.play('select');
-	
-}
-
-export function playEnterSound() {
-	if (!sound.exists('enter')) {
-		sound.init();
-		sound.add('enter', './sound/game-start.mp3');
-	}
-	sound.play('enter');
-	
-}
-
-export function playTouchBallSound() {
-	if (!sound.exists('touchBall')) {
-		sound.init();
-		sound.add('touchBall', './sound/touchBall.mp3')
-	}
-	sound.play('touchBall');
-	
-}
-
-export function playTouchPadSound() {
-	if (!sound.exists('touchPad')) {
-		sound.init();
-		sound.add('touchPad', './sound/touchPad.mp3')
-	}
-	sound.play('touchPad');
-	
-}
-
-export function playLoadingPageSound() {
-	if (!sound.exists('loading')) {
-		sound.init();
-		sound.add('loading', './sound/loadingPage.mp3')
-	}
-	sound.play('loading');
-	
-}
-
-export function playWinSound() {
-	if (!sound.exists('win')) {
-		sound.init();
-		sound.add('win', './sound/Winner.mp3')
-	}
-	sound.play('win');
-	
-}
-
-export function playLooseSound() {
-	if (!sound.exists('loose')) {
-		sound.init();
-		sound.add('loose', './sound/Looser.mp3')
-	}
-	sound.play('loose');
-	
+export function glow(filter: null) {
+	filter
+	return filter;
 }

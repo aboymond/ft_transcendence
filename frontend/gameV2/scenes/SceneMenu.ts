@@ -2,31 +2,22 @@ import * as PIXI from 'pixi.js';
 import { SceneBase } from './SceneBase';
 import { SceneMenu2 } from './SceneMenu2';
 import { glowFilter, textStyleDefaultMenu1, textStyleTitleMenu1 } from '../index';
+// import AppRoutes from '../../src/Routes';
 
 export class SceneMenu extends SceneBase {
 	private _textTitle = new PIXI.Text('PONG', textStyleTitleMenu1);
 	private _spaceText = new PIXI.Text('PRESS ENTER TO START', textStyleDefaultMenu1);
 	private _interval = 0;
 
+	// private _audio = new Audio('./sound/enter.mp3');
+	// private _sound: any = null;
+
 	public async onStart(container: PIXI.Container) {
-		//Init Title text
-		this._textTitle.eventMode = 'dynamic';
-		this._textTitle.cursor = 'pointer';
-		this._textTitle.on('pointerdown', () => {
-			this.root.playSound('enter');
-			this.root.loadScene(new SceneMenu2(this.root));
-		});
+		
 		container.addChild(this._initTextTitle());
 		this._textTitle.x = this.root.width / 2 - this._textTitle.width / 2;
 		this._textTitle.y = this.root.height / 2 / 2 - this._textTitle.height / 2;
 
-		//Init Space text
-		this._spaceText.eventMode = 'dynamic';
-		this._spaceText.cursor = 'pointer';
-		this._spaceText.on('pointerdown', () => {
-			this.root.playSound('enter');
-			this.root.loadScene(new SceneMenu2(this.root));
-		});
 		container.addChild(this._initTextSpace());
 		this._spaceText.x = this.root.width / 2 - this._spaceText.width / 2;
 		this._spaceText.y = this.root.height - 100 - this._spaceText.height / 2;
@@ -42,11 +33,12 @@ export class SceneMenu extends SceneBase {
 
 	public onFinish() {
 		clearInterval(this._interval);
+		// this.root.removeSound('loading');
 	}
 
 	public onKeyDown(e: KeyboardEvent) {
 		if (e.code === 'Enter') {
-			this.root.playSound('enter');
+			this.root.playSound("enter");
 			this.root.loadScene(new SceneMenu2(this.root));
 		}
 	}
