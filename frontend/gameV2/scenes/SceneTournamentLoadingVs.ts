@@ -56,6 +56,7 @@ export class SceneTournamentLoadingVs extends SceneBase {
 			this._setupTournamentDisplay(container); // Setup initial display based on current tournament state
 		}
 
+		//TODO use websocket to update the display
 		// Periodic check to update the display
 		this._checkInterval = window.setInterval(async () => {
 			const updatedTournament = await apiService.getTournament(this._tournamentId);
@@ -78,7 +79,7 @@ export class SceneTournamentLoadingVs extends SceneBase {
 				this._currentMatches = lastRoundMatches;
 				this._setupMatchDisplay(container, lastRoundMatches); // Update display based on new matches
 			}
-		}, 5000);
+		}, 1000);
 
 		// Add WebSocket message event listener for tournament end notification
 		this.root.ws?.addEventListener('message', (event) => {
