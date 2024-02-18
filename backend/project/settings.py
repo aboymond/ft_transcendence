@@ -195,11 +195,11 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 CORS_ALLOWED_ORIGINS = [
-    "https://api.intra.42.fr",  # Add the actual origin of the 42 API
-    "https://localhost",
-    "https://localhost:3001",
-    "https://frontend:3001",
-    "https://frontend:3001",
+    "http://api.intra.42.fr",  # Add the actual origin of the 42 API
+    "http://localhost",
+    "http://localhost:3001",
+    "http://frontend:3001",
+    "http://frontend:3001",
     # Add the origin of your Django application
 ]
 

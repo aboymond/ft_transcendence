@@ -29,7 +29,7 @@ export class SceneTournamentLoadingVs extends SceneBase {
 
 	private _checkInterval: number | null = null;
 
-	// private _oldPlaceX = 0;
+	private _winner: string = '';
 
 	constructor(
 		root: PixiManager,
@@ -56,6 +56,7 @@ export class SceneTournamentLoadingVs extends SceneBase {
 			this._setupTournamentDisplay(container); // Setup initial display based on current tournament state
 		}
 
+		//TODO use websocket to update the display
 		// Periodic check to update the display
 		this._checkInterval = window.setInterval(async () => {
 			const updatedTournament = await apiService.getTournament(this._tournamentId);
@@ -65,15 +66,30 @@ export class SceneTournamentLoadingVs extends SceneBase {
 			}
 
 			const currentMatches = await apiService.getMatches(this._tournamentId);
-			currentMatches.sort((a: Match, b: Match) => a.order - b.order); // Sort matches by order
-			if (JSON.stringify(currentMatches) !== JSON.stringify(this._currentMatches)) {
-				this._currentMatches = currentMatches;
-				this._setupMatchDisplay(container, currentMatches); // Update display based on new matches
+			console.log('matches', currentMatches);
+			currentMatches.sort((a: Match, b: Match) => a.match_order - b.match_order); // Sort matches by order
+
+			// Determine the last round number and filter matches for the last round
+			const lastRoundNumber = Math.max(...currentMatches.map((match: Match) => match.round_number));
+			const lastRoundMatches = currentMatches.filter(
+				(match: Match) => match.round_number === lastRoundNumber,
+			);
+
+			if (JSON.stringify(lastRoundMatches) !== JSON.stringify(this._currentMatches)) {
+				this._currentMatches = lastRoundMatches;
+				this._setupMatchDisplay(container, lastRoundMatches); // Update display based on new matches
 			}
-			// if (updatedTournament?.participants_usernames.length === updatedTournament?.max_participants) {
-			// 	clearInterval(this._checkInterval!);
-			// }
 		}, 1000);
+
+		// Add WebSocket message event listener for tournament end notification
+		this.root.ws?.addEventListener('message', (event) => {
+			const data = JSON.parse(event.data);
+			if (data.type === 'tournament_message' && data.payload.action === 'tournament_end') {
+				console.log('Tournament has ended. Winner:', data.payload.data.winner_username);
+				this._winner = data.payload.data.winner_username;
+				//TODO load winner scene
+			}
+		});
 	}
 
 	public onUpdate() {}
@@ -89,6 +105,7 @@ export class SceneTournamentLoadingVs extends SceneBase {
 	public onKeyDown(e: KeyboardEvent) {
 		if (e.code === 'Escape') {
 			try {
+				//TODO add a confirmation dialog
 				apiService.leaveTournament(this._tournamentId, this.root.userId!);
 				this.root.loadScene(new SceneMenu2(this.root));
 			} catch (error) {
@@ -97,7 +114,12 @@ export class SceneTournamentLoadingVs extends SceneBase {
 		}
 
 		if (e.code === 'Enter') {
-			this._playMatch(this._currentMatches[0]);
+			const userMatches = this._currentMatches.filter(
+				(match) => match.player1 === this.root.userId || match.player2 === this.root.userId,
+			);
+			if (userMatches.length > 0) {
+				this._playMatch(userMatches[0]);
+			}
 		}
 	}
 
@@ -294,18 +316,17 @@ export class SceneTournamentLoadingVs extends SceneBase {
 	}
 
 	private _setupMatchDisplay(container: PIXI.Container, matches: Match[]) {
-		// Clear existing match display
 		this._containerMatches.removeChildren();
 
-		matches.forEach((match) => {
+		// Determine the last round number
+		const lastRoundNumber = Math.max(...matches.map((match) => match.round_number));
+
+		// Filter matches to only include those from the last round
+		const lastRoundMatches = matches.filter((match) => match.round_number === lastRoundNumber);
+
+		lastRoundMatches.forEach((match) => {
 			const matchDisplay = this.createMatchDisplayElement(match);
 			this._containerMatches.addChild(matchDisplay);
-
-			// matchDisplay.interactive = true;
-			// matchDisplay.buttonMode = true;
-			// matchDisplay.on( 'pointerdown', () => {
-
-			// });
 		});
 
 		container.addChild(this._containerMatches);
@@ -331,14 +352,17 @@ export class SceneTournamentLoadingVs extends SceneBase {
 	}
 
 	private createMatchDisplayElement(match: Match): PIXI.Text {
-		const text = new PIXI.Text(`Match ${match.order}: ${match.player1} vs ${match.player2}`, {
-			fontSize: (this.root.width * 4) / 100,
-			fill: defaultColor,
-		});
+		const text = new PIXI.Text(
+			`Match ${match.match_order}: ${match.player1_username} vs ${match.player2_username}`,
+			{
+				fontSize: (this.root.width * 4) / 100,
+				fill: defaultColor,
+			},
+		);
 		text.filters = [glowFilter];
 		// Set position based on match order or any other logic
 		text.x = (this.root.width * 10) / 100;
-		text.y = (this.root.height * 80) / 100 + match.order * 20;
+		text.y = (this.root.height * 80) / 100 + match.match_order * 20;
 		return text;
 	}
 }

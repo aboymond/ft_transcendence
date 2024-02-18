@@ -88,7 +88,9 @@ class UserSerializer(serializers.ModelSerializer):
         instance.display_name = validated_data.get(
             "display_name", instance.display_name
         )
-
+        instance.username = validated_data.get(
+            "username", instance.username
+        )
         # Update password if it's in the validated data and not empty
         password = validated_data.get("password")
         if password:

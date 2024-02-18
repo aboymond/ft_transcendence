@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Navbar, Nav, Container, Image, Offcanvas, Row, Col, CloseButton } from 'react-bootstrap';
 import { useAuth } from '../hooks/useAuth';
 import Profile from './Profile';
@@ -8,13 +8,17 @@ import styles from '../styles/BarNav.module.css';
 import FriendRequestNotification from './FriendRequestNotification';
 
 const BarNav: React.FC = () => {
-	const [show, setShow] = useState(false);
 	const auth = useAuth();
-	const avatarUrl = auth.user?.avatar || '';
+	const [show, setShow] = useState(false);
+	const [avatarUrl, setAvatarUrl] = useState(auth.user?.avatar || '');
 	const [showTwoFA, setShowTwoFA] = useState(false);
 
 	const handleToggle = () => setShow(!show);
 	const handleTwoFAToggle = () => setShowTwoFA(!showTwoFA);
+
+	useEffect(() => {
+		setAvatarUrl(auth.user?.avatar || '');
+	}, [auth.user]);
 
 	return (
 		<Navbar

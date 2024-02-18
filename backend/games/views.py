@@ -84,6 +84,7 @@ class KeyPressView(View):
             return JsonResponse({"error": "Invalid player ID"}, status=400)
 
         if key == "Space" and game.player_turn == player_id and not game.paused:
+            print("Space key pressed")
             game.ball_moving = True
         elif key in ["ArrowRight", "ArrowLeft"]:
             move_x = 10 if key == "ArrowRight" else -10
