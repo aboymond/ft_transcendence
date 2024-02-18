@@ -261,7 +261,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             )(tournament)
             print("Round number:", round_number)
             await database_sync_to_async(Tournament.create_matches_for_round)(
-                tournament, winner, round_number
+                tournament, [winner], round_number
             )
 
         message = {
@@ -312,7 +312,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             )(tournament)
             print("Round number:", round_number)
             await database_sync_to_async(Tournament.create_matches_for_round)(
-                tournament, winner, round_number
+                tournament, [winner], round_number
             )
 
         message = {

@@ -177,8 +177,25 @@ export class SceneTournamentLoadingVs extends SceneBase {
 	}
 
 	private _initNameVs4(names: PIXI.Container) {
+		if (this._currentMatches.length > 0 && this._currentMatches[0].round_number === 2) {
+			const player1 = new PIXI.Text(this._currentMatches[0].player1_username, {
+				fontSize: (this.root.width * 3) / 100,
+				fill: defaultColor,
+			});
+			player1.angle = 90;
+			player1.y = (this.root.height * 43) / 100;
+			player1.x = (this.root.width * 44) / 100;
+			this._nameVs.push(player1);
+			const player2 = new PIXI.Text(this._currentMatches[0].player2_username, {
+				fontSize: (this.root.width * 3) / 100,
+				fill: defaultColor,
+			});
+			player2.angle = 90;
+			player2.y = (this.root.height * 43) / 100;
+			player2.x = (this.root.width * 62) / 100;
+			this._nameVs.push(player2);
+		}
 		const playerNames = this._currentTournament?.participants_usernames;
-		console.log(playerNames);
 		if (playerNames && playerNames.length) {
 			for (let i = 0; i < playerNames.length; i++) {
 				const newName = new PIXI.Text(playerNames[i], {
