@@ -23,7 +23,7 @@ export class SceneTournamentWinner extends SceneBase {
 	}
 
 	public async onStart(container: PIXI.Container) {
-		// AudioManager.play('win');
+		AudioManager.play('win');
 		this._nameText.text = this._playerName;
 		console.log("ID: " + this._gameId + " Player: " + this._nameText.text);
 		container.addChild(this._initTextTitle());
@@ -42,7 +42,6 @@ export class SceneTournamentWinner extends SceneBase {
 	public onFinish() {
 		clearInterval(this._interval);
 		AudioManager.reset();
-		// this.root.removeSound('loading');
 	}
 
 	public onKeyDown(e: KeyboardEvent) {
@@ -54,7 +53,7 @@ export class SceneTournamentWinner extends SceneBase {
 	public onKeyUp() {}
 
 	private _initTextTitle() {
-		const pourcentage = 100;
+		const pourcentage = 95;
 		const newWidth = (this.root.width * pourcentage) / 100;
 		const ratio = this._textTitle.width / this._textTitle.height;
 		const newHigth = newWidth / ratio;
