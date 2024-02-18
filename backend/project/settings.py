@@ -25,7 +25,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-vql&r!gfbg(jca6&+=__qm61((z9m#st28)3_af^cq09jl@1t3"
+
+secret_key = 'SECRET_KEY'
+
+SECRET_KEY = os.environ.get(secret_key, 'Variable not found')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DJANGO_DEBUG", "") != "False"
@@ -67,8 +70,6 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "middleware.middleware.PrometheusMonitoringMiddleware",
     "middleware.middleware.PageViewMiddleware",
-    # "users.middleware.PrometheusMonitoringMiddleware",
-    # "users.middleware.PageViewMiddleware",
     "django_prometheus.middleware.PrometheusAfterMiddleware",
 ]
 
@@ -109,14 +110,13 @@ CHANNEL_LAYERS = {
 DATABASES = {
     "default": {
         "ENGINE": "django_prometheus.db.backends.postgresql",
-        "NAME": "dbname",
-        "USER": "user",
-        "PASSWORD": "password",
-        "HOST": "db",  # Or the appropriate host for your setup
-        "PORT": "5432",  # The default port for PostgreSQL
+        "NAME": os.environ.get('DB_NAME', 'default_dbname'),
+        "USER": os.environ.get('DB_USER', 'default_dbname'),
+        "PASSWORD": os.environ.get('DB_PASSWORD', 'default_dbname'),
+        "HOST": os.environ.get('DB_HOST', 'default_dbname'),
+        "PORT": os.environ.get('DB_PORT', 'default_dbname'),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -196,10 +196,10 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 CORS_ALLOWED_ORIGINS = [
     "https://api.intra.42.fr",  # Add the actual origin of the 42 API
-    "http://localhost",
-    "http://localhost:3001",
-    "http://frontend:3001",
-    "http://frontend:3001",
+    "https://localhost",
+    "https://localhost:3001",
+    "https://frontend:3001",
+    "https://frontend:3001",
     # Add the origin of your Django application
 ]
 
