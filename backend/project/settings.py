@@ -26,9 +26,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 
-secret_key = 'SECRET_KEY'
+secret_key = "SECRET_KEY"
 
-SECRET_KEY = os.environ.get(secret_key, 'Variable not found')
+SECRET_KEY = os.environ.get(secret_key, "Variable not found")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DJANGO_DEBUG", "") != "False"
@@ -110,11 +110,11 @@ CHANNEL_LAYERS = {
 DATABASES = {
     "default": {
         "ENGINE": "django_prometheus.db.backends.postgresql",
-        "NAME": os.environ.get('DB_NAME', 'default_dbname'),
-        "USER": os.environ.get('DB_USER', 'default_dbname'),
-        "PASSWORD": os.environ.get('DB_PASSWORD', 'default_dbname'),
-        "HOST": os.environ.get('DB_HOST', 'default_dbname'),
-        "PORT": os.environ.get('DB_PORT', 'default_dbname'),
+        "NAME": os.environ.get("DB_NAME", "default_dbname"),
+        "USER": os.environ.get("DB_USER", "default_dbname"),
+        "PASSWORD": os.environ.get("DB_PASSWORD", "default_dbname"),
+        "HOST": os.environ.get("DB_HOST", "default_dbname"),
+        "PORT": os.environ.get("DB_PORT", "default_dbname"),
     }
 }
 
@@ -233,3 +233,12 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.getenv("EMAIL_H_U")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_H_P")
 PROMETHEUS_METRIC_NAMESPACE = "transcendence"
+
+# # Ensure CSRF cookie is secure
+# CSRF_COOKIE_SECURE = True
+
+# # Ensure session cookie is secure
+# SESSION_COOKIE_SECURE = True
+
+# # Use secure proxy header to tell Django about the original protocol (HTTP or HTTPS)
+# SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
