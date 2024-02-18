@@ -487,6 +487,10 @@
       "description": "The current number of connections from clients where nginx is writing a response back to the client.\n",
       "fieldConfig": {
         "defaults": {
+          "color": {
+            "fixedColor": "green",
+            "mode": "thresholds"
+          },
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -497,7 +501,11 @@
               },
               {
                 "color": "red",
-                "value": 80
+                "value": 0
+              },
+              {
+                "color": "green",
+                "value": 1
               }
             ]
           },
@@ -519,7 +527,7 @@
         "orientation": "auto",
         "reduceOptions": {
           "calcs": [
-            "mean"
+            "last"
           ],
           "fields": "",
           "values": false
@@ -535,14 +543,14 @@
             "uid": "$datasource"
           },
           "editorMode": "code",
-          "expr": "nginx_connections_writing",
+          "expr": "nginx_up",
           "interval": "",
           "legendFormat": "{{ host }}",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Nginx Writing",
+      "title": "Server status",
       "type": "stat"
     },
     {
