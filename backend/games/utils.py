@@ -48,6 +48,7 @@ def handle_leave_game(game_id, user):
             "message": "A player has left the game. The game has ended.",
             "winner_id": winner.id if winner else None,
             "loser_id": loser.id if loser else None,
+            "game_id": game_id,
         },
     )
     # TODOD remove this ?
