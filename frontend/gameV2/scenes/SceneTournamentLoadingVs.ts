@@ -1,6 +1,6 @@
 import { defaultColor } from '..';
 import { SceneBase } from './SceneBase';
-import { SceneMenu2 } from './SceneMenu2';
+import { SceneMenu } from './SceneMenu';
 import * as PIXI from 'pixi.js';
 import { PixiManager } from '../PixiManager';
 import apiService from '../../src/services/apiService';
@@ -68,7 +68,6 @@ export class SceneTournamentLoadingVs extends SceneBase {
 			}
 
 			const currentMatches = await apiService.getMatches(this._tournamentId);
-			console.log('matches', currentMatches);
 			currentMatches.sort((a: Match, b: Match) => a.match_order - b.match_order); // Sort matches by order
 
 			// Determine the last round number and filter matches for the last round
@@ -83,13 +82,11 @@ export class SceneTournamentLoadingVs extends SceneBase {
 			}
 		}, 1000);
 
-		// Add WebSocket message event listener for tournament end notification
 		this.root.ws?.addEventListener('message', (event) => {
 			const data = JSON.parse(event.data);
 			if (data.type === 'tournament_message' && data.payload.action === 'tournament_end') {
 				console.log('Tournament has ended. Winner:', data.payload.data.winner_username);
 				this._winner = data.payload.data.winner_username;
-				//TODO load winner scene
 				this.root.loadScene(new SceneTournamentWinner(this.root, this._tournamentId, this._winner));
 			}
 		});
@@ -110,7 +107,7 @@ export class SceneTournamentLoadingVs extends SceneBase {
 			try {
 				//TODO add a confirmation dialog
 				apiService.leaveTournament(this._tournamentId, this.root.userId!);
-				this.root.loadScene(new SceneMenu2(this.root));
+				this.root.loadScene(new SceneMenu(this.root));
 			} catch (error) {
 				console.error('Error leaving tournament:', error);
 			}
@@ -209,7 +206,7 @@ export class SceneTournamentLoadingVs extends SceneBase {
 				if (i >= 2) {
 					newName.x = (this.root.width * 28) / 100 + i * ((this.root.width * 20) / 100);
 				}
-				this._nameVs.push(newName); // Add the new text element to the _nameVs array
+				this._nameVs.push(newName);
 			}
 		}
 		for (let i = 0; i < this._nameVs.length; i++) {
