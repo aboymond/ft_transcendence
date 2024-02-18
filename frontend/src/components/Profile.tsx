@@ -29,11 +29,10 @@ const Profile: React.FC = () => {
 
 	const handleUpdate = async () => {
 		try {
-			const data: { username?: string, display_name?: string } = {};
-			if (display_name || username) 
+			const data: {display_name?: string } = {};
+			if (display_name) 
 			{
 				data.display_name = display_name;
-				data.username = username;
 				await apiService.updateUserProfile(data);
 			}
 			if (avatar) {
@@ -109,15 +108,6 @@ const Profile: React.FC = () => {
 			</div>
 			{isEditing ? (
 				<>
-					<div className={styles.nameContainer}>
-						<p style={{ marginBottom: '5px' }}>Username:</p>
-						<input
-							className={styles.input}
-							type="text"
-							value={username}
-							onChange={(e) => setUsername(e.target.value)}
-						/>
-					</div>
 					<div className={styles.nameContainer}>
 						<p style={{ marginBottom: '5px' }}>Display Name:</p>
 						<input
