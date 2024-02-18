@@ -46,10 +46,6 @@ services:
         container_name: db-container
         ports:
             - "5433:5432"
-        environment:
-            POSTGRES_DB: dbname
-            POSTGRES_USER: user
-            POSTGRES_PASSWORD: password
         networks:
             - my-network
         volumes:
