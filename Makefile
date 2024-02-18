@@ -25,6 +25,9 @@ restart:
 build:
 	docker-compose build
 
+build-log:
+	docker-compose build &> build.log
+
 # Rule to run migrations
 migrations:
 	docker-compose exec backend python manage.py makemigrations
