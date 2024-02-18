@@ -12,12 +12,11 @@ route:
   - match:
       alertname: server_down
 
-
 receivers:
 - name: 'email-me'
   email_configs:
-  - to: 'bonvin.quentin@gmail.com'
-    from: 'bonvin.quentin@gmail.com'
+  - to: "bonvin.quentin@gmail.com"
+    from: "bonvin.quentin@gmail.com"
     smarthost: 'smtp.gmail.com:587'
     auth_username: "bonvin.quentin@gmail.com"
     auth_identity: "bonvin.quentin@gmail.com"
