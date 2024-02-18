@@ -35,6 +35,7 @@ export interface GameHistory {
 	played_at: string;
 	player1_score: number;
 	player2_score: number;
+	created_at: string;
 }
 
 export interface GameState {

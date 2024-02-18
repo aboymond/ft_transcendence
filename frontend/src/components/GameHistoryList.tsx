@@ -14,7 +14,14 @@ const GameHistoryList: React.FC = () => {
 	useEffect(() => {
 		apiService
 			.getGameHistory()
-			.then(setGameHistory)
+			.then((data) => {
+				console.log(data);
+				const sortedData = data.sort((a, b) => {
+					return new Date(b.played_at).getTime() - new Date(a.played_at).getTime();
+				});
+				console.log(sortedData);
+				setGameHistory(sortedData);
+			})
 			.catch((error) => {
 				if ((error as Error).message === 'Unauthorized') {
 					logout();
