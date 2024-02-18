@@ -6,6 +6,7 @@ import { Container, Row, Col, Card, Button } from 'react-bootstrap';
 import Logo from '../components/Logo';
 import Login from '../components/Login';
 import Register from '../components/Register';
+import apiService from '../services/apiService';
 
 const LogPage: React.FC = () => {
 	const [showComponent, setShowComponent] = useState('');
@@ -21,10 +22,21 @@ const LogPage: React.FC = () => {
 		const urlParams = new URLSearchParams(window.location.search);
 		const accessToken = urlParams.get('access_token');
 		const userId = urlParams.get('user_id');
+		const loginUser = async () => {
+			if (accessToken && userId) {
+				try {
+					localStorage.setItem('token', accessToken);
+					const user = await apiService.getUserById(userId);
+					auth.login(accessToken, user, user.twofa);
+					navigate('/home');
+				} catch (error) {
+					console.error('Error logging in:', error);
+				}
+			}
+		};
 
 		if (accessToken && userId) {
-			auth.login(accessToken); //TODO
-			navigate('/home');
+			loginUser();
 		}
 	}, [auth, navigate]);
 
