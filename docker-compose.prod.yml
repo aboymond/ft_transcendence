@@ -20,7 +20,7 @@ services:
             - media_volume:/app/media
         depends_on:
             - db
-        # restart: unless-stopped
+        restart: unless-stopped
 
     frontend:
         build:
@@ -37,7 +37,7 @@ services:
         volumes:
             - ./frontend:/usr/src/app
             - frontend_node_modules:/usr/src/app/node_modules
-        # restart: unless-stopped
+        restart: unless-stopped
 
     db:
         image: postgres:latest
@@ -52,23 +52,7 @@ services:
             - my-network
         volumes:
             - db-data:/var/lib/postgresql/data
-        # restart: unless-stopped
-
-    pgadmin:
-        image: dpage/pgadmin4
-        container_name: pgadmin-container
-        ports:
-            - "5050:80"
-        environment:
-            PGADMIN_DEFAULT_EMAIL: admin@example.com
-            PGADMIN_DEFAULT_PASSWORD: root
-        networks:
-            - my-network
-        volumes:
-            - pgadmin_data:/var/lib/pgadmin
-        depends_on:
-            - db
-        # restart: unless-stopped
+        restart: unless-stopped
 
     redis:
         image: redis:latest
@@ -77,7 +61,7 @@ services:
             - "6379:6379"
         networks:
             - my-network
-        # restart: unless-stopped
+        restart: unless-stopped
 
     nginx:
         build:
@@ -96,6 +80,7 @@ services:
             - nginx_log:/var/log/nginx/
             - backend_static:/app/static
             - media_volume:/app/media
+        restart: unless-stopped
 
     prometheus:
         container_name: prometheus
@@ -107,6 +92,7 @@ services:
             - "9090:9090"
         networks:
             - my-network
+        restart: unless-stopped
 
     grafana:
         container_name: grafana
@@ -127,6 +113,7 @@ services:
         entrypoint: /etc/grafana/init-grafana/init-grafana.sh
         networks:
             - my-network
+        restart: unless-stopped
 
     nginx-prometheus-exporter:
         image: nginx/nginx-prometheus-exporter:1.0
@@ -154,6 +141,7 @@ services:
             - "9093:9093"
         networks:
             - my-network
+        restart: unless-stopped
 
 
 volumes:

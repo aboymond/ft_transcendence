@@ -55,22 +55,6 @@ services:
             - db-data:/var/lib/postgresql/data
         # restart: unless-stopped
 
-    pgadmin:
-        image: dpage/pgadmin4
-        container_name: pgadmin-container
-        ports:
-            - "5050:80"
-        environment:
-            PGADMIN_DEFAULT_EMAIL: admin@example.com #TODO: change this
-            PGADMIN_DEFAULT_PASSWORD: root #TODO: change this
-        networks:
-            - my-network
-        volumes:
-            - pgadmin_data:/var/lib/pgadmin
-        depends_on:
-            - db
-        # restart: unless-stopped
-
     redis:
         image: redis:latest
         container_name: redis-container

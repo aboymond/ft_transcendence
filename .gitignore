@@ -5,3 +5,5 @@
 info.txt
 .env
 node_modules
+build.log
+
