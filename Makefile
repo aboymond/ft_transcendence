@@ -6,7 +6,7 @@ up:
 	docker-compose up -d
 
 dev:
-	docker-compose up --build
+	docker-compose up --build --remove-orphans
 
 prod:
 	docker-compose -f docker-compose.prod.yml up --build
