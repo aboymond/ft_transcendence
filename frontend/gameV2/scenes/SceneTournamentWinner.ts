@@ -31,6 +31,9 @@ export class SceneTournamentWinner extends SceneBase {
 		container.addChild(this._initCrown());
 
 		this._interval = window.setInterval(() => {
+			if (this._nameText) {
+				this._nameText.visible = !this._nameText.visible;
+			}
 			if (this._textTitle) {
 				this._textTitle.visible = !this._textTitle.visible;
 			}
