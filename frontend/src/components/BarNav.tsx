@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { Navbar, Nav, Container, Image, Offcanvas, Row, Col, CloseButton } from 'react-bootstrap';
 import { useAuth } from '../hooks/useAuth';
 import Profile from './Profile';
+import TwoFA from './TwoFA';
 import Friends from './Friends';
 import styles from '../styles/BarNav.module.css';
+import FriendRequestNotification from './FriendRequestNotification';
 
 const BarNav: React.FC = () => {
 	const [show, setShow] = useState(false);
@@ -35,7 +37,10 @@ const BarNav: React.FC = () => {
 								roundedCircle
 								style={{ width: '60px', height: '60px', cursor: 'pointer' }}
 								onClick={handleToggle}
-							></Image>
+							/>
+							<div className={styles.notification}>
+								<FriendRequestNotification />
+							</div>
 						</Nav.Item>
 					</Col>
 				</Row>
@@ -74,11 +79,11 @@ const BarNav: React.FC = () => {
 								2FA Settings
 							</Nav.Link>
 						</div>
+						{showTwoFA && <TwoFA />}
 						<Friends />
 						<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
 							<Nav.Link onClick={auth.logout}>Log Out</Nav.Link>
 						</div>
-						{/* {showTwoFA && <TwoFA />} */}
 					</Offcanvas.Body>
 				</Navbar.Offcanvas>
 			</Container>

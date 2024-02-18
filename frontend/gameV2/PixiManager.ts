@@ -9,7 +9,6 @@ import { SceneMenu } from './scenes/SceneMenu';
 import { SceneWinOrLoose } from './scenes/SceneWinOrLoose';
 // import { sound } from '@pixi/sound';
 
-
 interface IPixiManagerOptions {
 	backgroundAlpha: number;
 	antialias: boolean;
@@ -86,16 +85,6 @@ export class PixiManager {
 		window.addEventListener('keyup', this._onKeyUpBind);
 		// window.addEventListener('resize', this.handleResize.bind(this));
 		$('#game_window').append(this._app.view as unknown as HTMLElement);
-
-		// if (!sound.exists('select')) sound.add('select', './sound/Select.mp3');
-		// if (!sound.exists('enter')) sound.add('enter', './sound/game-start.mp3');
-		// if (!sound.exists('win')) sound.add('win', './sound/Winner.mp3');
-		// if (!sound.exists('loose')) sound.add('loose', './sound/Looser.mp3');
-		// if (!sound.exists('touchPad')) sound.add('touchPad', './sound/touchPad.mp3');
-		// if (!sound.exists('touchBall')) sound.add('touchBall', './sound/touchBall.mp3');
-		// if (!sound.exists('loading')) sound.add('loading', './sound/loadingPage.mp3');
-
-
 	}
 
 	public destroy() {
@@ -237,6 +226,5 @@ export class PixiManager {
 			}
 		});
 	}
-
 
 }

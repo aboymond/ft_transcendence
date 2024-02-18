@@ -85,12 +85,26 @@ export const apiService = {
 			return false;
 		}
 	},
+
+	twoFAEnabling: async (twofa:boolean) => {
+		return fetchAPI('users/twofa/', {
+			method : 'POST',
+			body: JSON.stringify({twofa})});
+	},
+
+	verifyOtp: async (username: string, otp:string) => {
+		return fetchAPI('users/verify-2fa/', {
+			method : 'POST',
+			body: JSON.stringify({username, otp})});
+	},
+
 	getUserById: async (userId: string): Promise<User> => {
 		return fetchAPI(`users/${userId}/`);
 	},
 	getUsers(): Promise<User[]> {
 		return fetchAPI('users/list/');
 	},
+	
 	getUserProfile: async () => {
 		return fetchAPI('users/profile/'); // Endpoint for fetching the current user's profile
 	},
@@ -180,8 +194,14 @@ export const apiService = {
 	getMatches: async (tournamentId: number) => {
 		return fetchAPI(`tournaments/${tournamentId}/matches/`);
 	},
+	getCurrentTournament: async () => {
+		return fetchAPI('tournaments/current/');
+	},
+	getCurrentGame: async () => {
+		return fetchAPI('games/current/');
+	},
 	getGames: async () => {
-		return fetchAPI('games/list-create/');
+		return fetchAPI('games/list/');
 	},
 	createGame: async (userId: number) => {
 		return fetchAPI('games/create/', {

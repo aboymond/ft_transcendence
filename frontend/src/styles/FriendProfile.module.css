@@ -15,3 +15,10 @@
     font-family: var(--font-family);
     border-color: var(--accent-color);
 }
+
+.invite {
+    background-color: var(--primary-color);
+    color: var(--background-color);
+    font-family: var(--font-family);
+    border-color: var(--accent-color);
+}

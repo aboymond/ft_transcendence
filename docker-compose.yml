@@ -20,6 +20,7 @@ services:
             - media_volume:/app/media
         depends_on:
             - db
+            - redis
         # restart: unless-stopped
 
     frontend:

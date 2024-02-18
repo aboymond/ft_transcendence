@@ -11,7 +11,7 @@ export function launchGame(ws: WebSocket | null, userId: number | null) {
 		},
 		active: function () {
 			const pixiMan = new PixiManager({}, ws, userId);
-			pixiMan.loadScene(new SceneTournamentWinner(pixiMan));
+			pixiMan.loadScene(new SceneTournamentWinner(pixiMan, 22, "aboymond"));
 		},
 	});
 }

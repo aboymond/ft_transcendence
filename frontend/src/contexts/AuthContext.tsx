@@ -7,9 +7,11 @@ interface AuthContextType {
 	token: string | null;
 	isAuthenticated: boolean;
 	user: User | null;
+	TwoFa: boolean;
 	loading: boolean;
-	login: (token: string, user: User) => void;
+	login: (token: string, user: User, TwoFa: boolean) => void;
 	logout: () => void;
+	verifyOtp: (username: string, otp:string) => void;
 	updateUser: (user: User) => void;
 }
 
@@ -22,6 +24,8 @@ export const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
 	const [token, setToken] = useState<string | null>(null);
+	const [TwoFa, setTwoFa] = useState<boolean>(false);
+	const [OtpValidated, setOtpValidated] = useState(false);
 	const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 	const [user, setUser] = useState<User | null>(null);
 	const [loading, setLoading] = useState(true);
@@ -48,8 +52,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 		setLoading(false);
 	}, []);
 
-	const login = (newToken: string, newUser: User) => {
+	const login = (newToken: string, newUser: User, newTwoFa:boolean) => {
 		localStorage.setItem('token', newToken);
+		setTwoFa(newTwoFa);
 		setToken(newToken);
 		setIsAuthenticated(true);
 		setUser(newUser);
@@ -57,9 +62,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
 	const logout = () => {
 		localStorage.removeItem('token');
+		localStorage.removeItem('isTwoFAToggled');
+		localStorage.removeItem('username_otp');
 		setToken(null);
 		setIsAuthenticated(false);
 		setUser(null);
+	};
+
+	const verifyOtp = (username: string,  otp: string) => {
+		apiService.verifyOtp(username, otp).then((isValid) => {
+			if (isValid) 
+				return (true);
+			else 
+			{
+				console.error("OTP verification failed:");
+				return (false);
+			}
+		})
 	};
 
 	const updateUser = (updatedUser: User) => {
@@ -70,6 +89,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 		token,
 		isAuthenticated,
 		user,
+		TwoFa,
+		verifyOtp,
 		loading,
 		login,
 		logout,

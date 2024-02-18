@@ -20,9 +20,14 @@ const Login: React.FC<LoginProps> = ({ onClose }) => {
 		event.preventDefault();
 		try {
 			const data = await apiService.login(username, password);
-			auth.login(data.access, data.user);
+			if (data.missing_otp == true) {
+				console.log(username);
+				navigate('/verify-2fa?username=' + username);
+			} else {
+				auth.login(data.access, data.user, data.user.twofa);
+				navigate('/home');
+			}
 			setError('');
-			navigate('/home');
 		} catch (error) {
 			setError('Login failed. Please check your credentials.');
 		}

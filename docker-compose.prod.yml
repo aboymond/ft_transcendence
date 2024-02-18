@@ -10,6 +10,7 @@ services:
         environment:
             DATABASE_URL: postgresql://youruser:yourpassword@db:5432/yourdbname #TODO: change this
             FRONTEND_URL: http://localhost
+            DJANGO_DEBUG: "False"
         env_file: .env
         networks:
             - my-network
@@ -126,7 +127,7 @@ services:
             - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
             - ./grafana/init-grafana.sh:/etc/grafana/init-grafana/init-grafana.sh
         env_file:
-            - ./.env
+            - .env
         entrypoint: /etc/grafana/init-grafana/init-grafana.sh
         networks:
             - my-network

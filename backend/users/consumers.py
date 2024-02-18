@@ -119,3 +119,21 @@ class GeneralRequestConsumer(AsyncWebsocketConsumer):
                 {"type": "friend_request", "payload": event["payload"]}
             )
         )
+
+    async def tournament_message(self, event):
+        await self.send(
+            text_data=json.dumps(
+                {
+                    "type": "tournament_message",
+                    "payload": {
+                        "action": "tournament_end",
+                        "data": {
+                            "tournament_id": event["tournament_id"],
+                            "tournament_name": event["tournament_name"],
+                            "winner_id": event["winner_id"],
+                            "winner_username": event["winner_username"],
+                        },
+                    },
+                }
+            )
+        )

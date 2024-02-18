@@ -78,6 +78,8 @@ export class SceneGame extends SceneBase {
 			const pressedKeys = keys.filter((key) => this._keysPressed[key]);
 
 			if (pressedKeys.length > 0 && !this._exitBool) {
+				console.log('user id:', this.root.userId ?? 0);
+				console.log('game id:', this._gameId);
 				pressedKeys.forEach((key) => {
 					apiService
 						.sendKeyPress(this._gameId, this.root.userId ?? 0, key)
@@ -90,17 +92,21 @@ export class SceneGame extends SceneBase {
 		if (gameState) {
 			this._ball.x = gameState.ballPosition.x;
 			this._ball.y = gameState.ballPosition.y;
-			this._data.player1_score = gameState.player1_score;
-			this._data.player2_score = gameState.player2_score;
+
+			if (
+				this._data.player1_score !== gameState.player1_score ||
+				this._data.player2_score !== gameState.player2_score
+			) {
+				this._data.player1_score = gameState.player1_score;
+				this._data.player2_score = gameState.player2_score;
+				this._updateScoreText();
+			}
+
 			this._pad1.x = gameState.pad1.x;
 			this._pad1.y = gameState.pad1.y;
 			this._pad2.x = gameState.pad2.x;
 			this._pad2.y = gameState.pad2.y;
 		}
-
-		//TODO call this function from backend
-		this._updateScoreText();
-		// this._handleExit();
 	}
 
 	public onFinish() {

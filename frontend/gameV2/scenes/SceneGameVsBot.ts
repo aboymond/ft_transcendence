@@ -1,4 +1,3 @@
-
 import { SceneBase } from './SceneBase';
 import { SceneMenu } from './SceneMenu';
 import { SceneWinOrLoose } from './SceneWinOrLoose';
@@ -66,7 +65,6 @@ export class SceneGameVsBot extends SceneBase {
 
 		this._exitMenu = this._initExitMenu();
 		container.addChild(this._exitMenu);
-
 	}
 
 	public onUpdate() {
@@ -229,7 +227,6 @@ export class SceneGameVsBot extends SceneBase {
 			// start with space
 			if (this._keysPressed['Space']) {
 				if (this._gameStarted == false) this._gameStarted = true;
-
 			}
 		} else {
 			if (this._keysPressed['ArrowRight']) {

@@ -1,8 +1,10 @@
 import * as PIXI from 'pixi.js';
 import { SceneBase } from './SceneBase';
-import { SceneMenu2 } from './SceneMenu2';
+import { SceneMenu } from './SceneMenu';
 import { defaultColor, textStyleWinOrLoose } from '../index';
-import {AudioManager} from '../AudioManager';
+import { SceneTournamentLoadingVs } from './SceneTournamentLoadingVs';
+import { apiService } from '../../src/services/apiService';
+import { AudioManager } from '../AudioManager';
 
 export class SceneWinOrLoose extends SceneBase {
 	private _textWin = new PIXI.Text('YOU WIN', textStyleWinOrLoose);
@@ -45,10 +47,23 @@ export class SceneWinOrLoose extends SceneBase {
 		clearInterval(this._interval);
 	}
 
-	//TODO load tournament
 	public onKeyDown(e: KeyboardEvent) {
-		if (e.code === 'Enter' || e.code === 'Space' || e.code === 'Escape')
-			this.root.loadScene(new SceneMenu2(this.root));
+		if (e.code === 'Enter' || e.code === 'Space' || e.code === 'Escape') {
+			apiService
+				.getCurrentTournament()
+				.then((response) => {
+					const tournamentId = response.length > 0 ? response[0].id : null;
+					if (tournamentId) {
+						this.root.loadScene(new SceneTournamentLoadingVs(this.root, tournamentId));
+					} else {
+						this.root.loadScene(new SceneMenu(this.root));
+					}
+				})
+				.catch((error) => {
+					console.error('Error fetching current tournament:', error);
+					this.root.loadScene(new SceneMenu(this.root));
+				});
+		}
 	}
 
 	public onKeyUp() {}

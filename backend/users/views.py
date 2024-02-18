@@ -1,7 +1,11 @@
 import os
 import requests
-import logging
+import secrets
+import string
+from datetime import timedelta
+from django.utils import timezone
 from django.contrib.auth import authenticate, logout
+import logging
 from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied
 from django.core.files.base import ContentFile
@@ -23,10 +27,42 @@ from .serializers import FriendshipSerializer
 from .models import GameHistory, Friendship
 from .serializers import GameHistorySerializer
 from .serializers import AvatarSerializer
+from django.core.mail import send_mail
 
 User = get_user_model()
 load_dotenv()
 logger = logging.getLogger(__name__)
+
+
+def ft_login(user):
+    user.save()
+    refresh = RefreshToken.for_user(user)
+    return Response(
+        {
+            "refresh": str(refresh),
+            "access": str(refresh.access_token),  # type: ignore
+            "user": UserSerializer(user).data,
+        },
+        status=status.HTTP_200_OK,
+    )
+
+
+def send_otp(user):
+    verification_code = generate_random_digits()
+    user.otp = verification_code
+    user.otp_expiry_time = timezone.now() + timedelta(hours=1)
+    send_mail(
+        "Verification Code",
+        f"Your verification code is: {user.otp}",
+        os.getenv("EMAIL_H_U"),
+        [user.email],
+        fail_silently=True,
+    )
+    user.save()
+
+
+def generate_random_digits(n=6):
+    return "".join(map(str, (secrets.choice(string.digits) for i in range(n))))
 
 
 class CreateUserView(generics.CreateAPIView):
@@ -52,18 +88,51 @@ class LoginView(generics.GenericAPIView):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             user.status = "online"  # type: ignore
-            user.save()
-            refresh = RefreshToken.for_user(user)
-            return Response(
-                {
-                    "refresh": str(refresh),
-                    "access": str(refresh.access_token),  # type: ignore
-                    "user": UserSerializer(user).data,
-                },
-                status=status.HTTP_200_OK,
-            )
+            if user.twofa is True:
+                send_otp(user)
+                return Response(
+                    {
+                        "missing_otp": True,
+                    },
+                    status=status.HTTP_200_OK,
+                )
+            else:
+                return ft_login(user)
         else:
             raise AuthenticationFailed("Invalid Credentials")
+
+
+class TwoFAEnablingView(generics.UpdateAPIView):
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        user.twofa = request.data.get("twofa")
+        user.save()
+
+        return Response(status=status.HTTP_200_OK)
+
+
+class VerifyTwoFAView(generics.UpdateAPIView):
+    serializer_class = UserSerializer
+
+    def post(self, request, *args, **kwargs):
+        username = request.data.get("username")
+        user = User.objects.get(username=username)
+        otp = request.data.get("otp")
+        if user is not None:
+            if (
+                user.otp == otp
+                and user.otp_expiry_time is not None
+                and user.otp_expiry_time > timezone.now()
+            ):
+                user.otp = ""
+                user.otp_expiry_time = None
+                user.save()
+
+                return ft_login(user)
+        raise AuthenticationFailed("Invalid Credentials")
 
 
 class AuthView(generics.GenericAPIView):
@@ -77,7 +146,6 @@ class AuthView(generics.GenericAPIView):
 
 class CallBackView(APIView):
     def get(self, request, *args, **kwargs):
-        print("CALLBACKVIEW TEST")
         token_url = "https://api.intra.42.fr/oauth/token"
         client_id = os.getenv("CLIENT")
         client_secret = os.getenv("SECRET")
@@ -100,11 +168,9 @@ class CallBackView(APIView):
             client_id, token={"access_token": access_token}
         ).get(user_url)
         user_data = user_response.json()
-
         user = {
             "id": user_data["id"],
             "login": user_data["login"],
-            # "avatar": user_data["image"]["versions"]["small"],
             "email": user_data["email"],
             "access_token": access_token,
         }
@@ -113,10 +179,9 @@ class CallBackView(APIView):
         response = requests.get(avatar_url)
 
         User = get_user_model()
+
         username = user["login"]
         email = user["email"]
-
-        # TODO handle this better
         if email and User.objects.filter(email=email, is_oauth_user=False).exists():
             # If a non-OAuth user with the same email exists, do nothing and return
             return Response(
@@ -126,7 +191,7 @@ class CallBackView(APIView):
 
         if User.objects.filter(username=username, is_oauth_user=False).exists():
             # If a non-OAuth user with the same username exists, append the user id to the username
-            username = f"{username}#{user['id']}"
+            username = f"{username}{user['id']}"
 
         # Create a new user with the (potentially modified) username
         # only if a user with the new username doesn't already exist
@@ -138,18 +203,24 @@ class CallBackView(APIView):
             new_user.save()
         else:
             new_user = User.objects.get(username=username)
-
-        # temp JWT
-        refresh = RefreshToken.for_user(new_user)
-
-        redirect_url = (
-            os.environ.get("FRONTEND_URL", "http://localhost:3001")
-            + "?access_token="
-            + str(refresh.access_token)
-            + "&user_id="
-            + str(new_user.id)
-        )
-        return redirect(redirect_url)
+        if new_user.twofa is True:
+            send_otp(new_user)
+            redirect_url = (
+                os.environ.get("FRONTEND_URL", "http://localhost:3001")
+                + "/verify-2fa?username="
+                + username
+            )
+            return redirect(redirect_url)
+        else:
+            refresh = RefreshToken.for_user(new_user)
+            redirect_url = (
+                os.environ.get("FRONTEND_URL", "http://localhost:3001")
+                + "?access_token="
+                + str(refresh.access_token)
+                + "&user_id="
+                + str(new_user.id)
+            )
+            return redirect(redirect_url)
 
 
 class CallBackCodeView(APIView):
@@ -211,6 +282,17 @@ class UserDetailView(generics.RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     lookup_field = "id"
+
+    def get(self, request, *args, **kwargs):
+        user = self.get_object()
+        if request.user != user:
+            return Response(
+                {
+                    "detail": "You do not have permission to access this user's information."
+                },
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        return super().get(request, *args, **kwargs)
 
 
 class CurrentUserProfileView(generics.RetrieveAPIView):
@@ -274,6 +356,7 @@ class FriendRequestCreateView(generics.CreateAPIView):
                         "requester_id": friendship.requester.id,
                         "receiver_id": friendship.receiver.id,
                         "status": friendship.status,
+                        "sender_name": friendship.requester.username,
                     },
                 },
             },

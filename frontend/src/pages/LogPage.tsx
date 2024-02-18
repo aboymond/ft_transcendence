@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Button, Card } from 'react-bootstrap';
-import Logo from '../components/Logo';
-import styles from '../styles/LogPage.module.css';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import styles from '../styles/LogPage.module.css';
+import { Container, Row, Col, Card, Button } from 'react-bootstrap';
+import Logo from '../components/Logo';
 import Login from '../components/Login';
 import Register from '../components/Register';
-import apiService from '../services/apiService';
 
 const LogPage: React.FC = () => {
 	const [showComponent, setShowComponent] = useState('');
@@ -24,11 +23,8 @@ const LogPage: React.FC = () => {
 		const userId = urlParams.get('user_id');
 
 		if (accessToken && userId) {
-			// Fetch the user object from the API
-			apiService.getUserById(userId).then((user) => {
-				auth.login(accessToken, user);
-				navigate('/home');
-			});
+			auth.login(accessToken); //TODO
+			navigate('/home');
 		}
 	}, [auth, navigate]);
 
@@ -88,7 +84,7 @@ const LogPage: React.FC = () => {
 											className={`mt-3 ${styles.button} w-100`}
 											onClick={() => handleApiLogin()}
 										>
-											Sign Up with 42
+											Sign In with 42
 										</Button>
 									</>
 								)}

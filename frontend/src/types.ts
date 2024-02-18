@@ -8,6 +8,7 @@ export interface User {
 	status: 'online' | 'offline' | 'in-game' | 'queueing';
 	avatar?: string;
 	friendship_id?: number;
+	twofa: boolean;
 }
 
 export interface FriendRequest {
@@ -116,6 +117,9 @@ export interface Match {
 	id: number;
 	player1: number;
 	player2: number;
-	order: number;
+	match_order: number;
+	round_number: number;
 	game: number;
+	player1_username: string;
+	player2_username: string;
 }
