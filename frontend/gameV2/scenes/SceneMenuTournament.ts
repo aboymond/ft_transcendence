@@ -12,8 +12,7 @@ import {
 import { SceneMenu2 } from './SceneMenu2';
 import { SceneTournamentLoadingVs } from './SceneTournamentLoadingVs';
 import { apiService } from '../../src/services/apiService';
-import {AudioManager} from '../AudioManager';
-
+import { AudioManager } from '../AudioManager';
 
 const selectMaxCreate = 3;
 
@@ -108,7 +107,7 @@ export class SceneMenuTournament extends SceneBase {
 		}
 		if (e.code === 'Enter') {
 			if (this._currentSelectCreate === menu.PLAY) {
-				AudioManager.play('enter');	
+				AudioManager.play('enter');
 				this._inputText = this._inputText.trim();
 				if (this._inputText === '') alert('Please enter a name for the tournament');
 				else this._createTournament();
@@ -313,11 +312,6 @@ export class SceneMenuTournament extends SceneBase {
 	}
 
 	private _createTournament() {
-		console.log('Create tournament');
-		console.log('creator_id:', this.root.userId);
-		console.log('name:', this._inputText);
-		console.log('max_participants:', this._nb_playerForBack);
-		console.log('max_score:', this._nb_scoreForBack);
 		apiService
 			.createTournament(this.root.userId ?? 0, this._inputText, this._nb_playerForBack, this._nb_scoreForBack)
 			.then((response) => {

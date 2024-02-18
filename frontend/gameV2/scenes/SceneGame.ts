@@ -78,8 +78,6 @@ export class SceneGame extends SceneBase {
 			const pressedKeys = keys.filter((key) => this._keysPressed[key]);
 
 			if (pressedKeys.length > 0 && !this._exitBool) {
-				console.log('user id:', this.root.userId ?? 0);
-				console.log('game id:', this._gameId);
 				pressedKeys.forEach((key) => {
 					apiService
 						.sendKeyPress(this._gameId, this.root.userId ?? 0, key)
@@ -165,7 +163,6 @@ export class SceneGame extends SceneBase {
 	//=======================================
 
 	private async _handleExit() {
-		console.log('exitBool:', this._exitBool);
 		if (this._exitBool) {
 			if (this._keysPressed['Escape']) {
 				try {

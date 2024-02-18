@@ -8,8 +8,7 @@ import { SceneLoadingPage } from './SceneLoadingPage';
 import { Tournament, Game } from '../../src/types';
 // import { SceneGame } from './SceneGame';
 import { SceneTournamentLoadingVs } from './SceneTournamentLoadingVs';
-import {AudioManager} from '../AudioManager';
-
+import { AudioManager } from '../AudioManager';
 
 enum menuState {
 	TOURN_MENU,
@@ -62,7 +61,6 @@ export class SceneJoin extends SceneBase {
 	}
 
 	public onKeyDown(e: KeyboardEvent) {
-		// console.log(this.state);
 		switch (this._state) {
 			case menuState.TOURN_MENU:
 				if (e.key === 'ArrowRight') {
@@ -151,7 +149,6 @@ export class SceneJoin extends SceneBase {
 	}
 
 	private _pressUpTournament() {
-		console.log('UP: ' + this._currentSelectTournament);
 		if (this._currentSelectTournament < 1) {
 			return;
 		} else this._currentSelectTournament--;
@@ -286,7 +283,6 @@ export class SceneJoin extends SceneBase {
 		for (let i = 0; i < waitingTournaments.length; i++) {
 			const menuBoxTournament = new PIXI.Graphics();
 			const tournament = waitingTournaments[i];
-			// console.log(tournament);
 			const textName_tour = new PIXI.Text(tournament.name);
 			const textMode_tour = new PIXI.Text(tournament.max_score);
 			const textInfo_tour = new PIXI.Text(tournament.participants.length + '/' + tournament.max_participants);

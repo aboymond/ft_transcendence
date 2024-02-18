@@ -1,11 +1,11 @@
-import { defaultColor} from '..';
+import { defaultColor } from '..';
 import { SceneBase } from './SceneBase';
 import { SceneMenu } from './SceneMenu';
 import * as PIXI from 'pixi.js';
 import { PixiManager } from '../PixiManager';
 import { ErrorResponse } from 'react-router-dom';
 import { apiService } from '../../src/services/apiService';
-import {AudioManager} from '../AudioManager';
+import { AudioManager } from '../AudioManager';
 
 const keyExplanation = PIXI.Texture.from('./img/keyExplanation.png');
 
@@ -122,7 +122,6 @@ export class SceneLoadingPage extends SceneBase {
 			} else {
 				this._textPoints[this._index - 1].visible = true;
 			}
-			// console.log(this._index);
 			this._textPoints[this._index].visible = false;
 			this._index++;
 		}, 800);
@@ -136,7 +135,6 @@ export class SceneLoadingPage extends SceneBase {
 		clearInterval(this._interval);
 		AudioManager.pause('loading');
 		AudioManager.reset();
-		console.log("ICI ON FINISH");
 	}
 
 	public onKeyDown(e: KeyboardEvent) {
@@ -151,7 +149,6 @@ export class SceneLoadingPage extends SceneBase {
 		if (e.code === 'Escape') {
 			apiService
 				.leaveLoading(this._gameId)
-				.then(() => console.log('Left loading scene'))
 				.catch((error: ErrorResponse) => console.error('Error leaving loading', error));
 			if (this.root.gameSocket) {
 				this.root.gameSocket.close();

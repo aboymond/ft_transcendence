@@ -3,11 +3,8 @@ import { SceneMenu } from './SceneMenu';
 import { SceneWinOrLoose } from './SceneWinOrLoose';
 import * as PIXI from 'pixi.js';
 import { gsap } from 'gsap';
-import {
-	defaultColor,
-} from '../index';
-import {AudioManager} from '../AudioManager';
-
+import { defaultColor } from '../index';
+import { AudioManager } from '../AudioManager';
 
 export class SceneGameVsBot extends SceneBase {
 	// FOR THE BACK ======================================
@@ -98,7 +95,6 @@ export class SceneGameVsBot extends SceneBase {
 			this._escapeKeyPressed = true;
 			this._exitBool = !this._exitBool;
 			this._exitMenu.visible = this._exitBool;
-			console.log('Escape ' + (this._exitBool ? 'true' : 'false'));
 		}
 	}
 

@@ -13,7 +13,7 @@ import {
 import { SceneGameVsBot } from './SceneGameVsBot';
 import { SceneLoadingPage } from './SceneLoadingPage';
 import { apiService } from '../../src/services/apiService';
-import {AudioManager} from '../AudioManager';
+import { AudioManager } from '../AudioManager';
 
 const selectMax = 4;
 let errorLock: boolean = false;
@@ -249,14 +249,12 @@ export class SceneMenuOption extends SceneBase {
 		this._currentSelect--;
 		if (this._currentSelect === menu.BOT_LVL && this.root.vsPlayer) this._currentSelect--;
 		if (this._currentSelect < 0) this._currentSelect = selectMax;
-		// console.log('up: ' + this._currentSelect);
 	}
 
 	private _pressDown() {
 		this._currentSelect++;
 		if (this._currentSelect === menu.BOT_LVL && this.root.vsPlayer) this._currentSelect++;
 		if (this._currentSelect > selectMax) this._currentSelect = 0;
-		// console.log('down: ' + this._currentSelect);
 	}
 
 	private _pressLeft() {

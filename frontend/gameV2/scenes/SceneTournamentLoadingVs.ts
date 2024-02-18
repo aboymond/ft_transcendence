@@ -7,9 +7,8 @@ import apiService from '../../src/services/apiService';
 import { Tournament } from '../../src/types';
 import { Match } from '../../src/types';
 import { SceneLoadingPage } from './SceneLoadingPage';
-import {AudioManager} from '../AudioManager';
+import { AudioManager } from '../AudioManager';
 import { SceneTournamentWinner } from './SceneTournamentWinner';
-
 
 const tournamentLine = PIXI.Texture.from('./img/tournamentLine.png');
 
@@ -177,7 +176,6 @@ export class SceneTournamentLoadingVs extends SceneBase {
 		return container;
 	}
 
-
 	private _initNameVs4(names: PIXI.Container) {
 		const playerNames = this._currentTournament?.participants_usernames;
 		console.log(playerNames);
@@ -186,7 +184,7 @@ export class SceneTournamentLoadingVs extends SceneBase {
 				const newName = new PIXI.Text(playerNames[i], {
 					fontSize: (this.root.width * 3) / 100,
 					fill: defaultColor,
-				})
+				});
 				newName.angle = 90;
 				newName.y = (this.root.height * 65) / 100;
 				newName.x = (this.root.width * 17) / 100 + i * ((this.root.width * 20) / 100);
@@ -216,7 +214,7 @@ export class SceneTournamentLoadingVs extends SceneBase {
 		// Setup tournament lines based on the number of participants
 		if (this._currentTournament?.max_participants === 4) {
 			this._initLineTournament4(this._containerSprite);
-		} 
+		}
 		container.addChild(this._containerSprite);
 
 		// Setup player names
