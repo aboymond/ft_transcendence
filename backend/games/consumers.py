@@ -10,6 +10,7 @@ from websockets.exceptions import ConnectionClosedOK
 from django.utils import timezone
 import time
 from tournaments.models import Tournament
+from users.models import GameHistory
 
 User = get_user_model()
 
@@ -329,9 +330,19 @@ class GameConsumer(AsyncWebsocketConsumer):
                 "message": message,
             },
         )
+        await self.create_game_history(game)
 
     def determine_winner(self, game):
         return game.player1 if game.player1_score >= game.max_score else game.player2
 
     def determine_loser(self, game):
         return game.player2 if game.player1_score >= game.max_score else game.player1
+
+    async def create_game_history(self, game):
+        game_history = GameHistory(
+            winner=game.winner,
+            player1_score=game.player1_score,
+            player2_score=game.player2_score,
+        )
+        game_history.save()
+        game_history.players.add(game.player1, game.player2)
