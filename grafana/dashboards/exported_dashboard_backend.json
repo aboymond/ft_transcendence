@@ -11,98 +11,31 @@
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
         "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
         "type": "dashboard"
       }
     ]
   },
-  "description": "Django metrics dashboard using korfuri/django-prometheus Prometheus metrics exporter",
+  "description": "Django metrics dashboard using django-prometheus metrics exporter",
   "editable": true,
   "fiscalYearStartMonth": 0,
-  "gnetId": 9528,
+  "gnetId": 17658,
   "graphTooltip": 0,
   "id": 1,
   "links": [],
-  "liveNow": false,
+  "liveNow": true,
   "panels": [
     {
       "datasource": {
         "type": "prometheus",
         "uid": "$datasource"
       },
-      "description": "increase(v range-vector) calculates the increase in the time series in the range vector. Breaks in monotonicity (such as counter resets due to target restarts) are automatically adjusted for. The increase is extrapolated to cover the full time range as specified in the range vector selector, so that it is possible to get a non-integer result even if a counter increases only by integer increments.",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "fixedColor": "green",
-            "mode": "fixed"
-          },
-          "fieldMinMax": false,
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          },
-          "unit": "none",
-          "unitScale": true
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 12,
-        "x": 0,
-        "y": 0
-      },
-      "id": 13,
-      "links": [],
-      "maxDataPoints": 100,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "orientation": "horizontal",
-        "reduceOptions": {
-          "calcs": [
-            "last"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "text": {
-          "titleSize": 20,
-          "valueSize": 0
-        },
-        "textMode": "auto",
-        "wideLayout": true
-      },
-      "pluginVersion": "10.3.3",
-      "targets": [
-        {
-          "datasource": {
-            "uid": "$datasource"
-          },
-          "editorMode": "builder",
-          "expr": "transcendence_django_http_requests_total_by_transport_total",
-          "format": "time_series",
-          "intervalFactor": 1,
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "Total Requests",
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "$datasource"
-      },
+      "description": "",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -125,36 +58,43 @@
               {
                 "color": "green",
                 "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
               }
             ]
           },
-          "unit": "none",
+          "unit": "reqps",
           "unitScale": true
         },
         "overrides": []
       },
       "gridPos": {
         "h": 4,
-        "w": 4,
-        "x": 12,
+        "w": 6,
+        "x": 0,
         "y": 0
       },
-      "id": 15,
+      "id": 13,
       "links": [],
       "maxDataPoints": 100,
       "options": {
-        "colorMode": "value",
+        "colorMode": "none",
         "graphMode": "none",
         "justifyMode": "auto",
         "orientation": "horizontal",
         "reduceOptions": {
           "calcs": [
-            "last"
+            "mean"
           ],
           "fields": "",
           "values": false
         },
         "showPercentChange": false,
+        "text": {
+          "valueSize": 40
+        },
         "textMode": "auto",
         "wideLayout": true
       },
@@ -165,7 +105,93 @@
             "uid": "$datasource"
           },
           "editorMode": "code",
-          "expr": "transcendence_django_http_responses_total_by_status_total{status=~\"2.+\"}",
+          "expr": "sum(irate(transcendence_django_http_requests_total_by_view_transport_method_total{app=~\"^$application$\"}[$__rate_interval]))",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Requests",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "$datasource"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 2,
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "reqps",
+          "unitScale": true
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 3,
+        "x": 6,
+        "y": 0
+      },
+      "id": 15,
+      "links": [],
+      "maxDataPoints": 100,
+      "options": {
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "text": {
+          "valueSize": 20
+        },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "10.3.3",
+      "targets": [
+        {
+          "datasource": {
+            "uid": "$datasource"
+          },
+          "editorMode": "code",
+          "expr": "sum(irate(transcendence_django_http_responses_total_by_status_total{status=~\"2.+\",app=~\"^$application$\"}[$__rate_interval]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "",
@@ -184,9 +210,9 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "fixedColor": "red",
-            "mode": "fixed"
+            "mode": "thresholds"
           },
+          "decimals": 2,
           "mappings": [
             {
               "options": {
@@ -198,6 +224,7 @@
               "type": "special"
             }
           ],
+          "noValue": "0",
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -211,118 +238,36 @@
               }
             ]
           },
-          "unit": "none",
+          "unit": "reqps",
           "unitScale": true
         },
         "overrides": []
       },
       "gridPos": {
-        "h": 4,
-        "w": 4,
-        "x": 16,
+        "h": 2,
+        "w": 3,
+        "x": 9,
         "y": 0
       },
       "id": 16,
       "links": [],
       "maxDataPoints": 100,
       "options": {
-        "displayMode": "gradient",
-        "maxVizHeight": 300,
-        "minVizHeight": 16,
-        "minVizWidth": 8,
-        "namePlacement": "auto",
-        "orientation": "horizontal",
-        "reduceOptions": {
-          "calcs": [
-            "last"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showUnfilled": true,
-        "sizing": "auto",
-        "valueMode": "color"
-      },
-      "pluginVersion": "10.3.3",
-      "targets": [
-        {
-          "datasource": {
-            "uid": "$datasource"
-          },
-          "editorMode": "builder",
-          "expr": "transcendence_django_http_responses_total_by_status_total{status=~\"4.+\"}",
-          "format": "time_series",
-          "intervalFactor": 1,
-          "legendFormat": "{{status}}",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "4XX Responses",
-      "type": "bargauge"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "$datasource"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "fixedColor": "red",
-            "mode": "fixed"
-          },
-          "mappings": [
-            {
-              "options": {
-                "match": "null",
-                "result": {
-                  "text": "N/A"
-                }
-              },
-              "type": "special"
-            }
-          ],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "none",
-          "unitScale": true
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 4,
-        "x": 20,
-        "y": 0
-      },
-      "id": 17,
-      "links": [],
-      "maxDataPoints": 100,
-      "options": {
-        "colorMode": "value",
+        "colorMode": "none",
         "graphMode": "none",
         "justifyMode": "auto",
         "orientation": "horizontal",
         "reduceOptions": {
           "calcs": [
-            "last"
+            "mean"
           ],
           "fields": "",
           "values": false
         },
         "showPercentChange": false,
+        "text": {
+          "valueSize": 20
+        },
         "textMode": "auto",
         "wideLayout": true
       },
@@ -333,15 +278,251 @@
             "uid": "$datasource"
           },
           "editorMode": "code",
-          "expr": "transcendence_django_http_responses_total_by_status_total{status=~\"5.+\"}",
+          "expr": "sum(irate(transcendence_django_http_responses_total_by_status_total{status=~\"4.+\",app=~\"^$application$\"}[$__rate_interval]))",
           "format": "time_series",
           "intervalFactor": 1,
+          "legendFormat": "",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "4XX Responses",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PABF2E7BD7AE7B0F4"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "min": 0,
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "#EAB839",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 10
+              }
+            ]
+          },
+          "unitScale": true
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 12,
+        "y": 0
+      },
+      "id": 37,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto"
+      },
+      "pluginVersion": "10.3.3",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "sum(max_over_time(transcendence_django_db_errors_total{app=~\"^$application$\"}[$__range]))",
+          "format": "time_series",
+          "instant": false,
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "5XX Responses",
+      "title": "DB Query Errors",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PABF2E7BD7AE7B0F4"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "min": 0,
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "#EAB839",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 5
+              }
+            ]
+          },
+          "unitScale": true
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 18,
+        "y": 0
+      },
+      "id": 38,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto"
+      },
+      "pluginVersion": "10.3.3",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "sum(max_over_time(transcendence_django_db_new_connection_errors_total{app=~\"^$application$\"}[$__range]))",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "DB Connection Errors",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "$datasource"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 2,
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "reqps",
+          "unitScale": true
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 3,
+        "x": 6,
+        "y": 2
+      },
+      "id": 23,
+      "links": [],
+      "maxDataPoints": 100,
+      "options": {
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "text": {
+          "valueSize": 20
+        },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "10.3.3",
+      "targets": [
+        {
+          "datasource": {
+            "uid": "$datasource"
+          },
+          "editorMode": "code",
+          "expr": "sum(irate(transcendence_django_http_responses_total_by_status_total{status=~\"3.+\",app=~\"^$application$\"}[$__rate_interval]))",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "3XX Responses",
       "type": "stat"
     },
     {
@@ -354,7 +535,19 @@
           "color": {
             "mode": "thresholds"
           },
-          "mappings": [],
+          "decimals": 2,
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "noValue": "0",
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -368,36 +561,38 @@
               }
             ]
           },
-          "unit": "short",
+          "unit": "reqps",
           "unitScale": true
         },
         "overrides": []
       },
       "gridPos": {
-        "h": 9,
-        "w": 12,
-        "x": 0,
-        "y": 4
+        "h": 2,
+        "w": 3,
+        "x": 9,
+        "y": 2
       },
-      "id": 2,
+      "id": 17,
       "links": [],
+      "maxDataPoints": 100,
       "options": {
-        "displayMode": "gradient",
-        "maxVizHeight": 300,
-        "minVizHeight": 16,
-        "minVizWidth": 8,
-        "namePlacement": "auto",
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "auto",
         "orientation": "horizontal",
         "reduceOptions": {
           "calcs": [
-            "lastNotNull"
+            "mean"
           ],
           "fields": "",
           "values": false
         },
-        "showUnfilled": true,
-        "sizing": "auto",
-        "valueMode": "color"
+        "showPercentChange": false,
+        "text": {
+          "valueSize": 20
+        },
+        "textMode": "auto",
+        "wideLayout": true
       },
       "pluginVersion": "10.3.3",
       "targets": [
@@ -405,22 +600,195 @@
           "datasource": {
             "uid": "$datasource"
           },
-          "disableTextWrap": false,
-          "editorMode": "builder",
-          "expr": "transcendence_django_http_requests_total_by_view_transport_method_total{view!~\"prometheus-django-metrics\"}",
+          "editorMode": "code",
+          "expr": "sum(irate(transcendence_django_http_responses_total_by_status_total{status=~\"5.+\",app=~\"^$application$\"}[$__rate_interval]))",
           "format": "time_series",
-          "fullMetaSearch": false,
-          "hide": false,
-          "includeNullMetadata": true,
           "intervalFactor": 1,
-          "legendFormat": "{{method}} /{{view}}",
+          "legendFormat": "",
           "range": true,
-          "refId": "A",
-          "useBackend": false
+          "refId": "A"
         }
       ],
-      "title": "Requests",
-      "type": "bargauge"
+      "title": "5XX Responses",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PABF2E7BD7AE7B0F4"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "scaleDistribution": {
+              "type": "linear"
+            }
+          },
+          "unitScale": true
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 4
+      },
+      "id": 20,
+      "options": {
+        "calculate": false,
+        "cellGap": 1,
+        "cellValues": {
+          "unit": "reqps"
+        },
+        "color": {
+          "exponent": 0.5,
+          "fill": "dark-orange",
+          "mode": "scheme",
+          "reverse": false,
+          "scale": "exponential",
+          "scheme": "Spectral",
+          "steps": 64
+        },
+        "exemplars": {
+          "color": "rgba(255,0,255,0.7)"
+        },
+        "filterValues": {
+          "le": 1e-9
+        },
+        "legend": {
+          "show": true
+        },
+        "rowsFrame": {
+          "layout": "auto",
+          "value": "Responses"
+        },
+        "tooltip": {
+          "mode": "single",
+          "showColorScale": false,
+          "yHistogram": true
+        },
+        "yAxis": {
+          "axisPlacement": "left",
+          "decimals": 0,
+          "reverse": false,
+          "unit": "s"
+        }
+      },
+      "pluginVersion": "10.3.3",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(transcendence_django_http_requests_latency_including_middlewares_seconds_bucket{app=~\"^$application$\"}[$__rate_interval])) by (le)",
+          "format": "heatmap",
+          "interval": "",
+          "legendFormat": "{{le}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Number of Requests by Processing Time",
+      "type": "heatmap"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PABF2E7BD7AE7B0F4"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "scaleDistribution": {
+              "type": "linear"
+            }
+          },
+          "unitScale": true
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 4
+      },
+      "id": 22,
+      "options": {
+        "calculate": false,
+        "cellGap": 1,
+        "cellValues": {
+          "unit": "reqps"
+        },
+        "color": {
+          "exponent": 0.5,
+          "fill": "dark-orange",
+          "mode": "scheme",
+          "reverse": false,
+          "scale": "exponential",
+          "scheme": "Spectral",
+          "steps": 64
+        },
+        "exemplars": {
+          "color": "rgba(255,0,255,0.7)"
+        },
+        "filterValues": {
+          "le": 1e-9
+        },
+        "legend": {
+          "show": true
+        },
+        "rowsFrame": {
+          "layout": "auto",
+          "value": "Responses"
+        },
+        "tooltip": {
+          "mode": "single",
+          "showColorScale": false,
+          "yHistogram": true
+        },
+        "yAxis": {
+          "axisPlacement": "left",
+          "decimals": 0,
+          "reverse": false,
+          "unit": "bytes"
+        }
+      },
+      "pluginVersion": "10.3.3",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "sum(rate(transcendence_django_http_responses_body_total_bytes_bucket{app=~\"^$application$\"}[$__rate_interval])) by (le)",
+          "format": "heatmap",
+          "instant": false,
+          "interval": "",
+          "legendFormat": "{{le}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Number of Responses by Size",
+      "type": "heatmap"
     },
     {
       "datasource": {
@@ -452,7 +820,9 @@
             "lineWidth": 1,
             "pointSize": 5,
             "scaleDistribution": {
-              "type": "linear"
+              "linearThreshold": 1,
+              "log": 2,
+              "type": "log"
             },
             "showPoints": "never",
             "spanNulls": false,
@@ -461,7 +831,7 @@
               "mode": "none"
             },
             "thresholdsStyle": {
-              "mode": "off"
+              "mode": "dashed"
             }
           },
           "mappings": [],
@@ -474,22 +844,23 @@
               },
               {
                 "color": "red",
-                "value": 80
+                "value": 1
               }
             ]
           },
-          "unit": "dtdurations",
+          "unit": "s",
           "unitScale": true
         },
         "overrides": []
       },
       "gridPos": {
-        "h": 9,
+        "h": 8,
         "w": 12,
-        "x": 12,
-        "y": 4
+        "x": 0,
+        "y": 12
       },
       "id": 4,
+      "interval": "30s",
       "links": [],
       "options": {
         "legend": {
@@ -503,18 +874,18 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "10.3.3",
+      "pluginVersion": "9.3.1",
       "targets": [
         {
           "datasource": {
             "uid": "$datasource"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.50, sum(rate(transcendence_django_http_requests_latency_seconds_by_view_method_bucket{namespace=~\"$namespace\", app=~\"^$app$\",view!~\"prometheus-django-metrics|healthcheck\"}[5m])) by (job, le))",
+          "expr": "histogram_quantile(0.50, sum(irate(transcendence_django_http_requests_latency_seconds_by_view_method_bucket{app=~\"^$application$\"}[$__rate_interval])) by (le))",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "quantile=50",
+          "legendFormat": "50 quantile",
           "range": true,
           "refId": "A"
         },
@@ -523,12 +894,12 @@
             "uid": "$datasource"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.95, sum(rate(transcendence_django_http_requests_latency_seconds_by_view_method_bucket{namespace=~\"$namespace\", app=~\"^$app$\",view!~\"prometheus-django-metrics|healthcheck\"}[5m])) by (job, le))",
+          "expr": "histogram_quantile(0.95, sum(irate(transcendence_django_http_requests_latency_seconds_by_view_method_bucket{app=~\"^$application$\"}[$__rate_interval])) by (le))",
           "format": "time_series",
           "hide": false,
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "quantile=95",
+          "legendFormat": "95 quantile",
           "range": true,
           "refId": "B"
         },
@@ -536,33 +907,15 @@
           "datasource": {
             "uid": "$datasource"
           },
-          "disableTextWrap": false,
-          "editorMode": "builder",
-          "expr": "histogram_quantile(0.99, sum by(job, le) (rate(transcendence_django_http_requests_latency_seconds_by_view_method_bucket{namespace=~\"$namespace\", app=~\"^$app$\", view!~\"prometheus-django-metrics\"}[5m])))",
-          "format": "time_series",
-          "fullMetaSearch": false,
-          "hide": false,
-          "includeNullMetadata": true,
-          "interval": "",
-          "intervalFactor": 1,
-          "legendFormat": "quantile=99",
-          "range": true,
-          "refId": "C",
-          "useBackend": false
-        },
-        {
-          "datasource": {
-            "uid": "$datasource"
-          },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.999, sum(rate(transcendence_django_http_requests_latency_seconds_by_view_method_bucket{namespace=~\"$namespace\", app=~\"^$app$\",view!~\"prometheus-django-metrics|healthcheck\"}[5m])) by (job, le))",
+          "expr": "histogram_quantile(0.99, sum(irate(transcendence_django_http_requests_latency_seconds_by_view_method_bucket{app=~\"^$application$\"}[$__rate_interval])) by (le))",
           "format": "time_series",
           "hide": false,
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "quantile=99.9",
+          "legendFormat": "99 quantile",
           "range": true,
-          "refId": "D"
+          "refId": "C"
         }
       ],
       "title": "Request Latency",
@@ -610,6 +963,7 @@
               "mode": "off"
             }
           },
+          "decimals": 2,
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -624,140 +978,28 @@
               }
             ]
           },
-          "unit": "short",
-          "unitScale": true
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "api-beatstream-api"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "#1f78c1",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 9,
-        "w": 12,
-        "x": 0,
-        "y": 13
-      },
-      "id": 7,
-      "links": [],
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "10.3.3",
-      "targets": [
-        {
-          "datasource": {
-            "uid": "$datasource"
-          },
-          "editorMode": "code",
-          "expr": "sum(irate(transcendence_django_http_responses_before_middlewares_total{namespace=~\"$namespace\", app=~\"^$app$\", view!~\"prometheus-django-metrics|healthcheck\"}[1m])) by(job)",
-          "format": "time_series",
-          "interval": "",
-          "intervalFactor": 1,
-          "legendFormat": "{{status}}",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "Responses",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "$datasource"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 10,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "short",
+          "unit": "reqps",
           "unitScale": true
         },
         "overrides": []
       },
       "gridPos": {
-        "h": 9,
+        "h": 8,
         "w": 12,
         "x": 12,
-        "y": 13
+        "y": 12
       },
       "id": 11,
+      "interval": "30s",
       "links": [],
       "options": {
         "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "right",
           "showLegend": true
         },
         "tooltip": {
@@ -765,15 +1007,16 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "10.3.3",
+      "pluginVersion": "9.3.1",
       "targets": [
         {
           "datasource": {
             "uid": "$datasource"
           },
           "editorMode": "code",
-          "expr": "sum(irate(transcendence_django_http_responses_total_by_status_total{namespace=~\"$namespace\", app=~\"^$app$\", view!~\"prometheus-django-metrics|healthcheck\"}[1m])) by(status)",
+          "expr": "sum(irate(transcendence_django_http_responses_total_by_status_total{app=~\"^$application$\"}[$__rate_interval])) by(status)",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 1,
           "legendFormat": "{{status}}",
           "range": true,
@@ -786,46 +1029,18 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "$datasource"
+        "uid": "PABF2E7BD7AE7B0F4"
       },
+      "description": "",
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "palette-classic"
+            "mode": "thresholds"
           },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 10,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
+          "decimals": 0,
           "mappings": [],
+          "max": 1,
+          "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -834,90 +1049,74 @@
                 "value": null
               },
               {
+                "color": "#EAB839",
+                "value": 0.3
+              },
+              {
                 "color": "red",
-                "value": 80
+                "value": 0.6
               }
             ]
           },
-          "unit": "short",
+          "unit": "percentunit",
           "unitScale": true
         },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "mysql"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "#584477",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "postgresql"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "#0064a5",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          }
-        ]
+        "overrides": []
       },
       "gridPos": {
-        "h": 5,
-        "w": 24,
+        "h": 8,
+        "w": 12,
         "x": 0,
-        "y": 22
+        "y": 20
       },
-      "id": 9,
-      "links": [],
+      "id": 25,
       "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
+        "displayMode": "gradient",
+        "maxVizHeight": 300,
+        "minVizHeight": 10,
+        "minVizWidth": 0,
+        "namePlacement": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "limit": 20,
+          "values": true
         },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "none"
-        }
+        "showUnfilled": true,
+        "sizing": "auto",
+        "text": {},
+        "valueMode": "color"
       },
       "pluginVersion": "10.3.3",
       "targets": [
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(irate(transcendence_django_db_execute_total{}[1m])) by (vendor)",
-          "format": "time_series",
-          "intervalFactor": 1,
-          "legendFormat": "{{vendor}}",
-          "range": true,
+          "exemplar": false,
+          "expr": "topk(20, (1 - (sum(max_over_time(transcendence_django_http_requests_latency_seconds_by_view_method_bucket{app=~\"^$application$\",le=\"$threshold\"}[$__range]) / ignoring(le) max_over_time(transcendence_django_http_requests_latency_seconds_by_view_method_count{app=~\"^$application$\"}[$__range])) by (method, view) / count(present_over_time(transcendence_django_http_requests_latency_seconds_by_view_method_count{app=~\"^$application$\"}[$__range])) by (method, view))) > 0.0099)",
+          "format": "table",
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{method}} {{view}}",
+          "range": false,
           "refId": "A"
         }
       ],
-      "title": "Database Ops",
-      "type": "timeseries"
+      "title": "Top 20 Views by Response Time (> $threshold)",
+      "type": "bargauge"
     },
     {
       "datasource": {
         "type": "prometheus",
         "uid": "$datasource"
       },
+      "description": "",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -955,6 +1154,7 @@
               "mode": "off"
             }
           },
+          "decimals": 2,
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -969,102 +1169,249 @@
               }
             ]
           },
-          "unit": "short",
+          "unit": "reqps",
           "unitScale": true
         },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byValue",
-              "options": {
-                "op": "gte",
-                "reducer": "allIsZero",
-                "value": 0
-              }
-            },
-            "properties": [
-              {
-                "id": "custom.hideFrom",
-                "value": {
-                  "legend": true,
-                  "tooltip": true,
-                  "viz": false
-                }
-              }
-            ]
-          }
-        ]
+        "overrides": []
       },
       "gridPos": {
-        "h": 5,
-        "w": 24,
-        "x": 0,
-        "y": 27
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 20
       },
-      "id": 18,
+      "id": 2,
+      "interval": "30s",
       "links": [],
       "options": {
         "legend": {
           "calcs": [
             "mean",
-            "lastNotNull",
             "max"
           ],
           "displayMode": "table",
           "placement": "right",
-          "showLegend": true
+          "showLegend": true,
+          "sortBy": "Mean",
+          "sortDesc": true
         },
         "tooltip": {
           "mode": "multi",
           "sort": "none"
         }
       },
-      "pluginVersion": "10.3.3",
+      "pluginVersion": "9.3.1",
       "targets": [
         {
           "datasource": {
             "uid": "$datasource"
           },
           "editorMode": "code",
-          "expr": "transcendence_django_model_deletes_total",
+          "exemplar": false,
+          "expr": "topk(10, sum(irate(transcendence_django_http_requests_total_by_view_transport_method_total{app=~\"^$application$\",view!~\"prometheus-django-metrics|healthcheck|.*shop_product_import_1c_status\"}[$__rate_interval])) by(method, view) > 0)",
           "format": "time_series",
+          "hide": false,
+          "instant": false,
+          "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "[{{model}}] deletes",
+          "legendFormat": "{{method}} /{{view}}",
           "range": true,
           "refId": "A"
-        },
-        {
-          "datasource": {
-            "uid": "$datasource"
-          },
-          "editorMode": "code",
-          "expr": "transcendence_django_model_inserts_total",
-          "format": "time_series",
-          "intervalFactor": 1,
-          "legendFormat": "[{{model}}] inserts",
-          "range": true,
-          "refId": "B"
-        },
-        {
-          "datasource": {
-            "uid": "$datasource"
-          },
-          "editorMode": "code",
-          "expr": "transcendence_django_model_updates_total",
-          "format": "time_series",
-          "intervalFactor": 1,
-          "legendFormat": "[{{model}}] updates",
-          "range": true,
-          "refId": "C"
         }
       ],
-      "title": "Models stats",
+      "title": "Top Requests",
       "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PABF2E7BD7AE7B0F4"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "ops",
+          "unitScale": true
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 28
+      },
+      "id": 35,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "sum(irate(transcendence_django_db_execute_total{app=~\"^$application$\"}[$__rate_interval])) by (vendor)",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Database Total Queries",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PABF2E7BD7AE7B0F4"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "scaleDistribution": {
+              "type": "linear"
+            }
+          },
+          "unitScale": true
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 28
+      },
+      "id": 33,
+      "options": {
+        "calculate": false,
+        "cellGap": 1,
+        "cellValues": {
+          "unit": "ops"
+        },
+        "color": {
+          "exponent": 0.5,
+          "fill": "dark-orange",
+          "mode": "scheme",
+          "reverse": false,
+          "scale": "exponential",
+          "scheme": "Spectral",
+          "steps": 64
+        },
+        "exemplars": {
+          "color": "rgba(255,0,255,0.7)"
+        },
+        "filterValues": {
+          "le": 1e-9
+        },
+        "legend": {
+          "show": true
+        },
+        "rowsFrame": {
+          "layout": "auto"
+        },
+        "tooltip": {
+          "mode": "single",
+          "showColorScale": false,
+          "yHistogram": true
+        },
+        "yAxis": {
+          "axisPlacement": "left",
+          "decimals": 0,
+          "reverse": false,
+          "unit": "s"
+        }
+      },
+      "pluginVersion": "10.3.3",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(transcendence_django_db_query_duration_seconds_bucket{app=~\"^$application$\"}[$__rate_interval])) by (le)",
+          "format": "heatmap",
+          "legendFormat": "{{le}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Database Query Duration",
+      "type": "heatmap"
     }
   ],
-  "refresh": "10s",
+  "refresh": "30s",
   "schemaVersion": 39,
-  "tags": [],
+  "tags": [
+    "Web",
+    "Django",
+    "Database",
+    "Cache"
+  ],
   "templating": {
     "list": [
       {
@@ -1079,38 +1426,11 @@
         "name": "datasource",
         "options": [],
         "query": "prometheus",
+        "queryValue": "",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
         "type": "datasource"
-      },
-      {
-        "allValue": ".*",
-        "current": {
-          "isNone": true,
-          "selected": false,
-          "text": "None",
-          "value": ""
-        },
-        "datasource": {
-          "uid": "$datasource"
-        },
-        "definition": "",
-        "hide": 0,
-        "includeAll": false,
-        "label": "",
-        "multi": false,
-        "name": "namespace",
-        "options": [],
-        "query": "label_values(django_db_new_connections_total, namespace)",
-        "refresh": 1,
-        "regex": "",
-        "skipUrlSync": false,
-        "sort": 1,
-        "tagValuesQuery": "",
-        "tagsQuery": "",
-        "type": "query",
-        "useTags": false
       },
       {
         "current": {
@@ -1119,16 +1439,20 @@
           "value": "$__all"
         },
         "datasource": {
+          "type": "prometheus",
           "uid": "$datasource"
         },
-        "definition": "",
+        "definition": "label_values(python_info,app)",
         "hide": 0,
         "includeAll": true,
-        "label": "app",
+        "label": "application",
         "multi": false,
-        "name": "app",
+        "name": "application",
         "options": [],
-        "query": "label_values(django_db_new_connections_total{namespace=~\"$namespace\"}, app)",
+        "query": {
+          "query": "label_values(python_info,app)",
+          "refId": "StandardVariableQuery"
+        },
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
@@ -1137,11 +1461,80 @@
         "tagsQuery": "",
         "type": "query",
         "useTags": false
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "1s",
+          "value": "1.0"
+        },
+        "description": "Request duration threshold",
+        "hide": 0,
+        "includeAll": false,
+        "label": "threshold",
+        "multi": false,
+        "name": "threshold",
+        "options": [
+          {
+            "selected": false,
+            "text": "100ms",
+            "value": "0.1"
+          },
+          {
+            "selected": false,
+            "text": "250ms",
+            "value": "0.25"
+          },
+          {
+            "selected": false,
+            "text": "500ms",
+            "value": "0.5"
+          },
+          {
+            "selected": false,
+            "text": "750ms",
+            "value": "0.75"
+          },
+          {
+            "selected": true,
+            "text": "1s",
+            "value": "1.0"
+          },
+          {
+            "selected": false,
+            "text": "2.5s",
+            "value": "2.5"
+          },
+          {
+            "selected": false,
+            "text": "5s",
+            "value": "5.0"
+          },
+          {
+            "selected": false,
+            "text": "7.5s",
+            "value": "7.5"
+          },
+          {
+            "selected": false,
+            "text": "10s",
+            "value": "10.0"
+          },
+          {
+            "selected": false,
+            "text": "25s",
+            "value": "25.0"
+          }
+        ],
+        "query": "100ms : 0.1, 250ms : 0.25, 500ms : 0.5, 750ms : 0.75, 1s : 1.0, 2.5s : 2.5, 5s : 5.0, 7.5s : 7.5, 10s : 10.0, 25s : 25.0",
+        "queryValue": "",
+        "skipUrlSync": false,
+        "type": "custom"
       }
     ]
   },
   "time": {
-    "from": "now-15m",
+    "from": "now-1h",
     "to": "now"
   },
   "timepicker": {
@@ -1170,7 +1563,7 @@
     ]
   },
   "timezone": "",
-  "title": "a Django Prometheus",
+  "title": "Django",
   "uid": "O6v4rMpizda",
   "version": 1,
   "weekStart": ""

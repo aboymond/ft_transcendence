@@ -10,6 +10,7 @@ from websockets.exceptions import ConnectionClosedOK
 from django.utils import timezone
 import time
 from tournaments.models import Tournament
+from users.models import GameHistory
 
 User = get_user_model()
 
@@ -239,6 +240,7 @@ class GameConsumer(AsyncWebsocketConsumer):
     async def leave_game(self, event):
         winner_id = event["winner_id"]
         loser_id = event["loser_id"]
+        game_id = event["game_id"]
 
         winner = await database_sync_to_async(User.objects.get)(id=winner_id)
         loser = await database_sync_to_async(User.objects.get)(id=loser_id)
@@ -246,6 +248,21 @@ class GameConsumer(AsyncWebsocketConsumer):
         await database_sync_to_async(winner.save)()
         loser.losses += 1
         await database_sync_to_async(loser.save)()
+
+        game = await database_sync_to_async(Game.objects.get)(id=game_id)
+        if game.tournament_id is not None:
+            tournament = await database_sync_to_async(Tournament.objects.get)(
+                id=game.tournament_id
+            )
+            # winner = [game.winner]
+            print("Winner:", winner)
+            round_number = await database_sync_to_async(
+                Tournament.get_next_round_number
+            )(tournament)
+            print("Round number:", round_number)
+            await database_sync_to_async(Tournament.create_matches_for_round)(
+                tournament, winner, round_number
+            )
 
         message = {
             "action": "leave_game",
@@ -284,10 +301,6 @@ class GameConsumer(AsyncWebsocketConsumer):
         game.loser.losses += 1
         await sync_to_async(game.loser.save)()
 
-        print("Game ended")
-        print("Game ID:", game.id)
-        print("tournament_id:", game.tournament_id)
-        # Check if the game is part of a tournament and call create_matches_for_round
         if game.tournament_id is not None:
             tournament = await database_sync_to_async(Tournament.objects.get)(
                 id=game.tournament_id
@@ -317,9 +330,19 @@ class GameConsumer(AsyncWebsocketConsumer):
                 "message": message,
             },
         )
+        await self.create_game_history(game)
 
     def determine_winner(self, game):
         return game.player1 if game.player1_score >= game.max_score else game.player2
 
     def determine_loser(self, game):
         return game.player2 if game.player1_score >= game.max_score else game.player1
+
+    async def create_game_history(self, game):
+        game_history = GameHistory(
+            winner=game.winner,
+            player1_score=game.player1_score,
+            player2_score=game.player2_score,
+        )
+        game_history.save()
+        game_history.players.add(game.player1, game.player2)

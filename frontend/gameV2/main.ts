@@ -1,7 +1,7 @@
 import { PixiManager } from './PixiManager';
 import { SceneMenu } from './scenes/SceneMenu';
 import WebFont from 'webfontloader';
-import { SceneTournamentWinner } from './scenes/SceneTournamentWinner';
+// import { SceneTournamentWinner } from './scenes/SceneTournamentWinner';
 
 export function launchGame(ws: WebSocket | null, userId: number | null) {
 	WebFont.load({

@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
 import { SceneBase } from './SceneBase';
 import { SceneMenu } from './SceneMenu';
-import { defaultColor, textStyleDefaultMenu1, textStyleTitleMenu1 } from '../index';
+import { defaultColor, textStyleTitleMenu1 } from '../index';
 import {AudioManager} from '../AudioManager';
 import { PixiManager } from '../PixiManager';
 

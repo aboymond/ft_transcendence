@@ -11,7 +11,7 @@ interface AuthContextType {
 	loading: boolean;
 	login: (token: string, user: User, TwoFa: boolean) => void;
 	logout: () => void;
-	verifyOtp: (username: string, otp:string) => void;
+	verifyOtp: (username: string, otp: string) => void;
 	updateUser: (user: User) => void;
 }
 
@@ -25,7 +25,6 @@ export const AuthContext = createContext<AuthContextType | null>(null);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
 	const [token, setToken] = useState<string | null>(null);
 	const [TwoFa, setTwoFa] = useState<boolean>(false);
-	const [OtpValidated, setOtpValidated] = useState(false);
 	const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 	const [user, setUser] = useState<User | null>(null);
 	const [loading, setLoading] = useState(true);
@@ -52,7 +51,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 		setLoading(false);
 	}, []);
 
-	const login = (newToken: string, newUser: User, newTwoFa:boolean) => {
+	const login = (newToken: string, newUser: User, newTwoFa: boolean) => {
 		localStorage.setItem('token', newToken);
 		setTwoFa(newTwoFa);
 		setToken(newToken);
@@ -69,16 +68,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 		setUser(null);
 	};
 
-	const verifyOtp = (username: string,  otp: string) => {
+	const verifyOtp = (username: string, otp: string) => {
 		apiService.verifyOtp(username, otp).then((isValid) => {
-			if (isValid) 
-				return (true);
-			else 
-			{
-				console.error("OTP verification failed:");
-				return (false);
+			if (isValid) return true;
+			else {
+				console.error('OTP verification failed:');
+				return false;
 			}
-		})
+		});
 	};
 
 	const updateUser = (updatedUser: User) => {

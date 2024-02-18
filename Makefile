@@ -6,7 +6,7 @@ up:
 	docker-compose up -d
 
 dev:
-	docker-compose up --build
+	docker-compose up --build --remove-orphans
 
 prod:
 	docker-compose -f docker-compose.prod.yml up --build
@@ -24,6 +24,9 @@ restart:
 # Rule to build or rebuild services
 build:
 	docker-compose build
+
+build-log:
+	docker-compose build &> build.log
 
 # Rule to run migrations
 migrations:

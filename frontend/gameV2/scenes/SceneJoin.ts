@@ -83,8 +83,10 @@ export class SceneJoin extends SceneBase {
 					this._pressUpTournament();
 				}
 				if (e.code === 'Enter') {
-					AudioManager.play('enter');
-					this._joinTournament(this._tournamentObjects[this._currentSelectTournament].data.id);
+					if (this._tournamentObjects.length > 0 && this._currentSelectTournament >= 0) {
+						AudioManager.play('enter');
+						this._joinTournament(this._tournamentObjects[this._currentSelectTournament].data.id);
+					}
 				}
 				if (e.code === 'Escape') {
 					this.root.loadScene(new SceneMenu2(this.root));
@@ -109,8 +111,10 @@ export class SceneJoin extends SceneBase {
 					this._pressUpPvP();
 				}
 				if (e.code === 'Enter') {
-					AudioManager.play('enter');
-					this._joinGame(this._gameObjects[this._currentSelectPvP].data.id);
+					if (this._gameObjects.length > 0 && this._currentSelectPvP >= 0) {
+						AudioManager.play('enter');
+						this._joinGame(this._gameObjects[this._currentSelectPvP].data.id);
+					}
 				}
 				if (e.code === 'Escape') {
 					this.root.loadScene(new SceneMenu2(this.root));
@@ -357,19 +361,17 @@ export class SceneJoin extends SceneBase {
 	private _joinGame(gameId: number) {
 		apiService
 			.joinGame(gameId, this.root.userId ?? 0)
-			.then((response) => {
-				console.log('Joined game successfully', response);
+			.then(() => {
 				this.root.loadScene(new SceneLoadingPage(this.root, gameId));
 			})
-			.catch((error) => console.error('Error joining game', error));
+			.catch(() => this.root.loadScene(new SceneJoin(this.root)));
 	}
 	private _joinTournament(tournamentId: number) {
 		apiService
 			.joinTournament(tournamentId, this.root.userId ?? 0)
-			.then((response) => {
-				console.log('Joined tournament successfully', response);
+			.then(() => {
+				this.root.loadScene(new SceneTournamentLoadingVs(this.root, tournamentId));
 			})
-			.catch((error) => console.error('Error joining tournament', error));
-		this.root.loadScene(new SceneTournamentLoadingVs(this.root, tournamentId));
+			.catch(() => this.root.loadScene(new SceneJoin(this.root)));
 	}
 }
