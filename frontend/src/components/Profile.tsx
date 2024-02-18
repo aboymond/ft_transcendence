@@ -29,9 +29,13 @@ const Profile: React.FC = () => {
 
 	const handleUpdate = async () => {
 		try {
-			const data: { display_name?: string } = {};
-			if (display_name) data.display_name = display_name;
-			await apiService.updateUserProfile(data);
+			const data: { username?: string, display_name?: string } = {};
+			if (display_name || username) 
+			{
+				data.display_name = display_name;
+				data.username = username;
+				await apiService.updateUserProfile(data);
+			}
 			if (avatar) {
 				await apiService.uploadUserAvatar(avatar);
 			}
