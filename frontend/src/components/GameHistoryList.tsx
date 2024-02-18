@@ -41,18 +41,10 @@ const GameHistoryList: React.FC = () => {
 	};
 
 	return (
-		<div
-			style={{
-				display: 'flex',
-				flexDirection: 'column',
-				alignItems: 'center',
-				justifyContent: 'center',
-				fontSize: '0.9em',
-			}}
-		>
-			<ul>
+		<div className={styles.centeredContent}>
+			<ul className={styles.gameHistoryList}>
 				{gameHistory.slice(page * 10, (page + 1) * 10).map((game) => (
-					<li style={{ marginTop: '0.4em' }} key={game.id}>
+					<li className={styles.gameHistoryItem} key={game.id}>
 						{game.players[0].username} {game.player1_score} - {game.player2_score} {game.players[1].username}
 					</li>
 				))}

@@ -22,3 +22,20 @@
     font-family: var(--font-family);
     border-color: var(--accent-color);
 }
+
+.centeredContent {
+    text-align: center;
+}
+
+  .gameHistoryList {
+    list-style: none;
+    padding: 0;
+}
+
+  .gameHistoryItem {
+    margin: 10px 0;
+}
+
+.title {
+    text-decoration: underline;
+}
