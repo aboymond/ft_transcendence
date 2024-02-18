@@ -2,22 +2,19 @@ import * as PIXI from 'pixi.js';
 import { SceneBase } from './SceneBase';
 import { SceneMenu } from './SceneMenu';
 import { defaultColor, textStyleTitleMenu1 } from '../index';
-import {AudioManager} from '../AudioManager';
+import { AudioManager } from '../AudioManager';
 import { PixiManager } from '../PixiManager';
 
-
 export class SceneTournamentWinner extends SceneBase {
-	
-	
 	private _textTitle = new PIXI.Text('WINS', textStyleTitleMenu1);
 	private _nameText = new PIXI.Text('');
 	private _crownSprite = PIXI.Texture.from('./img/crown.png');
 	private _interval = 0;
-	
+
 	constructor(
 		public root: PixiManager,
 		private _gameId: number,
-		private _playerName: string
+		private _playerName: string,
 	) {
 		super(root);
 	}
@@ -25,7 +22,7 @@ export class SceneTournamentWinner extends SceneBase {
 	public async onStart(container: PIXI.Container) {
 		AudioManager.play('win');
 		this._nameText.text = this._playerName;
-		console.log("ID: " + this._gameId + " Player: " + this._nameText.text);
+		console.log('ID: ' + this._gameId + ' Player: ' + this._nameText.text);
 		container.addChild(this._initTextTitle());
 		container.addChild(this._initTextName());
 		container.addChild(this._initCrown());
@@ -48,7 +45,7 @@ export class SceneTournamentWinner extends SceneBase {
 	}
 
 	public onKeyDown(e: KeyboardEvent) {
-		if (e.code === 'enter') {
+		if (e.code === 'Enter') {
 			this.root.loadScene(new SceneMenu(this.root));
 		}
 	}
@@ -70,7 +67,7 @@ export class SceneTournamentWinner extends SceneBase {
 
 	private _initTextName() {
 		this._nameText.style.fill = defaultColor;
-		this._nameText.style.fontSize = ((this.root.width) * 10) / 100;
+		this._nameText.style.fontSize = (this.root.width * 10) / 100;
 		this._nameText.x = (this.root.width * 50) / 100 - this._nameText.width / 2;
 		this._nameText.y = (this.root.height * 35) / 100 - this._nameText.height / 2;
 		return this._nameText;
@@ -85,7 +82,7 @@ export class SceneTournamentWinner extends SceneBase {
 
 		crown.width = newWidth;
 		crown.height = newHigth;
-		crown.anchor.set(0.5, 0.5 );
+		crown.anchor.set(0.5, 0.5);
 		crown.x = (this.root.width * 50) / 100;
 		crown.y = (this.root.height * 50) / 100;
 		crown.angle = 90;
