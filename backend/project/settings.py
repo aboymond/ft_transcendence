@@ -195,7 +195,7 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 CORS_ALLOWED_ORIGINS = [
-    "https://api.intra.42.fr",  # Add the actual origin of the 42 API
+    "http://api.intra.42.fr",  # Add the actual origin of the 42 API
     "http://localhost",
     "http://localhost:3001",
     "http://frontend:3001",
