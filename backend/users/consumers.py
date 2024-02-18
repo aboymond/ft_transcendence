@@ -5,7 +5,6 @@ from django.contrib.auth import get_user_model
 from asgiref.sync import sync_to_async
 from django.db.models import Q
 from games.models import Game
-from websockets.exceptions import ConnectionClosedOK
 
 logger = logging.getLogger(__name__)
 User = get_user_model()

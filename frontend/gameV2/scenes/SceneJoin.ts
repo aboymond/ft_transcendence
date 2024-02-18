@@ -1,5 +1,5 @@
 // import { Container } from 'react-bootstrap';
-import { defaultColor} from '..';
+import { defaultColor } from '..';
 import { SceneBase } from './SceneBase';
 import { SceneMenu2 } from './SceneMenu2';
 import * as PIXI from 'pixi.js';
@@ -279,10 +279,12 @@ export class SceneJoin extends SceneBase {
 		const menu = new PIXI.Container();
 		this._tournamentObjects = [];
 		const tournaments = await apiService.getTournaments();
-
-		for (let i = 0; i < tournaments.length; i++) {
+		const waitingTournaments = tournaments.filter(
+			(tournament: Tournament) => tournament.status === 'waiting',
+		);
+		for (let i = 0; i < waitingTournaments.length; i++) {
 			const menuBoxTournament = new PIXI.Graphics();
-			const tournament = tournaments[i];
+			const tournament = waitingTournaments[i];
 			// console.log(tournament);
 			const textName_tour = new PIXI.Text(tournament.name);
 			const textMode_tour = new PIXI.Text(tournament.max_score);

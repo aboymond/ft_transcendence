@@ -34,13 +34,14 @@ export class SceneMenu extends SceneBase {
 			this.root.loadScene(new SceneMenu2(this.root));
 		}
 
-		//Init Title text
-		this._textTitle.eventMode = 'dynamic';
-		this._textTitle.cursor = 'pointer';
-		this._textTitle.on('pointerdown', () => {
-			this.root.playSound('enter');
-			this.root.loadScene(new SceneMenu2(this.root));
-		});
+		// //Init Title text
+		// this._textTitle.eventMode = 'dynamic';
+		// this._textTitle.cursor = 'pointer';
+		// this._textTitle.on('pointerdown', () => {
+		// 	this.root.playSound('enter');
+		// 	this.root.loadScene(new SceneMenu2(this.root));
+		// });
+
 		container.addChild(this._initTextTitle());
 		this._textTitle.x = this.root.width / 2 - this._textTitle.width / 2;
 		this._textTitle.y = this.root.height / 2 / 2 - this._textTitle.height / 2;
