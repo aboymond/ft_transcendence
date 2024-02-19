@@ -122,7 +122,6 @@ export class SceneLoadingPage extends SceneBase {
 			} else {
 				this._textPoints[this._index - 1].visible = true;
 			}
-			// console.log(this._index);
 			this._textPoints[this._index].visible = false;
 			this._index++;
 		}, 800);
@@ -136,7 +135,7 @@ export class SceneLoadingPage extends SceneBase {
 		clearInterval(this._interval);
 		AudioManager.pause('loading');
 		AudioManager.reset();
-		console.log("ICI ON FINISH");
+
 	}
 
 	public onKeyDown(e: KeyboardEvent) {

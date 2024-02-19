@@ -42,14 +42,7 @@ export class SceneTournamentWinner extends SceneBase {
 		}, 1000);
 	}
 
-	public onUpdate() {
-		// if (this.root.width != document.getElementById('game_window')?.clientWidth) {
-		// 	this.root.width = document.getElementById('game_window')?.clientWidth;
-		// }
-		// if (this.root.height != document.getElementById('game_window')?.clientHeight) {
-		// 	this.root.height = document.getElementById('game_window')?.clientHeight;
-		// }
-	}
+	public onUpdate() {}
 
 	public onFinish() {
 		clearInterval(this._interval);

@@ -99,7 +99,6 @@ export class SceneGameVsBot extends SceneBase {
 			this._escapeKeyPressed = true;
 			this._exitBool = !this._exitBool;
 			this._exitMenu.visible = this._exitBool;
-			console.log('Escape ' + (this._exitBool ? 'true' : 'false'));
 		}
 	}
 

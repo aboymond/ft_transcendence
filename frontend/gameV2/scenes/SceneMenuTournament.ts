@@ -127,7 +127,6 @@ export class SceneMenuTournament extends SceneBase {
 			}
 			if (this._inputText.length > 15) return;
 			this._textInputField.text = this._inputText;
-			console.log('text: ' + this._textInputField.text + ' length: ' + this._inputText.length);
 		}
 	}
 
@@ -324,11 +323,7 @@ export class SceneMenuTournament extends SceneBase {
 	}
 
 	private _createTournament() {
-		console.log('Create tournament');
-		console.log('creator_id:', this.root.userId);
-		console.log('name:', this._inputText);
-		console.log('max_participants:', this._nb_playerForBack);
-		console.log('max_score:', this._nb_scoreForBack);
+
 		apiService
 			.createTournament(this.root.userId ?? 0, this._inputText, this._nb_playerForBack, this._nb_scoreForBack)
 			.then((response) => {

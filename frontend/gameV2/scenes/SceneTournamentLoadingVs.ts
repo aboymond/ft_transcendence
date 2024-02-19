@@ -218,7 +218,6 @@ export class SceneTournamentLoadingVs extends SceneBase {
 
 	private _initNameVs4(names: PIXI.Container) {
 		const playerNames = this._currentTournament?.participants_usernames;
-		console.log(playerNames);
 		if (playerNames && playerNames.length) {
 			for (let i = 0; i < playerNames.length; i++) {
 				const newName = new PIXI.Text(playerNames[i], {
