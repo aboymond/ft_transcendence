@@ -78,6 +78,7 @@ services:
       - nginx_log:/var/log/nginx/
       - backend_static:/app/static
       - media_volume:/app/media
+      - ./frontend/dist:/usr/share/nginx/html
     restart: unless-stopped
 
   prometheus:
