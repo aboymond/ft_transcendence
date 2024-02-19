@@ -90,7 +90,7 @@ const WebSocketHandler: React.FC<Props> = ({ children }) => {
 			return;
 		}
 
-		const socketUrl = 'ws://localhost:8000/ws/general_requests/' + user.id + '/';
+		const socketUrl = 'wss://localhost/ws/general_requests/' + user.id + '/';
 		if (!socketRef.current || socketRef.current.readyState !== WebSocket.OPEN) {
 			socketRef.current = new WebSocket(socketUrl);
 			socketRef.current.addEventListener('message', messageHandler);
