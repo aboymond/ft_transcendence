@@ -61,6 +61,7 @@ export class SceneJoin extends SceneBase {
 	}
 
 	public onKeyDown(e: KeyboardEvent) {
+
 		switch (this._state) {
 			case menuState.TOURN_MENU:
 				if (e.key === 'ArrowRight') {
@@ -149,6 +150,7 @@ export class SceneJoin extends SceneBase {
 	}
 
 	private _pressUpTournament() {
+
 		if (this._currentSelectTournament < 1) {
 			return;
 		} else this._currentSelectTournament--;

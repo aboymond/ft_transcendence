@@ -4,7 +4,8 @@ import { SceneWinOrLoose } from './SceneWinOrLoose';
 import * as PIXI from 'pixi.js';
 import { gsap } from 'gsap';
 import { defaultColor } from '../index';
-import { AudioManager } from '../AudioManager';
+import {AudioManager} from '../AudioManager';
+
 
 export class SceneGameVsBot extends SceneBase {
 	// FOR THE BACK ======================================
@@ -26,7 +27,7 @@ export class SceneGameVsBot extends SceneBase {
 	private _ball = new PIXI.Graphics();
 	private _padBot = new PIXI.Graphics();
 	private _padPlayer = new PIXI.Graphics();
-	private _scoreText = new PIXI.Text('0 - 0', { fill: defaultColor });
+	private _scoreText = new PIXI.Text('0\n- \n0', { fill: defaultColor });
 	private _keysPressed: { [key: string]: boolean } = {};
 	private _escapeKeyPressed = false;
 
@@ -274,7 +275,8 @@ export class SceneGameVsBot extends SceneBase {
 	}
 
 	private _updateScoreText() {
-		this._scoreText.text = this._data.player1_score + ' - ' + this._data.player2_score;
+
+		this._scoreText.text = this._data.player2_score + '\n - \n' + this._data.player1_score;
 		this._scoreText.x = this.root.width / 2 - this._scoreText.width / 2;
 		this._scoreText.y = this.root.height / 2 - this._scoreText.height / 2;
 		this._scoreText.alpha = 0.2;

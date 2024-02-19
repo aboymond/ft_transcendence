@@ -149,12 +149,12 @@ export class SceneLoadingPage extends SceneBase {
 		if (e.code === 'Escape') {
 			apiService
 				.leaveLoading(this._gameId)
+				.then(() => this.root.loadScene(new SceneMenu(this.root)))
 				.catch((error: ErrorResponse) => console.error('Error leaving loading', error));
 			if (this.root.gameSocket) {
 				this.root.gameSocket.close();
 				this.root.gameSocket = null;
 			}
-			this.root.loadScene(new SceneMenu(this.root));
 		}
 	}
 

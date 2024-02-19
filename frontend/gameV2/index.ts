@@ -107,6 +107,9 @@ export const textStyleMenuTournamentJoin = new PIXI.TextStyle({
 	fill: defaultColor,
 });
 
+//function for resize
+
+
 // Effects
 
 export const PixelPad = new PixelateFilter(undefined) as unknown as PIXI.Filter;
