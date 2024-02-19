@@ -245,11 +245,11 @@ class LogoutView(generics.GenericAPIView):
 
 class UserListView(generics.ListAPIView):
     queryset = User.objects.all()
-    serializer_class = UserSerializer
+    serializer_class = ListUserSerializer
 
 
 class UserUpdateView(generics.UpdateAPIView):
-    serializer_class = UserSerializer
+    serializer_class = ListUserSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self):
@@ -297,7 +297,7 @@ class UserDetailView(generics.RetrieveAPIView):
 
 
 class CurrentUserProfileView(generics.RetrieveAPIView):
-    serializer_class = UserSerializer
+    serializer_class = ListUserSerializer
     permission_classes = [IsAuthenticated]
 
     def get_object(self):
