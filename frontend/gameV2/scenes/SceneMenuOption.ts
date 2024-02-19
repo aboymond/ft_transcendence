@@ -14,6 +14,7 @@ import { SceneGameVsBot } from './SceneGameVsBot';
 import { SceneLoadingPage } from './SceneLoadingPage';
 import { apiService } from '../../src/services/apiService';
 import {AudioManager} from '../AudioManager';
+import { Tools } from '../Tools';
 
 const selectMax = 4;
 let errorLock: boolean = false;
@@ -108,19 +109,19 @@ export class SceneMenuOption extends SceneBase {
 
 		for (let i = 0; i < this._spritesPad.length; i++) {
 			container.addChild(this._spritesPad[i]);
-			this._spritesPad[i].x = this.root.width / 2 - 75;
-			this._spritesPad[i].y = this._textPad.y - 20 - 10;
+			this._spritesPad[i] = Tools.resizeSprite(this._spritesPad[i], this.root.width, 35);
+			this._spritesPad[i].x = this.root.width / 2 - this._spritesPad[i].width / 2;
+			this._spritesPad[i].y = (this.root.height * 70) / 100 - this._spritesPad[i].height / 2;
 			this._spritesPad[i].tint = 'green';
 			this._spritesPad[i].visible = false;
 		}
 		this._spritesPad[0].visible = true;
 
 		container.addChild(this._createPopError(this._popError));
-		this._popError.y = this.root.height / 2 + this._popError.height / 2;
-		this._popError.x = this.root.width / 2 + this._popError.width / 2;
 		container.addChild(this._createTextError(this._textErrorPad));
+		this._textErrorPad.y = this._popError.y - (this._popError.height * 70) / 100;
 		container.addChild(this._createTextError(this._textErrorOK));
-		this._textErrorOK.y = this._popError.y - 40;
+		this._textErrorOK.y = this._popError.y - (this._popError.height * 40) / 100;
 	}
 
 	public onUpdate() {
@@ -132,6 +133,7 @@ export class SceneMenuOption extends SceneBase {
 	}
 
 	public onKeyDown(e: KeyboardEvent) {
+		console.log("error " + errorLock);
 		if (e.code === 'ArrowUp') {
 			AudioManager.play('select');
 			if (!errorLock) this._pressUp();
@@ -168,12 +170,14 @@ export class SceneMenuOption extends SceneBase {
 	//=======================================
 
 	private _createTextColorAvatar(text: PIXI.Text) {
+		text = Tools.resizeText(text, this.root.width, 30);
 		text.y = (25 * this.root.height) / 100;
 		text.x = this.root.width / 2 - text.width / 2;
 		return text;
 	}
 
 	private _createTextPad(text: PIXI.Text) {
+		text = Tools.resizeText(text, this.root.width, 30);
 		text.y = (75 * this.root.height) / 100;
 		text.x = this.root.width / 2 - text.width / 2;
 
@@ -181,18 +185,21 @@ export class SceneMenuOption extends SceneBase {
 	}
 
 	private _createTextBotLevel(text: PIXI.Text) {
+		text = Tools.resizeText(text, this.root.width, 30);
 		text.x = this.root.width / 2 - text.width / 2;
 		text.y = this.root.height / 2 - text.height / 2 - 25;
 		return text;
 	}
 
 	private _createTextVictory(text: PIXI.Text) {
+		text = Tools.resizeText(text, this.root.width, 30);
 		text.x = this.root.width / 2 - text.width / 2;
 		text.y = this.root.height / 2 - text.height / 2 + 25;
 		return text;
 	}
 
 	private _createTextPlay(text: PIXI.Text) {
+		text = Tools.resizeText(text, this.root.width, 45);
 		text.x = this.root.width / 2 - text.width / 2;
 		text.y = this.root.height - text.height / 2 - 30;
 		return text;
@@ -201,6 +208,7 @@ export class SceneMenuOption extends SceneBase {
 	private _createPadColor(pad: PIXI.Graphics) {
 		pad.beginFill(defaultColor);
 		pad.drawRect(-50, -50, 50, 50);
+		pad = Tools.resizeGraphics(pad, this.root.width, 15);
 		pad.endFill();
 		return pad;
 	}
@@ -208,13 +216,17 @@ export class SceneMenuOption extends SceneBase {
 	private _createPopError(pop: PIXI.Graphics) {
 		pop.beginFill('green');
 		pop.drawRect(-280, -150, 280, 150);
+		pop = Tools.resizeGraphics(pop, this.root.width, 70);
+		pop.x = (this.root.width / 2) + pop.width / 2;
+		pop.y = (this.root.height * 80) / 100; 
 		pop.endFill();
 		pop.visible = false;
 		return pop;
 	}
 
 	private _createTextError(error: PIXI.Text) {
-		error.y = this._popError.y - this._popError.height + 50;
+		error = Tools.resizeText(error, this.root.width, 25);
+		// error.y = this._popError.y - this._popError.height / 2;
 		error.x = this.root.width / 2 - error.width / 2;
 		error.visible = false;
 		return error;
@@ -225,8 +237,11 @@ export class SceneMenuOption extends SceneBase {
 	//=======================================
 
 	private _createGame() {
-		if (this.root.vsPlayer) {
+		if (this._currentSelect != menu.PLAY)
+			return;
+		if (this.root.vsPlayer && this._currentPad === 0) {
 			// Send a request to the backend to create a game
+			AudioManager.play('enter');
 			apiService
 				.createGame(this.root.userId ?? 0) //TODO
 				.then((response) => {

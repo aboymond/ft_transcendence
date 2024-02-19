@@ -11,10 +11,10 @@ export  class AudioManager {
 		['enter', {path:'./sound/game-start.mp3'}],
 		['touchBall', {path:'./sound/touchBall.mp3'}],
 		['touchPad', {path:'./sound/touchPad.mp3'}],
-		['select', {path:'./sound/Select.mp3'}],
+		['select', {path:'./sound/Select.mp3', volume: 0.5}],
 		['win', {path:'./sound/Winner.mp3'}],
 		['loose', {path:'./sound/Looser.mp3'}], 
-		['loading', {path:'./sound/loadingPage.mp3', volume: 0.01}],
+		['loading', {path:'./sound/loadingPage.mp3', volume: 0.1}],
 	]);
 
 	public static play(soundKey: TSoundKey): void {

@@ -8,7 +8,6 @@ import { Tournament } from '../../src/types';
 import { Match } from '../../src/types';
 import { SceneLoadingPage } from './SceneLoadingPage';
 import {AudioManager} from '../AudioManager';
-import { SceneTournamentWinner } from './SceneTournamentWinner';
 
 
 const tournamentLine = PIXI.Texture.from('./img/tournamentLine.png');
@@ -34,6 +33,17 @@ export class SceneTournamentLoadingVs extends SceneBase {
 
 	private _winner: string = '';
 
+	//Exit menu
+	private _exitMenu = new PIXI.Container();
+	private _yesOption!: PIXI.Text;
+	private _noOption!: PIXI.Text;
+	private _exitText!: PIXI.Text;
+
+	private _exitBool = false;
+	private _exitYesNO = true;
+	private _keysPressed: { [key: string]: boolean } = {};
+	private _escapeKeyPressed = false;
+
 	constructor(
 		root: PixiManager,
 		private _tournamentId: number,
@@ -49,6 +59,8 @@ export class SceneTournamentLoadingVs extends SceneBase {
 		this._initTextStandings(this._standings);
 		container.addChild(this._standings);
 		this._initEnterText(container);
+		this._exitMenu = this._initExitMenu();
+		container.addChild(this._exitMenu);
 
 		AudioManager.play('loading');
 
@@ -91,7 +103,6 @@ export class SceneTournamentLoadingVs extends SceneBase {
 				console.log('Tournament has ended. Winner:', data.payload.data.winner_username);
 				this._winner = data.payload.data.winner_username;
 				//TODO load winner scene
-				this.root.loadScene(new SceneTournamentWinner(this.root, this._tournamentId, this._winner));
 			}
 		});
 	}
@@ -107,27 +118,56 @@ export class SceneTournamentLoadingVs extends SceneBase {
 	}
 
 	public onKeyDown(e: KeyboardEvent) {
-		if (e.code === 'Escape') {
+		if (e.code === 'Escape' && !this._escapeKeyPressed) {
 			try {
-				//TODO add a confirmation dialog
-				apiService.leaveTournament(this._tournamentId, this.root.userId!);
-				this.root.loadScene(new SceneMenu2(this.root));
+					this._escapeKeyPressed = true;
+					this._exitBool = !this._exitBool;
+					this._exitMenu.visible = this._exitBool;
+				
+
+
+
 			} catch (error) {
 				console.error('Error leaving tournament:', error);
 			}
 		}
 
 		if (e.code === 'Enter') {
-			const userMatches = this._currentMatches.filter(
-				(match) => match.player1 === this.root.userId || match.player2 === this.root.userId,
-			);
-			if (userMatches.length > 0) {
-				this._playMatch(userMatches[0]);
+			if (this._exitBool) {
+				if (this._exitYesNO) {
+					apiService.leaveTournament(this._tournamentId, this.root.userId!);
+					this.root.loadScene(new SceneMenu2(this.root));
+				} else {
+					this._exitBool = false;
+					this._exitMenu.visible = false;
+				}
+			}
+			else {
+				const userMatches = this._currentMatches.filter(
+					(match) => match.player1 === this.root.userId || match.player2 === this.root.userId,
+				);
+				if (userMatches.length > 0) {
+					this._playMatch(userMatches[0]);
+				}
 			}
 		}
-	}
 
-	public onKeyUp() {}
+		if (e.code === 'ArrowRight') {
+			this._exitYesNO = false;
+			this._noOption.style.fill = defaultColor;
+			this._yesOption.style.fill = 0x053100;
+		}
+		if (e.code ==='ArrowLeft') {
+			this._exitYesNO = true;
+			this._yesOption.style.fill = defaultColor;
+			this._noOption.style.fill = 0x053100;
+		}
+	}
+	public onKeyUp(e: KeyboardEvent) {
+		if (e.code === 'Escape') {
+			this._escapeKeyPressed = false;
+		}
+	}
 
 	//=======================================
 	// UTILS INIT
@@ -275,5 +315,38 @@ export class SceneTournamentLoadingVs extends SceneBase {
 		text.x = (this.root.width * 10) / 100;
 		text.y = (this.root.height * 80) / 100 + match.match_order * 20;
 		return text;
+	}
+
+	private _initExitMenu(): PIXI.Container {
+		const menu = new PIXI.Container();
+
+		const background = new PIXI.Graphics();
+		background.beginFill('green');
+		background.drawRect(-280, -150, 280, 150);
+		background.endFill();
+		background.zIndex = 10
+		background.visible = true;
+		background.x = this.root.width / 2 + background.width / 2;
+		background.y = this.root.height / 2 + background.height / 2;
+		menu.addChild(background);
+
+		this._exitText = new PIXI.Text('Exit ?', { fill: defaultColor });
+		this._exitText.x = background.x - background.width / 2 - this._exitText.width / 2;
+		this._exitText.y = background.y - 125;
+		menu.addChild(this._exitText);
+
+		this._yesOption = new PIXI.Text('Yes', { fill: defaultColor });
+		this._yesOption.x = background.x - (background.width / 2 + this._yesOption.width / 2) - 50;
+		this._yesOption.y = background.y - 50;
+		menu.addChild(this._yesOption);
+
+		this._noOption = new PIXI.Text('No', { fill: 0x053100 });
+		this._noOption.x = background.x - (background.width / 2 + this._noOption.width / 2) + 50;
+		this._noOption.y = background.y - 50;
+		menu.addChild(this._noOption);
+
+		menu.visible = false;
+
+		return menu;
 	}
 }

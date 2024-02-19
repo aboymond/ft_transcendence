@@ -2,6 +2,7 @@ import * as PIXI from 'pixi.js';
 import { SceneBase } from './SceneBase';
 import { SceneMenu2 } from './SceneMenu2';
 import { textStyleDefaultMenu1, textStyleTitleMenu1 } from '../index';
+import { Tools } from '../Tools';
 import {AudioManager} from '../AudioManager';
 import { SceneTournamentLoadingVs } from './SceneTournamentLoadingVs';
 import { apiService } from '../../src/services/apiService';
@@ -33,21 +34,8 @@ export class SceneMenu extends SceneBase {
 			this.root.loadScene(new SceneMenu2(this.root));
 		}
 
-		// //Init Title text
-		// this._textTitle.eventMode = 'dynamic';
-		// this._textTitle.cursor = 'pointer';
-		// this._textTitle.on('pointerdown', () => {
-		// 	this.root.playSound('enter');
-		// 	this.root.loadScene(new SceneMenu2(this.root));
-		// });
-
-		container.addChild(this._initTextTitle());
-		this._textTitle.x = this.root.width / 2 - this._textTitle.width / 2;
-		this._textTitle.y = this.root.height / 2 / 2 - this._textTitle.height / 2;
-
-		container.addChild(this._initTextSpace());
-		this._spaceText.x = this.root.width / 2 - this._spaceText.width / 2;
-		this._spaceText.y = this.root.height - 100 - this._spaceText.height / 2;
+		container.addChild(this._initTextTitle(this._textTitle));
+		container.addChild(this._initTextSpace(this._spaceText));
 
 		this._interval = window.setInterval(() => {
 			if (this._spaceText) {
@@ -61,7 +49,6 @@ export class SceneMenu extends SceneBase {
 	public onFinish() {
 		clearInterval(this._interval);
 		AudioManager.reset();
-		// this.root.removeSound('loading');
 	}
 
 	public onKeyDown(e: KeyboardEvent) {
@@ -73,11 +60,25 @@ export class SceneMenu extends SceneBase {
 
 	public onKeyUp() {}
 
-	private _initTextTitle() {
-		return this._textTitle;
+	private _initTextTitle(title: PIXI.Text) {	
+		title = Tools.resizeText(title, this.root.width, 80);
+		
+		const anchorX = title.width / 2;
+		const anchorY = title.height / 2;
+		
+		title.x = (this.root.width) / 2 - anchorX;
+		title.y = ((this.root.height - anchorY) * 25) / 100;
+		return title;
 	}
 
-	private _initTextSpace() {
-		return this._spaceText;
+	private _initTextSpace(title: PIXI.Text) {
+		title = Tools.resizeText(title, this.root.width, 20);
+
+		const anchorX = title.width / 2;
+		const anchorY = title.height / 2;
+		
+		title.x = (this.root.width) / 2 - anchorX;
+		title.y = ((this.root.height - anchorY) * 80) / 100;
+		return title;
 	}
 }
