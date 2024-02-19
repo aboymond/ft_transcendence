@@ -34,16 +34,23 @@ const PotentialFriends: React.FC<PotentialFriendsProps> = ({ friends, onSelectFr
 
 	const handleAddFriend = async (username: string, event: React.MouseEvent) => {
 		event.stopPropagation();
+
 		const userToSelect = users.find(user => user.username === username);
 		if (userToSelect) {
 			onSelectFriend(userToSelect);
 		}
+         const friendrequests = await apiService.getFriendRequests();
+        const isRequestPending = friendrequests.some(request => request.receiver.username === username);
+        if (isRequestPending) {
+            console.log('Friend request is already pending');
+            return;
+        }
 		try {
 			await apiService.sendFriendRequest(username);
 			setUsers(prevUsers => prevUsers.filter(user => user.username !== username));
 		} catch (error) {
 			console.error('Failed to send friend request:', error);
-		}
+        }
 	};
 
     const isUserAFriend = (username: string) => {
@@ -69,6 +76,7 @@ const PotentialFriends: React.FC<PotentialFriendsProps> = ({ friends, onSelectFr
                         {user.username}
                     </p>
                     {!isUserAFriend(user.username) && (
+                        
                         <button className={styles.load} onClick={(e) => handleAddFriend(user.username, e)}>+</button>
                     )}
                 </div>
