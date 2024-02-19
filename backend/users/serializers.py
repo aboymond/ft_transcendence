@@ -5,8 +5,10 @@ from django.db.models import Q
 from .models import GameHistory
 from django.contrib.auth.models import AnonymousUser
 from .models import Friendship, TournamentHistory
+from .serializers import ListUserSerializer
 
 User = get_user_model()
+
 
 class GameHistorySerializer(serializers.ModelSerializer):
     players = serializers.SerializerMethodField()
@@ -65,7 +67,7 @@ class UserSerializer(serializers.ModelSerializer):
             "friendship_id",
             "tournament_history_played",
             "twofa",
-            "otp", 
+            "otp",
             "otp_expiry_time",
         )
         extra_kwargs = {
@@ -88,9 +90,7 @@ class UserSerializer(serializers.ModelSerializer):
         instance.display_name = validated_data.get(
             "display_name", instance.display_name
         )
-        instance.username = validated_data.get(
-            "username", instance.username
-        )
+        instance.username = validated_data.get("username", instance.username)
         # Update password if it's in the validated data and not empty
         password = validated_data.get("password")
         if password:
@@ -119,8 +119,8 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class FriendshipSerializer(serializers.ModelSerializer):
-    requester = UserSerializer(read_only=True)
-    receiver = UserSerializer()
+    requester = ListUserSerializer(read_only=True)
+    receiver = ListUserSerializer(read_only=True)
 
     class Meta:
         model = Friendship
@@ -142,3 +142,17 @@ class AvatarSerializer(serializers.ModelSerializer):
         instance.avatar = validated_data.get("avatar", instance.avatar)
         instance.save()
         return instance
+
+
+class ListUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id", "username", "display_name", "avatar"]
+        read_only_fields = [
+            "id",
+            "username",
+            "display_name",
+            "wins",
+            "losses",
+            "avatar",
+        ]

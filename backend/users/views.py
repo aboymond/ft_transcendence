@@ -27,6 +27,7 @@ from .serializers import FriendshipSerializer
 from .models import GameHistory, Friendship
 from .serializers import GameHistorySerializer
 from .serializers import AvatarSerializer
+from .serializers import ListUserSerializer
 from django.core.mail import send_mail
 
 User = get_user_model()
@@ -280,7 +281,7 @@ class UserGameHistoryView(generics.ListAPIView):
 
 class UserDetailView(generics.RetrieveAPIView):
     queryset = User.objects.all()
-    serializer_class = UserSerializer
+    serializer_class = ListUserSerializer
     lookup_field = "id"
 
     def get(self, request, *args, **kwargs):
@@ -405,7 +406,7 @@ class AcceptFriendRequestView(generics.UpdateAPIView):
 
 
 class ListFriendsView(generics.ListAPIView):
-    serializer_class = UserSerializer
+    serializer_class = ListUserSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
