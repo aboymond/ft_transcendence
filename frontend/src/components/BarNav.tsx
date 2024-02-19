@@ -17,6 +17,7 @@ const BarNav: React.FC = () => {
 	const handleTwoFAToggle = () => setShowTwoFA(!showTwoFA);
 
 	useEffect(() => {
+		console.log('auth.user:', auth.user?.avatar);
 		setAvatarUrl(auth.user?.avatar || '');
 	}, [auth.user]);
 
