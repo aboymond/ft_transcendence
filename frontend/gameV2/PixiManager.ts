@@ -143,7 +143,8 @@ export class PixiManager {
 	}
 
 	public openGameSocket(gameId: number) {
-		const gameSocketUrl = `wss://localhost/ws/game/${gameId}/`;
+		const hostname = process.env.HOSTNAME || '10.13.5.5';
+		const gameSocketUrl = `wss://${hostname}/ws/game/${gameId}/`;
 		this.gameSocket = new WebSocket(gameSocketUrl);
 		let lastUpdateTime = 0;
 		let pingSum = 0;

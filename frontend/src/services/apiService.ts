@@ -4,7 +4,8 @@ interface ErrorResponse {
 	error?: string;
 	detail?: string;
 }
-const API_BASE_URL = 'http://localhost:8000/api'; // Update with your actual backend URL
+
+const API_BASE_URL = '/api'; // Update with your actual backend URL
 
 function getHeaders(includeToken = true): HeadersInit {
 	const token = includeToken ? localStorage.getItem('token') : null;
