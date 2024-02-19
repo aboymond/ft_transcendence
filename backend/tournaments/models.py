@@ -14,7 +14,7 @@ class Tournament(ExportModelOperationsMixin("Tournament"), models.Model):
         ("completed", "Completed"),
     ]
 
-    name = models.CharField(max_length=15, default="Tournament")
+    name = models.CharField(max_length=10, default="Tournament")
     creator = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         related_name="tournaments_created",
