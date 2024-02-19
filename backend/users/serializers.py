@@ -120,6 +120,9 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class ListUserSerializer(serializers.ModelSerializer):
+    match_history = GameHistorySerializer(many=True, read_only=True)
+    tournament_history_played = TournamentHistorySerializer(many=True, read_only=True)
+
     class Meta:
         model = User
         fields = [
@@ -131,6 +134,8 @@ class ListUserSerializer(serializers.ModelSerializer):
             "tournament_wins",
             "avatar",
             "status",
+            "match_history",
+            "tournament_history_played",
         ]
         read_only_fields = [
             "id",
