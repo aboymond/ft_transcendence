@@ -123,11 +123,12 @@ export class SceneMenuTournament extends SceneBase {
 		if (this._currentSelectCreate === menu.NAME) {
 			if (e.key === 'Backspace') {
 				this._inputText = this._inputText.slice(0, -1);
-			} else if (e.key.length === 1 && this._inputText.length < 15) {
+			} else if (e.key.length === 1 && this._inputText.length < 10) {
 				this._inputText += e.key;
 			}
 			if (this._inputText.length > 15) return;
 			this._textInputField.text = this._inputText;
+			console.log('text: ' + this._textInputField.text + ' length: ' + this._inputText.length);
 		}
 	}
 
@@ -160,7 +161,7 @@ export class SceneMenuTournament extends SceneBase {
 	private _initTextCreate(text: PIXI.Text) {
 		text.x = (this.root.width * 10) / 100;
 		text.y = (this.root.height * 5) / 100;
-		text.style.fontSize = (this.root.width * 5) / 100;
+		text = Tools.resizeText(text, this.root.width, 45);
 		text.style.fill = defaultColor;
 		return text;
 	}

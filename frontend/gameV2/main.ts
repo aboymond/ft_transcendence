@@ -14,7 +14,7 @@ export function launchGame(ws: WebSocket | null, userId: number | null) {
 		},
 		active: function () {
 			const pixiMan = new PixiManager({}, ws, userId);
-			pixiMan.loadScene(new SceneMenuOption(pixiMan));
+			pixiMan.loadScene(new SceneMenuTournament(pixiMan));
 		},
 	});
 }
