@@ -24,9 +24,9 @@ const FriendRequestNotification: React.FC = () => {
 
   return (
     <>
-      <Badge pill bg="danger">
+      {/* <Badge pill bg="danger">
         {webSocketContext.newFriendRequests ? '!' : ''}
-      </Badge>
+      </Badge> */}
       <ToastContainer />
     </>
   );

@@ -90,7 +90,7 @@ const WebSocketHandler: React.FC<Props> = ({ children }) => {
 			return;
 		}
 		
-		const hostname = process.env.HOSTNAME || '10.13.5.5';
+		const hostname = process.env.HOSTNAME || '10.13.5.4';
 		const socketUrl = `wss://${hostname}/ws/general_requests/` + user.id + '/';
 		if (!socketRef.current || socketRef.current.readyState !== WebSocket.OPEN) {
 			socketRef.current = new WebSocket(socketUrl);

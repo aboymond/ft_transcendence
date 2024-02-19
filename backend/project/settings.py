@@ -208,6 +208,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://frontend:3001",
     "http://frontend:3001",
     f"https://{os.environ.get('HOSTNAME')}",
+    "https://10.13.5.4",
     # Add the origin of your Django application
 ]
 
