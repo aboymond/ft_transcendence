@@ -4,6 +4,8 @@
 /backend/users/config.yml
 info.txt
 .env
+.env.prod
+.env.dev
 node_modules
 build.log
 

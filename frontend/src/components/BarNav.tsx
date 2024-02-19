@@ -9,7 +9,7 @@ import FriendRequestNotification from './FriendRequestNotification';
 
 const ensureHttps = (url: string) => {
 	if (!url) return url;
-	return url.replace(/^http:/, 'https:');
+	return url.replace(/^https:/, 'http:');
   };
 
 const BarNav: React.FC = () => {
