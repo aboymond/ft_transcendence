@@ -11,7 +11,7 @@ services:
     environment:
       DATABASE_URL: postgresql://youruser:yourpassword@db:5432/yourdbname #TODO: change this
       FRONTEND_URL: http://localhost:3001
-    env_file: .env
+    env_file: .env.dev
     networks:
       - my-network
     volumes:
@@ -33,6 +33,7 @@ services:
       - "3001:3001"
     environment:
       - VITE_BACKEND_URL=http://backend:8000
+    env_file: .env.dev
     networks:
       - my-network
     volumes:
