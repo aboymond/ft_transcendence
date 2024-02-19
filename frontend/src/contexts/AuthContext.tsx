@@ -3,6 +3,11 @@ import apiService from '../services/apiService';
 import { User } from '../types';
 import { jwtDecode } from 'jwt-decode';
 
+const ensureHttps = (url: string) => {
+	if (!url) return url;
+	return url.replace(/^http:/, 'https:');
+  };
+
 interface AuthContextType {
 	token: string | null;
 	isAuthenticated: boolean;
@@ -56,6 +61,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 		setTwoFa(newTwoFa);
 		setToken(newToken);
 		setIsAuthenticated(true);
+		newUser.avatar = ensureHttps(newUser.avatar || '');
 		setUser(newUser);
 	};
 
@@ -79,6 +85,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 	};
 
 	const updateUser = (updatedUser: User) => {
+		updatedUser.avatar = ensureHttps(updatedUser.avatar || '');
 		setUser(updatedUser);
 	};
 

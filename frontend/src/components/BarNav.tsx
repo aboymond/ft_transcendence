@@ -7,6 +7,11 @@ import Friends from './Friends';
 import styles from '../styles/BarNav.module.css';
 import FriendRequestNotification from './FriendRequestNotification';
 
+const ensureHttps = (url: string) => {
+	if (!url) return url;
+	return url.replace(/^http:/, 'https:');
+  };
+
 const BarNav: React.FC = () => {
 	const auth = useAuth();
 	const [show, setShow] = useState(false);
@@ -17,8 +22,7 @@ const BarNav: React.FC = () => {
 	const handleTwoFAToggle = () => setShowTwoFA(!showTwoFA);
 
 	useEffect(() => {
-		console.log('auth.user:', auth.user?.avatar);
-		setAvatarUrl(auth.user?.avatar || '');
+		setAvatarUrl(ensureHttps(auth.user?.avatar || ''));
 	}, [auth.user]);
 
 	return (
