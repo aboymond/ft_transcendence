@@ -26,6 +26,8 @@ class GameHistorySerializer(serializers.ModelSerializer):
         ]
 
     def get_winner(self, obj):
+        if obj.winner is None:
+            return None
         return {"id": obj.winner.id, "username": obj.winner.username}
 
     def get_player1_score(self, obj):
