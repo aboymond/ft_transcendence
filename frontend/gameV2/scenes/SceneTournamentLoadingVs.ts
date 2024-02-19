@@ -8,6 +8,7 @@ import { Tournament } from '../../src/types';
 import { Match } from '../../src/types';
 import { SceneLoadingPage } from './SceneLoadingPage';
 import {AudioManager} from '../AudioManager';
+import { Tools } from '../Tools';
 
 
 const tournamentLine = PIXI.Texture.from('./img/tournamentLine.png');
@@ -56,44 +57,46 @@ export class SceneTournamentLoadingVs extends SceneBase {
 	//=======================================
 
 	public async onStart(container: PIXI.Container) {
-		this._exitMenu = this._initExitMenu();
-		container.addChild(this._exitMenu);
+		
 		this._initTextStandings(this._standings);
 		container.addChild(this._standings);
 		this._initEnterText(container);
-
+		this._exitMenu = this._initExitMenu();
+		container.addChild(this._exitMenu);
+		
 		AudioManager.play('loading');
-
+		
 		// Fetch the current tournament state
 		const currentTournament = await apiService.getTournament(this._tournamentId);
 		if (currentTournament) {
 			this._currentTournament = currentTournament;
-			this._setupTournamentDisplay(container); // Setup initial display based on current tournament state
+			container.addChild(this._setupTournamentDisplay(this._containerSprite)); // Setup initial display based on current tournament state
 		}
-
+		
 		//TODO use websocket to update the display
 		// Periodic check to update the display
 		this._checkInterval = window.setInterval(async () => {
-			const updatedTournament = await apiService.getTournament(this._tournamentId);
-			if (updatedTournament) {
-				this._currentTournament = updatedTournament;
-				this._setupTournamentDisplay(container); // Update display based on new tournament state
-			}
-
-			const currentMatches = await apiService.getMatches(this._tournamentId);
-			console.log('matches', currentMatches);
-			currentMatches.sort((a: Match, b: Match) => a.match_order - b.match_order); // Sort matches by order
-
-			// Determine the last round number and filter matches for the last round
-			const lastRoundNumber = Math.max(...currentMatches.map((match: Match) => match.round_number));
-			const lastRoundMatches = currentMatches.filter(
-				(match: Match) => match.round_number === lastRoundNumber,
-			);
-
-			if (JSON.stringify(lastRoundMatches) !== JSON.stringify(this._currentMatches)) {
-				this._currentMatches = lastRoundMatches;
-				this._setupMatchDisplay(container, lastRoundMatches); // Update display based on new matches
-			}
+				const updatedTournament = await apiService.getTournament(this._tournamentId);
+				if (updatedTournament) {
+					this._currentTournament = updatedTournament;
+					this._setupTournamentDisplay(container); // Update display based on new tournament state
+				}
+	
+				const currentMatches = await apiService.getMatches(this._tournamentId);
+				console.log('matches', currentMatches);
+				currentMatches.sort((a: Match, b: Match) => a.match_order - b.match_order); // Sort matches by order
+	
+				// Determine the last round number and filter matches for the last round
+				const lastRoundNumber = Math.max(...currentMatches.map((match: Match) => match.round_number));
+				const lastRoundMatches = currentMatches.filter(
+					(match: Match) => match.round_number === lastRoundNumber,
+				);
+	
+				if (JSON.stringify(lastRoundMatches) !== JSON.stringify(this._currentMatches)) {
+					this._currentMatches = lastRoundMatches;
+					this._setupMatchDisplay(container, lastRoundMatches); // Update display based on new matches
+				}
+			
 		}, 1000);
 
 		// Add WebSocket message event listener for tournament end notification
@@ -104,6 +107,7 @@ export class SceneTournamentLoadingVs extends SceneBase {
 				this._winner = data.payload.data.winner_username;
 				//TODO load winner scene
 			}
+
 		});
 	}
 
@@ -127,13 +131,10 @@ export class SceneTournamentLoadingVs extends SceneBase {
 		if (e.code === 'Enter') {
 			if (this._exitBool) {
 				if (this._exitYesNO) {
-					try {
-						apiService.leaveTournament(this._tournamentId, this.root.userId!);
-						this.root.loadScene(new SceneMenu2(this.root));
-					}
-					catch (error) {
-						console.error('Error leaving tournament:', error);
-					}
+					apiService
+					.leaveTournament(this._tournamentId, this.root.userId!)
+					.then(() => this.root.loadScene(new SceneMenu2(this.root)));
+				
 				} else {
 					this._exitBool = false;
 					this._exitMenu.visible = false;
@@ -254,7 +255,6 @@ export class SceneTournamentLoadingVs extends SceneBase {
 		if (this._currentTournament?.max_participants === 4) {
 			this._initLineTournament4(this._containerSprite);
 		} 
-		this._containerSprite.zIndex = -1;
 		container.addChild(this._containerSprite);
 
 		// Setup player names
@@ -264,6 +264,7 @@ export class SceneTournamentLoadingVs extends SceneBase {
 			}
 			container.addChild(this._containerNames);
 		}
+		return container;
 	}
 
 	private _setupMatchDisplay(container: PIXI.Container, matches: Match[]) {
@@ -279,6 +280,8 @@ export class SceneTournamentLoadingVs extends SceneBase {
 			const matchDisplay = this.createMatchDisplayElement(match);
 			this._containerMatches.addChild(matchDisplay);
 		});
+
+		container.zIndex = -1;
 
 		container.addChild(this._containerMatches);
 	}
@@ -318,31 +321,37 @@ export class SceneTournamentLoadingVs extends SceneBase {
 	private _initExitMenu(): PIXI.Container {
 		const menu = new PIXI.Container();
 
-		const background = new PIXI.Graphics();
+		let background = new PIXI.Graphics();
 		background.beginFill('green');
 		background.drawRect(-280, -150, 280, 150);
+		background = Tools.resizeGraphics(background, this.root.width, 50);
 		background.endFill();
 		background.visible = true;
 		background.x = this.root.width / 2 + background.width / 2;
-		background.y = this.root.height / 2 + background.height / 2;
+		background.y = (this.root.height * 95) / 100;
 		menu.addChild(background);
 
 		this._exitText = new PIXI.Text('Exit ?', { fill: defaultColor });
+		this._exitText = Tools.resizeText(this._exitText, this.root.width, 40);
 		this._exitText.x = background.x - background.width / 2 - this._exitText.width / 2;
-		this._exitText.y = background.y - 125;
+		this._exitText.y = background.y - (background.height * 80) / 100;
 		menu.addChild(this._exitText);
 
 		this._yesOption = new PIXI.Text('Yes', { fill: defaultColor });
-		this._yesOption.x = background.x - (background.width / 2 + this._yesOption.width / 2) - 50;
-		this._yesOption.y = background.y - 50;
+		this._yesOption = Tools.resizeText(this._yesOption, this.root.width, 35);
+		this._yesOption.x = background.x - (background.width * 80) / 100 - this._yesOption.width / 2;
+		this._yesOption.y = background.y - (background.height * 35) / 100;
 		menu.addChild(this._yesOption);
 
 		this._noOption = new PIXI.Text('No', { fill: 0x053100 });
-		this._noOption.x = background.x - (background.width / 2 + this._noOption.width / 2) + 50;
-		this._noOption.y = background.y - 50;
+		this._noOption = Tools.resizeText(this._noOption, this.root.width, 35);
+		this._noOption.x = background.x - (background.width * 20) / 100 - (this._noOption.width / 2);
+		this._noOption.y = background.y - (background.height * 35) / 100;
 		menu.addChild(this._noOption);
 
 		menu.visible = false;
+
+		menu.zIndex = 10;
 
 		return menu;
 	}
