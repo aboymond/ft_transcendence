@@ -9,7 +9,6 @@ services:
       - "8000:8000"
     environment:
       DATABASE_URL: postgresql://youruser:yourpassword@db:5432/yourdbname #TODO: change this
-      # FRONTEND_URL: http://localhost
       DJANGO_DEBUG: "True"
     env_file: .env
     networks:
@@ -32,7 +31,11 @@ services:
       - "8080:80"
     environment:
       - VITE_BACKEND_URL=http://backend:8000
+<<<<<<< HEAD
       - VITE_HOSTNAME=10.13.5.5
+=======
+      - HOSTNAME=10.13.5.4
+>>>>>>> master
     networks:
       - my-network
     volumes:

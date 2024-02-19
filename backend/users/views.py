@@ -140,17 +140,16 @@ class AuthView(generics.GenericAPIView):
     def get(self, request, *args, **kwargs):
         print("AUTH - GET")
         authorization_url = "https://api.intra.42.fr/oauth/authorize?client_id={}&redirect_uri={}&response_type=code".format(
-            os.getenv("CLIENT"), "http://localhost:8000/api/users/auth/callback"
+            os.getenv("CLIENT"), f"https://{os.getenv('HOSTNAME')}/api/users/auth/callback"
         )
         return redirect(authorization_url)
-
 
 class CallBackView(APIView):
     def get(self, request, *args, **kwargs):
         token_url = "https://api.intra.42.fr/oauth/token"
         client_id = os.getenv("CLIENT")
         client_secret = os.getenv("SECRET")
-        redirect_uri = "http://localhost:8000/api/users/auth/callback"
+        redirect_uri = f"https://{os.getenv('HOSTNAME')}/api/users/auth/callback"
         code = request.GET.get("code")
 
         # Fetch access token
@@ -207,15 +206,16 @@ class CallBackView(APIView):
         if new_user.twofa is True:
             send_otp(new_user)
             redirect_url = (
-                os.environ.get("FRONTEND_URL", "http://localhost:3001")
+                f"/https://{os.getenv('HOSTNAME')}"
                 + "/verify-2fa?username="
                 + username
             )
             return redirect(redirect_url)
         else:
             refresh = RefreshToken.for_user(new_user)
+            print(refresh.access_token)
             redirect_url = (
-                os.environ.get("FRONTEND_URL", "http://localhost:3001")
+                f"https://{os.getenv('HOSTNAME')}"
                 + "?access_token="
                 + str(refresh.access_token)
                 + "&user_id="
