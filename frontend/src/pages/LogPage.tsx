@@ -41,7 +41,8 @@ const LogPage: React.FC = () => {
 	}, [auth, navigate]);
 
 	const handleApiLogin = async () => {
-		window.location.href = 'http://localhost:8000/api/users/auth';
+		const hostname = process.env.HOSTNAME || '10.13.5.4';
+		window.location.href = `https://${hostname}/api/users/auth`;
 	};
 
 	return (
