@@ -1,11 +1,11 @@
-import { defaultColor} from '..';
+import { defaultColor } from '..';
 import { SceneBase } from './SceneBase';
 import { SceneMenu } from './SceneMenu';
 import * as PIXI from 'pixi.js';
 import { PixiManager } from '../PixiManager';
 import { ErrorResponse } from 'react-router-dom';
 import { apiService } from '../../src/services/apiService';
-import {AudioManager} from '../AudioManager';
+import { AudioManager } from '../AudioManager';
 
 const keyExplanation = PIXI.Texture.from('./img/keyExplanation.png');
 
@@ -135,7 +135,6 @@ export class SceneLoadingPage extends SceneBase {
 		clearInterval(this._interval);
 		AudioManager.pause('loading');
 		AudioManager.reset();
-
 	}
 
 	public onKeyDown(e: KeyboardEvent) {

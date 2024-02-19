@@ -4,7 +4,8 @@ interface ErrorResponse {
 	error?: string;
 	detail?: string;
 }
-const API_BASE_URL = 'http://localhost:8000/api'; // Update with your actual backend URL
+
+const API_BASE_URL = '/api'; // Update with your actual backend URL
 
 function getHeaders(includeToken = true): HeadersInit {
 	const token = includeToken ? localStorage.getItem('token') : null;
@@ -25,6 +26,7 @@ async function fetchAPI(endpoint: string, options: RequestInit = {}, includeToke
 	const response = await fetch(`${API_BASE_URL}/${endpoint}`, {
 		...options,
 		headers: headers,
+		mode: 'cors',
 	});
 	if (response.status === 401) {
 		localStorage.removeItem('token');
@@ -86,16 +88,18 @@ export const apiService = {
 		}
 	},
 
-	twoFAEnabling: async (twofa:boolean) => {
+	twoFAEnabling: async (twofa: boolean) => {
 		return fetchAPI('users/twofa/', {
-			method : 'POST',
-			body: JSON.stringify({twofa})});
+			method: 'POST',
+			body: JSON.stringify({ twofa }),
+		});
 	},
 
-	verifyOtp: async (username: string, otp:string) => {
+	verifyOtp: async (username: string, otp: string) => {
 		return fetchAPI('users/verify-2fa/', {
-			method : 'POST',
-			body: JSON.stringify({username, otp})});
+			method: 'POST',
+			body: JSON.stringify({ username, otp }),
+		});
 	},
 
 	getUserById: async (userId: string): Promise<User> => {
@@ -104,7 +108,7 @@ export const apiService = {
 	getUsers(): Promise<User[]> {
 		return fetchAPI('users/list/');
 	},
-	
+
 	getUserProfile: async () => {
 		return fetchAPI('users/profile/'); // Endpoint for fetching the current user's profile
 	},

@@ -3,11 +3,8 @@ import { SceneMenu } from './SceneMenu';
 import { SceneWinOrLoose } from './SceneWinOrLoose';
 import * as PIXI from 'pixi.js';
 import { gsap } from 'gsap';
-import {
-	defaultColor,
-} from '../index';
+import { defaultColor } from '../index';
 import {AudioManager} from '../AudioManager';
-import { Tools } from '../Tools';
 
 
 export class SceneGameVsBot extends SceneBase {

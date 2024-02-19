@@ -108,7 +108,7 @@ export class SceneMenuTournament extends SceneBase {
 		}
 		if (e.code === 'Enter') {
 			if (this._currentSelectCreate === menu.PLAY) {
-				AudioManager.play('enter');	
+				AudioManager.play('enter');
 				this._inputText = this._inputText.trim();
 				if (this._inputText === '') alert('Please enter a name for the tournament');
 				else this._createTournament();
@@ -323,7 +323,6 @@ export class SceneMenuTournament extends SceneBase {
 	}
 
 	private _createTournament() {
-
 		apiService
 			.createTournament(this.root.userId ?? 0, this._inputText, this._nb_playerForBack, this._nb_scoreForBack)
 			.then((response) => {

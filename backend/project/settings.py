@@ -25,12 +25,21 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-vql&r!gfbg(jca6&+=__qm61((z9m#st28)3_af^cq09jl@1t3"
+
+secret_key = "SECRET_KEY"
+
+SECRET_KEY = os.environ.get(secret_key, "Variable not found")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DJANGO_DEBUG", "") != "False"
 
-ALLOWED_HOSTS = ["localhost", "nginx", "frontend", "backend"]
+ALLOWED_HOSTS = [
+    "localhost",
+    "nginx",
+    "frontend",
+    "backend",
+    os.environ.get("HOSTNAME"),
+]
 
 # Application definition
 
@@ -55,6 +64,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "middleware.middleware.InvalidRequestLoggerMiddleware",
     "django_prometheus.middleware.PrometheusBeforeMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
@@ -67,8 +77,6 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "middleware.middleware.PrometheusMonitoringMiddleware",
     "middleware.middleware.PageViewMiddleware",
-    # "users.middleware.PrometheusMonitoringMiddleware",
-    # "users.middleware.PageViewMiddleware",
     "django_prometheus.middleware.PrometheusAfterMiddleware",
 ]
 
@@ -109,14 +117,13 @@ CHANNEL_LAYERS = {
 DATABASES = {
     "default": {
         "ENGINE": "django_prometheus.db.backends.postgresql",
-        "NAME": "dbname",
-        "USER": "user",
-        "PASSWORD": "password",
-        "HOST": "db",  # Or the appropriate host for your setup
-        "PORT": "5432",  # The default port for PostgreSQL
+        "NAME": os.environ.get("DB_NAME", "default_dbname"),
+        "USER": os.environ.get("DB_USER", "default_dbname"),
+        "PASSWORD": os.environ.get("DB_PASSWORD", "default_dbname"),
+        "HOST": os.environ.get("DB_HOST", "default_dbname"),
+        "PORT": os.environ.get("DB_PORT", "default_dbname"),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -200,6 +207,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3001",
     "http://frontend:3001",
     "http://frontend:3001",
+    f"https://{os.environ.get('HOSTNAME')}",
     # Add the origin of your Django application
 ]
 
@@ -212,14 +220,15 @@ LOGGING = {
             "class": "logging.StreamHandler",
             "level": "DEBUG",
         },
-    },
-    "root": {
-        "handlers": ["console"],
-        "level": "INFO",
+        "file": {
+            "level": "DEBUG",
+            "class": "logging.FileHandler",
+            "filename": "django_requests.log",
+        },
     },
     "loggers": {
-        "": {  # This configures the root logger to capture all logs of DEBUG level and above
-            "handlers": ["console"],
+        "django.request": {
+            "handlers": ["console", "file"],
             "level": "DEBUG",
             "propagate": True,
         },
@@ -233,3 +242,12 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.getenv("EMAIL_H_U")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_H_P")
 PROMETHEUS_METRIC_NAMESPACE = "transcendence"
+
+# # Ensure CSRF cookie is secure
+# CSRF_COOKIE_SECURE = True
+
+# # Ensure session cookie is secure
+# SESSION_COOKIE_SECURE = True
+
+# Use secure proxy header to tell Django about the original protocol (HTTP or HTTPS)
+# SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")

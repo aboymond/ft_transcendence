@@ -37,8 +37,6 @@ export class PixiManager {
 	public rpsText: PIXI.Text;
 	public currentTournament: Tournament | null = null;
 
-
-
 	private _currentScene?: SceneBase = undefined;
 	private _app: PIXI.Application;
 	private UpdateInterval: number = 500;
@@ -145,7 +143,8 @@ export class PixiManager {
 	}
 
 	public openGameSocket(gameId: number) {
-		const gameSocketUrl = `ws://localhost:8000/ws/game/${gameId}/`;
+		const hostname = process.env.HOSTNAME || '10.13.5.5';
+		const gameSocketUrl = `wss://${hostname}/ws/game/${gameId}/`;
 		this.gameSocket = new WebSocket(gameSocketUrl);
 		let lastUpdateTime = 0;
 		let pingSum = 0;
@@ -162,7 +161,6 @@ export class PixiManager {
 			const { action, data } = message; // Directly destructure action and data
 			switch (action) {
 				case 'start_game':
-					console.log('Starting SceneGame');
 					this.loadScene(new SceneGame(this, gameId));
 					break;
 				case 'game_state_update':
@@ -226,5 +224,4 @@ export class PixiManager {
 			}
 		});
 	}
-
 }

@@ -2,24 +2,20 @@ import * as PIXI from 'pixi.js';
 import { SceneBase } from './SceneBase';
 import { SceneMenu } from './SceneMenu';
 import { defaultColor, textStyleTitleMenu1 } from '../index';
-import {AudioManager} from '../AudioManager';
+import { AudioManager } from '../AudioManager';
 import { PixiManager } from '../PixiManager';
 import { Tools } from '../Tools';
-import $ from 'jquery';
-
 
 export class SceneTournamentWinner extends SceneBase {
-	
-	
 	private _textTitle = new PIXI.Text('WINS', textStyleTitleMenu1);
 	private _nameText = new PIXI.Text('');
 	private _crownSprite = PIXI.Texture.from('./img/crown.png');
 	private _interval = 0;
-	
+
 	constructor(
 		public root: PixiManager,
 		private _gameId: number,
-		private _playerName: string
+		private _playerName: string,
 	) {
 		super(root);
 	}
@@ -27,7 +23,7 @@ export class SceneTournamentWinner extends SceneBase {
 	public async onStart(container: PIXI.Container) {
 		AudioManager.play('win');
 		this._nameText.text = this._playerName;
-		console.log("ID: " + this._gameId + " Player: " + this._nameText.text);
+		console.log('ID: ' + this._gameId + ' Player: ' + this._nameText.text);
 		container.addChild(this._initTextTitle());
 		container.addChild(this._initTextName());
 		container.addChild(this._initCrown());
@@ -50,7 +46,7 @@ export class SceneTournamentWinner extends SceneBase {
 	}
 
 	public onKeyDown(e: KeyboardEvent) {
-		if (e.code === 'enter') {
+		if (e.code === 'Enter') {
 			this.root.loadScene(new SceneMenu(this.root));
 		}
 	}

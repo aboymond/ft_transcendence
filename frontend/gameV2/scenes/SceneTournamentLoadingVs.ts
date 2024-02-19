@@ -1,6 +1,5 @@
 import { defaultColor } from '..';
 import { SceneBase } from './SceneBase';
-import { SceneMenu2 } from './SceneMenu2';
 import * as PIXI from 'pixi.js';
 import { PixiManager } from '../PixiManager';
 import apiService from '../../src/services/apiService';
@@ -9,7 +8,8 @@ import { Match } from '../../src/types';
 import { SceneLoadingPage } from './SceneLoadingPage';
 import {AudioManager} from '../AudioManager';
 import { Tools } from '../Tools';
-
+import { SceneTournamentWinner } from './SceneTournamentWinner';
+import { SceneMenu2 } from './SceneMenu2';
 
 const tournamentLine = PIXI.Texture.from('./img/tournamentLine.png');
 
@@ -76,36 +76,33 @@ export class SceneTournamentLoadingVs extends SceneBase {
 		//TODO use websocket to update the display
 		// Periodic check to update the display
 		this._checkInterval = window.setInterval(async () => {
-				const updatedTournament = await apiService.getTournament(this._tournamentId);
-				if (updatedTournament) {
-					this._currentTournament = updatedTournament;
-					this._setupTournamentDisplay(container); // Update display based on new tournament state
-				}
-	
-				const currentMatches = await apiService.getMatches(this._tournamentId);
-				console.log('matches', currentMatches);
-				currentMatches.sort((a: Match, b: Match) => a.match_order - b.match_order); // Sort matches by order
-	
-				// Determine the last round number and filter matches for the last round
-				const lastRoundNumber = Math.max(...currentMatches.map((match: Match) => match.round_number));
-				const lastRoundMatches = currentMatches.filter(
-					(match: Match) => match.round_number === lastRoundNumber,
-				);
-	
-				if (JSON.stringify(lastRoundMatches) !== JSON.stringify(this._currentMatches)) {
-					this._currentMatches = lastRoundMatches;
-					this._setupMatchDisplay(container, lastRoundMatches); // Update display based on new matches
-				}
-			
+			const updatedTournament = await apiService.getTournament(this._tournamentId);
+			if (updatedTournament) {
+				this._currentTournament = updatedTournament;
+				this._setupTournamentDisplay(container); // Update display based on new tournament state
+			}
+
+			const currentMatches = await apiService.getMatches(this._tournamentId);
+			currentMatches.sort((a: Match, b: Match) => a.match_order - b.match_order); // Sort matches by order
+
+			// Determine the last round number and filter matches for the last round
+			const lastRoundNumber = Math.max(...currentMatches.map((match: Match) => match.round_number));
+			const lastRoundMatches = currentMatches.filter(
+				(match: Match) => match.round_number === lastRoundNumber,
+			);
+
+			if (JSON.stringify(lastRoundMatches) !== JSON.stringify(this._currentMatches)) {
+				this._currentMatches = lastRoundMatches;
+				this._setupMatchDisplay(container, lastRoundMatches); // Update display based on new matches
+			}
 		}, 1000);
 
-		// Add WebSocket message event listener for tournament end notification
 		this.root.ws?.addEventListener('message', (event) => {
 			const data = JSON.parse(event.data);
 			if (data.type === 'tournament_message' && data.payload.action === 'tournament_end') {
 				console.log('Tournament has ended. Winner:', data.payload.data.winner_username);
 				this._winner = data.payload.data.winner_username;
-				//TODO load winner scene
+				this.root.loadScene(new SceneTournamentWinner(this.root, this._tournamentId, this._winner));
 			}
 
 		});
@@ -215,15 +212,32 @@ export class SceneTournamentLoadingVs extends SceneBase {
 		return container;
 	}
 
-
 	private _initNameVs4(names: PIXI.Container) {
+		if (this._currentMatches.length > 0 && this._currentMatches[0].round_number === 2) {
+			const player1 = new PIXI.Text(this._currentMatches[0].player1_username, {
+				fontSize: (this.root.width * 3) / 100,
+				fill: defaultColor,
+			});
+			player1.angle = 90;
+			player1.y = (this.root.height * 43) / 100;
+			player1.x = (this.root.width * 44) / 100;
+			this._nameVs.push(player1);
+			const player2 = new PIXI.Text(this._currentMatches[0].player2_username, {
+				fontSize: (this.root.width * 3) / 100,
+				fill: defaultColor,
+			});
+			player2.angle = 90;
+			player2.y = (this.root.height * 43) / 100;
+			player2.x = (this.root.width * 62) / 100;
+			this._nameVs.push(player2);
+		}
 		const playerNames = this._currentTournament?.participants_usernames;
 		if (playerNames && playerNames.length) {
 			for (let i = 0; i < playerNames.length; i++) {
 				const newName = new PIXI.Text(playerNames[i], {
 					fontSize: (this.root.width * 3) / 100,
 					fill: defaultColor,
-				})
+				});
 				newName.angle = 90;
 				newName.y = (this.root.height * 65) / 100;
 				newName.x = (this.root.width * 17) / 100 + i * ((this.root.width * 20) / 100);
@@ -231,7 +245,7 @@ export class SceneTournamentLoadingVs extends SceneBase {
 				if (i >= 2) {
 					newName.x = (this.root.width * 28) / 100 + i * ((this.root.width * 20) / 100);
 				}
-				this._nameVs.push(newName); // Add the new text element to the _nameVs array
+				this._nameVs.push(newName);
 			}
 		}
 		for (let i = 0; i < this._nameVs.length; i++) {
@@ -253,7 +267,7 @@ export class SceneTournamentLoadingVs extends SceneBase {
 		// Setup tournament lines based on the number of participants
 		if (this._currentTournament?.max_participants === 4) {
 			this._initLineTournament4(this._containerSprite);
-		} 
+		}
 		container.addChild(this._containerSprite);
 
 		// Setup player names

@@ -8,8 +8,7 @@ import { SceneLoadingPage } from './SceneLoadingPage';
 import { Tournament, Game } from '../../src/types';
 // import { SceneGame } from './SceneGame';
 import { SceneTournamentLoadingVs } from './SceneTournamentLoadingVs';
-import {AudioManager} from '../AudioManager';
-
+import { AudioManager } from '../AudioManager';
 
 enum menuState {
 	TOURN_MENU,
