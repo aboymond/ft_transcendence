@@ -33,7 +33,13 @@ SECRET_KEY = os.environ.get(secret_key, "Variable not found")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DJANGO_DEBUG", "") != "False"
 
-ALLOWED_HOSTS = ["localhost", "nginx", "frontend", "backend", os.environ.get("HOSTNAME")]
+ALLOWED_HOSTS = [
+    "localhost",
+    "nginx",
+    "frontend",
+    "backend",
+    os.environ.get("HOSTNAME"),
+]
 
 # Application definition
 
@@ -58,6 +64,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "middleware.middleware.InvalidRequestLoggerMiddleware",
     "django_prometheus.middleware.PrometheusBeforeMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
@@ -213,14 +220,15 @@ LOGGING = {
             "class": "logging.StreamHandler",
             "level": "DEBUG",
         },
-    },
-    "root": {
-        "handlers": ["console"],
-        "level": "INFO",
+        "file": {
+            "level": "DEBUG",
+            "class": "logging.FileHandler",
+            "filename": "django_requests.log",
+        },
     },
     "loggers": {
-        "": {  # This configures the root logger to capture all logs of DEBUG level and above
-            "handlers": ["console"],
+        "django.request": {
+            "handlers": ["console", "file"],
             "level": "DEBUG",
             "propagate": True,
         },
