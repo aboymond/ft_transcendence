@@ -4,6 +4,8 @@ import { SceneMenu } from './SceneMenu';
 import { defaultColor, textStyleTitleMenu1 } from '../index';
 import {AudioManager} from '../AudioManager';
 import { PixiManager } from '../PixiManager';
+import { Tools } from '../Tools';
+import $ from 'jquery';
 
 
 export class SceneTournamentWinner extends SceneBase {
@@ -40,7 +42,14 @@ export class SceneTournamentWinner extends SceneBase {
 		}, 1000);
 	}
 
-	public onUpdate() {}
+	public onUpdate() {
+		// if (this.root.width != document.getElementById('game_window')?.clientWidth) {
+		// 	this.root.width = document.getElementById('game_window')?.clientWidth;
+		// }
+		// if (this.root.height != document.getElementById('game_window')?.clientHeight) {
+		// 	this.root.height = document.getElementById('game_window')?.clientHeight;
+		// }
+	}
 
 	public onFinish() {
 		clearInterval(this._interval);
@@ -56,13 +65,8 @@ export class SceneTournamentWinner extends SceneBase {
 	public onKeyUp() {}
 
 	private _initTextTitle() {
-		const pourcentage = 95;
-		const newWidth = (this.root.width * pourcentage) / 100;
-		const ratio = this._textTitle.width / this._textTitle.height;
-		const newHigth = newWidth / ratio;
 
-		this._textTitle.height = newHigth;
-		this._textTitle.width = newWidth;
+		this._textTitle = Tools.resizeText(this._textTitle, this.root.width, 95);
 		this._textTitle.x = this.root.width / 2 - this._textTitle.width / 2;
 		this._textTitle.y = (this.root.height * 50) / 100 - this._textTitle.height / 2;
 		return this._textTitle;
@@ -70,21 +74,15 @@ export class SceneTournamentWinner extends SceneBase {
 
 	private _initTextName() {
 		this._nameText.style.fill = defaultColor;
-		this._nameText.style.fontSize = ((this.root.width) * 10) / 100;
+		this._nameText = Tools.resizeText(this._nameText, this.root.width, 35);
 		this._nameText.x = (this.root.width * 50) / 100 - this._nameText.width / 2;
 		this._nameText.y = (this.root.height * 35) / 100 - this._nameText.height / 2;
 		return this._nameText;
 	}
 
 	private _initCrown() {
-		const crown = new PIXI.Sprite(this._crownSprite);
-		const pourcentage = 100;
-		const newWidth = (this.root.width * pourcentage) / 100;
-		const ratio = crown.width / crown.height;
-		const newHigth = newWidth / ratio;
-
-		crown.width = newWidth;
-		crown.height = newHigth;
+		let crown = new PIXI.Sprite(this._crownSprite);
+		crown = Tools.resizeSprite(crown, this.root.width, 80);
 		crown.anchor.set(0.5, 0.5 );
 		crown.x = (this.root.width * 50) / 100;
 		crown.y = (this.root.height * 50) / 100;
