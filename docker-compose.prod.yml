@@ -9,7 +9,6 @@ services:
       - "8000:8000"
     environment:
       DATABASE_URL: postgresql://youruser:yourpassword@db:5432/yourdbname #TODO: change this
-      # FRONTEND_URL: http://localhost
       DJANGO_DEBUG: "True"
     env_file: .env
     networks:
