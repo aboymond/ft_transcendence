@@ -113,6 +113,7 @@ export class SceneMenu2 extends SceneBase {
 		}
 
 		if (e.code === 'Escape') {
+			console.log("IN MENU2 ESCAPE");
 			this.root.loadScene(new SceneMenu(this.root));
 		}
 	}

@@ -41,7 +41,7 @@ export class SceneTournamentLoadingVs extends SceneBase {
 
 	private _exitBool = false;
 	private _exitYesNO = true;
-	private _keysPressed: { [key: string]: boolean } = {};
+	// private _keysPressed: { [key: string]: boolean } = {};
 	private _escapeKeyPressed = false;
 
 	constructor(
@@ -56,11 +56,11 @@ export class SceneTournamentLoadingVs extends SceneBase {
 	//=======================================
 
 	public async onStart(container: PIXI.Container) {
+		this._exitMenu = this._initExitMenu();
+		container.addChild(this._exitMenu);
 		this._initTextStandings(this._standings);
 		container.addChild(this._standings);
 		this._initEnterText(container);
-		this._exitMenu = this._initExitMenu();
-		container.addChild(this._exitMenu);
 
 		AudioManager.play('loading');
 
@@ -119,24 +119,21 @@ export class SceneTournamentLoadingVs extends SceneBase {
 
 	public onKeyDown(e: KeyboardEvent) {
 		if (e.code === 'Escape' && !this._escapeKeyPressed) {
-			try {
 					this._escapeKeyPressed = true;
 					this._exitBool = !this._exitBool;
 					this._exitMenu.visible = this._exitBool;
-				
-
-
-
-			} catch (error) {
-				console.error('Error leaving tournament:', error);
-			}
 		}
 
 		if (e.code === 'Enter') {
 			if (this._exitBool) {
 				if (this._exitYesNO) {
-					apiService.leaveTournament(this._tournamentId, this.root.userId!);
-					this.root.loadScene(new SceneMenu2(this.root));
+					try {
+						apiService.leaveTournament(this._tournamentId, this.root.userId!);
+						this.root.loadScene(new SceneMenu2(this.root));
+					}
+					catch (error) {
+						console.error('Error leaving tournament:', error);
+					}
 				} else {
 					this._exitBool = false;
 					this._exitMenu.visible = false;
@@ -257,6 +254,7 @@ export class SceneTournamentLoadingVs extends SceneBase {
 		if (this._currentTournament?.max_participants === 4) {
 			this._initLineTournament4(this._containerSprite);
 		} 
+		this._containerSprite.zIndex = -1;
 		container.addChild(this._containerSprite);
 
 		// Setup player names
@@ -324,7 +322,6 @@ export class SceneTournamentLoadingVs extends SceneBase {
 		background.beginFill('green');
 		background.drawRect(-280, -150, 280, 150);
 		background.endFill();
-		background.zIndex = 10
 		background.visible = true;
 		background.x = this.root.width / 2 + background.width / 2;
 		background.y = this.root.height / 2 + background.height / 2;

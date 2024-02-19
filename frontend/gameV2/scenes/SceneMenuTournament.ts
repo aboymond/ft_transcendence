@@ -31,7 +31,6 @@ export class SceneMenuTournament extends SceneBase {
 	private _nb_scoreForBack: number = 3;
 	// ====================================================
 
-	// private state: menuState = menuState.SELECT_MENU;
 	private _currentSelectCreate = -1;
 
 	// MENU CREATE ==========================================
