@@ -5,7 +5,6 @@ from django.db.models import Q
 from .models import GameHistory
 from django.contrib.auth.models import AnonymousUser
 from .models import Friendship, TournamentHistory
-from .serializers import ListUserSerializer
 
 User = get_user_model()
 
@@ -118,6 +117,31 @@ class UserSerializer(serializers.ModelSerializer):
         return value
 
 
+class ListUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = [
+            "id",
+            "username",
+            "display_name",
+            "wins",
+            "losses",
+            "tournament_wins",
+            "avatar",
+            "status",
+        ]
+        read_only_fields = [
+            "id",
+            "username",
+            "display_name",
+            "wins",
+            "losses",
+            "tournament_wins",
+            "avatar",
+            "status",
+        ]
+
+
 class FriendshipSerializer(serializers.ModelSerializer):
     requester = ListUserSerializer(read_only=True)
     receiver = ListUserSerializer(read_only=True)
@@ -142,19 +166,3 @@ class AvatarSerializer(serializers.ModelSerializer):
         instance.avatar = validated_data.get("avatar", instance.avatar)
         instance.save()
         return instance
-
-
-class ListUserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ["id", "username", "display_name", "avatar"]
-        read_only_fields = [
-            "id",
-            "username",
-            "display_name",
-            "wins",
-            "losses",
-            "tournament_wins",
-            "avatar",
-            "status",
-        ]
