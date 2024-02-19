@@ -33,7 +33,7 @@ SECRET_KEY = os.environ.get(secret_key, 'Variable not found')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DJANGO_DEBUG", "") != "False"
 
-ALLOWED_HOSTS = ["localhost", "nginx", "frontend", "backend"]
+ALLOWED_HOSTS = ["localhost", "nginx", "frontend", "backend", os.environ.get("HOSTNAME")]
 
 # Application definition
 
@@ -200,6 +200,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3001",
     "http://frontend:3001",
     "http://frontend:3001",
+    f"https://{os.environ.get('HOSTNAME')}",
     # Add the origin of your Django application
 ]
 

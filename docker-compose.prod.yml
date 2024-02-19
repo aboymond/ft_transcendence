@@ -1,156 +1,153 @@
 version: "3.8"
 services:
-    backend:
-        build:
-            context: ./backend
-        image: backend:latest
-        container_name: backend-container
-        ports:
-            - "8000:8000"
-        environment:
-            DATABASE_URL: postgresql://youruser:yourpassword@db:5432/yourdbname #TODO: change this
-            FRONTEND_URL: http://localhost
-            DJANGO_DEBUG: "False"
-        env_file: .env
-        networks:
-            - my-network
-        volumes:
-            - ./backend:/app
-            - backend_static:/app/static
-            - media_volume:/app/media
-        depends_on:
-            - db
-        restart: unless-stopped
+  backend:
+    build:
+      context: ./backend
+    image: backend:latest
+    container_name: backend-container
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://youruser:yourpassword@db:5432/yourdbname #TODO: change this
+      # FRONTEND_URL: http://localhost
+      DJANGO_DEBUG: "False"
+    env_file: .env
+    networks:
+      - my-network
+    volumes:
+      - ./backend:/app
+      - backend_static:/app/static
+      - media_volume:/app/media
+    depends_on:
+      - db
+    restart: unless-stopped
 
-    frontend:
-        build:
-            context: ./frontend
-            dockerfile: Dockerfile.prod
-        image: frontend:latest
-        container_name: frontend-container
-        ports:
-            - "8080:80"
-        environment:
-            - VITE_BACKEND_URL=http://backend:8000
-        networks:
-            - my-network
-        volumes:
-            - ./frontend:/usr/src/app
-            - frontend_node_modules:/usr/src/app/node_modules
-        restart: unless-stopped
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+    image: frontend:latest
+    container_name: frontend-container
+    ports:
+      - "8080:80"
+    environment:
+      - VITE_BACKEND_URL=http://backend:8000
+    networks:
+      - my-network
+    volumes:
+      - ./frontend:/usr/src/app
+      - frontend_node_modules:/usr/src/app/node_modules
+    restart: unless-stopped
 
-    db:
-        image: postgres:latest
-        env_file:
-            .env
-        container_name: db-container
-        ports:
-            - "5433:5432"
-        networks:
-            - my-network
-        volumes:
-            - db-data:/var/lib/postgresql/data
-        restart: unless-stopped
+  db:
+    image: postgres:latest
+    env_file: .env
+    container_name: db-container
+    ports:
+      - "5433:5432"
+    networks:
+      - my-network
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    restart: unless-stopped
 
-    redis:
-        image: redis:latest
-        container_name: redis-container
-        ports:
-            - "6379:6379"
-        networks:
-            - my-network
-        restart: unless-stopped
+  redis:
+    image: redis:latest
+    container_name: redis-container
+    ports:
+      - "6379:6379"
+    networks:
+      - my-network
+    restart: unless-stopped
 
-    nginx:
-        build:
-            context: ./nginx
-        container_name: nginx-container
-        ports:
-        - "80:80"
-        - "443:443"
-        depends_on:
-        - backend
-        - frontend
-        networks:
-            - my-network
-        volumes:
-            - ./nginx:/etc/nginx/conf.d
-            - nginx_log:/var/log/nginx/
-            - backend_static:/app/static
-            - media_volume:/app/media
-        restart: unless-stopped
+  nginx:
+    build:
+      context: ./nginx
+    container_name: nginx-container
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - my-network
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+      - nginx_log:/var/log/nginx/
+      - backend_static:/app/static
+      - media_volume:/app/media
+    restart: unless-stopped
 
-    prometheus:
-        container_name: prometheus
-        build:
-            context: ./prometheus
-        volumes:
-            - ./prometheus:/etc/prometheus
-        ports:
-            - "9090:9090"
-        networks:
-            - my-network
-        restart: unless-stopped
+  prometheus:
+    container_name: prometheus
+    build:
+      context: ./prometheus
+    volumes:
+      - ./prometheus:/etc/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - my-network
+    restart: unless-stopped
 
-    grafana:
-        container_name: grafana
-        build:
-            context: ./grafana
-        ports:
-            - "3000:3000"
-        environment:
-            - GF_SECURITY_ADMIN_USER=${GF_SECURITY_ADMIN_USER}
-            - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD}
-        volumes:
-            - grafana_data:/var/lib/grafana
-            - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
-            - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
-            - ./grafana/init-grafana.sh:/etc/grafana/init-grafana/init-grafana.sh
-        env_file:
-            - .env
-        entrypoint: /etc/grafana/init-grafana/init-grafana.sh
-        networks:
-            - my-network
-        restart: unless-stopped
+  grafana:
+    container_name: grafana
+    build:
+      context: ./grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GF_SECURITY_ADMIN_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD}
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+      - ./grafana/init-grafana.sh:/etc/grafana/init-grafana/init-grafana.sh
+    env_file:
+      - .env
+    entrypoint: /etc/grafana/init-grafana/init-grafana.sh
+    networks:
+      - my-network
+    restart: unless-stopped
 
-    nginx-prometheus-exporter:
-        image: nginx/nginx-prometheus-exporter:1.0
-        container_name: prometheus-nginx-exporter
-        restart: always
-        env_file:
-            .env
-        command:
-            - "-nginx.scrape-uri=http://nginx:80/basic_status"
-        ports:
-            - "9113:9113"
-        networks:
-            - my-network
-        depends_on:
-            - nginx
+  nginx-prometheus-exporter:
+    image: nginx/nginx-prometheus-exporter:1.0
+    container_name: prometheus-nginx-exporter
+    restart: always
+    env_file: .env
+    command:
+      - "-nginx.scrape-uri=http://nginx:80/basic_status"
+    ports:
+      - "9113:9113"
+    networks:
+      - my-network
+    depends_on:
+      - nginx
 
-    alertmanager:
-        image: prom/alertmanager:v0.22.2
-        volumes:
-            - ./prometheus/alertmanager.yml:/etc/alertmanager/alertmanager.yml
-        command:
-            - "--config.file=/etc/alertmanager/alertmanager.yml"
-            - "--storage.path=/alertmanager"
-        ports:
-            - "9093:9093"
-        networks:
-            - my-network
-        restart: unless-stopped
-
+  alertmanager:
+    image: prom/alertmanager:v0.22.2
+    volumes:
+      - ./prometheus/alertmanager.yml:/etc/alertmanager/alertmanager.yml
+    command:
+      - "--config.file=/etc/alertmanager/alertmanager.yml"
+      - "--storage.path=/alertmanager"
+    ports:
+      - "9093:9093"
+    networks:
+      - my-network
+    restart: unless-stopped
 
 volumes:
-    backend_static:
-    frontend_node_modules:
-    db-data:
-    pgadmin_data:
-    media_volume:
-    grafana_data:
-    nginx_log:
+  backend_static:
+  frontend_node_modules:
+  db-data:
+  pgadmin_data:
+  media_volume:
+  grafana_data:
+  nginx_log:
 
 networks:
-    my-network:
-        driver: bridge
+  my-network:
+    driver: bridge
