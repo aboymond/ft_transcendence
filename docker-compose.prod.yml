@@ -10,7 +10,7 @@ services:
     environment:
       DATABASE_URL: postgresql://youruser:yourpassword@db:5432/yourdbname #TODO: change this
       # FRONTEND_URL: http://localhost
-      DJANGO_DEBUG: "False"
+      DJANGO_DEBUG: "True"
     env_file: .env
     networks:
       - my-network
@@ -38,7 +38,8 @@ services:
     volumes:
       - ./frontend:/usr/src/app
       - frontend_node_modules:/usr/src/app/node_modules
-    restart: unless-stopped
+      - frontend_app:/usr/src/app/dist
+    # restart: unless-stopped
 
   db:
     image: postgres:latest
@@ -78,7 +79,7 @@ services:
       - nginx_log:/var/log/nginx/
       - backend_static:/app/static
       - media_volume:/app/media
-      - ./frontend/dist:/usr/share/nginx/html
+      - frontend_app:/usr/shre/nginx/html
     restart: unless-stopped
 
   prometheus:
@@ -149,6 +150,7 @@ volumes:
   media_volume:
   grafana_data:
   nginx_log:
+  frontend_app:
 
 networks:
   my-network:

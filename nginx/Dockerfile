@@ -17,5 +17,6 @@ RUN	openssl req -newkey rsa:4096 -x509 -sha256 -days 365 -nodes \
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Copy static and media files
+COPY --from=frontend /usr/src/app/dist /usr/share/nginx/html
 COPY --from=backend /app/staticfiles /app/staticfiles
 COPY --from=backend /app/media /app/media
