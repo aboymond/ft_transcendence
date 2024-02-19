@@ -23,7 +23,6 @@ export class SceneTournamentWinner extends SceneBase {
 	public async onStart(container: PIXI.Container) {
 		AudioManager.play('win');
 		this._nameText.text = this._playerName;
-		console.log('ID: ' + this._gameId + ' Player: ' + this._nameText.text);
 		container.addChild(this._initTextTitle());
 		container.addChild(this._initTextName());
 		container.addChild(this._initCrown());

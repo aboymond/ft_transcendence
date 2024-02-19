@@ -300,9 +300,7 @@ export class SceneTournamentLoadingVs extends SceneBase {
 	}
 
 	private _playMatch(match: Match) {
-		console.log('test');
 		if ([match.player1, match.player2].includes(this.root.userId ?? 0)) {
-			console.log('test2222');
 			this.root.loadScene(new SceneLoadingPage(this.root, match.game));
 		}
 	}

@@ -22,7 +22,6 @@ const VerifyTwoFa: React.FC = () => {
 		event.preventDefault();
 		const urlParams = new URLSearchParams(window.location.search);
 		const username = urlParams.get('username') || '';
-		console.log(username);
 		try {
 			const data = await apiService.verifyOtp(username, otp);
 			auth.login(data.access, data.user, data.user.twofa);
