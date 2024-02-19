@@ -154,5 +154,7 @@ class ListUserSerializer(serializers.ModelSerializer):
             "display_name",
             "wins",
             "losses",
+            "tournament_wins",
             "avatar",
+            "status",
         ]
