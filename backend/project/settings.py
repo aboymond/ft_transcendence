@@ -37,7 +37,7 @@ ALLOWED_HOSTS = [
     "nginx",
     "frontend",
     "backend",
-    "localhost",
+    # "localhost",
     os.environ.get("ALLOWED_HOSTS", "localhost"),
 ]
 
@@ -250,5 +250,5 @@ PROMETHEUS_METRIC_NAMESPACE = "transcendence"
 # # Ensure session cookie is secure
 # SESSION_COOKIE_SECURE = True
 
-#Use secure proxy header to tell Django about the original protocol (HTTP or HTTPS)
+# Use secure proxy header to tell Django about the original protocol (HTTP or HTTPS)
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")

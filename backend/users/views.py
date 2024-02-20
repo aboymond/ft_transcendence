@@ -144,6 +144,7 @@ class AuthView(generics.GenericAPIView):
         )
         return redirect(authorization_url)
 
+
 class CallBackView(APIView):
     def get(self, request, *args, **kwargs):
         token_url = "https://api.intra.42.fr/oauth/token"
@@ -206,9 +207,7 @@ class CallBackView(APIView):
         if new_user.twofa is True:
             send_otp(new_user)
             redirect_url = (
-                f"/{os.getenv('HOSTNAME')}"
-                + "/verify-2fa?username="
-                + username
+                f"/{os.getenv('HOSTNAME')}" + "/verify-2fa?username=" + username
             )
             return redirect(redirect_url)
         else:
