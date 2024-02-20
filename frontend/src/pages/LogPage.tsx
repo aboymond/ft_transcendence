@@ -41,8 +41,8 @@ const LogPage: React.FC = () => {
 	}, [auth, navigate]);
 
 	const handleApiLogin = async () => {
-		const hostname = import.meta.env.VITE_HOSTNAME;
-		window.location.href = `https://${hostname}/api/users/auth`;
+		const hostname = import.meta.env.VITE_API_URL;
+		window.location.href = `${hostname}/users/auth`;
 	};
 
 	return (

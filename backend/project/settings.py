@@ -34,11 +34,11 @@ SECRET_KEY = os.environ.get(secret_key, "Variable not found")
 DEBUG = os.environ.get("DJANGO_DEBUG", "") != "False"
 
 ALLOWED_HOSTS = [
-    "localhost",
     "nginx",
     "frontend",
     "backend",
-    os.environ.get("HOSTNAME"),
+    # "localhost",
+    os.environ.get("ALLOWED_HOSTS", "localhost"),
 ]
 
 # Application definition
@@ -207,7 +207,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3001",
     "http://frontend:3001",
     "http://frontend:3001",
-    f"https://{os.environ.get('HOSTNAME')}",
+    f"{os.environ.get('HOSTNAME')}",
     "https://10.13.5.4",
     # Add the origin of your Django application
 ]
@@ -250,5 +250,5 @@ PROMETHEUS_METRIC_NAMESPACE = "transcendence"
 # # Ensure session cookie is secure
 # SESSION_COOKIE_SECURE = True
 
-#Use secure proxy header to tell Django about the original protocol (HTTP or HTTPS)
+# Use secure proxy header to tell Django about the original protocol (HTTP or HTTPS)
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
