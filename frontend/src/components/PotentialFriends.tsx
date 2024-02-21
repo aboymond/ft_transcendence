@@ -39,7 +39,7 @@ const PotentialFriends: React.FC<PotentialFriendsProps> = ({ friends, onSelectFr
 		if (userToSelect) {
 			onSelectFriend(userToSelect);
 		}
-         const friendrequests = await apiService.getFriendRequests();
+        const friendrequests = await apiService.getFriendRequests();
         const isRequestPending = friendrequests.some(request => request.receiver.username === username);
         if (isRequestPending) {
             console.log('Friend request is already pending');

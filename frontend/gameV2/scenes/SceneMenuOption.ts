@@ -12,12 +12,15 @@ import {
 } from '../index';
 import { SceneGameVsBot } from './SceneGameVsBot';
 import { SceneLoadingPage } from './SceneLoadingPage';
+import { SceneGamePvpLocal } from './SceneGamePvpLocal';
 import { apiService } from '../../src/services/apiService';
 import {AudioManager} from '../AudioManager';
 import { Tools } from '../Tools';
 
 const selectMax = 4;
 let errorLock: boolean = false;
+
+let ifLocal: boolean = true; 
 
 enum menu {
 	COLOR = 0,
@@ -45,6 +48,7 @@ const chooseVictoryAmount: number[] = [5, 10, 20, 30];
 const chooseBotLevel: string[] = ['EASY', 'MEDIUM', 'HARD', 'IMPOSSIBLE!!!'];
 const botLvlNum: number[] = [0.05, 0.075, 0.09, 0.9];
 const choosePad: string[] = ['BASIC', 'LOCKED', 'LOCKED', 'LOCKED', 'LOCKED', 'LOCKED'];
+const choosePvpOption: string[] = ['LOCAL', 'ONLINE'];
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -63,6 +67,7 @@ export class SceneMenuOption extends SceneBase {
 	private _currentColor = 0;
 	private _currentPad = 0;
 	private _currentBotLevel = 0;
+	private _currentPvpOption = 0;
 	private _currentVictory = 0;
 
 	private _padColor = new PIXI.Graphics();
@@ -78,10 +83,11 @@ export class SceneMenuOption extends SceneBase {
 	// HOOK
 	//=======================================
 
-	private _textColorAvatar = new PIXI.Text('< CHOOSE COLOR {GREEN}>', textStyleMenuOptionColor);
+	private _textColorAvatar = new PIXI.Text('< CHOOSE COLOR {GREEN} >', textStyleMenuOptionColor);
 	private _textPad = new PIXI.Text('< CHOOSE PAD {BASIC}>', textStyleMenuOptionPad);
-	private _textBotLevel = new PIXI.Text('< CHOOSE BOT LEVEL {EASY}>', textStyleMenuOptionLevel);
-	private _textVictoryAmount = new PIXI.Text('< CHOOSE VICTORY AMOUNT {5}>', textStyleMenuOptionVictory);
+	private _textBotLevel = new PIXI.Text('< CHOOSE BOT LEVEL {EASY} >', textStyleMenuOptionLevel);
+	private _textPvpOption = new PIXI.Text('< PVP OPTION {LOCAL} >', textStyleMenuOptionLevel);
+	private _textVictoryAmount = new PIXI.Text('< CHOOSE VICTORY AMOUNT {5} >', textStyleMenuOptionVictory);
 	private _textPlay = new PIXI.Text('PLAY', textStyleMenuOptionPlay);
 	private _textErrorPad = new PIXI.Text('SELECT AN AVALIBLE PAD', textStyleMenuOptionError);
 	private _textErrorOK = new PIXI.Text('[ ENTER ]', textStyleMenuOptionError);
@@ -100,7 +106,8 @@ export class SceneMenuOption extends SceneBase {
 		if (!this.root.vsPlayer) {
 			container.addChild(this._createTextBotLevel(this._textBotLevel));
 		} else {
-			this._textVictoryAmount.y = this.root.height / 2 - this._textVictoryAmount.height / 2;
+			container.addChild(this._createTextPvpOption(this._textPvpOption));
+			// this._textVictoryAmount.y = this.root.height / 2 - this._textVictoryAmount.height / 2;
 		}
 
 		for (let i = 0; i < textures.length; i++) {
@@ -191,6 +198,13 @@ export class SceneMenuOption extends SceneBase {
 		return text;
 	}
 
+	private _createTextPvpOption(text: PIXI.Text) {
+		text = Tools.resizeText(text, this.root.width, 30);
+		text.x = this.root.width / 2 - text.width / 2;
+		text.y = this.root.height / 2 - text.height / 2 - 25;
+		return text;
+	}
+
 	private _createTextVictory(text: PIXI.Text) {
 		text = Tools.resizeText(text, this.root.width, 30);
 		text.x = this.root.width / 2 - text.width / 2;
@@ -242,13 +256,18 @@ export class SceneMenuOption extends SceneBase {
 		if (this.root.vsPlayer && this._currentPad === 0) {
 			// Send a request to the backend to create a game
 			AudioManager.play('enter');
-			apiService
-				.createGame(this.root.userId ?? 0) //TODO
-				.then((response) => {
-					console.log('Game created successfully', response);
-					this.root.loadScene(new SceneLoadingPage(this.root, response.id));
-				})
-				.catch((error) => console.error('Error creating game', error));
+			if (ifLocal) {
+				this.root.loadScene(new SceneGamePvpLocal(this.root));
+			}
+			else {
+				apiService
+					.createGame(this.root.userId ?? 0) //TODO
+					.then((response) => {
+						console.log('Game created successfully', response);
+						this.root.loadScene(new SceneLoadingPage(this.root, response.id));
+					})
+					.catch((error) => console.error('Error creating game', error));
+			}
 		} else if (this._currentPad === 0) {
 			AudioManager.play('enter');
 			this.root.loadScene(new SceneGameVsBot(this.root));
@@ -262,13 +281,13 @@ export class SceneMenuOption extends SceneBase {
 
 	private _pressUp() {
 		this._currentSelect--;
-		if (this._currentSelect === menu.BOT_LVL && this.root.vsPlayer) this._currentSelect--;
+		// if (this._currentSelect === menu.BOT_LVL) this._currentSelect--;
 		if (this._currentSelect < 0) this._currentSelect = selectMax;
 	}
 
 	private _pressDown() {
 		this._currentSelect++;
-		if (this._currentSelect === menu.BOT_LVL && this.root.vsPlayer) this._currentSelect++;
+		// if (this._currentSelect === menu.BOT_LVL) this._currentSelect++;
 		if (this._currentSelect > selectMax) this._currentSelect = 0;
 	}
 
@@ -276,6 +295,9 @@ export class SceneMenuOption extends SceneBase {
 		if (this._currentSelect === menu.COLOR) return this._colorPrev();
 		if (!this.root.vsPlayer) {
 			if (this._currentSelect === menu.BOT_LVL) return this._botLvlPrev();
+		}
+		else {
+			if (this._currentSelect === menu.BOT_LVL) return this._pvpOptionPrev();
 		}
 		if (this._currentSelect === menu.VICTORY_AMOUNT) return this._VictoryAmountPrev();
 		if (this._currentSelect === menu.PAD) return this._padPrev();
@@ -285,6 +307,9 @@ export class SceneMenuOption extends SceneBase {
 		if (this._currentSelect === menu.COLOR) return this._colorNext();
 		if (!this.root.vsPlayer) {
 			if (this._currentSelect === menu.BOT_LVL) return this._botLvlNext();
+		}
+		else {
+			if (this._currentSelect === menu.BOT_LVL) return this._pvpOptionNext();
 		}
 		if (this._currentSelect === menu.VICTORY_AMOUNT) return this._VictoryAmountNext();
 		if (this._currentSelect === menu.PAD) return this._padNext();
@@ -338,6 +363,30 @@ export class SceneMenuOption extends SceneBase {
 		this._textBotLevel.text = '< ' + chooseBotLevel[this._currentBotLevel] + ' >';
 		this._textBotLevel.x = this.root.width / 2 - this._textBotLevel.width / 2;
 		this.root.botLvl = botLvlNum[this._currentBotLevel];
+	}
+
+	private _pvpOptionPrev() {
+		this._currentPvpOption--;
+		if (this._currentPvpOption < 0) this._currentPvpOption = choosePvpOption.length - 1;
+		this._textPvpOption.text = '< ' + choosePvpOption[this._currentPvpOption] + ' >';
+		this._textPvpOption.x = this.root.width / 2 - this._textPvpOption.width / 2;
+		if (this._currentPvpOption === 0) {
+			ifLocal = true;
+		}
+		else	
+			ifLocal = false;
+	}
+
+	private _pvpOptionNext() {
+		this._currentPvpOption++;
+		if (this._currentPvpOption > choosePvpOption.length - 1) this._currentPvpOption = 0;
+		this._textPvpOption.text = '< ' + choosePvpOption[this._currentPvpOption] + ' >';
+		this._textPvpOption.x = this.root.width / 2 - this._textPvpOption.width / 2;
+		if (this._currentPvpOption === 0) {
+			ifLocal = true;
+		}
+		else	
+			ifLocal = false;
 	}
 
 	private _VictoryAmountPrev() {
