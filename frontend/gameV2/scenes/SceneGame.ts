@@ -43,7 +43,6 @@ export class SceneGame extends SceneBase {
 	// HOOK
 	//=======================================
 
-	//TODO init state in backend
 	public async onStart(container: PIXI.Container) {
 		//Init Ball
 		container.addChild(this._initBall(10, 0x1aff00));
@@ -164,7 +163,6 @@ export class SceneGame extends SceneBase {
 	//=======================================
 
 	private async _handleExit() {
-
 		if (this._exitBool) {
 			if (this._keysPressed['Escape']) {
 				try {

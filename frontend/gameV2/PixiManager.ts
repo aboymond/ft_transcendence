@@ -158,7 +158,8 @@ export class PixiManager {
 		this.gameSocket.addEventListener('message', (event) => {
 			const message = JSON.parse(event.data);
 
-			const { action, data } = message; // Directly destructure action and data
+			const { action, data } = message;
+			console.log('Game WebSocket message:', action, data);
 			switch (action) {
 				case 'start_game':
 					this.loadScene(new SceneGame(this, gameId));

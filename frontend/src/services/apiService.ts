@@ -22,11 +22,10 @@ async function fetchAPI(endpoint: string, options: RequestInit = {}, includeToke
 	if (options.body instanceof FormData && headers instanceof Headers) {
 		headers.delete('Content-Type');
 	}
-	console.log('fetching', `${api_url}/${endpoint}`);
 	const response = await fetch(`${api_url}/${endpoint}`, {
 		...options,
 		headers: headers,
-		mode: 'cors',
+		// mode: 'cors',
 	});
 	if (response.status === 401) {
 		localStorage.removeItem('token');
