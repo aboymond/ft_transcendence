@@ -1,16 +1,15 @@
-from channels.generic.websocket import AsyncWebsocketConsumer
+import time
 import json
-from .models import Game
-from asgiref.sync import sync_to_async
 import asyncio
+from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
-from .utils import handle_leave_game
+from asgiref.sync import sync_to_async
+from django.utils import timezone
 from django.contrib.auth import get_user_model
 from websockets.exceptions import ConnectionClosedOK
-from django.utils import timezone
 
-import time
-from django.core.exceptions import ObjectDoesNotExist
+from .models import Game
+from .utils import handle_leave_game
 from tournaments.models import Tournament
 from users.models import GameHistory
 
@@ -110,8 +109,6 @@ class GameConsumer(AsyncWebsocketConsumer):
             "pad_width": game.pad_width,
             "pad_height": game.pad_height,
             "status": game.status,
-            "key_released": False,
-            "key_pressed": False,
         }
 
         message = {
