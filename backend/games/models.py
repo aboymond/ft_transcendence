@@ -3,7 +3,7 @@ from django.db import models
 from django.conf import settings
 from django_prometheus.models import ExportModelOperationsMixin
 
-BALL_SPEED = 5
+BALL_SPEED = 10
 
 
 class Game(ExportModelOperationsMixin("game"), models.Model):
@@ -83,12 +83,3 @@ class Game(ExportModelOperationsMixin("game"), models.Model):
 
     player1_ready = models.BooleanField(default=False)
     player2_ready = models.BooleanField(default=False)
-
-    def move_pad(self, player_id, x, y):
-        if self.player1.id == player_id:
-            self.pad1_x += x
-            self.pad1_y += y
-        elif self.player2.id == player_id:
-            self.pad2_x += x
-            self.pad2_y += y
-        self.save()
