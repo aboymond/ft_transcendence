@@ -35,6 +35,15 @@ load_dotenv()
 logger = logging.getLogger(__name__)
 
 
+class IsOwnProfileOrAdmin(permissions.BasePermission):
+    """
+    Custom permission to only allow users to edit their own profile, unless they are admins.
+    """
+
+    def has_object_permission(self, request, view, obj):
+        return obj == request.user or request.user.is_staff
+
+
 def ft_login(user):
     user.save()
     refresh = RefreshToken.for_user(user)
@@ -140,16 +149,17 @@ class AuthView(generics.GenericAPIView):
     def get(self, request, *args, **kwargs):
         print("AUTH - GET")
         authorization_url = "https://api.intra.42.fr/oauth/authorize?client_id={}&redirect_uri={}&response_type=code".format(
-            os.getenv("CLIENT"), f"https://{os.getenv('HOSTNAME')}/api/users/auth/callback"
+            os.getenv("CLIENT"), f"{os.getenv('HOSTNAME')}/api/users/auth/callback"
         )
         return redirect(authorization_url)
+
 
 class CallBackView(APIView):
     def get(self, request, *args, **kwargs):
         token_url = "https://api.intra.42.fr/oauth/token"
         client_id = os.getenv("CLIENT")
         client_secret = os.getenv("SECRET")
-        redirect_uri = f"https://{os.getenv('HOSTNAME')}/api/users/auth/callback"
+        redirect_uri = f"{os.getenv('HOSTNAME')}/api/users/auth/callback"
         code = request.GET.get("code")
 
         # Fetch access token
@@ -206,16 +216,14 @@ class CallBackView(APIView):
         if new_user.twofa is True:
             send_otp(new_user)
             redirect_url = (
-                f"/https://{os.getenv('HOSTNAME')}"
-                + "/verify-2fa?username="
-                + username
+                f"/{os.getenv('HOSTNAME')}" + "/verify-2fa?username=" + username
             )
             return redirect(redirect_url)
         else:
             refresh = RefreshToken.for_user(new_user)
             print(refresh.access_token)
             redirect_url = (
-                f"https://{os.getenv('HOSTNAME')}"
+                f"{os.getenv('HOSTNAME')}"
                 + "?access_token="
                 + str(refresh.access_token)
                 + "&user_id="
@@ -250,7 +258,7 @@ class UserListView(generics.ListAPIView):
 
 class UserUpdateView(generics.UpdateAPIView):
     serializer_class = ListUserSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsOwnProfileOrAdmin]
 
     def get_object(self):
         # Assumes the user is updating their own profile

@@ -144,7 +144,7 @@ export class PixiManager {
 
 	public openGameSocket(gameId: number) {
 		const hostname = import.meta.env.VITE_HOSTNAME;
-		const gameSocketUrl = `wss://${hostname}/ws/game/${gameId}/`;
+		const gameSocketUrl = `${hostname}/ws/game/${gameId}/`;
 		this.gameSocket = new WebSocket(gameSocketUrl);
 		let lastUpdateTime = 0;
 		let pingSum = 0;
@@ -158,7 +158,8 @@ export class PixiManager {
 		this.gameSocket.addEventListener('message', (event) => {
 			const message = JSON.parse(event.data);
 
-			const { action, data } = message; // Directly destructure action and data
+			const { action, data } = message;
+			console.log('Game WebSocket message:', action, data);
 			switch (action) {
 				case 'start_game':
 					this.loadScene(new SceneGame(this, gameId));

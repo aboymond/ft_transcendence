@@ -81,10 +81,15 @@ const Friends: React.FC = () => {
 		}
 	};
 
+	const handleSelectFriend = (friend: User) => {
+		//TODO
+		console.log('Selected friend:', friend);
+	};
+
 	return (
 		<div>
 			<hr />
-			<FriendList friends={friends} onRemove={handleRemove} />
+			<FriendList friends={friends} onRemove={handleRemove} onSelectFriend={handleSelectFriend} />
 			<hr />
 			<AddFriend />
 			<hr />

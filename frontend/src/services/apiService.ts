@@ -5,7 +5,7 @@ interface ErrorResponse {
 	detail?: string;
 }
 
-const API_BASE_URL = '/api'; // Update with your actual backend URL
+const api_url = import.meta.env.VITE_API_URL;
 
 function getHeaders(includeToken = true): HeadersInit {
 	const token = includeToken ? localStorage.getItem('token') : null;
@@ -22,12 +22,12 @@ async function fetchAPI(endpoint: string, options: RequestInit = {}, includeToke
 	if (options.body instanceof FormData && headers instanceof Headers) {
 		headers.delete('Content-Type');
 	}
-
-	const response = await fetch(`${API_BASE_URL}/${endpoint}`, {
+	const response = await fetch(`${api_url}/${endpoint}`, {
 		...options,
 		headers: headers,
-		mode: 'cors',
+		// mode: 'cors',
 	});
+	console.log('response', response);
 	if (response.status === 401) {
 		localStorage.removeItem('token');
 		throw new Error('Unauthorized');

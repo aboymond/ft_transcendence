@@ -10,6 +10,8 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 
 from .models import Game
 from .serializers import GameSerializer  # GameStateSerializer
@@ -71,39 +73,27 @@ class KeyPressView(View):
         game_id = data.get("game_id")
         player_id = data.get("player_id")
         key = data.get("key")
-        game = get_object_or_404(Game, id=game_id)
 
-        # Determine which pad to move based on the player_id
-        if game.player1_id == player_id:
-            pad_x = "pad1_x"
-            pad_y = "pad1_y"
-        elif game.player2_id == player_id:
-            pad_x = "pad2_x"
-            pad_y = "pad2_y"
-        else:
-            return JsonResponse({"error": "Invalid player ID"}, status=400)
+        # Define the action based on the key press
+        action = None
+        if key == "ArrowRight":
+            action = "move_right"
+        elif key == "ArrowLeft":
+            action = "move_left"
+        elif key == "Space":
+            action = "launch_ball"
 
-        if key == "Space" and game.player_turn == player_id and not game.paused:
-            print("Space key pressed")
-            game.ball_moving = True
-        elif key in ["ArrowRight", "ArrowLeft"]:
-            move_x = 10 if key == "ArrowRight" else -10
-            if not (
-                (getattr(game, pad_x) + move_x + game.pad_width / 2 > game.win_width)
-                or (getattr(game, pad_x) + move_x - game.pad_width / 2 < 0)
-            ):
-                game.move_pad(player_id, move_x, 0)
-        elif key in ["ArrowUp", "ArrowDown"]:
-            move_y = 10 if key == "ArrowDown" else -10
-            if not (
-                (getattr(game, pad_y) + move_y + game.pad_height / 2 > game.win_height)
-                or (getattr(game, pad_y) + move_y - game.pad_height / 2 < 0)
-            ):
-                game.move_pad(player_id, 0, move_y)
-        # elif key == "Escape":
-        #     game.paused = not game.paused
-
-        game.save()
+        # Send a message to the GameConsumer with the action
+        if action:
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                f"game_{game_id}",
+                {
+                    "type": "key_action",  # This should match a method in GameConsumer
+                    "player_id": player_id,
+                    "action": action,
+                },
+            )
 
         return JsonResponse({"status": "success"})
 
@@ -161,8 +151,15 @@ def leave_loading(request, game_id):
 def pause_game(request, game_id):
     game = get_object_or_404(Game, id=game_id)
     if request.user.id in [game.player1_id, game.player2_id]:
-        game.paused = True
-        game.save()
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f"game_{game_id}",
+            {
+                "type": "key_action",  # This should match a method in GameConsumer
+                "player_id": request.user.id,
+                "action": "pause",
+            },
+        )
         return Response({"status": "Game paused"}, status=status.HTTP_200_OK)
     else:
         return Response(
@@ -175,8 +172,15 @@ def pause_game(request, game_id):
 def resume_game(request, game_id):
     game = get_object_or_404(Game, id=game_id)
     if request.user.id in [game.player1_id, game.player2_id]:
-        game.paused = False
-        game.save()
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f"game_{game_id}",
+            {
+                "type": "key_action",
+                "player_id": request.user.id,
+                "action": "resume",
+            },
+        )
         return Response({"status": "Game resumed"}, status=status.HTTP_200_OK)
     else:
         return Response(
