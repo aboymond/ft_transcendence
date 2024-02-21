@@ -3,7 +3,7 @@
 .cursorignore
 /backend/users/config.yml
 info.txt
-.env
+.env*
 node_modules
 build.log
 
