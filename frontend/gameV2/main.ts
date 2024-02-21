@@ -2,7 +2,6 @@ import { PixiManager } from './PixiManager';
 import { SceneMenu } from './scenes/SceneMenu';
 import WebFont from 'webfontloader';
 
-
 export function launchGame(ws: WebSocket | null, userId: number | null) {
 	WebFont.load({
 		custom: {

@@ -151,7 +151,7 @@ export class PixiManager {
 		let pingCount = 0;
 
 		this.gameSocket.onopen = () => {
-			console.log('Game WebSocket opened:', gameId);
+			// console.log('Game WebSocket opened:', gameId);
 			lastUpdateTime = performance.now();
 		};
 
@@ -159,7 +159,7 @@ export class PixiManager {
 			const message = JSON.parse(event.data);
 
 			const { action, data } = message;
-			console.log('Game WebSocket message:', action, data);
+			// console.log('Game WebSocket message:', action, data);
 			switch (action) {
 				case 'start_game':
 					this.loadScene(new SceneGame(this, gameId));

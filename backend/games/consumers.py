@@ -62,6 +62,7 @@ class GameConsumer(AsyncWebsocketConsumer):
     async def disconnect(self, close_code):
         print("Disconnecting... (Game)")
         self.game_state["status"] = "completed"
+        await self.sync_game_state_to_db()
         if self.update_task:
             print("Cancelling periodic update...")
             self.update_task.cancel()
@@ -159,8 +160,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         await sync_to_async(game.save)()
 
     async def send_game_state(self):
-        game = await sync_to_async(Game.objects.get)(id=self.game_id)
-        if game is None or self.game_state["paused"] or game.status != "in_progress":
+        if self.game_state["paused"] or self.game_state["status"] != "in_progress":
             return
         message = {
             "action": "game_state_update",
@@ -185,16 +185,15 @@ class GameConsumer(AsyncWebsocketConsumer):
         )
 
     async def check_turn(self):
-        game = await database_sync_to_async(Game.objects.get)(id=self.game_id)
-        if game is None:
-            return
-        player1_id = game.player1_id
-        player2_id = game.player2_id
+        player1_id = self.game_state["player1_id"]
+        player2_id = self.game_state["player2_id"]
 
         PAD_WIDTH = self.game_state["pad_width"]
         BALL_SIZE = self.game_state["ball_width"]
 
+
         if self.game_state["player_turn"] == player1_id:
+            self.game_state["ball_velocity_y"] = -5
             # Adjust ball position relative to pad1
             if (
                 self.game_state["ball_x"] - BALL_SIZE / 2
@@ -217,6 +216,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                 / (PAD_WIDTH / 2)
             ) * 5
         elif self.game_state["player_turn"] == player2_id:
+            self.game_state["ball_velocity_y"] = 5
             # Adjust ball position relative to pad2
             if (
                 self.game_state["ball_x"] - BALL_SIZE / 2
@@ -244,7 +244,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         if (
             self.game_state["ball_x"] <= 1
             or self.game_state["ball_x"] + self.game_state["ball_width"] / 2
-            >= game.win_width - 1
+            >= self.game_state["win_width"] - 1
         ):
             self.game_state["ball_velocity_x"] = -self.game_state["ball_velocity_x"]
 
@@ -256,8 +256,9 @@ class GameConsumer(AsyncWebsocketConsumer):
         ):
             if (
                 self.game_state["ball_y"]
-                <= self.game_state["pad2_y"] + game.pad_height / 2 + 1
+                <= self.game_state["pad2_y"] + self.game_state["pad_height"] / 2 + 1
             ):
+                self.game_state["ball_velocity_y"] -= 0.2
                 self.game_state["ball_velocity_y"] = -self.game_state["ball_velocity_y"]
                 self.game_state["ball_velocity_x"] = (
                     (self.game_state["ball_x"] - self.game_state["pad2_x"])
@@ -272,21 +273,22 @@ class GameConsumer(AsyncWebsocketConsumer):
         ):
             if (
                 self.game_state["ball_y"]
-                >= self.game_state["pad1_y"] - game.pad_height - 1
+                >= self.game_state["pad1_y"] - self.game_state["pad_height"] - 1
             ):
                 self.game_state["ball_velocity_x"] = (
                     (self.game_state["ball_x"] - self.game_state["pad1_x"])
                     / (self.game_state["pad_width"] / 2)
                 ) * 5
+                self.game_state["ball_velocity_y"] += 0.2
                 self.game_state["ball_velocity_y"] = -self.game_state["ball_velocity_y"]
 
     async def check_score(self, game):
-        player1_id = game.player1_id
-        player2_id = game.player2_id
+        player1_id = self.game_state["player1_id"]
+        player2_id = self.game_state["player2_id"]
 
         if (
             self.game_state["ball_y"] < 1
-            or self.game_state["ball_y"] > game.win_height - 1
+            or self.game_state["ball_y"] > self.game_state["win_height"] - 1
         ):
             self.game_state["ball_moving"] = False
             self.game_state["ball_velocity_x"] = 0
@@ -294,21 +296,21 @@ class GameConsumer(AsyncWebsocketConsumer):
             if self.game_state["ball_y"] < 1:
                 self.game_state["player1_score"] += 1
                 self.game_state["player_turn"] = player2_id
-                self.game_state["pad1_x"] = game.win_width / 2
-                self.game_state["pad1_y"] = game.win_height - 10
-                self.game_state["pad2_x"] = game.win_width / 2
+                self.game_state["pad1_x"] = self.game_state["win_width"] / 2
+                self.game_state["pad1_y"] = self.game_state["win_height"] - 10
+                self.game_state["pad2_x"] = self.game_state["win_width"] / 2
                 self.game_state["pad2_y"] = 10
-                self.game_state["ball_x"] = game.win_width / 2
+                self.game_state["ball_x"] = self.game_state["win_width"] / 2
                 self.game_state["ball_y"] = self.game_state["pad2_y"] + 20
                 self.game_state["ball_velocity_y"] *= -1
             else:
                 self.game_state["player2_score"] += 1
                 self.game_state["player_turn"] = player1_id
-                self.game_state["pad1_x"] = game.win_width / 2
-                self.game_state["pad1_y"] = game.win_height - 10
-                self.game_state["pad2_x"] = game.win_width / 2
+                self.game_state["pad1_x"] = self.game_state["win_width"] / 2
+                self.game_state["pad1_y"] = self.game_state["win_height"] - 10
+                self.game_state["pad2_x"] = self.game_state["win_width"] / 2
                 self.game_state["pad2_y"] = 10
-                self.game_state["ball_x"] = game.win_width / 2
+                self.game_state["ball_x"] = self.game_state["win_width"] / 2
                 self.game_state["ball_y"] = self.game_state["pad1_y"] - 20
                 self.game_state["ball_velocity_y"] *= -1
             if (
@@ -420,6 +422,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                 "message": message,
             },
         )
+        await self.sync_game_state_to_db()
         await self.create_game_history(game)
 
     def determine_winner(self, game):
@@ -437,6 +440,9 @@ class GameConsumer(AsyncWebsocketConsumer):
         )
 
     async def create_game_history(self, game):
+        print("Creating game history...")
+        print("player1_score:", self.game_state["player1_score"])
+        print("player2_score:", self.game_state["player2_score"])
         game_history = GameHistory(
             winner=game.winner,
             player1_score=self.game_state["player1_score"],
