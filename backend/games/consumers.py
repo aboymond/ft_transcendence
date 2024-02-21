@@ -327,6 +327,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             print("Attempted to send a message to a closed WebSocket connection.")
 
     async def leave_game(self, event):
+        await self.sync_game_state_to_db()
         winner_id = event["winner_id"]
         loser_id = event["loser_id"]
         game_id = event["game_id"]
