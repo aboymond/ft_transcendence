@@ -35,6 +35,15 @@ load_dotenv()
 logger = logging.getLogger(__name__)
 
 
+class IsOwnProfileOrAdmin(permissions.BasePermission):
+    """
+    Custom permission to only allow users to edit their own profile, unless they are admins.
+    """
+
+    def has_object_permission(self, request, view, obj):
+        return obj == request.user or request.user.is_staff
+
+
 def ft_login(user):
     user.save()
     refresh = RefreshToken.for_user(user)
@@ -249,7 +258,7 @@ class UserListView(generics.ListAPIView):
 
 class UserUpdateView(generics.UpdateAPIView):
     serializer_class = ListUserSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsOwnProfileOrAdmin]
 
     def get_object(self):
         # Assumes the user is updating their own profile
