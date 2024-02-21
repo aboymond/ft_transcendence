@@ -3,8 +3,7 @@ import { SceneMenu } from './SceneMenu';
 import { SceneWinOrLooseLocal } from './SceneWinOrLooseLocal';
 import * as PIXI from 'pixi.js';
 import { defaultColor } from '../index';
-import {AudioManager} from '../AudioManager';
-
+import { AudioManager } from '../AudioManager';
 
 export class SceneGamePvpLocal extends SceneBase {
 	// FOR THE BACK ======================================
@@ -64,7 +63,6 @@ export class SceneGamePvpLocal extends SceneBase {
 
 	public onUpdate() {
 		if (!this._exitBool) {
-
 			if (!this._gameStarted) this._checkTurn();
 			else {
 				this._addVelocity();
@@ -75,10 +73,10 @@ export class SceneGamePvpLocal extends SceneBase {
 		this._updatePadPosition();
 		if (this._data.player1_score === this.root.amountVictory) {
 			this.root.playerAWin = true;
-			this.root.loadScene(new SceneWinOrLooseLocal(this.root, "Player 1"));
+			this.root.loadScene(new SceneWinOrLooseLocal(this.root, 'Player 1'));
 		} else if (this._data.player2_score === this.root.amountVictory) {
 			this.root.playerAWin = false;
-			this.root.loadScene(new SceneWinOrLooseLocal(this.root, "Player 2"));
+			this.root.loadScene(new SceneWinOrLooseLocal(this.root, 'Player 2'));
 		}
 	}
 
@@ -228,7 +226,7 @@ export class SceneGamePvpLocal extends SceneBase {
 			}
 
 			if (this._keysPressed['KeyA']) {
-				console.log('keya')
+				console.log('keya');
 				if (!(this._padPlayer2.x - this._padPlayer2.width / 2 < 0)) {
 					this._padPlayer2.x -= 10;
 				}
@@ -236,16 +234,12 @@ export class SceneGamePvpLocal extends SceneBase {
 
 			// start with space
 			if (this._keysPressed['Space']) {
-
-				if (this._playerTurn)
-					if (this._gameStarted == false) this._gameStarted = true;
+				if (this._playerTurn) if (this._gameStarted == false) this._gameStarted = true;
 			}
 
 			if (this._keysPressed['KeyS']) {
-				if (!(this._playerTurn))
-					if (this._gameStarted == false) this._gameStarted = true;
+				if (!this._playerTurn) if (this._gameStarted == false) this._gameStarted = true;
 			}
-
 		} else {
 			if (this._keysPressed['ArrowRight']) {
 				this._exitYesNO = false;
@@ -296,7 +290,6 @@ export class SceneGamePvpLocal extends SceneBase {
 	}
 
 	private _updateScoreText() {
-
 		this._scoreText.text = this._data.player2_score + '\n \n' + this._data.player1_score;
 		this._scoreText.x = this.root.width / 2 - this._scoreText.width / 2;
 		this._scoreText.y = this.root.height / 2 - this._scoreText.height / 2;

@@ -53,7 +53,6 @@ const WebSocketHandler: React.FC<Props> = ({ children }) => {
 	const messageHandler = (e: MessageEvent) => {
 		const { type, payload } = JSON.parse(e.data);
 		const { action, data } = payload;
-		console.log('General:', { type, action, data });
 		setMessage({ type, payload: { action, data } });
 
 		if (type === 'user_event' && action === 'user_status') {

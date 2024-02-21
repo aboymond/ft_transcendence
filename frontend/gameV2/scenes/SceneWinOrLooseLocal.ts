@@ -14,7 +14,7 @@ export class SceneWinOrLooseLocal extends SceneBase {
 		super(root);
 	}
 
-	private _textPlayer = new PIXI.Text("");
+	private _textPlayer = new PIXI.Text('');
 	private _textWin = new PIXI.Text('WIN', textStyleWinOrLoose);
 	private _interval = 0;
 	//=======================================
@@ -26,11 +26,9 @@ export class SceneWinOrLooseLocal extends SceneBase {
 	//=======================================
 
 	public async onStart(container: PIXI.Container) {
-
-		this._textPlayer.text = this._player; 
+		this._textPlayer.text = this._player;
 		container.addChild(this._initTextWin(this._textWin));
 		container.addChild(this._initTextPlayer(this._textPlayer));
-		console.log("win: " + this._player + " win text: " + this._textPlayer.text);
 
 		AudioManager.play('win');
 		this._interval = window.setInterval(() => {
@@ -75,5 +73,4 @@ export class SceneWinOrLooseLocal extends SceneBase {
 		text.visible = true;
 		return text;
 	}
-
 }

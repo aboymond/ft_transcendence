@@ -21,7 +21,7 @@ export class SceneGame extends SceneBase {
 	private _ball = new PIXI.Graphics();
 	private _pad1 = new PIXI.Graphics();
 	private _pad2 = new PIXI.Graphics();
-	private _scoreText = new PIXI.Text('0\n \n 0', { fill: defaultColor });
+	private _scoreText = new PIXI.Text('0\n \n0', { fill: defaultColor });
 	private _keysPressed: { [key: string]: boolean } = {};
 
 	private _exitMenu = new PIXI.Container();

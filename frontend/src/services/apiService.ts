@@ -27,7 +27,6 @@ async function fetchAPI(endpoint: string, options: RequestInit = {}, includeToke
 		headers: headers,
 		// mode: 'cors',
 	});
-	console.log('response', response);
 	if (response.status === 401) {
 		localStorage.removeItem('token');
 		throw new Error('Unauthorized');
