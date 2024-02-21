@@ -8,8 +8,10 @@ import styles from '../styles/BarNav.module.css';
 import FriendRequestNotification from './FriendRequestNotification';
 
 const ensureHttps = (url: string) => {
+	console.log(url);
+	console.log(url.replace(/^http:/, 'https:'));
 	if (!url) return url;
-	return url.replace(/^https:/, 'http:');
+	return url.replace(/^http:/, 'https:');
   };
 
 const BarNav: React.FC = () => {
