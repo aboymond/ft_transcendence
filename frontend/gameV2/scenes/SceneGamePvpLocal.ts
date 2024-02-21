@@ -87,8 +87,6 @@ export class SceneGamePvpLocal extends SceneBase {
 	public onKeyDown(e: KeyboardEvent) {
 		this._keysPressed[e.code] = true;
 
-		console.log(e.code);
-
 		if (e.code === 'Escape' && !this._escapeKeyPressed) {
 			this._escapeKeyPressed = true;
 			this._exitBool = !this._exitBool;
@@ -219,14 +217,12 @@ export class SceneGamePvpLocal extends SceneBase {
 			}
 
 			if (this._keysPressed['KeyD']) {
-				console.log('keyd');
 				if (!(this._padPlayer2.x + this._padPlayer2.width / 2 > this.root.width)) {
 					this._padPlayer2.x += 10;
 				}
 			}
 
 			if (this._keysPressed['KeyA']) {
-				console.log('keya');
 				if (!(this._padPlayer2.x - this._padPlayer2.width / 2 < 0)) {
 					this._padPlayer2.x -= 10;
 				}
