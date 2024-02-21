@@ -140,13 +140,27 @@ class ListUserSerializer(serializers.ModelSerializer):
         read_only_fields = [
             "id",
             "username",
-            "display_name",
             "wins",
             "losses",
             "tournament_wins",
-            "avatar",
             "status",
         ]
+
+        def update(self, instance, validated_data):
+            # Update display name if it's in the validated data
+            instance.display_name = validated_data.get(
+                "display_name", instance.display_name
+            )
+            instance.username = validated_data.get("username", instance.username)
+            # Update password if it's in the validated data and not empty
+            password = validated_data.get("password")
+            if password:
+                instance.set_password(password)
+
+            # Save the instance with updated fields
+            instance.save()
+
+            return instance
 
 
 class FriendshipSerializer(serializers.ModelSerializer):
