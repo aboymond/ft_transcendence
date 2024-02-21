@@ -38,7 +38,8 @@ const Profile: React.FC = () => {
 			if (avatar) {
 				await apiService.uploadUserAvatar(avatar);
 			}
-			console.log('Profile updated successfully');
+			
+			('Profile updated successfully');
 			setIsEditing(false);
 
 			// Fetch the updated profile

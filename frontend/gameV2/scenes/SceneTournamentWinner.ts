@@ -14,7 +14,7 @@ export class SceneTournamentWinner extends SceneBase {
 
 	constructor(
 		public root: PixiManager,
-		private _gameId: number,
+		// private _gameId: number,
 		private _playerName: string,
 	) {
 		super(root);

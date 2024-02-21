@@ -21,7 +21,7 @@ export class SceneGame extends SceneBase {
 	private _ball = new PIXI.Graphics();
 	private _pad1 = new PIXI.Graphics();
 	private _pad2 = new PIXI.Graphics();
-	private _scoreText = new PIXI.Text('0\n -\n 0', { fill: defaultColor });
+	private _scoreText = new PIXI.Text('0\n \n 0', { fill: defaultColor });
 	private _keysPressed: { [key: string]: boolean } = {};
 
 	private _exitMenu = new PIXI.Container();
@@ -201,7 +201,7 @@ export class SceneGame extends SceneBase {
 		}
 	}
 	private _updateScoreText() {
-		this._scoreText.text = this._data.player2_score + '\n - \n' + this._data.player1_score;
+		this._scoreText.text = this._data.player2_score + '\n \n' + this._data.player1_score;
 		this._scoreText.x = this.root.width / 2 - this._scoreText.width / 2;
 		this._scoreText.y = this.root.height / 2 - this._scoreText.height / 2;
 		this._scoreText.alpha = 0.2;
