@@ -117,6 +117,8 @@ class UserSerializer(serializers.ModelSerializer):
 class ListUserSerializer(serializers.ModelSerializer):
     match_history = GameHistorySerializer(many=True, read_only=True)
     tournament_history_played = TournamentHistorySerializer(many=True, read_only=True)
+    
+    friendship_id = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -129,6 +131,8 @@ class ListUserSerializer(serializers.ModelSerializer):
             "tournament_wins",
             "avatar",
             "status",
+            "friendship_id",
+            "twofa",
             "match_history",
             "tournament_history_played",
         ]
@@ -136,26 +140,38 @@ class ListUserSerializer(serializers.ModelSerializer):
             "id",
             "username",
             "wins",
+            "twofa",
             "losses",
             "tournament_wins",
             "status",
         ]
 
-        def update(self, instance, validated_data):
-            # Update display name if it's in the validated data
-            instance.display_name = validated_data.get(
-                "display_name", instance.display_name
-            )
-            instance.username = validated_data.get("username", instance.username)
-            # Update password if it's in the validated data and not empty
-            password = validated_data.get("password")
-            if password:
-                instance.set_password(password)
+    def update(self, instance, validated_data):
+        # Update display name if it's in the validated data
+        instance.display_name = validated_data.get(
+            "display_name", instance.display_name
+        )
+        instance.username = validated_data.get("username", instance.username)
+        # Update password if it's in the validated data and not empty
+        password = validated_data.get("password")
+        if password:
+            instance.set_password(password)
 
-            # Save the instance with updated fields
-            instance.save()
+        # Save the instance with updated fields
+        instance.save()
 
-            return instance
+        return instance
+        
+    def get_friendship_id(self, obj):
+        request = self.context.get("request")
+        if request and request.user and not isinstance(request.user, AnonymousUser):
+            friendship = Friendship.objects.filter(
+                Q(requester=request.user, receiver=obj)
+                | Q(requester=obj, receiver=request.user),
+                status="accepted",
+            ).first()
+            return friendship.id if friendship else None  # type: ignore
+        return None
 
 
 class FriendshipSerializer(serializers.ModelSerializer):
