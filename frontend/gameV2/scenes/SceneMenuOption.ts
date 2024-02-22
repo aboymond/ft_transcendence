@@ -14,13 +14,13 @@ import { SceneGameVsBot } from './SceneGameVsBot';
 import { SceneLoadingPage } from './SceneLoadingPage';
 import { SceneGamePvpLocal } from './SceneGamePvpLocal';
 import { apiService } from '../../src/services/apiService';
-import {AudioManager} from '../AudioManager';
+import { AudioManager } from '../AudioManager';
 import { Tools } from '../Tools';
 
 const selectMax = 4;
 let errorLock: boolean = false;
 
-let ifLocal: boolean = true; 
+let ifLocal: boolean = true;
 
 enum menu {
 	COLOR = 0,
@@ -44,7 +44,7 @@ const chooseColor: string[] = [
 	'0X1AFF00',
 	'GREEN NEON',
 ];
-const chooseVictoryAmount: number[] = [5, 10, 20, 30];
+const chooseVictoryAmount: number[] = [1, 3, 5, 10];
 const chooseBotLevel: string[] = ['EASY', 'MEDIUM', 'HARD', 'IMPOSSIBLE!!!'];
 const botLvlNum: number[] = [0.05, 0.075, 0.09, 0.9];
 const choosePad: string[] = ['BASIC', 'LOCKED', 'LOCKED', 'LOCKED', 'LOCKED', 'LOCKED'];
@@ -83,11 +83,11 @@ export class SceneMenuOption extends SceneBase {
 	// HOOK
 	//=======================================
 
-	private _textColorAvatar = new PIXI.Text('< CHOOSE COLOR {GREEN} >', textStyleMenuOptionColor);
-	private _textPad = new PIXI.Text('< CHOOSE PAD {BASIC}>', textStyleMenuOptionPad);
-	private _textBotLevel = new PIXI.Text('< CHOOSE BOT LEVEL {EASY} >', textStyleMenuOptionLevel);
-	private _textPvpOption = new PIXI.Text('< PVP OPTION {LOCAL} >', textStyleMenuOptionLevel);
-	private _textVictoryAmount = new PIXI.Text('< CHOOSE VICTORY AMOUNT {5} >', textStyleMenuOptionVictory);
+	private _textColorAvatar = new PIXI.Text('< CHOOSE COLOR [GREEN] >', textStyleMenuOptionColor);
+	private _textPad = new PIXI.Text('< CHOOSE PAD [BASIC]>', textStyleMenuOptionPad);
+	private _textBotLevel = new PIXI.Text('< CHOOSE BOT LEVEL [EASY] >', textStyleMenuOptionLevel);
+	private _textPvpOption = new PIXI.Text('< PVP OPTION [LOCAL] >', textStyleMenuOptionLevel);
+	private _textVictoryAmount = new PIXI.Text('< CHOOSE VICTORY AMOUNT [1] >', textStyleMenuOptionVictory);
 	private _textPlay = new PIXI.Text('PLAY', textStyleMenuOptionPlay);
 	private _textErrorPad = new PIXI.Text('SELECT AN AVALIBLE PAD', textStyleMenuOptionError);
 	private _textErrorOK = new PIXI.Text('[ ENTER ]', textStyleMenuOptionError);
@@ -140,7 +140,6 @@ export class SceneMenuOption extends SceneBase {
 	}
 
 	public onKeyDown(e: KeyboardEvent) {
-
 		if (e.code === 'ArrowUp') {
 			AudioManager.play('select');
 			if (!errorLock) this._pressUp();
@@ -231,8 +230,8 @@ export class SceneMenuOption extends SceneBase {
 		pop.beginFill('green');
 		pop.drawRect(-280, -150, 280, 150);
 		pop = Tools.resizeGraphics(pop, this.root.width, 70);
-		pop.x = (this.root.width / 2) + pop.width / 2;
-		pop.y = (this.root.height * 80) / 100; 
+		pop.x = this.root.width / 2 + pop.width / 2;
+		pop.y = (this.root.height * 80) / 100;
 		pop.endFill();
 		pop.visible = false;
 		return pop;
@@ -251,17 +250,15 @@ export class SceneMenuOption extends SceneBase {
 	//=======================================
 
 	private _createGame() {
-		if (this._currentSelect != menu.PLAY)
-			return;
+		if (this._currentSelect != menu.PLAY) return;
 		if (this.root.vsPlayer && this._currentPad === 0) {
 			// Send a request to the backend to create a game
 			AudioManager.play('enter');
 			if (ifLocal) {
 				this.root.loadScene(new SceneGamePvpLocal(this.root));
-			}
-			else {
+			} else {
 				apiService
-					.createGame(this.root.userId ?? 0) //TODO
+					.createGame(this.root.userId ?? 0, chooseVictoryAmount[this._currentVictory]) //TODO
 					.then((response) => {
 						console.log('Game created successfully', response);
 						this.root.loadScene(new SceneLoadingPage(this.root, response.id));
@@ -295,8 +292,7 @@ export class SceneMenuOption extends SceneBase {
 		if (this._currentSelect === menu.COLOR) return this._colorPrev();
 		if (!this.root.vsPlayer) {
 			if (this._currentSelect === menu.BOT_LVL) return this._botLvlPrev();
-		}
-		else {
+		} else {
 			if (this._currentSelect === menu.BOT_LVL) return this._pvpOptionPrev();
 		}
 		if (this._currentSelect === menu.VICTORY_AMOUNT) return this._VictoryAmountPrev();
@@ -307,8 +303,7 @@ export class SceneMenuOption extends SceneBase {
 		if (this._currentSelect === menu.COLOR) return this._colorNext();
 		if (!this.root.vsPlayer) {
 			if (this._currentSelect === menu.BOT_LVL) return this._botLvlNext();
-		}
-		else {
+		} else {
 			if (this._currentSelect === menu.BOT_LVL) return this._pvpOptionNext();
 		}
 		if (this._currentSelect === menu.VICTORY_AMOUNT) return this._VictoryAmountNext();
@@ -372,9 +367,7 @@ export class SceneMenuOption extends SceneBase {
 		this._textPvpOption.x = this.root.width / 2 - this._textPvpOption.width / 2;
 		if (this._currentPvpOption === 0) {
 			ifLocal = true;
-		}
-		else	
-			ifLocal = false;
+		} else ifLocal = false;
 	}
 
 	private _pvpOptionNext() {
@@ -384,9 +377,7 @@ export class SceneMenuOption extends SceneBase {
 		this._textPvpOption.x = this.root.width / 2 - this._textPvpOption.width / 2;
 		if (this._currentPvpOption === 0) {
 			ifLocal = true;
-		}
-		else	
-			ifLocal = false;
+		} else ifLocal = false;
 	}
 
 	private _VictoryAmountPrev() {

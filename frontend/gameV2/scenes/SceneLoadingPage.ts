@@ -197,7 +197,7 @@ export class SceneLoadingPage extends SceneBase {
 	private _initMoreTips() {
 		const moreTips = new PIXI.Container();
 
-		this._textPress.y = (this.root.height * 65) / 100;
+		this._textPress.y = (this.root.height * 70) / 100;
 		this._textPress.x = ((this.root.width - this._textPress.width / 2) * 50) / 100;
 		this._textPress.style.fill = defaultColor;
 		this._textPress.style.fontSize = this.root.width / 28;
