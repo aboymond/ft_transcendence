@@ -63,9 +63,12 @@ def handle_leave_game(game_id, user):
 
 def create_game_history(game):
     game_history = GameHistory(
+        player1=game.player1,
+        player2=game.player2,
         winner=game.winner,
         player1_score=game.player1_score,
         player2_score=game.player2_score,
+        played_at=game.start_time,
     )
     game_history.save()
     game_history.players.add(game.player1, game.player2)

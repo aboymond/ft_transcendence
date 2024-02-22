@@ -31,9 +31,14 @@ class CreateGameView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         user_id = self.request.data.get("user_id")
+        max_score = self.request.data.get("max_score")
         user = get_object_or_404(User, pk=user_id)
         serializer.save(
-            player1=user, player2=None, status="waiting", player_turn=user.id
+            player1=user,
+            player2=None,
+            status="waiting",
+            player_turn=user.id,
+            max_score=max_score,
         )
 
 

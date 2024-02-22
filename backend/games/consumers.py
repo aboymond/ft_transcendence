@@ -17,6 +17,7 @@ User = get_user_model()
 
 BALL_SPEED = 10
 
+
 class GameConsumer(AsyncWebsocketConsumer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -192,7 +193,6 @@ class GameConsumer(AsyncWebsocketConsumer):
         PAD_WIDTH = self.game_state["pad_width"]
         BALL_SIZE = self.game_state["ball_width"]
 
-
         if self.game_state["player_turn"] == player1_id:
             self.game_state["ball_velocity_y"] = -BALL_SPEED
             # Adjust ball position relative to pad1
@@ -310,7 +310,9 @@ class GameConsumer(AsyncWebsocketConsumer):
                 self.game_state["pad1_x"] = self.game_state["win_width"] / 2
                 self.game_state["pad2_x"] = self.game_state["win_width"] / 2
                 self.game_state["ball_x"] = self.game_state["win_width"] / 2
-                self.game_state["ball_y"] = self.game_state["pad1_y"] - self.game_state["pad_height"] - 20
+                self.game_state["ball_y"] = (
+                    self.game_state["pad1_y"] - self.game_state["pad_height"] - 20
+                )
                 self.game_state["ball_velocity_y"] *= -1
             if (
                 self.game_state["player1_score"] >= self.game_state["max_score"]
@@ -439,16 +441,19 @@ class GameConsumer(AsyncWebsocketConsumer):
         )
 
     async def create_game_history(self, game):
-        print("Creating game history...")
-        print("player1_score:", self.game_state["player1_score"])
-        print("player2_score:", self.game_state["player2_score"])
+        # Fetch player1 and player2 asynchronously
+        player1 = await database_sync_to_async(lambda: game.player1)()
+        player2 = await database_sync_to_async(lambda: game.player2)()
+
         game_history = GameHistory(
-            winner=game.winner,
+            player1=player1,
+            player2=player2,
             player1_score=self.game_state["player1_score"],
             player2_score=self.game_state["player2_score"],
+            winner=game.winner,
+            played_at=game.end_time,
         )
-        game_history.save()
-        game_history.players.add(game.player1, game.player2)
+        await database_sync_to_async(game_history.save)()
 
     async def sync_game_state_to_db(self):
         game = await database_sync_to_async(Game.objects.get)(id=self.game_id)
