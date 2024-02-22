@@ -37,7 +37,7 @@ ALLOWED_HOSTS = [
     "nginx",
     "frontend",
     "backend",
-    # "localhost",
+    "localhost",
     os.environ.get("ALLOWED_HOSTS", "localhost"),
 ]
 
