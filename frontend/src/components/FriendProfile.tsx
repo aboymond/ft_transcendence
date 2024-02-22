@@ -26,12 +26,17 @@ const FriendProfile: React.FC<FriendProfileProps> = ({ friend, onClose }) => {
 			<p>Losses: {friend.losses}</p>
 			<p>Status: {friend.status}</p>
 			<div className={styles.centeredContent}>
-				<h4 className={styles.title}>Game History</h4>
+				<h5 className={styles.title}>Game History</h5>
 				<ul className={styles.gameHistoryList}>
 					{gameHistory.map((game) => (
 						<li key={game.id} className={styles.gameHistoryItem}>
-							{game.players[0].username} {game.player1_score} - {game.player2_score}{' '}
-							{game.players[1].username}
+							{game.player1 && game.player2 ? (
+								<>
+									{game.player1.username} {game.player1_score} - {game.player2_score} {game.player2.username}
+								</>
+							) : (
+								'Game data is incomplete'
+							)}
 						</li>
 					))}
 				</ul>

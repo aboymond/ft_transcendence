@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiService } from '../services/apiService';
-import { GameHistory } from '../types';
+import { GameHistory } from '../types'; // Ensure this type is updated accordingly
 import styles from '../styles/GameHistoryList.module.css';
 import { useAuth } from '../hooks/useAuth';
 
@@ -43,7 +43,13 @@ const GameHistoryList: React.FC = () => {
 			<ul className={styles.gameHistoryList}>
 				{gameHistory.slice(page * 10, (page + 1) * 10).map((game) => (
 					<li className={styles.gameHistoryItem} key={game.id}>
-						{game.players[0].username} {game.player1_score} - {game.player2_score} {game.players[1].username}
+						{game.player1 && game.player2 ? (
+							<>
+								{game.player1.username} {game.player1_score} - {game.player2_score} {game.player2.username}
+							</>
+						) : (
+							'Game data is incomplete'
+						)}
 					</li>
 				))}
 			</ul>
