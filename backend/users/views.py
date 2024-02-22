@@ -221,7 +221,7 @@ class CallBackView(APIView):
         if user.twofa is True:
             send_otp(user)
             redirect_url = (
-                f"/{os.getenv('HOSTNAME')}" + "/verify-2fa?username=" + username
+                f"{os.getenv('HOSTNAME')}" + "/verify-2fa?username=" + username
             )
             return redirect(redirect_url)
         else:
