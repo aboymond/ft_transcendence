@@ -14,12 +14,12 @@ export class SceneMenu extends SceneBase {
 
 	public async onStart(container: PIXI.Container) {
 		try {
-			// 	const gameResponse = await apiService.getCurrentGame();
-			// 	const gameId = gameResponse.length > 0 ? gameResponse[0].id : null;
-			// 	if (gameId) {
-			// 		this.root.openGameSocket(gameId);
-			// 		return;
-			// 	}
+			// const gameResponse = await apiService.getCurrentGame();
+			// const gameId = gameResponse.length > 0 ? gameResponse[0].id : null;
+			// if (gameId) {
+			// 	this.root.openGameSocket(gameId);
+			// 	return;
+			// }
 
 			const tournamentResponse = await apiService.getCurrentTournament();
 			const tournamentId = tournamentResponse.length > 0 ? tournamentResponse[0].id : null;

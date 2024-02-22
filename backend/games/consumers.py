@@ -68,7 +68,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                 elif self.user_id == self.game.player2_id:
                     self.game.player2_ready = False
                 print("Game status:", self.game.status)
-                if not self.game.player1_ready and not self.game.player2_ready:
+                if not self.game.player1_ready or not self.game.player2_ready:
                     self.game.status = "completed"
                     if self.update_task:
                         print("Cancelling periodic update...")
@@ -77,14 +77,9 @@ class GameConsumer(AsyncWebsocketConsumer):
                             await self.update_task
                         except asyncio.CancelledError:
                             pass
-                elif (
-                    self.game.player1_ready != self.game.player2_ready
-                    and self.game.status == "in_progress"
-                ):
-                    pass
-                    # self.game.status = "pending"
-                await sync_to_async(self.game.save)()
 
+                await sync_to_async(self.game.save)()
+                print("Game status:", self.game.status)
                 await self.notify_status_change()
 
         await self.channel_layer.group_discard(self.game_group_name, self.channel_name)
@@ -100,7 +95,8 @@ class GameConsumer(AsyncWebsocketConsumer):
 
         self.game = await sync_to_async(Game.objects.get)(id=self.game_id)
 
-        if self.game.status != "pending":
+        print("status:", self.game.status)
+        if self.game.status == "waiting":
             self.game.start_time = timezone.now()
             self.game.status = "in_progress"
             await sync_to_async(self.game.save)()
@@ -133,9 +129,6 @@ class GameConsumer(AsyncWebsocketConsumer):
                 "pad_height": self.game.pad_height,
                 "status": self.game.status,
             }
-        else:
-            self.game.status = "in_progress"
-            await sync_to_async(self.game.save)()
 
         await self.notify_players_game_started()
 
@@ -329,6 +322,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                 self.game_state["status"] = "completed"
                 await self.sync_game_state_to_db()
                 await self.end_game(game)
+            await self.sync_game_state_to_db()
 
     async def game_message(self, event):
         message = event["message"]
@@ -338,20 +332,24 @@ class GameConsumer(AsyncWebsocketConsumer):
             print("Attempted to send a message to a closed WebSocket connection.")
 
     async def leave_game(self, event):
-        # user_id = event["user_id"]
+        print("Leaving game...")
+        user_id = event["user_id"]
         game_id = event["game_id"]
         winner_id = event["winner_id"]
         loser_id = event["loser_id"]
 
         game = await database_sync_to_async(Game.objects.get)(id=game_id)
-        winner = await database_sync_to_async(User.objects.get)(id=winner_id)
-        loser = await database_sync_to_async(User.objects.get)(id=loser_id)
+
+        game.winner = await self.determine_winner(game.id)
+        game.loser = await self.determine_loser(game.id)
+        self.game_state["status"] = "completed"
         game.status = "completed"
-        winner.wins += 1
-        loser.losses += 1
+        game.winner.wins += 1
+        game.loser.losses += 1
+        await database_sync_to_async(game.winner.save)()
+        await database_sync_to_async(game.loser.save)()
         await database_sync_to_async(game.save)()
-        await database_sync_to_async(winner.save)()
-        await database_sync_to_async(loser.save)()
+        await self.create_game_history(game)
 
         game = await database_sync_to_async(Game.objects.get)(id=game_id)
         if game.tournament_id is not None:
@@ -392,7 +390,9 @@ class GameConsumer(AsyncWebsocketConsumer):
             return None
 
     async def end_game(self, game):
+        print("Ending game...")
         game.status = "completed"
+        self.game_state["status"] = "completed"
         game.winner = await self.determine_winner(game.id)
         game.loser = await self.determine_loser(game.id)
         game.end_time = timezone.now()
@@ -433,6 +433,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             },
         )
         # await self.sync_game_state_to_db()
+        print("Game ended.")
         await self.create_game_history(game)
 
     async def determine_winner(self, game_id):
@@ -460,16 +461,16 @@ class GameConsumer(AsyncWebsocketConsumer):
             return player1
 
     async def create_game_history(self, game):
-        # Fetch player1 and player2 asynchronously
         player1 = await database_sync_to_async(lambda: game.player1)()
         player2 = await database_sync_to_async(lambda: game.player2)()
-
+        winnner = await database_sync_to_async(lambda: game.winner)()
+        print("Creating game history...")
         game_history = GameHistory(
-            player1=player1,
-            player2=player2,
-            player1_score=self.game_state["player1_score"],
-            player2_score=self.game_state["player2_score"],
-            winner=game.winner,  # Ensure game.winner is handled correctly
+            player1=game.player1,
+            player2=game.player2,
+            player1_score=game.player1_score,
+            player2_score=game.player2_score,
+            winner=game.winner,
             played_at=game.end_time,
         )
         await database_sync_to_async(game_history.save)()
@@ -554,7 +555,6 @@ class GameConsumer(AsyncWebsocketConsumer):
             "action": "start_game",
             "data": {
                 "message": "Game has started",
-                # Include any other relevant game state information
             },
         }
         await self.channel_layer.group_send(
