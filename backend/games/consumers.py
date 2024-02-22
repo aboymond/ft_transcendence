@@ -1,6 +1,7 @@
 import time
 import json
 import asyncio
+import urllib.parse
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from asgiref.sync import sync_to_async
@@ -9,7 +10,6 @@ from django.contrib.auth import get_user_model
 from websockets.exceptions import ConnectionClosedOK
 
 from .models import Game
-from .utils import handle_leave_game
 from tournaments.models import Tournament
 from users.models import GameHistory
 
@@ -17,120 +17,135 @@ User = get_user_model()
 
 BALL_SPEED = 10
 
+
 class GameConsumer(AsyncWebsocketConsumer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.update_task = None
-        self.game_state = {
-            "player1_id": None,
-            "player2_id": None,
-            "player1_ready": False,
-            "player2_ready": False,
-            "pad1_x": 0,
-            "pad1_y": 0,
-            "pad2_x": 0,
-            "pad2_y": 0,
-            "ball_x": 0,
-            "ball_y": 0,
-            "player1_score": 0,
-            "player2_score": 0,
-            "player_turn": 0,
-            "paused": False,
-            "ball_moving": False,
-            "ball_velocity_x": 0,
-            "ball_velocity_y": 0,
-            "max_score": 5,
-            "win_width": 426,
-            "win_height": 563,
-            "ball_width": 10,
-            "pad_width": 100,
-            "pad_height": 10,
-            "status": "in_progress",
-            "key_released": False,
-            "key_pressed": False,
-        }
+        self.game_state = {}
 
     async def connect(self):
-        print("Connecting... (Game)")
         self.game_id = self.scope["url_route"]["kwargs"]["game_id"]
-        self.game_group_name = f"game_{self.game_id}"
-        await self.channel_layer.group_add(self.game_group_name, self.channel_name)
-        await self.accept()
+        query_string = self.scope["query_string"].decode()
+        query_params = urllib.parse.parse_qs(query_string)
+        self.user_id = query_params.get("user_id", [None])[0]
 
-        if await self.ready_to_start_game():
-            await self.start_game()
+        if self.user_id is not None:
+            self.user_id = int(self.user_id)  # Convert user_id to int
+            self.user = await self.get_user(self.user_id)
+            if self.user:
+                print(f"Connecting... game_id: {self.game_id}, user_id: {self.user_id}")
+                self.game_group_name = f"game_{self.game_id}"
+                await self.channel_layer.group_add(
+                    self.game_group_name, self.channel_name
+                )
+                await self.accept()
+
+                self.game = await sync_to_async(Game.objects.get)(id=self.game_id)
+
+                # Determine the player based on user_id and set ready flag
+                if self.user_id == self.game.player1_id:
+                    self.game.player1_ready = True
+                elif self.user_id == self.game.player2_id:
+                    self.game.player2_ready = True
+                await sync_to_async(self.game.save)()
+
+                if await self.ready_to_start_game():
+                    await self.start_game()
+            else:
+                print("User not found.")
+                await self.close()
+        else:
+            print("User ID not provided.")
+            await self.close()
 
     async def disconnect(self, close_code):
-        print("Disconnecting... (Game)")
-        self.game_state["status"] = "completed"
-        await self.sync_game_state_to_db()
-        if self.update_task:
-            print("Cancelling periodic update...")
-            self.update_task.cancel()
-            try:
-                await self.update_task
-            except asyncio.CancelledError:
-                pass
+        print(f"Disconnecting... game_id: {self.game_id}, user_id: {self.user_id}")
+        if self.user_id is not None:
+            if self.game:
+                if self.user_id == self.game.player1_id:
+                    self.game.player1_ready = False
+                elif self.user_id == self.game.player2_id:
+                    self.game.player2_ready = False
+                print("Game status:", self.game.status)
+                if not self.game.player1_ready and not self.game.player2_ready:
+                    self.game.status = "completed"
+                    if self.update_task:
+                        print("Cancelling periodic update...")
+                        self.update_task.cancel()
+                        try:
+                            await self.update_task
+                        except asyncio.CancelledError:
+                            pass
+                elif (
+                    self.game.player1_ready != self.game.player2_ready
+                    and self.game.status == "in_progress"
+                ):
+                    pass
+                    # self.game.status = "pending"
+                await sync_to_async(self.game.save)()
+
+                await self.notify_status_change()
+
         await self.channel_layer.group_discard(self.game_group_name, self.channel_name)
 
     async def ready_to_start_game(self):
-        game = await sync_to_async(Game.objects.get)(id=self.game_id)
-        player1 = await sync_to_async(getattr)(game, "player1_ready", False)
-        player2 = await sync_to_async(getattr)(game, "player2_ready", False)
-        return player1 and player2
+        # Ensure the game object is up-to-date
+        self.game = await sync_to_async(Game.objects.get)(id=self.game_id)
+        return self.game.player1_ready and self.game.player2_ready
 
     async def start_game(self):
-        game = await sync_to_async(Game.objects.get)(id=self.game_id)
-        if game is None:
+        if not await self.ready_to_start_game():
             return
-        game.start_time = timezone.now()
-        game.status = "in_progress"
-        await sync_to_async(game.save)()
-        self.game_state = {
-            "player1_id": game.player1_id,
-            "player2_id": game.player2_id,
-            "player1_ready": game.player1_ready,
-            "player2_ready": game.player2_ready,
-            "pad1_x": game.win_width / 2,
-            "pad1_y": game.win_height - 10,
-            "pad2_x": game.win_width / 2,
-            "pad2_y": 10,
-            "ball_x": game.win_width / 2,
-            "ball_y": game.win_height - 10 - 20,
-            "player1_score": game.player1_score,
-            "player2_score": game.player2_score,
-            "player_turn": game.player1_id if game.player1_ready else game.player2_id,
-            "paused": game.paused,
-            "ball_moving": game.ball_moving,
-            "ball_velocity_x": game.ball_velocity_x,
-            "ball_velocity_y": game.ball_velocity_y,
-            "max_score": game.max_score,
-            "win_width": game.win_width,
-            "win_height": game.win_height,
-            "ball_width": game.ball_width,
-            "pad_width": game.pad_width,
-            "pad_height": game.pad_height,
-            "status": game.status,
-        }
 
-        message = {
-            "action": "start_game",
-            "data": {
-                "message": "Game has started",
-            },
-        }
-        await self.channel_layer.group_send(
-            self.game_group_name,
-            {
-                "type": "game_message",
-                "message": message,
-            },
-        )
-        print("Starting periodic update...")
-        self.update_task = asyncio.create_task(self._periodic_update())
+        self.game = await sync_to_async(Game.objects.get)(id=self.game_id)
+
+        if self.game.status != "pending":
+            self.game.start_time = timezone.now()
+            self.game.status = "in_progress"
+            await sync_to_async(self.game.save)()
+
+            self.game_state = {
+                "player1_id": self.game.player1_id,
+                "player2_id": self.game.player2_id,
+                "player1_ready": self.game.player1_ready,
+                "player2_ready": self.game.player2_ready,
+                "pad1_x": self.game.win_width / 2,
+                "pad1_y": self.game.win_height - 10,
+                "pad2_x": self.game.win_width / 2,
+                "pad2_y": 10,
+                "ball_x": self.game.win_width / 2,
+                "ball_y": self.game.win_height - 10 - 20,
+                "player1_score": self.game.player1_score,
+                "player2_score": self.game.player2_score,
+                "player_turn": self.game.player1_id
+                if self.game.player1_ready
+                else self.game.player2_id,
+                "paused": self.game.paused,
+                "ball_moving": self.game.ball_moving,
+                "ball_velocity_x": self.game.ball_velocity_x,
+                "ball_velocity_y": self.game.ball_velocity_y,
+                "max_score": self.game.max_score,
+                "win_width": self.game.win_width,
+                "win_height": self.game.win_height,
+                "ball_width": self.game.ball_width,
+                "pad_width": self.game.pad_width,
+                "pad_height": self.game.pad_height,
+                "status": self.game.status,
+            }
+        else:
+            self.game.status = "in_progress"
+            await sync_to_async(self.game.save)()
+
+        await self.notify_players_game_started()
+
+        # Start the periodic update task if this is player1 and the task isn't already running
+        if self.user_id == self.game.player2_id and self.update_task is None:
+            print("Starting periodic update...")
+            self.update_task = asyncio.create_task(self._periodic_update())
 
     async def _periodic_update(self):
-        while True:
+        while self.game.status != "completed":
             start_time = time.time()
             await self.update_game_state()
             await self.send_game_state()
@@ -140,12 +155,12 @@ class GameConsumer(AsyncWebsocketConsumer):
             await asyncio.sleep(sleep_time / 1000)
 
     async def update_game_state(self):
-        game = await sync_to_async(Game.objects.get)(id=self.game_id)
-        if game is not None:
-            player1_id = game.player1_id
-            player2_id = game.player2_id
-            if player1_id is None or player2_id is None:
-                return
+        if self.game is None:
+            return
+        player1_id = self.game.player1_id
+        player2_id = self.game.player2_id
+        if player1_id is None or player2_id is None:
+            return
 
         if not self.game_state["ball_moving"] and not self.game_state["paused"]:
             await self.check_turn()
@@ -155,10 +170,10 @@ class GameConsumer(AsyncWebsocketConsumer):
         if self.game_state["ball_moving"] and not self.game_state["paused"]:
             self.game_state["ball_x"] += self.game_state["ball_velocity_x"]
             self.game_state["ball_y"] += self.game_state["ball_velocity_y"]
-            await self.check_collisions(game)
-            await self.check_score(game)
+            await self.check_collisions(self.game)
+            await self.check_score(self.game)
 
-        await sync_to_async(game.save)()
+        await sync_to_async(self.game.save)()
 
     async def send_game_state(self):
         if self.game_state["paused"] or self.game_state["status"] != "in_progress":
@@ -186,14 +201,10 @@ class GameConsumer(AsyncWebsocketConsumer):
         )
 
     async def check_turn(self):
-        player1_id = self.game_state["player1_id"]
-        player2_id = self.game_state["player2_id"]
-
         PAD_WIDTH = self.game_state["pad_width"]
         BALL_SIZE = self.game_state["ball_width"]
 
-
-        if self.game_state["player_turn"] == player1_id:
+        if self.game_state["player_turn"] == self.game_state["player1_id"]:
             self.game_state["ball_velocity_y"] = -BALL_SPEED
             # Adjust ball position relative to pad1
             if (
@@ -215,8 +226,8 @@ class GameConsumer(AsyncWebsocketConsumer):
             self.game_state["ball_velocity_x"] = (
                 (self.game_state["ball_x"] - self.game_state["pad1_x"])
                 / (PAD_WIDTH / 2)
-            ) * 10
-        elif self.game_state["player_turn"] == player2_id:
+            ) * BALL_SPEED
+        elif self.game_state["player_turn"] == self.game_state["player2_id"]:
             self.game_state["ball_velocity_y"] = BALL_SPEED
             # Adjust ball position relative to pad2
             if (
@@ -238,7 +249,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             self.game_state["ball_velocity_x"] = (
                 (self.game_state["ball_x"] - self.game_state["pad2_x"])
                 / (PAD_WIDTH / 2)
-            ) * 10
+            ) * BALL_SPEED
 
     async def check_collisions(self, game):
         # Wall collision
@@ -265,7 +276,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                 self.game_state["ball_velocity_x"] = (
                     (self.game_state["ball_x"] - self.game_state["pad2_x"])
                     / (self.game_state["pad_width"] / 2)
-                ) * 10
+                ) * BALL_SPEED
 
         # Pad 1 collision
         if (
@@ -280,15 +291,12 @@ class GameConsumer(AsyncWebsocketConsumer):
                 self.game_state["ball_velocity_x"] = (
                     (self.game_state["ball_x"] - self.game_state["pad1_x"])
                     / (self.game_state["pad_width"] / 2)
-                ) * 10
+                ) * BALL_SPEED
                 if self.game_state["ball_velocity_y"] < 15:
                     self.game_state["ball_velocity_y"] += 0.25
                 self.game_state["ball_velocity_y"] = -self.game_state["ball_velocity_y"]
 
     async def check_score(self, game):
-        player1_id = self.game_state["player1_id"]
-        player2_id = self.game_state["player2_id"]
-
         if (
             self.game_state["ball_y"] < 1
             or self.game_state["ball_y"] > self.game_state["win_height"] - 1
@@ -298,7 +306,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 
             if self.game_state["ball_y"] < 1:
                 self.game_state["player1_score"] += 1
-                self.game_state["player_turn"] = player2_id
+                self.game_state["player_turn"] = self.game_state["player2_id"]
                 self.game_state["pad1_x"] = self.game_state["win_width"] / 2
                 self.game_state["pad2_x"] = self.game_state["win_width"] / 2
                 self.game_state["ball_x"] = self.game_state["win_width"] / 2
@@ -306,11 +314,13 @@ class GameConsumer(AsyncWebsocketConsumer):
                 self.game_state["ball_velocity_y"] *= -1
             else:
                 self.game_state["player2_score"] += 1
-                self.game_state["player_turn"] = player1_id
+                self.game_state["player_turn"] = self.game_state["player1_id"]
                 self.game_state["pad1_x"] = self.game_state["win_width"] / 2
                 self.game_state["pad2_x"] = self.game_state["win_width"] / 2
                 self.game_state["ball_x"] = self.game_state["win_width"] / 2
-                self.game_state["ball_y"] = self.game_state["pad1_y"] - self.game_state["pad_height"] - 20
+                self.game_state["ball_y"] = (
+                    self.game_state["pad1_y"] - self.game_state["pad_height"] - 20
+                )
                 self.game_state["ball_velocity_y"] *= -1
             if (
                 self.game_state["player1_score"] >= self.game_state["max_score"]
@@ -328,16 +338,19 @@ class GameConsumer(AsyncWebsocketConsumer):
             print("Attempted to send a message to a closed WebSocket connection.")
 
     async def leave_game(self, event):
-        await self.sync_game_state_to_db()
+        # user_id = event["user_id"]
+        game_id = event["game_id"]
         winner_id = event["winner_id"]
         loser_id = event["loser_id"]
-        game_id = event["game_id"]
 
+        game = await database_sync_to_async(Game.objects.get)(id=game_id)
         winner = await database_sync_to_async(User.objects.get)(id=winner_id)
         loser = await database_sync_to_async(User.objects.get)(id=loser_id)
+        game.status = "completed"
         winner.wins += 1
-        await database_sync_to_async(winner.save)()
         loser.losses += 1
+        await database_sync_to_async(game.save)()
+        await database_sync_to_async(winner.save)()
         await database_sync_to_async(loser.save)()
 
         game = await database_sync_to_async(Game.objects.get)(id=game_id)
@@ -371,25 +384,23 @@ class GameConsumer(AsyncWebsocketConsumer):
             },
         )
 
-    async def user_disconnected(self, event):
-        user_id = event["user_id"]
-        user = await self.get_user(user_id)
-        await database_sync_to_async(handle_leave_game)(self.game_id, user)
-
     @database_sync_to_async
     def get_user(self, user_id):
-        return User.objects.get(id=user_id)
+        try:
+            return User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return None
 
     async def end_game(self, game):
         game.status = "completed"
-        game.winner = await sync_to_async(self.determine_winner)(game)
-        game.loser = await sync_to_async(self.determine_loser)(game)
+        game.winner = await self.determine_winner(game.id)
+        game.loser = await self.determine_loser(game.id)
         game.end_time = timezone.now()
         await sync_to_async(game.save)()
 
         game.winner.wins += 1
-        await sync_to_async(game.winner.save)()
         game.loser.losses += 1
+        await sync_to_async(game.winner.save)()
         await sync_to_async(game.loser.save)()
 
         if game.tournament_id is not None:
@@ -421,76 +432,198 @@ class GameConsumer(AsyncWebsocketConsumer):
                 "message": message,
             },
         )
-        await self.sync_game_state_to_db()
+        # await self.sync_game_state_to_db()
         await self.create_game_history(game)
 
-    def determine_winner(self, game):
-        return (
-            game.player1
-            if self.game_state["player1_score"] >= self.game_state["max_score"]
-            else game.player2
-        )
+    async def determine_winner(self, game_id):
+        game = await database_sync_to_async(Game.objects.get)(id=game_id)
 
-    def determine_loser(self, game):
-        return (
-            game.player2
-            if self.game_state["player1_score"] >= self.game_state["max_score"]
-            else game.player1
-        )
+        # Fetch player1 and player2 asynchronously
+        player1 = await database_sync_to_async(lambda: game.player1)()
+        player2 = await database_sync_to_async(lambda: game.player2)()
+
+        if game.player1_score >= game.player2_score:
+            return player1
+        elif game.player2_score >= game.player1_score:
+            return player2
+
+    async def determine_loser(self, game_id):
+        game = await database_sync_to_async(Game.objects.get)(id=game_id)
+
+        # Fetch player1 and player2 asynchronously
+        player1 = await database_sync_to_async(lambda: game.player1)()
+        player2 = await database_sync_to_async(lambda: game.player2)()
+
+        if game.player1_score >= game.player2_score:
+            return player2
+        elif game.player2_score >= game.player1_score:
+            return player1
 
     async def create_game_history(self, game):
-        print("Creating game history...")
-        print("player1_score:", self.game_state["player1_score"])
-        print("player2_score:", self.game_state["player2_score"])
+        # Fetch player1 and player2 asynchronously
+        player1 = await database_sync_to_async(lambda: game.player1)()
+        player2 = await database_sync_to_async(lambda: game.player2)()
+
         game_history = GameHistory(
-            winner=game.winner,
+            player1=player1,
+            player2=player2,
             player1_score=self.game_state["player1_score"],
             player2_score=self.game_state["player2_score"],
+            winner=game.winner,  # Ensure game.winner is handled correctly
+            played_at=game.end_time,
         )
-        game_history.save()
-        game_history.players.add(game.player1, game.player2)
+        await database_sync_to_async(game_history.save)()
 
     async def sync_game_state_to_db(self):
-        game = await database_sync_to_async(Game.objects.get)(id=self.game_id)
-        game.pad1_x = self.game_state["pad1_x"]
-        game.pad1_y = self.game_state["pad1_y"]
-        game.pad2_x = self.game_state["pad2_x"]
-        game.pad2_y = self.game_state["pad2_y"]
-        game.ball_x = self.game_state["ball_x"]
-        game.ball_y = self.game_state["ball_y"]
-        game.ball_velocity_x = self.game_state["ball_velocity_x"]
-        game.ball_velocity_y = self.game_state["ball_velocity_y"]
-        game.player1_score = self.game_state["player1_score"]
-        game.player2_score = self.game_state["player2_score"]
-        game.player_turn = self.game_state["player_turn"]
-        game.paused = self.game_state["paused"]
-        game.ball_moving = self.game_state["ball_moving"]
-        await database_sync_to_async(game.save)()
+        if self.game is None:
+            return
 
-    async def game_state_update(self, event):
-        message = event["message"]
-        self.game_state.update(message)
+        self.game.pad1_x = self.game_state["pad1_x"]
+        self.game.pad1_y = self.game_state["pad1_y"]
+        self.game.pad2_x = self.game_state["pad2_x"]
+        self.game.pad2_y = self.game_state["pad2_y"]
+        self.game.ball_x = self.game_state["ball_x"]
+        self.game.ball_y = self.game_state["ball_y"]
+        self.game.ball_velocity_x = self.game_state["ball_velocity_x"]
+        self.game.ball_velocity_y = self.game_state["ball_velocity_y"]
+        self.game.player1_score = self.game_state["player1_score"]
+        self.game.player2_score = self.game_state["player2_score"]
+        self.game.player_turn = self.game_state["player_turn"]
+        self.game.paused = self.game_state["paused"]
+        self.game.ball_moving = self.game_state["ball_moving"]
+
+        await sync_to_async(self.game.save)()
+
+    # async def game_state_update(self, event):
+    #     message = event["message"]
+    #     self.game_state.update(message)
 
     async def key_action(self, event):
         player_id = event["player_id"]
         action = event["action"]
 
+        if action == "pause":
+            self.game_state["paused"] = True
+        elif action == "resume":
+            self.game_state["paused"] = False
+
+        if self.game_state.get("paused", False):
+            return
+
         # Determine which pad to move based on the player_id
-        pad_key = "pad1_x" if player_id == self.game_state["player1_id"] else "pad2_x"
+        pad_key = (
+            "pad1_x"
+            if player_id == self.game_state.get("player1_id", None)
+            else "pad2_x"
+        )
 
         # Update the game state based on the action
         if action == "move_right":
             self.game_state[pad_key] = min(
-                self.game_state[pad_key] + 10,
-                self.game_state["win_width"] - self.game_state["pad_width"] / 2,
+                self.game_state.get(pad_key, 0) + 10,
+                self.game_state.get("win_width", 426)
+                - self.game_state.get("pad_width", 100) / 2,
             )
         elif action == "move_left":
             self.game_state[pad_key] = max(
-                self.game_state[pad_key] - 10, self.game_state["pad_width"] / 2
+                self.game_state.get(pad_key, 0) - 10,
+                self.game_state.get("pad_width", 100) / 2,
             )
-        elif action == "launch_ball" and player_id == self.game_state["player_turn"]:
+        elif action == "launch_ball" and player_id == self.game_state.get(
+            "player_turn", None
+        ):
             self.game_state["ball_moving"] = True
-        elif action == "pause":
-            self.game_state["paused"] = True
-        elif action == "resume":
-            self.game_state["paused"] = False
+
+    async def notify_status_change(self):
+        message = {
+            "action": "update_status",
+            "data": {
+                "status": self.game.status,
+            },
+        }
+        await self.channel_layer.group_send(
+            self.game_group_name,
+            {
+                "type": "game_message",
+                "message": message,
+            },
+        )
+
+    async def notify_players_game_started(self):
+        message = {
+            "action": "start_game",
+            "data": {
+                "message": "Game has started",
+                # Include any other relevant game state information
+            },
+        }
+        await self.channel_layer.group_send(
+            self.game_group_name,
+            {
+                "type": "game_message",
+                "message": message,
+            },
+        )
+
+    async def handle_leave_game(self, user_id):
+        user = await database_sync_to_async(User.objects.get)(id=user_id)
+        if user not in [self.game.player1, self.game.player2]:
+            return {"error": "You are not a player in this game"}, 403
+
+        if user == self.game.player1:
+            winner = self.game.player2
+            loser = self.game.player1
+        else:
+            winner = self.game.player1
+            loser = self.game.player2
+
+        self.game.status = "completed"
+        self.game.winner = winner
+        self.game.loser = loser
+        self.game.end_time = timezone.now()
+        await database_sync_to_async(self.game.save)()
+
+        self.game_state["status"] = "completed"
+
+        await self.notify_players_game_ended(winner.id, loser.id)
+
+    async def notify_players_game_ended(self, winner_id, loser_id):
+        message = {
+            "type": "leave_game",
+            "message": "A player has left the game. The game has ended.",
+            "winner_id": winner_id,
+            "loser_id": loser_id,
+            "game_id": self.game_id,
+        }
+        await self.channel_layer.group_send(self.game_group_name, message)
+
+    async def game_leave(self, event):
+        user_id = event["user_id"]
+        game = await database_sync_to_async(Game.objects.get)(id=self.game_id)
+
+        print("User ID:", user_id)
+        print("Player1 ID:", game.player1_id)
+        print("Player2 ID:", game.player2_id)
+        # Determine the winner and loser based on who is leaving
+        if game.player1_id == user_id:
+            winner_id = game.player2_id
+            loser_id = game.player1_id
+        elif game.player2_id == user_id:
+            winner_id = game.player1_id
+            loser_id = game.player2_id
+        else:
+            # Handle error if user is not part of the game
+            return
+
+        # Update scores: winner gets max score, loser gets 0
+        if winner_id and loser_id:
+            game.player1_score, game.player2_score = (
+                (game.max_score, 0)
+                if winner_id == game.player1_id
+                else (0, game.max_score)
+            )
+            game.status = "completed"
+            await database_sync_to_async(game.save)()
+
+            # Call end_game to finalize the game state and notify players
+            await self.end_game(game)
