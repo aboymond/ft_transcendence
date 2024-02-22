@@ -15,7 +15,6 @@ from asgiref.sync import async_to_sync
 
 from .models import Game
 from .serializers import GameSerializer  # GameStateSerializer
-from .utils import handle_leave_game
 
 User = get_user_model()
 
@@ -31,9 +30,14 @@ class CreateGameView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         user_id = self.request.data.get("user_id")
+        max_score = self.request.data.get("max_score")
         user = get_object_or_404(User, pk=user_id)
         serializer.save(
-            player1=user, player2=None, status="waiting", player_turn=user.id
+            player1=user,
+            player2=None,
+            status="waiting",
+            player_turn=user.id,
+            max_score=max_score,
         )
 
 
@@ -54,12 +58,14 @@ class JoinGameView(generics.UpdateAPIView):
         # If the game already has a first player, add the user as the second player
         elif not game.player2 and game.player1 != user:
             game.player2 = user
-            game.status = "in_progress"  # Optionally, change the game status
+            # game.status = "in_progress"  # Optionally, change the game status
             game.save()
             return Response(self.get_serializer(game).data, status=status.HTTP_200_OK)
 
         # If the game is full or the user is already in the game, return an error
         else:
+            print("Game is full or user is already in the game")
+            print(game.player1, game.player2, user)
             return Response(
                 {"detail": "Game is full or user is already in the game"},
                 status=status.HTTP_400_BAD_REQUEST,
@@ -123,8 +129,33 @@ def player_ready(request, game_id):
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def leave_game(request, game_id):
-    response, status_code = handle_leave_game(game_id, request.user)
-    return Response(response, status=status_code)
+    game = get_object_or_404(Game, id=game_id)
+    if request.user not in [game.player1, game.player2]:
+        return Response(
+            {"error": "You are not a player in this game"},
+            status=status.HTTP_403_FORBIDDEN,
+        )
+
+    if request.user == game.player1:
+        winner_id = game.player2_id
+    else:
+        winner_id = game.player1_id
+
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        f"game_{game_id}",
+        {
+            "type": "leave.game",
+            "user_id": request.user.id,
+            "game_id": game_id,
+            "winner_id": winner_id,  # Pass the winner ID
+            "loser_id": request.user.id,  # Pass the loser ID
+        },
+    )
+
+    return Response(
+        {"message": "Leave game request processed."}, status=status.HTTP_200_OK
+    )
 
 
 @api_view(["POST"])
