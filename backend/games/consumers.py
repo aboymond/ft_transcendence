@@ -469,7 +469,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             player2=player2,
             player1_score=self.game_state["player1_score"],
             player2_score=self.game_state["player2_score"],
-            winner=game.winner,  # Ensure game.winner is handled correctly
+            winner=game.winner,
             played_at=game.end_time,
         )
         await database_sync_to_async(game_history.save)()

@@ -129,6 +129,7 @@ class ListUserSerializer(serializers.ModelSerializer):
             "tournament_wins",
             "avatar",
             "status",
+            "twofa",
             "match_history",
             "tournament_history_played",
         ]
@@ -136,6 +137,7 @@ class ListUserSerializer(serializers.ModelSerializer):
             "id",
             "username",
             "wins",
+            "twofa",
             "losses",
             "tournament_wins",
             "status",
