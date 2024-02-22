@@ -204,11 +204,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         PAD_WIDTH = self.game_state["pad_width"]
         BALL_SIZE = self.game_state["ball_width"]
 
-<<<<<<< HEAD
-        if self.game_state["player_turn"] == player1_id:
-=======
         if self.game_state["player_turn"] == self.game_state["player1_id"]:
->>>>>>> master
             self.game_state["ball_velocity_y"] = -BALL_SPEED
             # Adjust ball position relative to pad1
             if (
