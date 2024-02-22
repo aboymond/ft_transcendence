@@ -10,7 +10,7 @@ const TwoFA: React.FC = () => {
             try {
                 const profile = await apiService.getUserProfile(); 
                 setUserProfile(profile);
-                setIsTwoFAToggled(profile?.twofa || false);
+                setIsTwoFAToggled(profile?.twofa);
             } catch (error) {
                 console.error("Failed to fetch user profile:", error);
             }
