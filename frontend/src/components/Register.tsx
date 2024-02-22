@@ -11,20 +11,19 @@ interface RegisterProps {
 const Register: React.FC<RegisterProps> = ({ onClose, onSuccess }) => {
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
-	const [displayName, setDisplayName] = useState('');
 	const [error, setError] = useState('');
 	const [email, setEmail] = useState('');
 
 	const handleSubmit = async (event: React.FormEvent) => {
 		event.preventDefault();
 		try {
-			await apiService.register(username, password, displayName, email);
+			await apiService.register(username, password, email);
 			console.log('Registration successful');
 			setError('');
 			onSuccess();
-		} catch (error) {
+		} catch (error: unknown) {
 			console.error('Registration failed:', error);
-			setError('Registration failed.');
+			setError((error as Error).message || 'Registration failed.');
 		}
 	};
 
@@ -66,17 +65,8 @@ const Register: React.FC<RegisterProps> = ({ onClose, onSuccess }) => {
 					/>
 				</div>
 				<div>
-					<label>Display Name:</label>
-					<input
-						type="text"
-						value={displayName}
-						onChange={(e) => setDisplayName(e.target.value)}
-						className={styles.inputField}
-					/>
-				</div>
-				<div>
 					<label>Email:</label>
-						<input
+					<input
 						type="email"
 						value={email}
 						onChange={(e) => setEmail(e.target.value)}

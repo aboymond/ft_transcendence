@@ -1,9 +1,4 @@
-import { User, FriendRequest, GameHistory } from '../types';
-
-interface ErrorResponse {
-	error?: string;
-	detail?: string;
-}
+import { User, FriendRequest, GameHistory, APIResponse } from '../types';
 
 const api_url = import.meta.env.VITE_API_URL;
 
@@ -32,7 +27,7 @@ async function fetchAPI(endpoint: string, options: RequestInit = {}, includeToke
 		throw new Error('Unauthorized');
 	}
 	if (!response.ok) {
-		let errorDetail: ErrorResponse = {};
+		let errorDetail: APIResponse = {};
 		const contentType = response.headers.get('Content-Type');
 		if (contentType && contentType.includes('application/json')) {
 			const text = await response.text();
@@ -41,9 +36,8 @@ async function fetchAPI(endpoint: string, options: RequestInit = {}, includeToke
 			} catch (e) {
 				console.error('Error parsing JSON response:', e);
 			}
-			const detailedErrorMessage =
-				errorDetail.error || errorDetail.detail || `API call failed: ${response.statusText}`;
-			throw new Error(detailedErrorMessage + ' - More details: ' + text);
+			const detailedErrorMessage = errorDetail.error || errorDetail.detail || `${response.statusText}`;
+			throw new Error(detailedErrorMessage + ':' + text);
 		}
 	}
 
@@ -117,13 +111,12 @@ export const apiService = {
 	getUserGameHistory: async (userId: number): Promise<GameHistory[]> => {
 		return fetchAPI(`users/${userId}/game_history/`);
 	},
-	register: async (username: string, password: string, displayName: string, email: string) => {
+	register: async (username: string, password: string, email: string) => {
 		return fetchAPI(
 			'users/register/',
 			{
-				// Update with your actual registration endpoint
 				method: 'POST',
-				body: JSON.stringify({ username, password, display_name: displayName, email }),
+				body: JSON.stringify({ username, password, email }),
 			},
 			false,
 		);
@@ -206,10 +199,10 @@ export const apiService = {
 	getGames: async () => {
 		return fetchAPI('games/list/');
 	},
-	createGame: async (userId: number) => {
+	createGame: async (userId: number, max_score: number) => {
 		return fetchAPI('games/create/', {
 			method: 'POST',
-			body: JSON.stringify({ user_id: userId }),
+			body: JSON.stringify({ user_id: userId, max_score: max_score }),
 		});
 	},
 	joinGame: async (gameId: number, userId: number) => {
