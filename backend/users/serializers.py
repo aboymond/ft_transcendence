@@ -9,32 +9,20 @@ from .models import Friendship, TournamentHistory
 User = get_user_model()
 
 
+class SimpleUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ("id", "username")
+
+
 class GameHistorySerializer(serializers.ModelSerializer):
-    players = serializers.SerializerMethodField()
-    winner = serializers.SerializerMethodField()
-    player1_score = serializers.SerializerMethodField()
-    player2_score = serializers.SerializerMethodField()
+    player1 = SimpleUserSerializer(read_only=True)
+    player2 = SimpleUserSerializer(read_only=True)
+    winner = SimpleUserSerializer(read_only=True)
 
     class Meta:
         model = GameHistory
         fields = "__all__"
-
-    def get_players(self, obj):
-        return [
-            {"id": player.id, "username": player.username}
-            for player in obj.players.all()
-        ]
-
-    def get_winner(self, obj):
-        if obj.winner is None:
-            return None
-        return {"id": obj.winner.id, "username": obj.winner.username}
-
-    def get_player1_score(self, obj):
-        return obj.player1_score
-
-    def get_player2_score(self, obj):
-        return obj.player2_score
 
 
 class TournamentHistorySerializer(serializers.ModelSerializer):
@@ -57,7 +45,6 @@ class UserSerializer(serializers.ModelSerializer):
             "id",
             "username",
             "password",
-            "display_name",
             "email",
             "avatar",
             "wins",
@@ -73,15 +60,23 @@ class UserSerializer(serializers.ModelSerializer):
         )
         extra_kwargs = {
             "password": {"write_only": True},
-            "display_name": {"required": False},
+            # "display_name": {"required": False},
         }
 
     def create(self, validated_data):
-        display_name = validated_data.pop("display_name", None)
-        user = User.objects.create_user(  # type: ignore
+        # Set display_name to username
+        display_name = validated_data["username"]
+
+        # Ensure display_name is unique
+        if User.objects.filter(display_name=display_name).exists():
+            raise serializers.ValidationError(
+                {"display_name": "This display name is already in use."}
+            )
+
+        user = User.objects.create_user(
             username=validated_data["username"],
             password=validated_data["password"],
-            display_name=display_name,
+            display_name=display_name,  # Use username as display_name
             email=validated_data["email"],
         )
         return user

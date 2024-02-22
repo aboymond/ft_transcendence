@@ -25,28 +25,30 @@ class CustomUserAdmin(admin.ModelAdmin):
 class GameHistoryAdmin(admin.ModelAdmin):
     list_display = (
         "id",
-        "get_player1_username",
-        "get_player2_username",
-        "winner",
+        "player1_username",
+        "player2_username",
+        "winner_username",
         "played_at",
         "player1_score",
         "player2_score",
     )
     list_filter = ("played_at", "winner")
-    search_fields = ("winner__username", "players__username")
+    search_fields = ("winner__username", "player1__username", "player2__username")
 
-    def get_queryset(self, request):
-        return super().get_queryset(request).prefetch_related("players")
+    def player1_username(self, obj):
+        return obj.player1.username if obj.player1 else "No Player"
 
-    def get_player1_username(self, obj):
-        return obj.players.all()[0].username
+    player1_username.short_description = "Player 1"
 
-    get_player1_username.short_description = "Player 1"
+    def player2_username(self, obj):
+        return obj.player2.username if obj.player2 else "No Player"
 
-    def get_player2_username(self, obj):
-        return obj.players.all()[1].username
+    player2_username.short_description = "Player 2"
 
-    get_player2_username.short_description = "Player 2"
+    def winner_username(self, obj):
+        return obj.winner.username if obj.winner else "No Winner"
+
+    winner_username.short_description = "Winner"
 
 
 @admin.register(Friendship)

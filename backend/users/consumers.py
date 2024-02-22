@@ -12,8 +12,8 @@ User = get_user_model()
 
 class GeneralRequestConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        print("Connecting... (General)")
         user_id = self.scope["url_route"]["kwargs"]["user_id"]
+        print("Connecting... (General) # user_id:", user_id)
         self.room_group_name = "general_requests_%s" % user_id
         user = await sync_to_async(User.objects.get)(pk=user_id)
         if user:
@@ -39,25 +39,14 @@ class GeneralRequestConsumer(AsyncWebsocketConsumer):
         print("Connected! (General)")  # Log message after connection
 
     async def disconnect(self, close_code):
-        print("Disconnecting... (General)")
-
         user_id = self.scope["url_route"]["kwargs"]["user_id"]
+        print("Disconnecting... (General) # user_id:", user_id)
         user = await sync_to_async(User.objects.get)(pk=user_id)
         if user:
             user.status = "offline"
             await sync_to_async(user.save)()
         else:
             print("Error: User not found")
-
-        games = await self.get_active_games(user_id)
-        for game_id in games:
-            await self.channel_layer.group_send(
-                f"game_{game_id}",
-                {
-                    "type": "user_disconnected",
-                    "user_id": user_id,
-                },
-            )
 
         if self.channel_layer is not None:
             await self.channel_layer.group_discard(
@@ -103,15 +92,6 @@ class GeneralRequestConsumer(AsyncWebsocketConsumer):
                 }
             )
         )
-
-    @sync_to_async
-    def get_active_games(self, user_id):
-        # Query your Game model for active games involving the user
-        games = Game.objects.filter(
-            (Q(player1_id=user_id) | Q(player2_id=user_id)),
-            status__in=["waiting", "in_progress"],  # Adjust based on your game statuses
-        ).values_list("id", flat=True)
-        return list(games)
 
     async def friend_request(self, event):
         await self.send(

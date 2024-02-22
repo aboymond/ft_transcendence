@@ -190,44 +190,49 @@ class CallBackView(APIView):
 
         User = get_user_model()
 
-        username = user["login"]
-        email = user["email"]
+        username = user_data["login"]
+        email = user_data["email"]
+
+        display_name = username
+
+        # Check if a non-OAuth user with the same email exists
         if email and User.objects.filter(email=email, is_oauth_user=False).exists():
-            # If a non-OAuth user with the same email exists, do nothing and return
             return Response(
                 {"Error": "A user with this email already exists."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        if User.objects.filter(username=username, is_oauth_user=False).exists():
-            # If a non-OAuth user with the same username exists, append the user id to the username
-            username = f"{username}{user['id']}"
+        # Create or update the user with the username and set display_name to username
+        user, created = User.objects.update_or_create(
+            username=username,
+            defaults={
+                "email": email,
+                "is_oauth_user": True,
+                "display_name": display_name,
+            },
+        )
 
-        # Create a new user with the (potentially modified) username
-        # only if a user with the new username doesn't already exist
-        if not User.objects.filter(username=username).exists():
-            new_user = User.objects.create(
-                username=username, email=email, is_oauth_user=True
-            )
-            new_user.avatar.save(f"{username}.jpg", ContentFile(response.content))
-            new_user.save()
-        else:
-            new_user = User.objects.get(username=username)
-        if new_user.twofa is True:
-            send_otp(new_user)
+        if created:
+            avatar_url = user_data["image"]["versions"]["small"]
+            response = requests.get(avatar_url)
+            user.avatar.save(f"{username}.jpg", ContentFile(response.content))
+            user.save()
+
+        if user.twofa is True:
+            send_otp(user)
             redirect_url = (
                 f"/{os.getenv('HOSTNAME')}" + "/verify-2fa?username=" + username
             )
             return redirect(redirect_url)
         else:
-            refresh = RefreshToken.for_user(new_user)
+            refresh = RefreshToken.for_user(user)
             print(refresh.access_token)
             redirect_url = (
                 f"{os.getenv('HOSTNAME')}"
                 + "?access_token="
                 + str(refresh.access_token)
                 + "&user_id="
-                + str(new_user.id)
+                + str(user.id)
             )
             return redirect(redirect_url)
 
@@ -281,7 +286,8 @@ class UserGameHistoryView(generics.ListAPIView):
         try:
             user = User.objects.get(id=user_id)
             logger.info(f"Found user {user.username} with ID {user_id}")
-            return user.match_history
+            # Fetch games where the user is either player1 or player2
+            return GameHistory.objects.filter(Q(player1=user) | Q(player2=user))
         except User.DoesNotExist:
             logger.error(f"User with ID {user_id} does not exist")
             return []
