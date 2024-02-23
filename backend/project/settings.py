@@ -37,8 +37,10 @@ ALLOWED_HOSTS = [
     "nginx",
     "frontend",
     "backend",
+    "grafana",
+    "prometheus",
     # "localhost",
-    os.environ.get("ALLOWED_HOSTS", "localhost"),
+    os.environ.get("ALLOWED_HOSTS", "HOSTNAME"),
 ]
 
 # Application definition
