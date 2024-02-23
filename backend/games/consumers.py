@@ -466,17 +466,10 @@ class GameConsumer(AsyncWebsocketConsumer):
         winnner = await database_sync_to_async(lambda: game.winner)()
         print("Creating game history...")
         game_history = GameHistory(
-<<<<<<< HEAD
             player1=game.player1,
             player2=game.player2,
             player1_score=game.player1_score,
             player2_score=game.player2_score,
-=======
-            player1=player1,
-            player2=player2,
-            player1_score=self.game_state["player1_score"],
-            player2_score=self.game_state["player2_score"],
->>>>>>> origin
             winner=game.winner,
             played_at=game.end_time,
         )
