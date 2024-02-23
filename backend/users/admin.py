@@ -14,6 +14,7 @@ class CustomUserAdmin(admin.ModelAdmin):
         "status",
         "email",
         "twofa",
+        'idft',
         "otp",
         "otp_expiry_time",
     )

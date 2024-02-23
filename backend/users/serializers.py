@@ -55,6 +55,7 @@ class UserSerializer(serializers.ModelSerializer):
             "friendship_id",
             "tournament_history_played",
             "twofa",
+            "idft",
             "otp",
             "otp_expiry_time",
         )
@@ -132,6 +133,7 @@ class ListUserSerializer(serializers.ModelSerializer):
             "avatar",
             "status",
             "friendship_id",
+            "idft",
             "twofa",
             "match_history",
             "tournament_history_played",

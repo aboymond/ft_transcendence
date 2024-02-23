@@ -63,7 +63,7 @@ def send_otp(user):
     user.otp_expiry_time = timezone.now() + timedelta(hours=1)
     send_mail(
         "Verification Code",
-        f"Your verification code is: {user.otp}",
+        f"Username : {user.username}\n\nYour verification code is: {user.otp}\n\nRetroscendence Team",
         os.getenv("EMAIL_H_U"),
         [user.email],
         fail_silently=True,
@@ -192,31 +192,36 @@ class CallBackView(APIView):
 
         username = user_data["login"]
         email = user_data["email"]
+        idft = user_data["id"]
 
         display_name = username
 
-        # Check if a non-OAuth user with the same email exists
-        if email and User.objects.filter(email=email, is_oauth_user=False).exists():
-            return Response(
-                {"Error": "A user with this email already exists."},
-                status=status.HTTP_400_BAD_REQUEST,
+        if idft and not User.objects.filter(idft=idft, is_oauth_user=False).exists():
+
+            # Check if a non-OAuth user with the same display name exists
+            if display_name and User.objects.filter(display_name=display_name, is_oauth_user=False).exists():
+                x = 1
+                display_name = username + str(x)
+                while User.objects.filter(display_name=display_name, is_oauth_user=False).exists():
+                    display_name = username + str(x + 1)
+
+            # Create or update the user with the username and set display_name to username
+            user, created = User.objects.update_or_create(
+                display_name=display_name,
+                defaults={
+                    "email": email,
+                    "idft" : idft,
+                    "is_oauth_user": True,
+                    "display_name": display_name,
+                    "username": display_name,
+                },
             )
 
-        # Create or update the user with the username and set display_name to username
-        user, created = User.objects.update_or_create(
-            username=username,
-            defaults={
-                "email": email,
-                "is_oauth_user": True,
-                "display_name": display_name,
-            },
-        )
-
-        if created:
-            avatar_url = user_data["image"]["versions"]["small"]
-            response = requests.get(avatar_url)
-            user.avatar.save(f"{username}.jpg", ContentFile(response.content))
-            user.save()
+            if created:
+                avatar_url = user_data["image"]["versions"]["small"]
+                response = requests.get(avatar_url)
+                user.avatar.save(f"{username}.jpg", ContentFile(response.content))
+                user.save()
 
         if user.twofa is True:
             send_otp(user)

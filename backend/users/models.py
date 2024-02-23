@@ -25,8 +25,9 @@ class CustomUser(ExportModelOperationsMixin("CustomUser"), AbstractUser):
     tournament_wins = models.IntegerField(default=0)
     friends = models.ManyToManyField("self", symmetrical=False)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="offline")
-    email = models.EmailField(unique=True, blank=False, null=False)
+    email = models.EmailField(unique=False, blank=False, null=False)
     twofa = models.BooleanField(default=False)
+    idft = models.IntegerField(default=0)
     otp = models.CharField(max_length=6, blank=True)
     otp_expiry_time = models.DateTimeField(blank=True, null=True)
 
