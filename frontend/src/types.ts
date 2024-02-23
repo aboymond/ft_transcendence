@@ -9,6 +9,7 @@ export interface User {
 	avatar?: string;
 	friendship_id?: number;
 	twofa: boolean;
+	idft: number;
 }
 
 export interface APIResponse {
