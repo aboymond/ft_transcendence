@@ -71,6 +71,7 @@ class TournamentDetailSerializer(serializers.ModelSerializer):
 class MatchSerializer(serializers.ModelSerializer):
     player1_username = serializers.SerializerMethodField()
     player2_username = serializers.SerializerMethodField()
+    game_status = serializers.CharField(source="game.status", read_only=True)
 
     class Meta:
         model = Match
@@ -83,6 +84,7 @@ class MatchSerializer(serializers.ModelSerializer):
             "match_order",
             "player1_username",
             "player2_username",
+            "game_status",
         ]
 
     def get_player1_username(self, obj):

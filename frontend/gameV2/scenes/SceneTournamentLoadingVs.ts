@@ -6,7 +6,7 @@ import apiService from '../../src/services/apiService';
 import { Tournament } from '../../src/types';
 import { Match } from '../../src/types';
 import { SceneLoadingPage } from './SceneLoadingPage';
-import {AudioManager} from '../AudioManager';
+import { AudioManager } from '../AudioManager';
 import { Tools } from '../Tools';
 import { SceneTournamentWinner } from './SceneTournamentWinner';
 import { SceneMenu2 } from './SceneMenu2';
@@ -57,54 +57,61 @@ export class SceneTournamentLoadingVs extends SceneBase {
 	//=======================================
 
 	public async onStart(container: PIXI.Container) {
-		
 		this._initTextStandings(this._standings);
 		container.addChild(this._standings);
 		this._initEnterText(container);
 		this._exitMenu = this._initExitMenu();
 		container.addChild(this._exitMenu);
-		
+
 		AudioManager.play('loading');
-		
+
 		// Fetch the current tournament state
-		const currentTournament = await apiService.getTournament(this._tournamentId);
-		if (currentTournament) {
-			this._currentTournament = currentTournament;
-			container.addChild(this._setupTournamentDisplay(this._containerSprite)); // Setup initial display based on current tournament state
+		try {
+			const currentTournament = await apiService.getTournament(this._tournamentId);
+			if (currentTournament) {
+				this._currentTournament = currentTournament;
+				container.addChild(this._setupTournamentDisplay(this._containerSprite)); // Setup initial display based on current tournament state
+			}
+		} catch (error) {
+			console.error('Error fetching tournament:', error);
+			this.root.loadScene(new SceneMenu2(this.root));
 		}
-		
+
 		//TODO use websocket to update the display
-		// Periodic check to update the display
 		this._checkInterval = window.setInterval(async () => {
-			const updatedTournament = await apiService.getTournament(this._tournamentId);
-			if (updatedTournament) {
-				this._currentTournament = updatedTournament;
-				this._setupTournamentDisplay(container); // Update display based on new tournament state
+			try {
+				const updatedTournament = await apiService.getTournament(this._tournamentId);
+				if (updatedTournament) {
+					this._currentTournament = updatedTournament;
+					this._setupTournamentDisplay(container); // Update display based on new tournament state
+				}
+
+				const currentMatches = await apiService.getMatches(this._tournamentId);
+				currentMatches.sort((a: Match, b: Match) => a.match_order - b.match_order); // Sort matches by order
+
+				// Determine the last round number and filter matches for the last round
+				const lastRoundNumber = Math.max(...currentMatches.map((match: Match) => match.round_number));
+				const lastRoundMatches = currentMatches.filter(
+					(match: Match) => match.round_number === lastRoundNumber && match.game_status !== 'completed',
+				);
+
+				if (JSON.stringify(lastRoundMatches) !== JSON.stringify(this._currentMatches)) {
+					this._currentMatches = lastRoundMatches;
+					this._setupMatchDisplay(container, lastRoundMatches); // Update display based on new matches
+				}
+			} catch (error) {
+				console.error('Error fetching matches or tournament:', error);
+				this.root.loadScene(new SceneMenu2(this.root));
 			}
-
-			const currentMatches = await apiService.getMatches(this._tournamentId);
-			currentMatches.sort((a: Match, b: Match) => a.match_order - b.match_order); // Sort matches by order
-
-			// Determine the last round number and filter matches for the last round
-			const lastRoundNumber = Math.max(...currentMatches.map((match: Match) => match.round_number));
-			const lastRoundMatches = currentMatches.filter(
-				(match: Match) => match.round_number === lastRoundNumber,
-			);
-
-			if (JSON.stringify(lastRoundMatches) !== JSON.stringify(this._currentMatches)) {
-				this._currentMatches = lastRoundMatches;
-				this._setupMatchDisplay(container, lastRoundMatches); // Update display based on new matches
-			}
-		}, 1000);
+		}, 5000);
 
 		this.root.ws?.addEventListener('message', (event) => {
 			const data = JSON.parse(event.data);
 			if (data.type === 'tournament_message' && data.payload.action === 'tournament_end') {
 				console.log('Tournament has ended. Winner:', data.payload.data.winner_username);
 				this._winner = data.payload.data.winner_username;
-				this.root.loadScene(new SceneTournamentWinner(this.root, this._tournamentId, this._winner));
+				this.root.loadScene(new SceneTournamentWinner(this.root, this._winner));
 			}
-
 		});
 	}
 
@@ -120,24 +127,22 @@ export class SceneTournamentLoadingVs extends SceneBase {
 
 	public onKeyDown(e: KeyboardEvent) {
 		if (e.code === 'Escape' && !this._escapeKeyPressed) {
-					this._escapeKeyPressed = true;
-					this._exitBool = !this._exitBool;
-					this._exitMenu.visible = this._exitBool;
+			this._escapeKeyPressed = true;
+			this._exitBool = !this._exitBool;
+			this._exitMenu.visible = this._exitBool;
 		}
 
 		if (e.code === 'Enter') {
 			if (this._exitBool) {
 				if (this._exitYesNO) {
 					apiService
-					.leaveTournament(this._tournamentId, this.root.userId!)
-					.then(() => this.root.loadScene(new SceneMenu2(this.root)));
-				
+						.leaveTournament(this._tournamentId, this.root.userId!)
+						.then(() => this.root.loadScene(new SceneMenu2(this.root)));
 				} else {
 					this._exitBool = false;
 					this._exitMenu.visible = false;
 				}
-			}
-			else {
+			} else {
 				const userMatches = this._currentMatches.filter(
 					(match) => match.player1 === this.root.userId || match.player2 === this.root.userId,
 				);
@@ -152,7 +157,7 @@ export class SceneTournamentLoadingVs extends SceneBase {
 			this._noOption.style.fill = defaultColor;
 			this._yesOption.style.fill = 0x053100;
 		}
-		if (e.code ==='ArrowLeft') {
+		if (e.code === 'ArrowLeft') {
 			this._exitYesNO = true;
 			this._yesOption.style.fill = defaultColor;
 			this._noOption.style.fill = 0x053100;
@@ -356,7 +361,7 @@ export class SceneTournamentLoadingVs extends SceneBase {
 
 		this._noOption = new PIXI.Text('No', { fill: 0x053100 });
 		this._noOption = Tools.resizeText(this._noOption, this.root.width, 35);
-		this._noOption.x = background.x - (background.width * 20) / 100 - (this._noOption.width / 2);
+		this._noOption.x = background.x - (background.width * 20) / 100 - this._noOption.width / 2;
 		this._noOption.y = background.y - (background.height * 35) / 100;
 		menu.addChild(this._noOption);
 

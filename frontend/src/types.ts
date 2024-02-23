@@ -110,6 +110,7 @@ export interface Match {
 	game: number;
 	player1_username: string;
 	player2_username: string;
+	game_status: 'empty' | 'waiting' | 'in_progress' | 'completed';
 }
 
 export interface FriendRequest {

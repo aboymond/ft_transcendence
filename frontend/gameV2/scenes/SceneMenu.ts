@@ -27,9 +27,8 @@ export class SceneMenu extends SceneBase {
 				this.root.loadScene(new SceneTournamentLoadingVs(this.root, tournamentId));
 				return;
 			}
-		} catch (error) {
-			console.error('Error fetching current tournament or game:', error);
-			this.root.loadScene(new SceneMenu(this.root));
+		} catch (e) {
+			console.log('No tournament found');
 		}
 
 		container.addChild(this._initTextTitle(this._textTitle));

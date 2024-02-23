@@ -89,9 +89,10 @@ class Tournament(ExportModelOperationsMixin("Tournament"), models.Model):
             round_progress, created = RoundProgress.objects.get_or_create(
                 tournament=tournament, round_number=round_number
             )
+            if not isinstance(winners, (list, tuple)):
+                winners = [winners]
             for winner in winners:
-                print("Adding winner", winner, "to round", round_number)
-                round_progress.awaiting_winners.add(winner)
+                round_progress.awaiting_winners.add(winner.id)
             participants = list(round_progress.awaiting_winners.all())
             print("Participants for round", round_number, ":", participants)
 
@@ -101,6 +102,7 @@ class Tournament(ExportModelOperationsMixin("Tournament"), models.Model):
             # Pop the first two participants to create a match
             player1, player2 = participants.pop(0), participants.pop(0)
 
+            print("Creating match for", player1, "vs", player2, "in round", round_number, "match", match_order)
             match = Match.objects.create(
                 tournament=tournament,
                 player1=player1,
@@ -110,8 +112,9 @@ class Tournament(ExportModelOperationsMixin("Tournament"), models.Model):
             )
             match_order += 1
 
+            print("Creating game for match", match.id, "in round", round_number, "match", match_order, "between", player1, "and", player2)
             game = Game.objects.create(
-                status="waiting",
+                status="empty",
                 player1=player1,
                 player2=player2,
                 player_turn=player1.id,

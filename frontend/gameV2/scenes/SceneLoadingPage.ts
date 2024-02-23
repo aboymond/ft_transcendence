@@ -240,6 +240,7 @@ export class SceneLoadingPage extends SceneBase {
 		try {
 			await apiService.sendPlayerReady(this._gameId).then(() => {
 				if (!this.root.gameSocket) {
+					console.log('Opening game socket');
 					this.root.openGameSocket(this._gameId);
 				}
 			});

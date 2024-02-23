@@ -184,6 +184,10 @@ export class SceneGame extends SceneBase {
 				if (this._exitYesNO) {
 					try {
 						await apiService.leaveGame(this._gameId);
+						if (this.root.gameSocket) {
+							this.root.gameSocket.close();
+							this.root.gameSocket = null;
+						}
 					} catch (error) {
 						console.error('Error leaving game:', error);
 					}

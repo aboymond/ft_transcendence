@@ -49,9 +49,9 @@ class GameConsumer(AsyncWebsocketConsumer):
                 elif self.user_id == self.game.player2_id:
                     self.game.player2_ready = True
                 await sync_to_async(self.game.save)()
-
+                
                 if await self.ready_to_start_game():
-                    await self.start_game()
+                        await self.start_game()
             else:
                 print("User not found.")
                 await self.close()
@@ -61,44 +61,40 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code):
         print(f"Disconnecting... game_id: {self.game_id}, user_id: {self.user_id}")
+        self.game.status = "completed"
         if self.user_id is not None:
             if self.game:
                 if self.user_id == self.game.player1_id:
                     self.game.player1_ready = False
                 elif self.user_id == self.game.player2_id:
                     self.game.player2_ready = False
-                print("Game status:", self.game.status)
-                if not self.game.player1_ready or not self.game.player2_ready:
-                    self.game.status = "completed"
-                    if self.update_task:
-                        print("Cancelling periodic update...")
-                        self.update_task.cancel()
-                        try:
-                            await self.update_task
-                        except asyncio.CancelledError:
-                            pass
+                if self.update_task:
+                    print("Cancelling periodic update...")
+                    self.update_task.cancel()
+                    try:
+                        await self.update_task
+                    except asyncio.CancelledError:
+                        pass
 
-                await sync_to_async(self.game.save)()
-                print("Game status:", self.game.status)
-                await self.notify_status_change()
-
+        await sync_to_async(self.game.save)()
+        print("Game status after disconnect:", self.game.status)
+        await self.notify_status_change()
         await self.channel_layer.group_discard(self.game_group_name, self.channel_name)
 
     async def ready_to_start_game(self):
-        # Ensure the game object is up-to-date
+        print("Checking if ready to start game...")
         self.game = await sync_to_async(Game.objects.get)(id=self.game_id)
         return self.game.player1_ready and self.game.player2_ready
 
     async def start_game(self):
-        if not await self.ready_to_start_game():
-            return
-
         self.game = await sync_to_async(Game.objects.get)(id=self.game_id)
 
-        print("status:", self.game.status)
-        if self.game.status == "waiting":
-            self.game.start_time = timezone.now()
+        print("Starting game...")
+        print("Game status:", self.game.status)
+
+        if self.game.status == "empty":
             self.game.status = "in_progress"
+            self.game.start_time = timezone.now()
             await sync_to_async(self.game.save)()
 
             self.game_state = {
@@ -114,9 +110,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                 "ball_y": self.game.win_height - 10 - 20,
                 "player1_score": self.game.player1_score,
                 "player2_score": self.game.player2_score,
-                "player_turn": self.game.player1_id
-                if self.game.player1_ready
-                else self.game.player2_id,
+                "player_turn": self.game.player1_id,
                 "paused": self.game.paused,
                 "ball_moving": self.game.ball_moving,
                 "ball_velocity_x": self.game.ball_velocity_x,
@@ -132,9 +126,10 @@ class GameConsumer(AsyncWebsocketConsumer):
 
         await self.notify_players_game_started()
 
-        # Start the periodic update task if this is player1 and the task isn't already running
+        # Start the periodic update task if this is player2 and the task isn't already running
         if self.user_id == self.game.player2_id and self.update_task is None:
             print("Starting periodic update...")
+            print("Game status:", self.game.status)
             self.update_task = asyncio.create_task(self._periodic_update())
 
     async def _periodic_update(self):
@@ -148,6 +143,9 @@ class GameConsumer(AsyncWebsocketConsumer):
             await asyncio.sleep(sleep_time / 1000)
 
     async def update_game_state(self):
+        print("Updating game state...")
+        print("Game status:", self.game.status)
+        print("Game state:", self.game_state)
         if self.game is None:
             return
         player1_id = self.game.player1_id
@@ -155,6 +153,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         if player1_id is None or player2_id is None:
             return
 
+        print("TEST")
         if not self.game_state["ball_moving"] and not self.game_state["paused"]:
             await self.check_turn()
             await self.send_game_state()
@@ -194,6 +193,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         )
 
     async def check_turn(self):
+        print("Checking turn...")
         PAD_WIDTH = self.game_state["pad_width"]
         BALL_SIZE = self.game_state["ball_width"]
 
@@ -332,6 +332,8 @@ class GameConsumer(AsyncWebsocketConsumer):
             print("Attempted to send a message to a closed WebSocket connection.")
 
     async def leave_game(self, event):
+        if (self.user_id != self.game.player2_id):
+            return
         print("Leaving game...")
         user_id = event["user_id"]
         game_id = event["game_id"]
@@ -356,14 +358,12 @@ class GameConsumer(AsyncWebsocketConsumer):
             tournament = await database_sync_to_async(Tournament.objects.get)(
                 id=game.tournament_id
             )
-            # winner = [game.winner]
-            print("Winner:", winner)
             round_number = await database_sync_to_async(
                 Tournament.get_next_round_number
             )(tournament)
-            print("Round number:", round_number)
+            winner = await database_sync_to_async(User.objects.get)(id=winner_id)
             await database_sync_to_async(Tournament.create_matches_for_round)(
-                tournament, [winner], round_number
+                tournament, winner, round_number
             )
 
         message = {

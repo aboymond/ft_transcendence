@@ -58,7 +58,6 @@ class JoinGameView(generics.UpdateAPIView):
         # If the game already has a first player, add the user as the second player
         elif not game.player2 and game.player1 != user:
             game.player2 = user
-            # game.status = "in_progress"  # Optionally, change the game status
             game.save()
             return Response(self.get_serializer(game).data, status=status.HTTP_200_OK)
 
