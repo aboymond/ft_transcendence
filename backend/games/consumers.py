@@ -127,7 +127,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         await self.notify_players_game_started()
 
         # Start the periodic update task if this is player2 and the task isn't already running
-        if self.user_id == self.game.player2_id and self.update_task is None:
+        if self.update_task is None:
             print("Starting periodic update...")
             print("Game status:", self.game.status)
             self.update_task = asyncio.create_task(self._periodic_update())
@@ -332,8 +332,8 @@ class GameConsumer(AsyncWebsocketConsumer):
             print("Attempted to send a message to a closed WebSocket connection.")
 
     async def leave_game(self, event):
-        if (self.user_id != self.game.player2_id):
-            return
+        # if (self.user_id != self.game.player2_id):
+        #     return
         print("Leaving game...")
         user_id = event["user_id"]
         game_id = event["game_id"]
@@ -463,14 +463,14 @@ class GameConsumer(AsyncWebsocketConsumer):
     async def create_game_history(self, game):
         player1 = await database_sync_to_async(lambda: game.player1)()
         player2 = await database_sync_to_async(lambda: game.player2)()
-        winnner = await database_sync_to_async(lambda: game.winner)()
+        winner = await database_sync_to_async(lambda: game.winner)()
         print("Creating game history...")
         game_history = GameHistory(
-            player1=game.player1,
-            player2=game.player2,
+            player1=player1,
+            player2=player2,
             player1_score=game.player1_score,
             player2_score=game.player2_score,
-            winner=game.winner,
+            winner=winner,
             played_at=game.end_time,
         )
         await database_sync_to_async(game_history.save)()

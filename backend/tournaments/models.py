@@ -59,6 +59,8 @@ class Tournament(ExportModelOperationsMixin("Tournament"), models.Model):
 
     @classmethod
     def create_matches_for_round(cls, tournament, winners, round_number):
+        print("Creating matches for round", round_number)
+        print("Winners for round", round_number, ":", winners)
         # Check if it's the initial round
         if round_number == 1:
             # Assuming winners list contains all participants for the initial setup
@@ -92,7 +94,8 @@ class Tournament(ExportModelOperationsMixin("Tournament"), models.Model):
             if not isinstance(winners, (list, tuple)):
                 winners = [winners]
             for winner in winners:
-                round_progress.awaiting_winners.add(winner.id)
+                if (hasattr(winner, "id")):
+                    round_progress.awaiting_winners.add(winner.id)
             participants = list(round_progress.awaiting_winners.all())
             print("Participants for round", round_number, ":", participants)
 
