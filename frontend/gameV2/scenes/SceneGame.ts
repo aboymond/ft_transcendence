@@ -3,6 +3,7 @@ import { SceneBase } from './SceneBase';
 import { PixiManager } from '../PixiManager';
 import { apiService } from '../../src/services/apiService';
 import { defaultColor } from '..';
+import { SceneWinOrLoose } from './SceneWinOrLoose';
 
 export class SceneGame extends SceneBase {
 	// FOR THE BACK ======================================
@@ -182,15 +183,15 @@ export class SceneGame extends SceneBase {
 			}
 			if (this._keysPressed['Enter']) {
 				if (this._exitYesNO) {
-					try {
-						await apiService.leaveGame(this._gameId);
-						if (this.root.gameSocket) {
-							this.root.gameSocket.close();
-							this.root.gameSocket = null;
-						}
-					} catch (error) {
-						console.error('Error leaving game:', error);
-					}
+					apiService
+						.leaveGame(this._gameId)
+						.then(() => {
+							this.root.playerAWin = false;
+							this.root.loadScene(new SceneWinOrLoose(this.root));
+						})
+						.catch((error) => {
+							console.error('Error leaving game:', error);
+						});
 				} else {
 					try {
 						await apiService.resumeGame(this._gameId);

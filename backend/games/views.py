@@ -12,9 +12,12 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
+from django.utils import timezone
+
 
 from .models import Game
 from .serializers import GameSerializer  # GameStateSerializer
+from users.models import GameHistory
 
 User = get_user_model()
 
@@ -129,16 +132,44 @@ def player_ready(request, game_id):
 @permission_classes([IsAuthenticated])
 def leave_game(request, game_id):
     game = get_object_or_404(Game, id=game_id)
+    print("Leave game request received")
     if request.user not in [game.player1, game.player2]:
+        print("User not in game")
         return Response(
             {"error": "You are not a player in this game"},
             status=status.HTTP_403_FORBIDDEN,
         )
 
+    # Assuming the user leaving the game is the loser
     if request.user == game.player1:
-        winner_id = game.player2_id
+        winner = game.player2
+        loser = game.player1
     else:
-        winner_id = game.player1_id
+        winner = game.player1
+        loser = game.player2
+
+    # Update the game instance
+    game.winner = winner
+    game.loser = loser
+    game.status = "completed"
+    game.end_time = timezone.now()
+    game.save()
+
+    print("Game ended successfully")
+    print(f"Winner: {winner.username}, Loser: {loser.username}")
+    print("end_time:", game.end_time)
+
+    # Optionally, create or update a game history record
+    # This step depends on how you're handling game histories in your application
+    # For example:
+    # GameHistory.objects.create(
+    #     player1=game.player1,
+    #     player2=game.player2,
+    #     winner=winner,
+    #     player1_score=game.player1_score,
+    #     player2_score=game.player2_score,
+    #     played_at=game.end_time,
+    # )
 
     channel_layer = get_channel_layer()
     async_to_sync(channel_layer.group_send)(
@@ -147,8 +178,8 @@ def leave_game(request, game_id):
             "type": "leave.game",
             "user_id": request.user.id,
             "game_id": game_id,
-            "winner_id": winner_id,  # Pass the winner ID
-            "loser_id": request.user.id,  # Pass the loser ID
+            "winner_id": winner.id,  # Pass the winner ID
+            "loser_id": loser.id,  # Pass the loser ID
         },
     )
 

@@ -5,6 +5,7 @@ from django_prometheus.models import ExportModelOperationsMixin
 from games.models import Game
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
+from channels.db import database_sync_to_async
 
 
 class Tournament(ExportModelOperationsMixin("Tournament"), models.Model):
@@ -69,7 +70,14 @@ class Tournament(ExportModelOperationsMixin("Tournament"), models.Model):
             print("Tournament completed")
             tournament.status = "completed"
             tournament.end_date = timezone.now()
-            tournament.winner = winners[0]
+
+            if isinstance(winners, list) and len(winners) > 0:
+                if isinstance(winners[0], list) and len(winners[0]) > 0:
+                    tournament.winner = winners[0][0]
+                else:
+                    tournament.winner = winners[0]
+            else:
+                tournament.winner = None  # Or any other appropriate handling
             tournament.winner.tournament_wins += 1
             tournament.save()
 
@@ -94,7 +102,7 @@ class Tournament(ExportModelOperationsMixin("Tournament"), models.Model):
             if not isinstance(winners, (list, tuple)):
                 winners = [winners]
             for winner in winners:
-                if (hasattr(winner, "id")):
+                if hasattr(winner, "id"):
                     round_progress.awaiting_winners.add(winner.id)
             participants = list(round_progress.awaiting_winners.all())
             print("Participants for round", round_number, ":", participants)
@@ -105,7 +113,16 @@ class Tournament(ExportModelOperationsMixin("Tournament"), models.Model):
             # Pop the first two participants to create a match
             player1, player2 = participants.pop(0), participants.pop(0)
 
-            print("Creating match for", player1, "vs", player2, "in round", round_number, "match", match_order)
+            print(
+                "Creating match for",
+                player1,
+                "vs",
+                player2,
+                "in round",
+                round_number,
+                "match",
+                match_order,
+            )
             match = Match.objects.create(
                 tournament=tournament,
                 player1=player1,
@@ -113,9 +130,19 @@ class Tournament(ExportModelOperationsMixin("Tournament"), models.Model):
                 round_number=round_number,
                 match_order=match_order,
             )
-            match_order += 1
 
-            print("Creating game for match", match.id, "in round", round_number, "match", match_order, "between", player1, "and", player2)
+            print(
+                "Creating game for match",
+                match.id,
+                "in round",
+                round_number,
+                "match",
+                match_order,
+                "between",
+                player1,
+                "and",
+                player2,
+            )
             game = Game.objects.create(
                 status="empty",
                 player1=player1,
@@ -127,12 +154,15 @@ class Tournament(ExportModelOperationsMixin("Tournament"), models.Model):
             match.game = game
             match.save()
 
+            match_order += 1
+
             # For subsequent rounds, remove the winners from awaiting_winners
             if round_number != 1:
                 round_progress.awaiting_winners.remove(player1, player2)
 
         # Handle any remaining participant for odd numbers
         if round_number == 1 and participants:
+            print("Handling remaining participant for round", round_number)
             # Logic to handle a single remaining participant, if any
             # This could involve automatically advancing them to the next round
             pass
@@ -144,6 +174,58 @@ class Tournament(ExportModelOperationsMixin("Tournament"), models.Model):
             return last_match.round_number + 1
         else:
             return 1
+
+    async def game_ended(self, winner):
+        # Convert the synchronous method call to asynchronous
+        current_round_number = await database_sync_to_async(
+            self.get_current_round_number
+        )()
+        await database_sync_to_async(self.track_winner_for_round)(
+            winner, current_round_number
+        )
+
+        if await database_sync_to_async(self.all_games_completed_for_round)(
+            current_round_number
+        ):
+            winners = await database_sync_to_async(self.get_winners_for_round)(
+                current_round_number
+            )
+            next_round_number = current_round_number + 1
+            await database_sync_to_async(self.create_matches_for_round)(
+                self, winners, next_round_number
+            )
+
+    def get_current_round_number(self):
+        last_match = self.matches.order_by("-round_number").first()
+        if last_match:
+            return last_match.round_number
+        else:
+            return 1
+
+    def track_winner_for_round(self, winner, round_number):
+        round_progress, _ = RoundProgress.objects.get_or_create(
+            tournament=self, round_number=round_number
+        )
+        round_progress.awaiting_winners.add(winner)
+        round_progress.save()
+
+    def all_games_completed_for_round(self, round_number):
+        round_progress = RoundProgress.objects.filter(
+            tournament=self, round_number=round_number
+        ).first()
+        if round_progress:
+            completed_games_count = round_progress.awaiting_winners.count()
+            total_games_count = self.matches.filter(round_number=round_number).count()
+            return completed_games_count == total_games_count
+        return False
+
+    def get_winners_for_round(self, round_number):
+        round_progress = RoundProgress.objects.filter(
+            tournament=self, round_number=round_number
+        ).first()
+        if round_progress:
+            return list(round_progress.awaiting_winners.all())
+        return []
 
 
 class Match(ExportModelOperationsMixin("Match"), models.Model):
