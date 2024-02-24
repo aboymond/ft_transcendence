@@ -32,7 +32,7 @@ interface WebSocketContextType {
 export const WebSocketContext = createContext<WebSocketContextType | null>(null);
 
 const WebSocketHandler: React.FC<Props> = ({ children }) => {
-	const { user, isAuthenticated } = useAuth();
+	const { user, isAuthenticated, token } = useAuth();
 	const socketRef = useRef<WebSocket | null>(null);
 	const [message, setMessage] = useState<WebSocketMessage | null>(null);
 	const [gameState, setGameState] = useState<GameState | null>(null);
@@ -92,7 +92,7 @@ const WebSocketHandler: React.FC<Props> = ({ children }) => {
 		const hostname = import.meta.env.VITE_HOSTNAME;
 		const socketUrl = `${hostname}/ws/general_requests/` + user.id + '/';
 		if (!socketRef.current || socketRef.current.readyState !== WebSocket.OPEN) {
-			socketRef.current = new WebSocket(socketUrl);
+			socketRef.current = new WebSocket(socketUrl, [String(user.id), String(token)]);
 			socketRef.current.addEventListener('message', messageHandler);
 		}
 
@@ -102,7 +102,7 @@ const WebSocketHandler: React.FC<Props> = ({ children }) => {
 				socketRef.current.close();
 			}
 		};
-	}, [user?.id, isAuthenticated]);
+	}, [user?.id, isAuthenticated, token]);
 
 	return (
 		<WebSocketContext.Provider
