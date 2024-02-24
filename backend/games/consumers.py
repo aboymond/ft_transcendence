@@ -2,6 +2,7 @@ import time
 import json
 import asyncio
 import urllib.parse
+from django.db import transaction
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from asgiref.sync import sync_to_async
@@ -81,9 +82,14 @@ class GameConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_discard(self.game_group_name, self.channel_name)
 
     async def ready_to_start_game(self):
-        print("Checking if ready to start game...")
-        self.game = await sync_to_async(Game.objects.get)(id=self.game_id)
-        return self.game.player1_ready and self.game.player2_ready
+        game_ready = await self.check_game_ready()
+        return game_ready
+
+    @database_sync_to_async
+    def check_game_ready(self):
+        with transaction.atomic():
+            game = Game.objects.select_for_update().get(id=self.game_id)
+            return game.player1_ready and game.player2_ready
 
     async def start_game(self):
         self.launcher = True

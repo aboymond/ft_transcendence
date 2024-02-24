@@ -17,7 +17,6 @@ from django.utils import timezone
 
 from .models import Game
 from .serializers import GameSerializer  # GameStateSerializer
-from users.models import GameHistory
 
 User = get_user_model()
 
@@ -158,18 +157,6 @@ def leave_game(request, game_id):
     print("Game ended successfully")
     print(f"Winner: {winner.username}, Loser: {loser.username}")
     print("end_time:", game.end_time)
-
-    # Optionally, create or update a game history record
-    # This step depends on how you're handling game histories in your application
-    # For example:
-    # GameHistory.objects.create(
-    #     player1=game.player1,
-    #     player2=game.player2,
-    #     winner=winner,
-    #     player1_score=game.player1_score,
-    #     player2_score=game.player2_score,
-    #     played_at=game.end_time,
-    # )
 
     channel_layer = get_channel_layer()
     async_to_sync(channel_layer.group_send)(
