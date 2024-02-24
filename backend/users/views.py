@@ -195,8 +195,7 @@ class CallBackView(APIView):
         idft = user_data["id"]
 
         display_name = username
-
-        if idft and not User.objects.filter(idft=idft, is_oauth_user=False).exists():
+        if idft and not User.objects.filter(idft=idft, is_oauth_user=True).exists():
 
             # Check if a non-OAuth user with the same display name exists
             if display_name and User.objects.filter(display_name=display_name, is_oauth_user=False).exists():
@@ -206,8 +205,9 @@ class CallBackView(APIView):
                     display_name = username + str(x + 1)
 
             # Create or update the user with the username and set display_name to username
+
             user, created = User.objects.update_or_create(
-                display_name=display_name,
+                idft=idft,
                 defaults={
                     "email": email,
                     "idft" : idft,
@@ -223,10 +223,11 @@ class CallBackView(APIView):
                 user.avatar.save(f"{username}.jpg", ContentFile(response.content))
                 user.save()
 
+        user = User.objects.get(idft=idft)
         if user.twofa is True:
             send_otp(user)
             redirect_url = (
-                f"{os.getenv('HOSTNAME')}" + "/verify-2fa?username=" + username
+                f"{os.getenv('HOSTNAME')}" + "/verify-2fa?username=" + user.username
             )
             return redirect(redirect_url)
         else:
