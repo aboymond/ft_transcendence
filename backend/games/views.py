@@ -13,7 +13,7 @@ from rest_framework.permissions import IsAuthenticated
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from django.utils import timezone
-
+from django.core.exceptions import PermissionDenied
 
 from .models import Game
 from .serializers import GameSerializer  # GameStateSerializer
@@ -80,6 +80,11 @@ class KeyPressView(View):
         game_id = data.get("game_id")
         player_id = data.get("player_id")
         key = data.get("key")
+
+        # Check if the player is part of the game
+        game = get_object_or_404(Game, id=game_id)
+        if request.user != game.player1 and request.user != game.player2:
+            raise PermissionDenied("You are not a player in this game")
 
         # Define the action based on the key press
         action = None
