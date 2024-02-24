@@ -1,7 +1,6 @@
 import time
 import json
 import asyncio
-import urllib.parse
 from django.db import transaction
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
@@ -28,9 +27,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def connect(self):
         self.game_id = self.scope["url_route"]["kwargs"]["game_id"]
-        query_string = self.scope["query_string"].decode()
-        query_params = urllib.parse.parse_qs(query_string)
-        self.user_id = query_params.get("user_id", [None])[0]
+        self.user_id = self.scope["user"].id
 
         if self.user_id is not None:
             self.user_id = int(self.user_id)  # Convert user_id to int
@@ -41,9 +38,13 @@ class GameConsumer(AsyncWebsocketConsumer):
                 await self.channel_layer.group_add(
                     self.game_group_name, self.channel_name
                 )
-                await self.accept()
-
                 self.game = await sync_to_async(Game.objects.get)(id=self.game_id)
+                # Check if the user is a player in the game
+                if self.user_id not in [self.game.player1_id, self.game.player2_id]:
+                    print("User is not a player in the game.")
+                    await self.close()
+                    return
+                await self.accept()
 
                 # Determine the player based on user_id and set ready flag
                 if self.user_id == self.game.player1_id:

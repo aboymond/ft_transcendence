@@ -144,8 +144,12 @@ export class PixiManager {
 
 	public openGameSocket(gameId: number) {
 		const hostname = import.meta.env.VITE_HOSTNAME;
-		const gameSocketUrl = `${hostname}/ws/game/${gameId}/?user_id=${this.userId}`;
-		this.gameSocket = new WebSocket(gameSocketUrl);
+		const gameSocketUrl = `${hostname}/ws/game/${gameId}/`;
+
+		this.gameSocket = new WebSocket(gameSocketUrl, [
+			String(this.userId),
+			localStorage.getItem('token') ?? '',
+		]);
 		let lastUpdateTime = 0;
 		let pingSum = 0;
 		let pingCount = 0;
