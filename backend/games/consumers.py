@@ -413,15 +413,13 @@ class GameConsumer(AsyncWebsocketConsumer):
             )
             await tournament.game_ended(game.winner)
 
-            winner = [game.winner]
-            print("Winner:", winner)
-            round_number = await database_sync_to_async(
-                Tournament.get_next_round_number
-            )(tournament)
-            print("Round number:", round_number)
-            await database_sync_to_async(Tournament.create_matches_for_round)(
-                tournament, [winner], round_number
-            )
+            # winner = [game.winner]
+            # round_number = await database_sync_to_async(
+            #     Tournament.get_next_round_number
+            # )(tournament)
+            # await database_sync_to_async(Tournament.create_matches_for_round)(
+            #     tournament, [winner], round_number
+            # )
 
         await self.create_game_history(game)
 
@@ -608,9 +606,6 @@ class GameConsumer(AsyncWebsocketConsumer):
         user_id = event["user_id"]
         game = await database_sync_to_async(Game.objects.get)(id=self.game_id)
 
-        print("User ID:", user_id)
-        print("Player1 ID:", game.player1_id)
-        print("Player2 ID:", game.player2_id)
         # Determine the winner and loser based on who is leaving
         if game.player1_id == user_id:
             winner_id = game.player2_id

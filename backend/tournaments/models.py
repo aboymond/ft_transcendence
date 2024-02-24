@@ -71,6 +71,8 @@ class Tournament(ExportModelOperationsMixin("Tournament"), models.Model):
             tournament.status = "completed"
             tournament.end_date = timezone.now()
 
+            print("Setting winner for tournament", tournament.name)
+            print("Winners for round", round_number, ":", winners)
             if isinstance(winners, list) and len(winners) > 0:
                 if isinstance(winners[0], list) and len(winners[0]) > 0:
                     tournament.winner = winners[0][0]
@@ -78,7 +80,9 @@ class Tournament(ExportModelOperationsMixin("Tournament"), models.Model):
                     tournament.winner = winners[0]
             else:
                 tournament.winner = None  # Or any other appropriate handling
+            print("Winner for tournament", tournament.name, ":", tournament.winner)
             tournament.winner.tournament_wins += 1
+            tournament.winner.save()
             tournament.save()
 
             channel_layer = get_channel_layer()
@@ -103,6 +107,7 @@ class Tournament(ExportModelOperationsMixin("Tournament"), models.Model):
                 winners = [winners]
             for winner in winners:
                 if hasattr(winner, "id"):
+                    print("Adding winner", winner, "for round", round_number)
                     round_progress.awaiting_winners.add(winner.id)
             participants = list(round_progress.awaiting_winners.all())
             print("Participants for round", round_number, ":", participants)
@@ -180,10 +185,10 @@ class Tournament(ExportModelOperationsMixin("Tournament"), models.Model):
         current_round_number = await database_sync_to_async(
             self.get_current_round_number
         )()
+        print("Game ended for round", current_round_number)
         await database_sync_to_async(self.track_winner_for_round)(
             winner, current_round_number
         )
-
         if await database_sync_to_async(self.all_games_completed_for_round)(
             current_round_number
         ):
@@ -206,6 +211,7 @@ class Tournament(ExportModelOperationsMixin("Tournament"), models.Model):
         round_progress, _ = RoundProgress.objects.get_or_create(
             tournament=self, round_number=round_number
         )
+        print("Adding winner", winner, "for round", round_number)
         round_progress.awaiting_winners.add(winner)
         round_progress.save()
 
@@ -214,8 +220,16 @@ class Tournament(ExportModelOperationsMixin("Tournament"), models.Model):
             tournament=self, round_number=round_number
         ).first()
         if round_progress:
+            print("Checking if all games are completed for round", round_number)
             completed_games_count = round_progress.awaiting_winners.count()
+            print(
+                "Completed games count for round",
+                round_number,
+                ":",
+                completed_games_count,
+            )
             total_games_count = self.matches.filter(round_number=round_number).count()
+            print("Total games count for round", round_number, ":", total_games_count)
             return completed_games_count == total_games_count
         return False
 
@@ -223,7 +237,14 @@ class Tournament(ExportModelOperationsMixin("Tournament"), models.Model):
         round_progress = RoundProgress.objects.filter(
             tournament=self, round_number=round_number
         ).first()
+        print("Fetching winners for round", round_number)
         if round_progress:
+            print(
+                "Winners for round",
+                round_number,
+                ":",
+                round_progress.awaiting_winners.all(),
+            )
             return list(round_progress.awaiting_winners.all())
         return []
 

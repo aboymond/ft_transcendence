@@ -83,6 +83,7 @@ export class SceneTournamentLoadingVs extends SceneBase {
 				const updatedTournament = await apiService.getTournament(this._tournamentId);
 				if (updatedTournament) {
 					this._currentTournament = updatedTournament;
+					console.log('Tournament updated:', updatedTournament);
 					this._setupTournamentDisplay(container); // Update display based on new tournament state
 				}
 
