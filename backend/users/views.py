@@ -196,12 +196,18 @@ class CallBackView(APIView):
 
         display_name = username
         if idft and not User.objects.filter(idft=idft, is_oauth_user=True).exists():
-
             # Check if a non-OAuth user with the same display name exists
-            if display_name and User.objects.filter(display_name=display_name, is_oauth_user=False).exists():
+            if (
+                display_name
+                and User.objects.filter(
+                    display_name=display_name, is_oauth_user=False
+                ).exists()
+            ):
                 x = 1
                 display_name = username + str(x)
-                while User.objects.filter(display_name=display_name, is_oauth_user=False).exists():
+                while User.objects.filter(
+                    display_name=display_name, is_oauth_user=False
+                ).exists():
                     display_name = username + str(x + 1)
 
             # Create or update the user with the username and set display_name to username
@@ -210,7 +216,7 @@ class CallBackView(APIView):
                 idft=idft,
                 defaults={
                     "email": email,
-                    "idft" : idft,
+                    "idft": idft,
                     "is_oauth_user": True,
                     "display_name": display_name,
                     "username": display_name,
@@ -255,6 +261,8 @@ class CallBackCodeView(APIView):
 
 
 class LogoutView(generics.GenericAPIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request, *args, **kwargs):
         request.user.status = "offline"
         request.user.save()
@@ -263,6 +271,7 @@ class LogoutView(generics.GenericAPIView):
 
 
 class UserListView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
     queryset = User.objects.all()
     serializer_class = ListUserSerializer
 
@@ -284,6 +293,7 @@ class UserUpdateView(generics.UpdateAPIView):
 
 
 class UserGameHistoryView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
     serializer_class = GameHistorySerializer
 
     def get_queryset(self):
@@ -300,6 +310,7 @@ class UserGameHistoryView(generics.ListAPIView):
 
 
 class UserDetailView(generics.RetrieveAPIView):
+    permission_classes = [IsAuthenticated]
     queryset = User.objects.all()
     serializer_class = ListUserSerializer
     lookup_field = "id"
@@ -325,19 +336,21 @@ class CurrentUserProfileView(generics.RetrieveAPIView):
 
 
 class GameHistoryListCreateView(generics.ListCreateAPIView):
+    permission_classes = [IsAuthenticated]
     queryset = GameHistory.objects.all()
     serializer_class = GameHistorySerializer
 
 
 class GameHistoryRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAuthenticated]
     queryset = GameHistory.objects.all()
     serializer_class = GameHistorySerializer
 
 
 class FriendRequestCreateView(generics.CreateAPIView):
+    permission_classes = [IsAuthenticated]
     queryset = Friendship.objects.all()
     serializer_class = FriendshipSerializer
-    permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
         receiver_username = self.request.data.get("receiver")  # type: ignore

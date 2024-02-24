@@ -3,20 +3,20 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from django.db.models import Q
 from django.views.decorators.csrf import csrf_exempt
+from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.http import JsonResponse
-from django.views import View
 from rest_framework import generics, status
+from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-from django.utils import timezone
-from django.core.exceptions import PermissionDenied
 
 from .models import Game
-from .serializers import GameSerializer  # GameStateSerializer
+from .serializers import GameSerializer
 
 User = get_user_model()
 
@@ -24,11 +24,13 @@ User = get_user_model()
 class GameListCreateView(generics.ListCreateAPIView):
     queryset = Game.objects.all()
     serializer_class = GameSerializer
+    permission_classes = [IsAuthenticated]
 
 
 class CreateGameView(generics.CreateAPIView):
     queryset = Game.objects.all()
     serializer_class = GameSerializer
+    permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
         user_id = self.request.data.get("user_id")
@@ -46,11 +48,12 @@ class CreateGameView(generics.CreateAPIView):
 class JoinGameView(generics.UpdateAPIView):
     queryset = Game.objects.all()
     serializer_class = GameSerializer
+    permission_classes = [IsAuthenticated]
 
     def patch(self, request, *args, **kwargs):
         game = self.get_object()
         user = request.user
-
+        print("request.user in join:", user)
         # Check if the game is empty and add the user as the first player
         if not game.player1:
             game.player1 = user
@@ -74,7 +77,10 @@ class JoinGameView(generics.UpdateAPIView):
 
 
 @method_decorator(csrf_exempt, name="dispatch")
-class KeyPressView(View):
+class KeyPressView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)
         game_id = data.get("game_id")
@@ -84,7 +90,9 @@ class KeyPressView(View):
         # Check if the player is part of the game
         game = get_object_or_404(Game, id=game_id)
         if request.user != game.player1 and request.user != game.player2:
-            raise PermissionDenied("You are not a player in this game")
+            return JsonResponse(
+                {"error": "You are not a player in this game"}, status=403
+            )
 
         # Define the action based on the key press
         action = None
@@ -101,7 +109,7 @@ class KeyPressView(View):
             async_to_sync(channel_layer.group_send)(
                 f"game_{game_id}",
                 {
-                    "type": "key_action",  # This should match a method in GameConsumer
+                    "type": "key_action",
                     "player_id": player_id,
                     "action": action,
                 },
@@ -116,7 +124,6 @@ def player_ready(request, game_id):
     game = get_object_or_404(Game, id=game_id)
     user = request.user
 
-    # Mark the player as ready
     if game.player1 == user:
         game.player1_ready = True
     elif game.player2 == user:
@@ -243,6 +250,7 @@ def resume_game(request, game_id):
 
 class GetCurrentGameView(generics.ListAPIView):
     serializer_class = GameSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         user = self.request.user

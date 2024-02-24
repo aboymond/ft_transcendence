@@ -3,9 +3,11 @@ from django.http import JsonResponse
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.generics import RetrieveAPIView
+from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import get_user_model
 from django.db.models import Q
 from .models import Tournament, Match
+
 from .serializers import (
     TournamentSerializer,
     TournamentCreateSerializer,
@@ -22,6 +24,7 @@ logger = logging.getLogger(__name__)
 class TournamentCreateView(generics.CreateAPIView):
     queryset = Tournament.objects.all()
     serializer_class = TournamentCreateSerializer
+    permission_classes = [IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -38,6 +41,7 @@ class TournamentCreateView(generics.CreateAPIView):
 class TournamentJoinView(generics.UpdateAPIView):
     queryset = Tournament.objects.all()
     serializer_class = TournamentSerializer
+    permission_classes = [IsAuthenticated]
 
     def patch(self, request, *args, **kwargs):
         tournament = self.get_object()
@@ -53,6 +57,7 @@ class TournamentJoinView(generics.UpdateAPIView):
 
 # TODO: Implement the TournamentLeaveView
 class TournamentLeaveView(generics.UpdateAPIView):
+    permission_classes = [IsAuthenticated]
     queryset = Tournament.objects.all()
     serializer_class = TournamentSerializer
 
@@ -75,6 +80,7 @@ class TournamentLeaveView(generics.UpdateAPIView):
 
 
 class TournamentListView(generics.ListCreateAPIView):
+    permission_classes = [IsAuthenticated]
     queryset = Tournament.objects.all()
 
     def get_serializer_class(self):
@@ -84,12 +90,14 @@ class TournamentListView(generics.ListCreateAPIView):
 
 
 class TournamentDetailView(RetrieveAPIView):
+    permission_classes = [IsAuthenticated]
     queryset = Tournament.objects.all()
     serializer_class = TournamentDetailSerializer
     lookup_field = "id"
 
 
 class TournamentMatchesListView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
     serializer_class = MatchSerializer
 
     def get_queryset(self):
@@ -98,6 +106,7 @@ class TournamentMatchesListView(generics.ListAPIView):
 
 
 class GetCurrentTournamentView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
     serializer_class = TournamentIdSerializer
 
     def get_queryset(self):
