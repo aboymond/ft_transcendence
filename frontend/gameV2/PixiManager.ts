@@ -146,10 +146,7 @@ export class PixiManager {
 		const hostname = import.meta.env.VITE_HOSTNAME;
 		const gameSocketUrl = `${hostname}/ws/game/${gameId}/`;
 
-		this.gameSocket = new WebSocket(gameSocketUrl, [
-			String(this.userId),
-			localStorage.getItem('token') ?? '',
-		]);
+		this.gameSocket = new WebSocket(gameSocketUrl);
 		let lastUpdateTime = 0;
 		let pingSum = 0;
 		let pingCount = 0;

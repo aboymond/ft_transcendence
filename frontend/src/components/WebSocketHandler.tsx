@@ -95,7 +95,7 @@ const WebSocketHandler: React.FC<Props> = ({ children }) => {
 		const hostname = import.meta.env.VITE_HOSTNAME;
 		const socketUrl = `${hostname}/ws/general_requests/` + user.id + '/';
 		if (!socketRef.current || socketRef.current.readyState !== WebSocket.OPEN) {
-			socketRef.current = new WebSocket(socketUrl, [String(user.id), String(token)]);
+			socketRef.current = new WebSocket(socketUrl);
 			socketRef.current.addEventListener('message', messageHandler);
 		}
 
