@@ -187,8 +187,8 @@ export class PixiManager {
 						player2_score: data.player2_score,
 						ballVelocity: { x: data.ball_velocity_x, y: data.ball_velocity_y },
 						playerTurn: data.player_turn,
-						winWidth: this.width, //TODO: check if needed
-						winHeight: this.height, //TODO: check if needed
+						winWidth: this.width,
+						winHeight: this.height,
 					};
 					break;
 				case 'leave_game':

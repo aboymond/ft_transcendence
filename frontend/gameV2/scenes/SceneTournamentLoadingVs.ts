@@ -77,13 +77,11 @@ export class SceneTournamentLoadingVs extends SceneBase {
 			this.root.loadScene(new SceneMenu2(this.root));
 		}
 
-		//TODO use websocket to update the display
 		this._checkInterval = window.setInterval(async () => {
 			try {
 				const updatedTournament = await apiService.getTournament(this._tournamentId);
 				if (updatedTournament) {
 					this._currentTournament = updatedTournament;
-					console.log('Tournament updated:', updatedTournament);
 					this._setupTournamentDisplay(container); // Update display based on new tournament state
 				}
 

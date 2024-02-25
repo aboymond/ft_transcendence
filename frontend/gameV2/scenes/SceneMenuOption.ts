@@ -260,7 +260,6 @@ export class SceneMenuOption extends SceneBase {
 				apiService
 					.createGame(this.root.userId ?? 0, chooseVictoryAmount[this._currentVictory]) //TODO
 					.then((response) => {
-						console.log('Game created successfully', response);
 						this.root.loadScene(new SceneLoadingPage(this.root, response.id));
 					})
 					.catch((error) => console.error('Error creating game', error));

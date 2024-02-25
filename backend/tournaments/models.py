@@ -60,8 +60,6 @@ class Tournament(ExportModelOperationsMixin("Tournament"), models.Model):
 
     @classmethod
     def create_matches_for_round(cls, tournament, winners, round_number):
-        print("Creating matches for round", round_number)
-        print("Winners for round", round_number, ":", winners)
         next_round_matches = Match.objects.filter(
             tournament=tournament, round_number=round_number + 1
         )
@@ -77,8 +75,6 @@ class Tournament(ExportModelOperationsMixin("Tournament"), models.Model):
             tournament.status = "completed"
             tournament.end_date = timezone.now()
 
-            print("Setting winner for tournament", tournament.name)
-            print("Winners for round", round_number, ":", winners)
             if isinstance(winners, list) and len(winners) > 0:
                 if isinstance(winners[0], list) and len(winners[0]) > 0:
                     tournament.winner = winners[0][0]
@@ -107,7 +103,6 @@ class Tournament(ExportModelOperationsMixin("Tournament"), models.Model):
             return
         else:
             # For subsequent rounds, fetch or wait for winners
-            print("Fetching winners for round", round_number)
             round_progress, created = RoundProgress.objects.get_or_create(
                 tournament=tournament, round_number=round_number
             )
@@ -126,16 +121,6 @@ class Tournament(ExportModelOperationsMixin("Tournament"), models.Model):
             # Pop the first two participants to create a match
             player1, player2 = participants.pop(0), participants.pop(0)
 
-            print(
-                "Creating match for",
-                player1,
-                "vs",
-                player2,
-                "in round",
-                round_number,
-                "match",
-                match_order,
-            )
             match = Match.objects.create(
                 tournament=tournament,
                 player1=player1,
@@ -175,9 +160,6 @@ class Tournament(ExportModelOperationsMixin("Tournament"), models.Model):
 
         # Handle any remaining participant for odd numbers
         if round_number == 1 and participants:
-            print("Handling remaining participant for round", round_number)
-            # Logic to handle a single remaining participant, if any
-            # This could involve automatically advancing them to the next round
             pass
 
     @classmethod
@@ -219,7 +201,6 @@ class Tournament(ExportModelOperationsMixin("Tournament"), models.Model):
         round_progress, _ = RoundProgress.objects.get_or_create(
             tournament=self, round_number=round_number
         )
-        print("Adding winner", winner, "for round", round_number)
         round_progress.awaiting_winners.add(winner)
         round_progress.save()
 
@@ -228,16 +209,8 @@ class Tournament(ExportModelOperationsMixin("Tournament"), models.Model):
             tournament=self, round_number=round_number
         ).first()
         if round_progress:
-            print("Checking if all games are completed for round", round_number)
             completed_games_count = round_progress.awaiting_winners.count()
-            print(
-                "Completed games count for round",
-                round_number,
-                ":",
-                completed_games_count,
-            )
             total_games_count = self.matches.filter(round_number=round_number).count()
-            print("Total games count for round", round_number, ":", total_games_count)
             return completed_games_count == total_games_count
         return False
 

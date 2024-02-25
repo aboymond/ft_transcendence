@@ -26,7 +26,6 @@ const AddFriend = () => {
 		}
 	};
 
-	//TODO fix colors
 	return (
 		<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
 			<p style={{ textAlign: 'center' }}>Add friends</p>

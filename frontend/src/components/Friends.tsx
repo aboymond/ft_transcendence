@@ -57,7 +57,7 @@ const Friends: React.FC = () => {
 		try {
 			const acceptedRequest = await apiService.acceptFriendRequest(requestId);
 			setFriendRequests(friendRequests.filter((request) => request.id !== requestId));
-			setFriends([...friends, acceptedRequest.receiver]);
+			setFriends([...friends, acceptedRequest.requester]);
 		} catch (error) {
 			console.error('Error accepting request:', error);
 		}
@@ -82,7 +82,6 @@ const Friends: React.FC = () => {
 	};
 
 	const handleSelectFriend = (friend: User) => {
-		//TODO
 		console.log('Selected friend:', friend);
 	};
 

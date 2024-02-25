@@ -1,11 +1,11 @@
 groups:
-- name: server_down
-  rules:
-  - alert: server_down
-    expr: nginx_up == 0
-    for: 1m
-    labels:
-      severity: critical
-    annotations:
-      summary: "Instance {{ $labels.instance }} down"
-      description: "{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 5 minutes."
+  - name: server_down
+    rules:
+      - alert: server_down
+        expr: nginx_up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Instance {{ $labels.instance }} down"
+          description: "{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 1 minutes."

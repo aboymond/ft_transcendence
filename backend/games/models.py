@@ -3,7 +3,7 @@ from django.db import models
 from django.conf import settings
 from django_prometheus.models import ExportModelOperationsMixin
 
-BALL_SPEED = 10
+BALL_SPEED = 15
 
 
 class Game(ExportModelOperationsMixin("game"), models.Model):
@@ -74,11 +74,10 @@ class Game(ExportModelOperationsMixin("game"), models.Model):
     ball_moving = models.BooleanField(default=False)
     paused = models.BooleanField(default=False)
 
-    # TODO: Remove these hardcoded values ?
     win_width = models.FloatField(default=426)
     win_height = models.FloatField(default=563)
     ball_width = models.FloatField(default=10)
-    pad_width = models.FloatField(default=100)
+    pad_width = models.FloatField(default=105)
     pad_height = models.FloatField(default=10)
 
     player1_ready = models.BooleanField(default=False)

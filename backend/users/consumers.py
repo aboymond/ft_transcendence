@@ -82,7 +82,6 @@ class GeneralRequestConsumer(AsyncWebsocketConsumer):
 
     async def general_request(self, event):
         message = event["message"]
-        print("General request message:\n", message)
         await self.send(
             text_data=json.dumps(
                 {

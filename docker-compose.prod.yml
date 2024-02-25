@@ -8,7 +8,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      DJANGO_DEBUG: "True" #TODO: change this for push
+      DJANGO_DEBUG: "False"
     env_file: .env.prod
     networks:
       - my-network
@@ -30,8 +30,8 @@ services:
       - "8080:80"
     environment:
       - VITE_BACKEND_URL=http://backend:8000
-      - VITE_HOSTNAME=wss://localhost #TODO move to .env for push
-      - VITE_API_URL=/api #TODO move to .env for push
+      - VITE_HOSTNAME=wss://localhost
+      - VITE_API_URL=/api
     env_file: ./frontend/.env
     networks:
       - my-network

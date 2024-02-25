@@ -147,7 +147,6 @@ class VerifyTwoFAView(generics.UpdateAPIView):
 
 class AuthView(generics.GenericAPIView):
     def get(self, request, *args, **kwargs):
-        print("AUTH - GET")
         authorization_url = "https://api.intra.42.fr/oauth/authorize?client_id={}&redirect_uri={}&response_type=code".format(
             os.getenv("CLIENT"), f"{os.getenv('HOSTNAME')}/api/users/auth/callback"
         )
@@ -238,7 +237,6 @@ class CallBackView(APIView):
             return redirect(redirect_url)
         else:
             refresh = RefreshToken.for_user(user)
-            print(refresh.access_token)
             redirect_url = (
                 f"{os.getenv('HOSTNAME')}"
                 + "?access_token="
@@ -247,17 +245,6 @@ class CallBackView(APIView):
                 + str(user.id)
             )
             return redirect(redirect_url)
-
-
-class CallBackCodeView(APIView):
-    def get(self, request, *args, **kwargs):
-        print("We're in")
-        print(f'access token : {request.GET.get("code")}')
-        return Response(
-            {
-                "test": "koukou",
-            }
-        )
 
 
 class LogoutView(generics.GenericAPIView):

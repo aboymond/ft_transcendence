@@ -1,24 +1,24 @@
 global:
   resolve_timeout: 5m
-  smtp_require_tls: true  # Définir à false si votre serveur SMTP n'utilise pas TLS
+  smtp_require_tls: true # Définir à false si votre serveur SMTP n'utilise pas TLS
 
 route:
-  group_by: ['instance', 'severity']
+  group_by: ["instance", "severity"]
   group_wait: 30s
   group_interval: 5m
   repeat_interval: 12h
-  receiver: 'email-me'
+  receiver: "email-me"
   routes:
-  - match:
-      alertname: server_down
+    - match:
+        alertname: server_down
 
 receivers:
-- name: 'email-me'
-  email_configs:
-  - to:
-    from:
-    smarthost:
-    auth_username:
-    auth_identity:
-    auth_password:
-    send_resolved: true
+  - name: "email-me"
+    email_configs:
+      - to:
+        from:
+        smarthost:
+        auth_username:
+        auth_identity:
+        auth_password:
+        send_resolved: true

@@ -15,7 +15,8 @@ from users.models import GameHistory
 
 User = get_user_model()
 
-BALL_SPEED = 10
+BALL_SPEED = 15
+MAX_SPEED = 30
 
 
 class GameConsumer(AsyncWebsocketConsumer):
@@ -33,7 +34,6 @@ class GameConsumer(AsyncWebsocketConsumer):
             self.user_id = int(self.user_id)  # Convert user_id to int
             self.user = await self.get_user(self.user_id)
             if self.user:
-                print(f"Connecting... game_id: {self.game_id}, user_id: {self.user_id}")
                 self.game_group_name = f"game_{self.game_id}"
                 await self.channel_layer.group_add(
                     self.game_group_name, self.channel_name
@@ -114,12 +114,12 @@ class GameConsumer(AsyncWebsocketConsumer):
             return game.player1_ready and game.player2_ready
 
     async def start_game(self):
-        self.launcher = True
         self.game = await sync_to_async(Game.objects.get)(id=self.game_id)
 
         print("Starting game...")
 
         if self.game.status == "empty" or self.game.status == "waiting":
+            self.launcher = True
             self.game.status = "in_progress"
             self.game.start_time = timezone.now()
             await sync_to_async(self.game.save)()
@@ -178,7 +178,6 @@ class GameConsumer(AsyncWebsocketConsumer):
 
         if not self.game_state["ball_moving"] and not self.game_state["paused"]:
             await self.check_turn()
-            await self.send_game_state()
             return
 
         if self.game_state["ball_moving"] and not self.game_state["paused"]:
@@ -282,7 +281,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                 self.game_state["ball_y"]
                 <= self.game_state["pad2_y"] + self.game_state["pad_height"] / 2 + 2
             ):
-                if self.game_state["ball_velocity_y"] > -15:
+                if self.game_state["ball_velocity_y"] > -MAX_SPEED:
                     self.game_state["ball_velocity_y"] -= 0.25
                 self.game_state["ball_velocity_y"] = -self.game_state["ball_velocity_y"]
                 self.game_state["ball_velocity_x"] = (
@@ -304,7 +303,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                     (self.game_state["ball_x"] - self.game_state["pad1_x"])
                     / (self.game_state["pad_width"] / 2)
                 ) * BALL_SPEED
-                if self.game_state["ball_velocity_y"] < 15:
+                if self.game_state["ball_velocity_y"] < MAX_SPEED:
                     self.game_state["ball_velocity_y"] += 0.25
                 self.game_state["ball_velocity_y"] = -self.game_state["ball_velocity_y"]
 
@@ -350,56 +349,6 @@ class GameConsumer(AsyncWebsocketConsumer):
         except ConnectionClosedOK:
             print("Attempted to send a message to a closed WebSocket connection.")
 
-    # async def leave_game(self, event):
-    #     if not self.launcher:
-    #         return
-    #     print("Leaving game...")
-    #     game_id = event["game_id"]
-    #     winner_id = event["winner_id"]
-    #     loser_id = event["loser_id"]
-
-    #     game = await database_sync_to_async(Game.objects.get)(id=game_id)
-    #     winner = await database_sync_to_async(User.objects.get)(id=winner_id)
-    #     loser = await database_sync_to_async(User.objects.get)(id=loser_id)
-
-    #     game.winner = winner
-    #     game.loser = loser
-    #     game.status = "completed"
-
-    #     # Increment wins and losses
-    #     winner.wins += 1
-    #     loser.losses += 1
-
-    #     # Save the changes
-    #     await database_sync_to_async(winner.save)()
-    #     await database_sync_to_async(loser.save)()
-    #     await database_sync_to_async(game.save)()
-
-    #     await self.create_game_history(game)
-
-    #     game = await database_sync_to_async(Game.objects.get)(id=game_id)
-    #     if game.tournament_id is not None:
-    #         tournament = await database_sync_to_async(Tournament.objects.get)(
-    #             id=game.tournament_id
-    #         )
-    #         await tournament.game_ended(game.winner)
-
-    #     message = {
-    #         "action": "leave_game",
-    #         "data": {
-    #             "message": "A player has left the game. The game has ended.",
-    #             "winner_id": winner_id,
-    #             "loser_id": loser_id,
-    #         },
-    #     }
-    #     await self.channel_layer.group_send(
-    #         self.game_group_name,
-    #         {
-    #             "type": "game_message",
-    #             "message": message,
-    #         },
-    #     )
-
     @database_sync_to_async
     def get_user(self, user_id):
         try:
@@ -412,8 +361,6 @@ class GameConsumer(AsyncWebsocketConsumer):
         game.status = "completed"
         game.winner = await self.determine_winner(game.id)
         game.loser = await self.determine_loser(game.id)
-        print("Winner:", game.winner)
-        print("Loser:", game.loser)
         game.end_time = timezone.now()
         await sync_to_async(game.save)()
 
@@ -529,13 +476,13 @@ class GameConsumer(AsyncWebsocketConsumer):
         # Update the game state based on the action
         if action == "move_right":
             self.game_state[pad_key] = min(
-                self.game_state.get(pad_key, 0) + 10,
+                self.game_state.get(pad_key, 0) + 15,
                 self.game_state.get("win_width", 426)
                 - self.game_state.get("pad_width", 100) / 2,
             )
         elif action == "move_left":
             self.game_state[pad_key] = max(
-                self.game_state.get(pad_key, 0) - 10,
+                self.game_state.get(pad_key, 0) - 15,
                 self.game_state.get("pad_width", 100) / 2,
             )
         elif action == "launch_ball" and player_id == self.game_state.get(

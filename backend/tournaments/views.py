@@ -95,8 +95,7 @@ class TournamentLeaveView(generics.UpdateAPIView):
                         )
                     else:
                         print("No opponent found")
-        else:
-            tournament.participants.remove(user)
+        tournament.participants.remove(user)
         # Check if there are no participants left in the tournament
         if tournament.participants.count() == 0:
             tournament.delete()

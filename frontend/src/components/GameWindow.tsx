@@ -9,7 +9,6 @@ function GameWindow() {
 	const ws = context?.socket;
 	const user = context?.user;
 	const [gameLaunched, setGameLaunched] = useState(false);
-	//TODO  const gameState = context?.gameState;
 
 	useEffect(() => {
 		if (ws && user && user.id && !gameLaunched) {

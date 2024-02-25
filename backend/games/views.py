@@ -53,7 +53,6 @@ class JoinGameView(generics.UpdateAPIView):
     def patch(self, request, *args, **kwargs):
         game = self.get_object()
         user = request.user
-        print("request.user in join:", user)
         # Check if the game is empty and add the user as the first player
         if not game.player1:
             game.player1 = user
@@ -69,7 +68,6 @@ class JoinGameView(generics.UpdateAPIView):
         # If the game is full or the user is already in the game, return an error
         else:
             print("Game is full or user is already in the game")
-            print(game.player1, game.player2, user)
             return Response(
                 {"detail": "Game is full or user is already in the game"},
                 status=status.HTTP_400_BAD_REQUEST,
@@ -165,10 +163,6 @@ def leave_game(request, game_id):
     game.status = "completed"
     game.end_time = timezone.now()
     game.save()
-
-    print("Game ended successfully")
-    print(f"Winner: {winner.username}, Loser: {loser.username}")
-    print("end_time:", game.end_time)
 
     channel_layer = get_channel_layer()
     async_to_sync(channel_layer.group_send)(

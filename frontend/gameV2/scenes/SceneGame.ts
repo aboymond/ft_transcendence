@@ -76,7 +76,7 @@ export class SceneGame extends SceneBase {
 		if (pressedKeys.length > 0 && !this._exitBool) {
 			const currentTime = Date.now();
 			const timeSinceLastCall = currentTime - this._lastApiCallTime;
-			const rateLimit = 100; // Rate limit in milliseconds
+			const rateLimit = 32; // Rate limit in milliseconds
 
 			if (timeSinceLastCall >= rateLimit) {
 				pressedKeys.forEach((key) => {

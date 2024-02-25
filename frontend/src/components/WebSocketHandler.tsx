@@ -41,7 +41,6 @@ const WebSocketHandler: React.FC<Props> = ({ children }) => {
 	const [friendRequestReceived, setFriendRequestReceived] = useState<FriendRequestReceived | null>(null);
 
 	const acceptFriendRequest = async (requestId: string) => {
-		console.log(`Accepting friend request with ID: ${requestId}`);
 		setFriendRequestReceived((prevState) => ({
 			...(prevState || { senderName: '', requestId: '', status: 'sent' }),
 			status: 'accepted',
