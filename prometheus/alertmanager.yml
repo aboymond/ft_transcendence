@@ -14,10 +14,10 @@ route:
 receivers:
   - name: "email-me"
     email_configs:
-      - to:
-        from:
-        smarthost:
-        auth_username:
-        auth_identity:
-        auth_password:
+      - to: "bonvin.quentin@gmail.com"
+        from: "bonvin.quentin@gmail.com"
+        smarthost: "smtp.gmail.com:587"
+        auth_username: "bonvin.quentin@gmail.com"
+        auth_identity: "bonvin.quentin@gmail.com"
+        auth_password: "rxht mbpj nbvt kvzf"
         send_resolved: true
