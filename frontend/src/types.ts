@@ -120,3 +120,8 @@ export interface FriendRequest {
 	status: 'sent' | 'accepted';
 	created_at: string;
 }
+
+export interface DecodedToken {
+	[key: string]: unknown;
+	exp: number;
+}

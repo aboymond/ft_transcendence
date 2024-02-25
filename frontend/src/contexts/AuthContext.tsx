@@ -1,12 +1,12 @@
 import { createContext, useState, useEffect, ReactNode } from 'react';
 import apiService from '../services/apiService';
-import { User } from '../types';
+import { User, DecodedToken } from '../types';
 import { jwtDecode } from 'jwt-decode';
 
 const ensureHttps = (url: string) => {
 	if (!url) return url;
 	return url.replace(/^http:/, 'https:');
-  };
+};
 
 interface AuthContextType {
 	token: string | null;
@@ -18,11 +18,6 @@ interface AuthContextType {
 	logout: () => void;
 	verifyOtp: (username: string, otp: string) => void;
 	updateUser: (user: User) => void;
-}
-
-interface DecodedToken {
-	[key: string]: unknown;
-	exp: number;
 }
 
 export const AuthContext = createContext<AuthContextType | null>(null);

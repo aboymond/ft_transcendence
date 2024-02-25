@@ -6,10 +6,12 @@ import Window from '../components/Window';
 import { Row, Col, Container } from 'react-bootstrap';
 import styles from '../styles/Home.module.css';
 import { Link } from 'react-router-dom';
+import SessionTimeout from '../components/SessionTimeout';
 
 const Home: React.FC = () => {
 	return (
 		<>
+			<SessionTimeout />
 			<div id="homepage">
 				<BarNav />
 				<Container className={styles.container}>

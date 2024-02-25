@@ -10,7 +10,6 @@ const Profile: React.FC = () => {
 	const [profile, setProfile] = useState<User | null>(null);
 	const [error, setError] = useState<string | null>(null);
 	const [isEditing, setIsEditing] = useState(false);
-	const [username, setUsername] = useState('');
 	const [display_name, setDisplayName] = useState('');
 	const [avatar, setAvatar] = useState<File | null>(null);
 	const [filename, setFilename] = useState('');
@@ -29,16 +28,15 @@ const Profile: React.FC = () => {
 
 	const handleUpdate = async () => {
 		try {
-			const data: {display_name?: string } = {};
-			if (display_name) 
-			{
+			const data: { display_name?: string } = {};
+			if (display_name) {
 				data.display_name = display_name;
 				await apiService.updateUserProfile(data);
 			}
 			if (avatar) {
 				await apiService.uploadUserAvatar(avatar);
 			}
-			
+
 			('Profile updated successfully');
 			setIsEditing(false);
 

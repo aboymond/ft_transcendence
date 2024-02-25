@@ -261,7 +261,7 @@ class CallBackCodeView(APIView):
 
 
 class LogoutView(generics.GenericAPIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsOwnProfileOrAdmin]
 
     def post(self, request, *args, **kwargs):
         request.user.status = "offline"
@@ -310,7 +310,7 @@ class UserGameHistoryView(generics.ListAPIView):
 
 
 class UserDetailView(generics.RetrieveAPIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsOwnProfileOrAdmin]
     queryset = User.objects.all()
     serializer_class = ListUserSerializer
     lookup_field = "id"
@@ -329,7 +329,7 @@ class UserDetailView(generics.RetrieveAPIView):
 
 class CurrentUserProfileView(generics.RetrieveAPIView):
     serializer_class = ListUserSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsOwnProfileOrAdmin]
 
     def get_object(self):
         return self.request.user
