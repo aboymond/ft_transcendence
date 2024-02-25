@@ -62,6 +62,12 @@ class Tournament(ExportModelOperationsMixin("Tournament"), models.Model):
     def create_matches_for_round(cls, tournament, winners, round_number):
         print("Creating matches for round", round_number)
         print("Winners for round", round_number, ":", winners)
+        next_round_matches = Match.objects.filter(
+            tournament=tournament, round_number=round_number + 1
+        )
+        if next_round_matches.exists():
+            print("Matches for the next round have already been created.")
+            return
         # Check if it's the initial round
         if round_number == 1:
             # Assuming winners list contains all participants for the initial setup
@@ -91,7 +97,7 @@ class Tournament(ExportModelOperationsMixin("Tournament"), models.Model):
             for participant in tournament.participants.all():
                 group_name = f"general_requests_{participant.id}"  # Construct the group name for each participant
                 message = {
-                    "type": "tournament_message",
+                    "type": "tournament_message_end",
                     "tournament_id": tournament.id,
                     "tournament_name": tournament.name,
                     "winner_id": tournament.winner.id,

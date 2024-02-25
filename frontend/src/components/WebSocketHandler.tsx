@@ -82,6 +82,9 @@ const WebSocketHandler: React.FC<Props> = ({ children }) => {
 				toast.success(`${data.sender_name} accepted your friend request.`);
 			}
 		}
+		if (type === 'tournament_message') {
+			// TODO
+		}
 	};
 
 	useEffect(() => {

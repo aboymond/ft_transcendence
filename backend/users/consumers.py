@@ -3,6 +3,7 @@ import json
 import logging
 from django.contrib.auth import get_user_model
 from asgiref.sync import sync_to_async
+from tournaments.models import Tournament
 
 logger = logging.getLogger(__name__)
 User = get_user_model()
@@ -98,7 +99,7 @@ class GeneralRequestConsumer(AsyncWebsocketConsumer):
             )
         )
 
-    async def tournament_message(self, event):
+    async def tournament_message_end(self, event):
         await self.send(
             text_data=json.dumps(
                 {
@@ -115,3 +116,9 @@ class GeneralRequestConsumer(AsyncWebsocketConsumer):
                 }
             )
         )
+
+    async def tournament_message(self, event):
+        tournament_id = event["tournament_id"]
+        tournament = await sync_to_async(Tournament.objects.get)(pk=tournament_id)
+        winner = await sync_to_async(User.objects.get)(pk=event["winner_id"])
+        await tournament.game_ended(winner)

@@ -8,6 +8,8 @@ from django.contrib.auth import get_user_model
 from django.db.models import Q
 from .models import Tournament, Match
 from django.utils import timezone
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 
 from .serializers import (
     TournamentSerializer,
@@ -56,7 +58,6 @@ class TournamentJoinView(generics.UpdateAPIView):
             return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
-# TODO: Implement the TournamentLeaveView
 class TournamentLeaveView(generics.UpdateAPIView):
     permission_classes = [IsAuthenticated]
     queryset = Tournament.objects.all()
@@ -80,6 +81,18 @@ class TournamentLeaveView(generics.UpdateAPIView):
                         match.game.status = "completed"
                         match.game.save()
                         match.save()
+                        # Send a message to the GeneralRequestConsumer to handle the game_ended logic
+                        channel_layer = get_channel_layer()
+                        async_to_sync(channel_layer.group_send)(
+                            f"general_requests_{user.id}",
+                            {
+                                "type": "tournament_message",
+                                "tournament_id": tournament.id,
+                                "tournament_name": tournament.name,
+                                "winner_id": opponent.id,
+                                "winner_username": opponent.username,
+                            },
+                        )
                     else:
                         print("No opponent found")
         else:
