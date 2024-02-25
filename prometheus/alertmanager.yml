@@ -1,7 +1,6 @@
 global:
   resolve_timeout: 5m
-  smtp_require_tls: true # Définir à false si votre serveur SMTP n'utilise pas TLS
-
+  smtp_require_tls: true
 route:
   group_by: ["instance", "severity"]
   group_wait: 30s
