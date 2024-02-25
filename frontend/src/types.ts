@@ -63,7 +63,7 @@ export interface Tournament {
 	max_participants: number;
 	max_score: number;
 	participants: User[];
-	participants_usernames: string[];
+	participants_display_name: string[];
 	games: Game[]; // Assuming GameHistory can represent the games in a tournament
 	start_date?: string; // Optional to handle null values
 	end_date?: string; // Optional to handle null values
@@ -108,8 +108,8 @@ export interface Match {
 	match_order: number;
 	round_number: number;
 	game: number;
-	player1_username: string;
-	player2_username: string;
+	player1_display_name: string;
+	player2_display_name: string;
 	game_status: 'empty' | 'waiting' | 'in_progress' | 'completed';
 }
 

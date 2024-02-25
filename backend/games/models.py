@@ -77,7 +77,7 @@ class Game(ExportModelOperationsMixin("game"), models.Model):
     win_width = models.FloatField(default=426)
     win_height = models.FloatField(default=563)
     ball_width = models.FloatField(default=10)
-    pad_width = models.FloatField(default=105)
+    pad_width = models.FloatField(default=110)
     pad_height = models.FloatField(default=10)
 
     player1_ready = models.BooleanField(default=False)

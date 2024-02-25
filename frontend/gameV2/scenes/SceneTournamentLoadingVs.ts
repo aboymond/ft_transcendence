@@ -218,7 +218,7 @@ export class SceneTournamentLoadingVs extends SceneBase {
 
 	private _initNameVs4(names: PIXI.Container) {
 		if (this._currentMatches.length > 0 && this._currentMatches[0].round_number === 2) {
-			const player1 = new PIXI.Text(this._currentMatches[0].player1_username, {
+			const player1 = new PIXI.Text(this._currentMatches[0].player1_display_name, {
 				fontSize: (this.root.width * 3) / 100,
 				fill: defaultColor,
 			});
@@ -226,7 +226,7 @@ export class SceneTournamentLoadingVs extends SceneBase {
 			player1.y = (this.root.height * 43) / 100;
 			player1.x = (this.root.width * 44) / 100;
 			this._nameVs.push(player1);
-			const player2 = new PIXI.Text(this._currentMatches[0].player2_username, {
+			const player2 = new PIXI.Text(this._currentMatches[0].player2_display_name, {
 				fontSize: (this.root.width * 3) / 100,
 				fill: defaultColor,
 			});
@@ -235,7 +235,7 @@ export class SceneTournamentLoadingVs extends SceneBase {
 			player2.x = (this.root.width * 62) / 100;
 			this._nameVs.push(player2);
 		}
-		const playerNames = this._currentTournament?.participants_usernames;
+		const playerNames = this._currentTournament?.participants_display_name;
 		if (playerNames && playerNames.length) {
 			for (let i = 0; i < playerNames.length; i++) {
 				const newName = new PIXI.Text(playerNames[i], {
@@ -275,7 +275,7 @@ export class SceneTournamentLoadingVs extends SceneBase {
 		container.addChild(this._containerSprite);
 
 		// Setup player names
-		if (this._currentTournament!.participants_usernames.length > 0) {
+		if (this._currentTournament!.participants_display_name.length > 0) {
 			if (this._currentTournament!.max_participants === 4) {
 				this._initNameVs4(this._containerNames);
 			}
@@ -321,7 +321,7 @@ export class SceneTournamentLoadingVs extends SceneBase {
 
 	private createMatchDisplayElement(match: Match): PIXI.Text {
 		const text = new PIXI.Text(
-			`Match ${match.match_order}: ${match.player1_username} vs ${match.player2_username}`,
+			`Match ${match.match_order}: ${match.player1_display_name} vs ${match.player2_display_name}`,
 			{
 				fontSize: (this.root.width * 4) / 100,
 				fill: defaultColor,

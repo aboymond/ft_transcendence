@@ -97,7 +97,7 @@ class Tournament(ExportModelOperationsMixin("Tournament"), models.Model):
                     "tournament_id": tournament.id,
                     "tournament_name": tournament.name,
                     "winner_id": tournament.winner.id,
-                    "winner_username": tournament.winner.username,
+                    "winner_username": tournament.winner.display_name,
                 }
                 async_to_sync(channel_layer.group_send)(group_name, message)
             return

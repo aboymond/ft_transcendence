@@ -49,8 +49,8 @@ class TournamentUpdateSerializer(serializers.ModelSerializer):
 
 
 class TournamentDetailSerializer(serializers.ModelSerializer):
-    participants_usernames = serializers.SerializerMethodField()
-    creator_username = serializers.CharField(source="creator.username", read_only=True)
+    participants_display_name = serializers.SerializerMethodField()
+    creator_display_name = serializers.CharField(source="creator.display_name", read_only=True)
 
     class Meta:
         model = Tournament
@@ -60,17 +60,17 @@ class TournamentDetailSerializer(serializers.ModelSerializer):
             "max_participants",
             "max_score",
             "status",
-            "creator_username",
-            "participants_usernames",
+            "creator_display_name",
+            "participants_display_name",
         ]
 
-    def get_participants_usernames(self, obj):
-        return [user.username for user in obj.participants.all()]
+    def get_participants_display_name(self, obj):
+        return [user.display_name for user in obj.participants.all()]
 
 
 class MatchSerializer(serializers.ModelSerializer):
-    player1_username = serializers.SerializerMethodField()
-    player2_username = serializers.SerializerMethodField()
+    player1_display_name = serializers.SerializerMethodField()
+    player2_display_name = serializers.SerializerMethodField()
     game_status = serializers.CharField(source="game.status", read_only=True)
 
     class Meta:
@@ -82,16 +82,16 @@ class MatchSerializer(serializers.ModelSerializer):
             "game",
             "round_number",
             "match_order",
-            "player1_username",
-            "player2_username",
+            "player1_display_name",
+            "player2_display_name",
             "game_status",
         ]
 
-    def get_player1_username(self, obj):
-        return obj.player1.username
+    def get_player1_display_name(self, obj):
+        return obj.player1.display_name
 
-    def get_player2_username(self, obj):
-        return obj.player2.username
+    def get_player2_display_name(self, obj):
+        return obj.player2.display_name
 
 
 class TournamentIdSerializer(serializers.ModelSerializer):

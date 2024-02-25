@@ -7,6 +7,8 @@ import { GameState } from '../src/types';
 import { SceneGame } from './scenes/SceneGame';
 import { SceneMenu } from './scenes/SceneMenu';
 import { SceneWinOrLoose } from './scenes/SceneWinOrLoose';
+import { Tools } from './Tools';
+import { defaultColor } from '.';
 // import { sound } from '@pixi/sound';
 
 interface IPixiManagerOptions {
@@ -59,11 +61,15 @@ export class PixiManager {
 			antialias: options.antialias ?? true,
 		});
 
-		this.fpsText = new PIXI.Text('FPS: 0', { fontFamily: 'Arial', fontSize: 24, fill: 0xffffff });
+		this.fpsText = new PIXI.Text('0', { fontFamily: 'Arial', fontSize: 24, fill: 0xffffff });
+		this.fpsText = Tools.resizeText(this.fpsText, this.width, 30);
+		this.fpsText.style.fill = defaultColor;
 		this.fpsText.x = 10; // Position the text object
 		this.fpsText.y = 10;
 		this._app.stage.addChild(this.fpsText);
-		this.rpsText = new PIXI.Text('RPS: 0', { fontFamily: 'Arial', fontSize: 24, fill: 0xffffff });
+		this.rpsText = new PIXI.Text('0', { fontFamily: 'Arial', fontSize: 24, fill: 0xffffff });
+		this.rpsText = Tools.resizeText(this.rpsText, this.width, 30);
+		this.rpsText.style.fill = defaultColor;
 		this.rpsText.x = 10;
 		this.rpsText.y = 40;
 		this._app.stage.addChild(this.rpsText);
@@ -75,7 +81,7 @@ export class PixiManager {
 			const currentTime = performance.now();
 			if (currentTime - this.lastFpsUpdateTime > this.UpdateInterval) {
 				const fps = this._app.ticker.FPS;
-				this.fpsText.text = 'FPS: ' + fps.toFixed(0);
+				this.fpsText.text = fps.toFixed(0);
 				this.lastFpsUpdateTime = currentTime;
 			}
 		});
@@ -173,7 +179,7 @@ export class PixiManager {
 
 						if (currentTime - this.lastPingUpdateTime > this.UpdateInterval) {
 							const rps = 1000 / (pingSum / pingCount);
-							this.rpsText.text = `RPS: ${rps.toFixed(0)}`;
+							this.rpsText.text = `${rps.toFixed(0)}`;
 							this.lastPingUpdateTime = currentTime;
 							pingSum = 0;
 							pingCount = 0;
