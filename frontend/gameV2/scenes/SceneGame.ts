@@ -29,8 +29,9 @@ export class SceneGame extends SceneBase {
 	private _noOption!: PIXI.Text;
 	private _exitText!: PIXI.Text;
 
-	private _accumulator = 0;
-	private _sendInterval = 1 / 60;
+	// private _accumulator = 0;
+	// private _sendInterval = 1 / 60;
+	private _lastApiCallTime: number = 0;
 
 	constructor(
 		public root: PixiManager,
@@ -68,21 +69,22 @@ export class SceneGame extends SceneBase {
 		container.addChild(this._exitMenu);
 	}
 
-	public onUpdate(delta: number) {
-		this._accumulator += delta * (1000 / 60);
+	public onUpdate() {
+		const keys = ['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
+		const pressedKeys = keys.filter((key) => this._keysPressed[key]);
 
-		if (this._accumulator >= this._sendInterval) {
-			this._accumulator -= this._sendInterval;
+		if (pressedKeys.length > 0 && !this._exitBool) {
+			const currentTime = Date.now();
+			const timeSinceLastCall = currentTime - this._lastApiCallTime;
+			const rateLimit = 100; // Rate limit in milliseconds
 
-			const keys = ['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
-			const pressedKeys = keys.filter((key) => this._keysPressed[key]);
-
-			if (pressedKeys.length > 0 && !this._exitBool) {
+			if (timeSinceLastCall >= rateLimit) {
 				pressedKeys.forEach((key) => {
 					apiService
 						.sendKeyPress(this._gameId, this.root.userId ?? 0, key)
 						.catch((error) => console.error(`Error sending ${key} press`, error));
 				});
+				this._lastApiCallTime = currentTime; // Update the timestamp of the last API call
 			}
 		}
 
