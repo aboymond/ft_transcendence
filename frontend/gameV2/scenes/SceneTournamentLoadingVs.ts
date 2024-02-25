@@ -104,7 +104,7 @@ export class SceneTournamentLoadingVs extends SceneBase {
 				console.error('Error fetching matches or tournament:', error);
 				this.root.loadScene(new SceneMenu2(this.root));
 			}
-		}, 5000);
+		}, 10000);
 
 		this.root.ws?.addEventListener('message', (event) => {
 			const data = JSON.parse(event.data);
