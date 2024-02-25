@@ -183,15 +183,10 @@ export class SceneGame extends SceneBase {
 			}
 			if (this._keysPressed['Enter']) {
 				if (this._exitYesNO) {
-					apiService
-						.leaveGame(this._gameId)
-						.then(() => {
-							this.root.playerAWin = false;
-							this.root.loadScene(new SceneWinOrLoose(this.root));
-						})
-						.catch((error) => {
-							console.error('Error leaving game:', error);
-						});
+					this.root.gameSocket?.close();
+					this.root.gameSocket = null;
+					this.root.playerAWin = false;
+					this.root.loadScene(new SceneWinOrLoose(this.root));
 				} else {
 					try {
 						await apiService.resumeGame(this._gameId);

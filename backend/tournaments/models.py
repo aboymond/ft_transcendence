@@ -79,11 +79,13 @@ class Tournament(ExportModelOperationsMixin("Tournament"), models.Model):
                 else:
                     tournament.winner = winners[0]
             else:
-                tournament.winner = None  # Or any other appropriate handling
-            print("Winner for tournament", tournament.name, ":", tournament.winner)
-            tournament.winner.tournament_wins += 1
-            tournament.winner.save()
-            tournament.save()
+                tournament.winner = None
+            if tournament.winner is not None:
+                tournament.winner.tournament_wins += 1
+                tournament.winner.save()
+                tournament.save()
+            else:
+                print("No winner found for tournament", tournament.name)
 
             channel_layer = get_channel_layer()
             for participant in tournament.participants.all():

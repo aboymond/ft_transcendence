@@ -64,13 +64,34 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code):
         print(f"Disconnecting... game_id: {self.game_id}, user_id: {self.user_id}")
-        self.game.status = "completed"
+        self.game = await sync_to_async(Game.objects.get)(id=self.game_id)
         if self.user_id is not None:
-            if self.game:
+            if self.game and self.game.status != "completed":
                 if self.user_id == self.game.player1_id:
+                    winner_id = self.game.player2_id
+                    loser_id = self.game.player1_id
                     self.game.player1_ready = False
                 elif self.user_id == self.game.player2_id:
+                    winner_id = self.game.player1_id
+                    loser_id = self.game.player2_id
                     self.game.player2_ready = False
+                else:
+                    print("User is not a player in the game.")
+
+                # Update scores: winner gets max score, loser gets  0
+                if winner_id and loser_id:
+                    self.game.player1_score, self.game.player2_score = (
+                        (self.game.max_score, 0)
+                        if winner_id == self.game.player1_id
+                        else (0, self.game.max_score)
+                    )
+                    self.game.status = "completed"
+                    await database_sync_to_async(self.game.save)()
+
+                # Call end_game to finalize the game state and notify players
+                if loser_id == self.user_id:
+                    await self.end_game(self.game)
+
                 if self.update_task:
                     print("Cancelling periodic update...")
                     self.update_task.cancel()
@@ -97,8 +118,6 @@ class GameConsumer(AsyncWebsocketConsumer):
         self.game = await sync_to_async(Game.objects.get)(id=self.game_id)
 
         print("Starting game...")
-        print("user_id:", self.user_id)
-        print("Game status:", self.game.status)
 
         if self.game.status == "empty" or self.game.status == "waiting":
             self.game.status = "in_progress"
@@ -137,8 +156,6 @@ class GameConsumer(AsyncWebsocketConsumer):
         # Start the periodic update task if this is player2 and the task isn't already running
         if self.update_task is None:
             print("Starting periodic update...")
-            print("user_id:", self.user_id)
-            print("Game status:", self.game.status)
             self.update_task = asyncio.create_task(self._periodic_update())
 
     async def _periodic_update(self):
@@ -333,64 +350,55 @@ class GameConsumer(AsyncWebsocketConsumer):
         except ConnectionClosedOK:
             print("Attempted to send a message to a closed WebSocket connection.")
 
-    async def leave_game(self, event):
-        if not self.launcher:
-            return
-        print("Leaving game...")
-        game_id = event["game_id"]
-        winner_id = event["winner_id"]
-        loser_id = event["loser_id"]
+    # async def leave_game(self, event):
+    #     if not self.launcher:
+    #         return
+    #     print("Leaving game...")
+    #     game_id = event["game_id"]
+    #     winner_id = event["winner_id"]
+    #     loser_id = event["loser_id"]
 
-        print("game_id", game_id)
-        print("self.game_id", self.game_id)
+    #     game = await database_sync_to_async(Game.objects.get)(id=game_id)
+    #     winner = await database_sync_to_async(User.objects.get)(id=winner_id)
+    #     loser = await database_sync_to_async(User.objects.get)(id=loser_id)
 
-        game = await database_sync_to_async(Game.objects.get)(id=game_id)
-        winner = await database_sync_to_async(User.objects.get)(id=winner_id)
-        loser = await database_sync_to_async(User.objects.get)(id=loser_id)
+    #     game.winner = winner
+    #     game.loser = loser
+    #     game.status = "completed"
 
-        game.winner = winner
-        game.loser = loser
-        game.status = "completed"
+    #     # Increment wins and losses
+    #     winner.wins += 1
+    #     loser.losses += 1
 
-        # Increment wins and losses
-        winner.wins += 1
-        loser.losses += 1
+    #     # Save the changes
+    #     await database_sync_to_async(winner.save)()
+    #     await database_sync_to_async(loser.save)()
+    #     await database_sync_to_async(game.save)()
 
-        # Save the changes
-        await database_sync_to_async(winner.save)()
-        await database_sync_to_async(loser.save)()
-        await database_sync_to_async(game.save)()
+    #     await self.create_game_history(game)
 
-        await self.create_game_history(game)
+    #     game = await database_sync_to_async(Game.objects.get)(id=game_id)
+    #     if game.tournament_id is not None:
+    #         tournament = await database_sync_to_async(Tournament.objects.get)(
+    #             id=game.tournament_id
+    #         )
+    #         await tournament.game_ended(game.winner)
 
-        game = await database_sync_to_async(Game.objects.get)(id=game_id)
-        if game.tournament_id is not None:
-            tournament = await database_sync_to_async(Tournament.objects.get)(
-                id=game.tournament_id
-            )
-            round_number = await database_sync_to_async(
-                Tournament.get_next_round_number
-            )(tournament)
-            winner = await database_sync_to_async(User.objects.get)(id=winner_id)
-            await database_sync_to_async(Tournament.create_matches_for_round)(
-                tournament, winner, round_number
-            )
-
-        message = {
-            "action": "leave_game",
-            "data": {
-                "message": "A player has left the game. The game has ended.",
-                "winner_id": winner_id,
-                "loser_id": loser_id,
-            },
-        }
-        await self.channel_layer.group_send(
-            self.game_group_name,
-            {
-                "type": "game_message",
-                "message": message,
-            },
-        )
+    #     message = {
+    #         "action": "leave_game",
+    #         "data": {
+    #             "message": "A player has left the game. The game has ended.",
+    #             "winner_id": winner_id,
+    #             "loser_id": loser_id,
+    #         },
+    #     }
+    #     await self.channel_layer.group_send(
+    #         self.game_group_name,
+    #         {
+    #             "type": "game_message",
+    #             "message": message,
+    #         },
+    #     )
 
     @database_sync_to_async
     def get_user(self, user_id):
@@ -414,20 +422,6 @@ class GameConsumer(AsyncWebsocketConsumer):
         await sync_to_async(game.winner.save)()
         await sync_to_async(game.loser.save)()
 
-        if game.tournament_id is not None:
-            tournament = await database_sync_to_async(Tournament.objects.get)(
-                id=game.tournament_id
-            )
-            await tournament.game_ended(game.winner)
-
-            # winner = [game.winner]
-            # round_number = await database_sync_to_async(
-            #     Tournament.get_next_round_number
-            # )(tournament)
-            # await database_sync_to_async(Tournament.create_matches_for_round)(
-            #     tournament, [winner], round_number
-            # )
-
         await self.create_game_history(game)
 
         message = {
@@ -445,6 +439,12 @@ class GameConsumer(AsyncWebsocketConsumer):
                 "message": message,
             },
         )
+
+        if game.tournament_id is not None:
+            tournament = await database_sync_to_async(Tournament.objects.get)(
+                id=game.tournament_id
+            )
+            await tournament.game_ended(game.winner)
 
     async def determine_winner(self, game_id):
         game = await database_sync_to_async(Game.objects.get)(id=game_id)
@@ -474,10 +474,6 @@ class GameConsumer(AsyncWebsocketConsumer):
         player1 = await database_sync_to_async(lambda: game.player1)()
         player2 = await database_sync_to_async(lambda: game.player2)()
         winner = await database_sync_to_async(lambda: game.winner)()
-        print("Creating game history...")
-        print("Player1:", player1)
-        print("Player2:", player2)
-        print("Winner:", winner)
 
         game_history = GameHistory(
             player1=player1,

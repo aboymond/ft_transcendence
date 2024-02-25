@@ -7,6 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import get_user_model
 from django.db.models import Q
 from .models import Tournament, Match
+from django.utils import timezone
 
 from .serializers import (
     TournamentSerializer,
@@ -55,28 +56,46 @@ class TournamentJoinView(generics.UpdateAPIView):
             return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
-# TODO: Implement the TournamentLeaveView
-class TournamentLeaveView(generics.UpdateAPIView):
-    permission_classes = [IsAuthenticated]
-    queryset = Tournament.objects.all()
-    serializer_class = TournamentSerializer
+# # TODO: Implement the TournamentLeaveView
+# class TournamentLeaveView(generics.UpdateAPIView):
+#     permission_classes = [IsAuthenticated]
+#     queryset = Tournament.objects.all()
+#     serializer_class = TournamentSerializer
 
-    def patch(self, request, *args, **kwargs):
-        tournament = self.get_object()
-        user = request.user
-        # Remove the user from the tournament's participants
-        tournament.participants.remove(user)
-        # Check if there are no participants left in the tournament
-        if tournament.participants.count() == 0:
-            tournament.delete()  # Delete the tournament if no participants are left
-            return JsonResponse(
-                {"message": "Tournament deleted as there are no participants left."},
-                status=status.HTTP_200_OK,
-            )
-        return JsonResponse(
-            {"message": "Successfully left the tournament."},
-            status=status.HTTP_200_OK,
-        )
+#     def patch(self, request, *args, **kwargs):
+#         tournament = self.get_object()
+#         user = request.user
+#         if tournament.status == "in_progress":
+#             matches = Match.objects.filter(tournament=tournament).filter(
+#                 Q(player1=user) | Q(player2=user)
+#             )
+#             for match in matches:
+#                 if match.game and match.game.status != "completed":
+#                     opponent = match.player2 if match.player1 == user else match.player1
+#                     if opponent:
+#                         match.game.winner = opponent
+#                         match.game.loser = user
+#                         match.game.start_time = timezone.now()
+#                         match.game.end_time = timezone.now()
+#                         match.game.status = "completed"
+#                         match.game.save()
+#                         match.save()
+#                         game_ended_task.delay(tournament.id, opponent.id)
+#                     else:
+#                         print("No opponent found")
+#         else:
+#             tournament.participants.remove(user)
+#         # Check if there are no participants left in the tournament
+#         if tournament.participants.count() == 0:
+#             tournament.delete()
+#             return JsonResponse(
+#                 {"message": "Tournament deleted as there are no participants left."},
+#                 status=status.HTTP_200_OK,
+#             )
+#         return JsonResponse(
+#             {"message": "Successfully left the tournament."},
+#             status=status.HTTP_200_OK,
+#         )
 
 
 class TournamentListView(generics.ListCreateAPIView):
