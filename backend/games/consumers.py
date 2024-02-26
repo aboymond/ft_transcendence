@@ -270,9 +270,9 @@ class GameConsumer(AsyncWebsocketConsumer):
     async def check_collisions(self, game):
         # Wall collision
         if (
-            self.game_state["ball_x"] <= 1
+            self.game_state["ball_x"] <= 5
             or self.game_state["ball_x"] + self.game_state["ball_width"] / 2
-            >= self.game_state["win_width"] - 1
+            >= self.game_state["win_width"] - 5
         ):
             self.game_state["ball_velocity_x"] = -self.game_state["ball_velocity_x"]
 
@@ -284,7 +284,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         ):
             if (
                 self.game_state["ball_y"]
-                <= self.game_state["pad2_y"] + self.game_state["pad_height"] / 2 + 2
+                <= self.game_state["pad2_y"] + self.game_state["pad_height"] / 2 + 15
             ):
                 if self.game_state["ball_velocity_y"] > -MAX_SPEED:
                     self.game_state["ball_velocity_y"] -= 0.25
@@ -302,7 +302,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         ):
             if (
                 self.game_state["ball_y"]
-                >= self.game_state["pad1_y"] - self.game_state["pad_height"] - 12
+                >= self.game_state["pad1_y"] - self.game_state["pad_height"] - 15
             ):
                 self.game_state["ball_velocity_x"] = (
                     (self.game_state["ball_x"] - self.game_state["pad1_x"])
@@ -314,13 +314,13 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def check_score(self, game):
         if (
-            self.game_state["ball_y"] < 1
-            or self.game_state["ball_y"] > self.game_state["win_height"] - 1
+            self.game_state["ball_y"] < -10
+            or self.game_state["ball_y"] > self.game_state["win_height"] + 10
         ):
             self.game_state["ball_moving"] = False
             self.game_state["ball_velocity_x"] = 0
 
-            if self.game_state["ball_y"] < 1:
+            if self.game_state["ball_y"] < -10:
                 self.game_state["player1_score"] += 1
                 self.game_state["player_turn"] = self.game_state["player2_id"]
                 self.game_state["pad1_x"] = self.game_state["win_width"] / 2

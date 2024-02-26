@@ -44,7 +44,11 @@ class GeneralRequestConsumer(AsyncWebsocketConsumer):
         print("Connected! (General)")
 
     async def disconnect(self, close_code):
-        user_id = self.scope["url_route"]["kwargs"]["user_id"]
+        user = self.scope["user"]
+        if user is None:
+            print("Error: User not found")
+        else:
+            user_id = user.id
         print("Disconnecting... (General) # user_id:", user_id)
         user = await sync_to_async(User.objects.get)(pk=user_id)
         if user:

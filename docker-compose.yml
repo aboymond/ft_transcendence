@@ -10,6 +10,7 @@ services:
       - "8000:8000"
     environment:
       FRONTEND_URL: http://localhost:3001
+      DJANGO_DEBUG: "True"
     env_file: .env.dev
     networks:
       - my-network

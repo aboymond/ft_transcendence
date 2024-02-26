@@ -6,6 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.http import JsonResponse
+from django.core.cache import cache
 from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -85,8 +86,12 @@ class KeyPressView(APIView):
         player_id = data.get("player_id")
         key = data.get("key")
 
-        # Check if the player is part of the game
-        game = get_object_or_404(Game, id=game_id)
+        cache_key = f"game_{game_id}"
+        game = cache.get(cache_key)
+        if not game:
+            game = get_object_or_404(Game, id=game_id)
+            cache.set(cache_key, game, timeout=300)
+
         if request.user != game.player1 and request.user != game.player2:
             return JsonResponse(
                 {"error": "You are not a player in this game"}, status=403
