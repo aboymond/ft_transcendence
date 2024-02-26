@@ -107,8 +107,7 @@ export class SceneTournamentLoadingVs extends SceneBase {
 		this.root.ws?.addEventListener('message', (event) => {
 			const data = JSON.parse(event.data);
 			if (data.type === 'tournament_message' && data.payload.action === 'tournament_end') {
-				console.log('Tournament has ended. Winner:', data.payload.data.winner_display_name);
-				this._winner = data.payload.data.winner_username;
+				this._winner = data.payload.data.winner_display_name;
 				this.root.loadScene(new SceneTournamentWinner(this.root, this._winner));
 			}
 			if (data.type === 'tournament_message' && data.payload.action == 'tournament_update') {

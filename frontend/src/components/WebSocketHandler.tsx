@@ -66,23 +66,7 @@ const WebSocketHandler: React.FC<Props> = ({ children }) => {
 					requestId: data.request_id,
 					status: 'sent',
 				});
-			} else if (action === 'accept_friend_request') {
-				setFriendRequestReceived((prev) => {
-					if (!prev) {
-						return null;
-					}
-					return {
-						...prev,
-						status: 'accepted',
-						senderName: data.sender_name || prev.senderName,
-						requestId: data.request_id || prev.requestId,
-					};
-				});
-				toast.success(`${data.sender_name} accepted your friend request.`);
 			}
-		}
-		if (type === 'tournament_message') {
-			// TODO
 		}
 	};
 

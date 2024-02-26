@@ -258,7 +258,7 @@ export class SceneMenuOption extends SceneBase {
 				this.root.loadScene(new SceneGamePvpLocal(this.root));
 			} else {
 				apiService
-					.createGame(this.root.userId ?? 0, chooseVictoryAmount[this._currentVictory]) //TODO
+					.createGame(this.root.userId ?? 0, chooseVictoryAmount[this._currentVictory])
 					.then((response) => {
 						this.root.loadScene(new SceneLoadingPage(this.root, response.id));
 					})

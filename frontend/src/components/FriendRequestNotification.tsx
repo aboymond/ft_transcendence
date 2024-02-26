@@ -11,8 +11,6 @@ const FriendRequestNotification: React.FC = () => {
 		if (friendRequest) {
 			if (friendRequest.status === 'sent') {
 				toast(`${friendRequest.senderName} sent you a friend request.`);
-			} else if (friendRequest.status === 'accepted') {
-				toast(`${friendRequest.senderName} accepted your friend request.`);
 			}
 		}
 	}, [webSocketContext?.friendRequestReceived]);

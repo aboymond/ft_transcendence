@@ -325,7 +325,7 @@ export class SceneMenuTournament extends SceneBase {
 		apiService
 			.createTournament(this.root.userId ?? 0, this._inputText, this._nb_playerForBack, this._nb_scoreForBack)
 			.then((response) => {
-				console.log('Tournament created successfully', response);
+				console.log('Tournament created successfully');
 				this.root.loadScene(new SceneTournamentLoadingVs(this.root, response.id));
 			})
 			.catch((error) => console.error('Error creating game', error));
