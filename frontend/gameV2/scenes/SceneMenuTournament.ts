@@ -12,9 +12,8 @@ import {
 import { SceneMenu2 } from './SceneMenu2';
 import { SceneTournamentLoadingVs } from './SceneTournamentLoadingVs';
 import { apiService } from '../../src/services/apiService';
-import {AudioManager} from '../AudioManager';
+import { AudioManager } from '../AudioManager';
 import { Tools } from '../Tools';
-
 
 const selectMaxCreate = 3;
 
@@ -170,17 +169,17 @@ export class SceneMenuTournament extends SceneBase {
 		const alignLeft = (this.root.width * 10) / 100;
 		const alignRight = (this.root.width * 70) / 100;
 
-		this._name = Tools.resizeText(this._name, this.root.width , pourcent);
+		this._name = Tools.resizeText(this._name, this.root.width, pourcent);
 		this._name.style.fill = 'green';
 		this._name.x = alignLeft;
-		this._name.y = (this.root.height * 30) / 100 - (this._name.height / 2);
+		this._name.y = (this.root.height * 30) / 100 - this._name.height / 2;
 		menu.addChild(this._name);
 
 		this._nameInputBox.lineStyle(1, 'green', 1);
 		this._nameInputBox.drawRect(0, 0, (this.root.width * 45) / 100, (this.root.height * 10) / 100);
 		this._nameInputBox = Tools.resizeGraphics(this._nameInputBox, this.root.width, 30);
 		this._nameInputBox.visible = true;
-		this._nameInputBox.x = alignRight - (this._nameInputBox.width / 2);
+		this._nameInputBox.x = alignRight - this._nameInputBox.width / 2;
 		this._nameInputBox.y = this._name.y;
 		this._nameInputBox.endFill();
 		menu.addChild(this._nameInputBox);
@@ -199,7 +198,7 @@ export class SceneMenuTournament extends SceneBase {
 
 		this._nb_player_tab = Tools.resizeText(this._nb_player_tab, this.root.width, pourcent);
 		this._nb_player_tab.style.fill = 'green';
-		this._nb_player_tab.x = alignRight - (this._nb_player_tab.width / 2);
+		this._nb_player_tab.x = alignRight - this._nb_player_tab.width / 2;
 		this._nb_player_tab.y = this._nb_player_text.y;
 		menu.addChild(this._nb_player_tab);
 
@@ -212,7 +211,7 @@ export class SceneMenuTournament extends SceneBase {
 
 		this._score_max_tab = Tools.resizeText(this._score_max_tab, this.root.width, pourcent);
 		this._score_max_tab.style.fill = 'green';
-		this._score_max_tab.x = alignRight - (this._score_max_tab.width / 2);
+		this._score_max_tab.x = alignRight - this._score_max_tab.width / 2;
 		this._score_max_tab.y = this._score_max_text.y;
 		menu.addChild(this._score_max_tab);
 

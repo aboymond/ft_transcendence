@@ -27,8 +27,13 @@ class GameConsumer(AsyncWebsocketConsumer):
         self.game_state = {}
 
     async def connect(self):
+        user = self.scope["user"]
+        if user is None:
+            await self.close()
+            return
+
         self.game_id = self.scope["url_route"]["kwargs"]["game_id"]
-        self.user_id = self.scope["query_string"].decode("utf-8").split("=")[1]
+        self.user_id = user.id
 
         if self.user_id is not None:
             self.user_id = int(self.user_id)  # Convert user_id to int

@@ -53,7 +53,6 @@ INSTALLED_APPS = [
     "oauth2_provider",
     "corsheaders",
     "channels",
-    # 'django-two-factor-auth',
     "games",
     "tournaments",
     "users",
@@ -169,7 +168,6 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "users.CustomUser"
 
 OAUTH2_PROVIDER = {
-    # this is the list of available scopes
     "SCOPES": {
         "read": "Read scope",
         "write": "Write scope",
@@ -183,7 +181,6 @@ REST_FRAMEWORK = {
         "oauth2_provider.contrib.rest_framework.OAuth2Authentication",
     ),
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.AllowAny",),
-    # ... other settings ...
 }
 
 LOGIN_URL = "/admin/login/"
@@ -193,21 +190,19 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
     "ROTATE_REFRESH_TOKENS": False,
     "BLACKLIST_AFTER_ROTATION": True,
-    # ... other settings ...
+    "ALGORITHM": "HS256",
+    "SIGNING_KEY": os.environ.get("SECRET_KEY", "Variable not found"),
 }
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 CORS_ALLOWED_ORIGINS = [
-    "http://api.intra.42.fr",  # Add the actual origin of the 42 API
+    "http://api.intra.42.fr",
     "http://localhost",
     "http://localhost:3001",
     "http://frontend:3001",
-    "http://frontend:3001",
     f"{os.environ.get('HOSTNAME')}",
-    "https://10.13.5.4",
-    # Add the origin of your Django application
 ]
 
 
@@ -241,12 +236,6 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.getenv("EMAIL_H_U")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_H_P")
 PROMETHEUS_METRIC_NAMESPACE = "transcendence"
-
-# # Ensure CSRF cookie is secure
-# CSRF_COOKIE_SECURE = True
-
-# # Ensure session cookie is secure
-# SESSION_COOKIE_SECURE = True
 
 # Use secure proxy header to tell Django about the original protocol (HTTP or HTTPS)
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")

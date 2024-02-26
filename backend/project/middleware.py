@@ -1,32 +1,44 @@
-class TokenAuthMiddleware:
-    def __init__(self, inner):
-        self.inner = inner
+from channels.middleware import BaseMiddleware
+from django.conf import settings
+from channels.db import database_sync_to_async
 
+
+@database_sync_to_async
+def get_user(user_id):
+    from django.contrib.auth import get_user_model
+
+    User = get_user_model()
+
+    try:
+        return User.objects.get(id=user_id)
+    except User.DoesNotExist:
+        return None
+
+
+def validate_token(token):
+    from rest_framework_simplejwt.backends import TokenBackend
+    from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
+
+    try:
+        token_backend = TokenBackend(
+            algorithm=settings.SIMPLE_JWT["ALGORITHM"],
+            signing_key=settings.SIMPLE_JWT["SIGNING_KEY"],
+        )
+        decoded_token = token_backend.decode(token)
+        user = get_user(decoded_token["user_id"])
+        return user
+    except (InvalidToken, TokenError):
+        return None
+
+
+class TokenAuthMiddleware(BaseMiddleware):
     async def __call__(self, scope, receive, send):
-        from django.contrib.auth.models import AnonymousUser
-        from rest_framework_simplejwt.tokens import AccessToken
-        from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
-        from django.contrib.auth import get_user_model
-        from asgiref.sync import sync_to_async
-
-        User = get_user_model()
-        headers = dict(scope["headers"])
-
-        # Initialize scope user as AnonymousUser by default
-        scope["user"] = AnonymousUser()
-
-        if b"sec-websocket-protocol" in headers:
-            try:
-                token_name, token_key = (
-                    headers[b"sec-websocket-protocol"].decode().split(", ")
-                )
-                AccessToken(token_key)
-                user = await sync_to_async(User.objects.get)(id=token_name)
+        token = dict(
+            (x.split("=") for x in scope["query_string"].decode().split("&"))
+        ).get("token", None)
+        if token:
+            user = await validate_token(token)
+            if user is not None:
                 scope["user"] = user
-            except (TokenError, InvalidToken, User.DoesNotExist) as e:
-                print(f"Authentication error: {e}")
-                await send({"type": "websocket.close", "code": 4001})
-                return
-
-        # Proceed to call the inner application with the modified scope
-        return await self.inner(scope, receive, send)
+                return await super().__call__(scope, receive, send)
+        return await send({"type": "websocket.close"})

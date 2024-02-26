@@ -150,7 +150,7 @@ export class PixiManager {
 
 	public openGameSocket(gameId: number) {
 		const hostname = import.meta.env.VITE_HOSTNAME;
-		const gameSocketUrl = `${hostname}/ws/game/${gameId}/?user_id=${this.userId}`;
+		const gameSocketUrl = `${hostname}/ws/game/${gameId}/?token=${localStorage.getItem('token')}`;
 
 		this.gameSocket = new WebSocket(gameSocketUrl);
 		let lastUpdateTime = 0;

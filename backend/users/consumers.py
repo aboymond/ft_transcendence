@@ -11,7 +11,13 @@ User = get_user_model()
 
 class GeneralRequestConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        user_id = self.scope["url_route"]["kwargs"]["user_id"]
+        user = self.scope["user"]
+        if user is None:
+            print("Error: User not found")
+            await self.close()
+            return
+
+        user_id = user.id
         print("Connecting... (General) # user_id:", user_id)
         self.room_group_name = "general_requests_%s" % user_id
         user = await sync_to_async(User.objects.get)(pk=user_id)
@@ -35,7 +41,7 @@ class GeneralRequestConsumer(AsyncWebsocketConsumer):
         else:
             print("Error: self.channel_layer is None")
         await self.accept()
-        print("Connected! (General)")  # Log message after connection
+        print("Connected! (General)")
 
     async def disconnect(self, close_code):
         user_id = self.scope["url_route"]["kwargs"]["user_id"]
@@ -62,7 +68,7 @@ class GeneralRequestConsumer(AsyncWebsocketConsumer):
             )
         else:
             print("Error: self.channel_layer is None")
-        print("Disconnected! (General)")  # Log message after connection
+        print("Disconnected! (General)")
 
     async def user_status(self, event):
         await self.send(
