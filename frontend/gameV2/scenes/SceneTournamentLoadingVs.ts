@@ -9,7 +9,7 @@ import { SceneLoadingPage } from './SceneLoadingPage';
 import { AudioManager } from '../AudioManager';
 import { Tools } from '../Tools';
 import { SceneTournamentWinner } from './SceneTournamentWinner';
-import { SceneMenu2 } from './SceneMenu2';
+import { SceneMenu } from './SceneMenu';
 
 const tournamentLine = PIXI.Texture.from('./img/tournamentLine.png');
 
@@ -74,7 +74,7 @@ export class SceneTournamentLoadingVs extends SceneBase {
 			}
 		} catch (error) {
 			console.error('Error fetching tournament:', error);
-			this.root.loadScene(new SceneMenu2(this.root));
+			this.root.loadScene(new SceneMenu(this.root));
 		}
 
 		this._checkInterval = window.setInterval(async () => {
@@ -100,16 +100,22 @@ export class SceneTournamentLoadingVs extends SceneBase {
 				}
 			} catch (error) {
 				console.error('Error fetching matches or tournament:', error);
-				this.root.loadScene(new SceneMenu2(this.root));
+				this.root.loadScene(new SceneMenu(this.root));
 			}
 		}, 10000);
 
 		this.root.ws?.addEventListener('message', (event) => {
 			const data = JSON.parse(event.data);
 			if (data.type === 'tournament_message' && data.payload.action === 'tournament_end') {
-				console.log('Tournament has ended. Winner:', data.payload.data.winner_username);
+				console.log('Tournament has ended. Winner:', data.payload.data.winner_display_name);
 				this._winner = data.payload.data.winner_username;
 				this.root.loadScene(new SceneTournamentWinner(this.root, this._winner));
+			}
+			if (data.type === 'tournament_message' && data.payload.action == 'tournament_update') {
+				this._currentTournament = data.payload.tournament;
+				this._currentMatches = data.payload.matches;
+				this._setupTournamentDisplay(container);
+				this._setupMatchDisplay(container, this._currentMatches);
 			}
 		});
 	}
@@ -136,7 +142,7 @@ export class SceneTournamentLoadingVs extends SceneBase {
 				if (this._exitYesNO) {
 					apiService
 						.leaveTournament(this._tournamentId, this.root.userId!)
-						.then(() => this.root.loadScene(new SceneMenu2(this.root)));
+						.then(() => this.root.loadScene(new SceneMenu(this.root)));
 				} else {
 					this._exitBool = false;
 					this._exitMenu.visible = false;
@@ -321,7 +327,7 @@ export class SceneTournamentLoadingVs extends SceneBase {
 
 	private createMatchDisplayElement(match: Match): PIXI.Text {
 		const text = new PIXI.Text(
-			`Match ${match.match_order}: ${match.player1_display_name} vs ${match.player2_display_name}`,
+			`Match ${match.match_order}: ${match.player1_display_name} vs ${match.player2_display_name} : ${match.game_status}`,
 			{
 				fontSize: (this.root.width * 4) / 100,
 				fill: defaultColor,

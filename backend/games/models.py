@@ -1,5 +1,4 @@
 # import operator
-from django import db
 from django.db import models
 from django.conf import settings
 from django_prometheus.models import ExportModelOperationsMixin

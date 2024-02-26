@@ -56,6 +56,8 @@ class GameConsumer(AsyncWebsocketConsumer):
                     self.game.player1_ready = True
                 elif self.user_id == self.game.player2_id:
                     self.game.player2_ready = True
+                if self.game.status == "empty":
+                    self.game.status = "waiting"
                 await sync_to_async(self.game.save)()
 
                 if await self.ready_to_start_game():

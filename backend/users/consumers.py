@@ -119,7 +119,7 @@ class GeneralRequestConsumer(AsyncWebsocketConsumer):
                             "tournament_id": event["tournament_id"],
                             "tournament_name": event["tournament_name"],
                             "winner_id": event["winner_id"],
-                            "winner_username": event["winner_username"],
+                            "winner_display_name": event["winner_display_name"],
                         },
                     },
                 }
